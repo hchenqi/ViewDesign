@@ -3,10 +3,10 @@
 #include "../style/cursor_style.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 void SetCursor(Cursor cursor);
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

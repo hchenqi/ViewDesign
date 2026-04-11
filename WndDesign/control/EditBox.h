@@ -9,7 +9,7 @@
 #include "../wrapper/Cursor.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 class EditBox : public CustomizedCursor<TextBox, Cursor::Text> {
@@ -156,4 +156,4 @@ protected:
 };
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

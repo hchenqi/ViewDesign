@@ -8,7 +8,7 @@
 #include "WndDesign/control/EditBox.h"
 
 
-using namespace WndDesign;
+using namespace ViewDesign;
 
 
 class MainFrame : public DesktopFrame {

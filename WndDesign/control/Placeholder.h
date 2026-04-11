@@ -3,7 +3,7 @@
 #include "../window/wnd_traits.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 template<class WidthType, class HeightType>
@@ -53,4 +53,4 @@ template<>
 class Placeholder<Assigned, Assigned> : public WndType<Assigned, Assigned> {};
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

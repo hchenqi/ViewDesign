@@ -3,7 +3,7 @@
 #include "../common/core.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 struct Scale {
@@ -23,4 +23,4 @@ struct Scale {
 };
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

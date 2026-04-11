@@ -5,7 +5,7 @@
 #include <functional>
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 class Timer : public Uncopyable {
@@ -24,4 +24,4 @@ public:
 };
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

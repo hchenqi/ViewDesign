@@ -3,7 +3,7 @@
 #include "core.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 template <typename T>
@@ -19,4 +19,4 @@ template <typename T>
 reversion_wrapper<T> reverse(T& iterable) { return { iterable }; }
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

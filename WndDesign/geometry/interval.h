@@ -3,7 +3,7 @@
 #include "../common/core.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 struct Interval {
@@ -43,4 +43,4 @@ struct Interval {
 constexpr Interval interval_empty;
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

@@ -4,7 +4,7 @@
 #include "../common/reversion_wrapper.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 class _StackLayout_Base : public WndObject {
@@ -45,7 +45,7 @@ protected:
 template<class WidthTypeFirst, class HeightTypeFirst, class WidthTypeSecond, class HeightTypeSecond>
 class StackLayout : public _StackLayout_Base {
 public:
-	static_assert((IsAssigned<WidthTypeFirst> && IsAssigned<HeightTypeFirst>) || (IsAssigned<WidthTypeSecond> && IsAssigned<HeightTypeSecond>), "At least one child window's width type and height type should be Assigned.");
+	static_assert((IsAssigned<WidthTypeFirst>&& IsAssigned<HeightTypeFirst>) || (IsAssigned<WidthTypeSecond> && IsAssigned<HeightTypeSecond>), "At least one child window's width type and height type should be Assigned.");
 public:
 	using width_type = std::conditional_t<IsAssigned<WidthTypeFirst>, WidthTypeSecond, WidthTypeFirst>;
 	using height_type = std::conditional_t<IsAssigned<HeightTypeFirst>, HeightTypeSecond, HeightTypeFirst>;
@@ -141,4 +141,4 @@ protected:
 };
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

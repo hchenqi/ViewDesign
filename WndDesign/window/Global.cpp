@@ -5,10 +5,10 @@
 #include "../frame/DesktopFrame.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
-DesktopFrame& Global::AddWnd(std::unique_ptr<DesktopFrame> frame) { return desktop.AddChild(std::move(frame));}
+DesktopFrame& Global::AddWnd(std::unique_ptr<DesktopFrame> frame) { return desktop.AddChild(std::move(frame)); }
 DesktopFrame& Global::AddWnd(alloc_ptr<DesktopFrame> frame) { return AddWnd(std::unique_ptr<DesktopFrame>(frame)); }
 std::unique_ptr<DesktopFrame> Global::RemoveWnd(DesktopFrame& frame) { return desktop.RemoveChild(frame); }
 
@@ -19,4 +19,4 @@ void Global::MessageLoop() { desktop.MessageLoop(); }
 void Global::Terminate() { desktop.Terminate(); }
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

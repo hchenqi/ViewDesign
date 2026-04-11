@@ -3,7 +3,7 @@
 #include "../window/WndObject.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 class ContextProvider : Uncopyable {
@@ -41,4 +41,4 @@ public:
 };
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

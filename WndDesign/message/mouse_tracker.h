@@ -5,7 +5,7 @@
 #include "../geometry/helper.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 enum class MouseTrackMsg {
@@ -63,4 +63,4 @@ public:
 };
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

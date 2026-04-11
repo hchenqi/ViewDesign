@@ -3,7 +3,7 @@
 #include "../geometry/border_helper.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 class WndObject;
 
@@ -13,4 +13,4 @@ void AeroSnapDraggingEffect(WndObject& wnd);
 void AeroSnapBorderResizingEffect(WndObject& wnd, BorderPosition border_position);
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

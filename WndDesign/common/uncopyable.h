@@ -3,7 +3,7 @@
 #include "core.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 class Uncopyable {
@@ -16,4 +16,4 @@ private:
 };
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

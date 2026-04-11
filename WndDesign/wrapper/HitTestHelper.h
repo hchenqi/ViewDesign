@@ -3,7 +3,7 @@
 #include "../frame/WndFrame.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 template<class Wnd> requires std::is_base_of_v<WndObject, Wnd>
@@ -148,4 +148,4 @@ protected:
 };
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

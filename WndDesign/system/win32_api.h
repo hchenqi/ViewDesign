@@ -5,12 +5,12 @@
 #include <string>
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 using HANDLE = void*;
 
 
-BEGIN_NAMESPACE(Win32)
+namespace Win32 {
 
 
 Size GetDesktopSize();
@@ -48,6 +48,6 @@ bool CheckMessage();
 void Terminate();
 
 
-END_NAMESPACE(Win32)
+} // namespace Win32
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

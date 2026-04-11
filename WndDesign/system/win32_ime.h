@@ -5,7 +5,7 @@
 #include <string>
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 using std::wstring;
 
@@ -21,4 +21,4 @@ std::wstring ImeGetString();
 size_t ImeGetCursorPosition();
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

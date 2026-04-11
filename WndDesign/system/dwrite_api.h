@@ -6,10 +6,10 @@
 struct IDWriteFactory7;
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 IDWriteFactory7& GetDWriteFactory();
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

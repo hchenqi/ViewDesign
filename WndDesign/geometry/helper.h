@@ -4,7 +4,7 @@
 #include "margin.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 constexpr Size Extend(Size size, float length) {
@@ -44,4 +44,4 @@ constexpr bool PointInRoundedRectangle(Point point, Rect rect, float radius) {
 }
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

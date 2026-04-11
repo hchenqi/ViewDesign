@@ -3,7 +3,7 @@
 #include "../common/core.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 struct Margin {
@@ -26,4 +26,4 @@ struct Margin {
 };
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

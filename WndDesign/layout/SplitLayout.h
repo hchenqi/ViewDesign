@@ -3,7 +3,7 @@
 #include "../window/wnd_traits.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 class _SplitLayout_Base : public WndObject {
@@ -109,7 +109,7 @@ public:
 	static_assert(!IsAssigned<HeightTypeFirst> || !IsAssigned<HeightTypeSecond>, "At least one child window's height type should not be Assigned.");
 	static_assert((IsAssigned<WidthTypeFirst> || !IsAssigned<HeightTypeFirst>) && (IsAssigned<WidthTypeSecond> || !IsAssigned<HeightTypeSecond>), "Child window's width type must be Assigned if its height type is Assigned.");
 public:
-	using width_type = std::conditional_t<IsAssigned<WidthTypeFirst>&& IsAssigned<WidthTypeSecond>, Assigned, std::conditional_t<IsRelative<WidthTypeFirst> || IsRelative<WidthTypeSecond>, Relative, Auto>>;
+	using width_type = std::conditional_t<IsAssigned<WidthTypeFirst> && IsAssigned<WidthTypeSecond>, Assigned, std::conditional_t<IsRelative<WidthTypeFirst> || IsRelative<WidthTypeSecond>, Relative, Auto>>;
 	using height_type = std::conditional_t<IsAssigned<HeightTypeFirst> || IsAssigned<HeightTypeSecond>, Assigned, std::conditional_t<IsRelative<HeightTypeFirst> || IsRelative<HeightTypeSecond>, Relative, Auto>>;
 public:
 	using child_type_first = child_ptr<WidthTypeFirst, HeightTypeFirst>;
@@ -231,7 +231,7 @@ public:
 	static_assert((!IsAssigned<WidthTypeFirst> || IsAssigned<HeightTypeFirst>) && (!IsAssigned<WidthTypeSecond> || IsAssigned<HeightTypeSecond>), "Child window's height type must be Assigned if its width type is Assigned.");
 public:
 	using width_type = std::conditional_t<IsAssigned<WidthTypeFirst> || IsAssigned<WidthTypeSecond>, Assigned, std::conditional_t<IsRelative<WidthTypeFirst> || IsRelative<WidthTypeSecond>, Relative, Auto>>;
-	using height_type = std::conditional_t<IsAssigned<HeightTypeFirst>&& IsAssigned<HeightTypeSecond>, Assigned, std::conditional_t<IsRelative<HeightTypeFirst> || IsRelative<HeightTypeSecond>, Relative, Auto>>;
+	using height_type = std::conditional_t<IsAssigned<HeightTypeFirst> && IsAssigned<HeightTypeSecond>, Assigned, std::conditional_t<IsRelative<HeightTypeFirst> || IsRelative<HeightTypeSecond>, Relative, Auto>>;
 public:
 	using child_type_first = child_ptr<WidthTypeFirst, HeightTypeFirst>;
 	using child_type_second = child_ptr<WidthTypeSecond, HeightTypeSecond>;
@@ -352,4 +352,4 @@ template<class T1, class T2>
 SplitLayoutHorizontal(T1, T2) -> SplitLayoutHorizontal<extract_width_type<T1>, extract_height_type<T1>, extract_width_type<T2>, extract_height_type<T2>>;
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

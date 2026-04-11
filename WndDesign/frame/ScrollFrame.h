@@ -4,7 +4,7 @@
 #include "../geometry/clamp.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 template<class Direction>
@@ -246,4 +246,4 @@ template<class T>
 ScrollFrame(T) -> ScrollFrame<typename deduce_scroll_frame_direction<extract_width_type<T>, extract_height_type<T>>::type>;
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

@@ -5,7 +5,7 @@
 #include <algorithm>
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 void _ListLayoutAuto_Base::UpdateIndex(size_t begin) {
@@ -231,4 +231,4 @@ ref_ptr<WndObject> ListLayoutAuto<Horizontal>::HitTest(MouseMsg& msg) {
 }
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

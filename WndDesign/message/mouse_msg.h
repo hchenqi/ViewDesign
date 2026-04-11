@@ -3,7 +3,7 @@
 #include "../geometry/point.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 struct MouseMsg {
@@ -35,4 +35,4 @@ struct MouseMsg {
 };
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

@@ -6,7 +6,7 @@
 #include "../geometry/region.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 class DesktopFrame : public WndFrame {
@@ -93,4 +93,4 @@ private:
 };
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

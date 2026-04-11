@@ -6,10 +6,10 @@
 struct IDCompositionDevice;
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 IDCompositionDevice& GetDCompDevice();
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

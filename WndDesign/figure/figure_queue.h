@@ -9,7 +9,7 @@
 #include <functional>
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 class FigureQueue : public Uncopyable {
@@ -87,4 +87,4 @@ public:
 };
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

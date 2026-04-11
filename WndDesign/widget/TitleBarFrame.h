@@ -25,7 +25,7 @@
 #include "../widget/Tooltip.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 class TitleBarFrame : public DesktopFrame, ContextProvider {
@@ -261,4 +261,4 @@ protected:
 };
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

@@ -7,7 +7,7 @@
 #include <windowsx.h>
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 struct DesktopFrameApi : DesktopFrame {
 	DesktopFrame::GetRegion;
@@ -29,7 +29,7 @@ struct DesktopApi : Desktop {
 	Desktop::DispatchKeyMsg;
 };
 
-BEGIN_NAMESPACE(Anonymous)
+namespace {
 
 bool is_mouse_tracked = false;
 DesktopApi& desktop = static_cast<DesktopApi&>(Desktop::Get());
@@ -184,9 +184,9 @@ inline void RegisterWndClass() {
 	}
 }
 
-END_NAMESPACE(Anonymous)
+} // namespace
 
-BEGIN_NAMESPACE(Win32)
+namespace Win32 {
 
 
 Size GetDesktopSize() { RECT rect; SystemParametersInfoW(SPI_GETWORKAREA, 0, &rect, 0); return AsRect(rect).size; }
@@ -305,6 +305,6 @@ bool CheckMessage() {
 void Terminate() { PostQuitMessage(0); }
 
 
-END_NAMESPACE(Win32)
+} // namespace Win32
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

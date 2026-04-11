@@ -2,7 +2,7 @@
 #include "Desktop.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 WndObject::~WndObject() {
@@ -62,4 +62,4 @@ void WndObject::SetFocus() { desktop.SetFocus(*this); }
 void WndObject::ReleaseFocus() { desktop.ReleaseFocus(*this); }
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

@@ -4,7 +4,7 @@
 #include "../geometry/helper.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 template<class WidthType, class HeightType>
@@ -57,4 +57,4 @@ template<class T>
 ScaleFrame(Scale, T) -> ScaleFrame<extract_width_type<T>, extract_height_type<T>>;
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

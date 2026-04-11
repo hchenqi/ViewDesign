@@ -1,17 +1,12 @@
-# Visual Studio generated .editorconfig file with C++ settings.
 root = true
 
-[*.{c++,cc,cpp,cppm,cxx,h,h++,hh,hpp,hxx,inl,ipp,ixx,tlh,tli}]
-
-# Visual C++ Code Style settings
-
-cpp_generate_documentation_comments = xml
-
-# Visual C++ Formatting settings
+[*.{cpp,h}]
 
 indent_style = tab
 indent_size = 4
 tab_width= 4
+insert_final_newline = true
+
 cpp_indent_braces = false
 cpp_indent_multi_line_relative_to = innermost_parenthesis
 cpp_indent_within_parentheses = align_to_parenthesis
@@ -71,8 +66,6 @@ cpp_space_pointer_reference_alignment = left
 cpp_space_around_ternary_operator = insert
 cpp_use_unreal_engine_macro_formatting = true
 cpp_wrap_preserve_blocks = one_liners
-
-# Visual C++ Include Cleanup settings
 
 cpp_include_cleanup_add_missing_error_tag_type = suggestion
 cpp_include_cleanup_remove_unused_error_tag_type = dimmed

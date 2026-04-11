@@ -6,7 +6,7 @@
 #include "../figure/shape.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 template<class WidthType, class HeightType>
@@ -68,4 +68,4 @@ template<class T>
 BorderFrame(Border, T) -> BorderFrame<extract_width_type<T>, extract_height_type<T>>;
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

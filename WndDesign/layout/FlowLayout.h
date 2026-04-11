@@ -5,7 +5,7 @@
 #include <vector>
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 class FlowLayout : public WndType<Assigned, Auto> {
@@ -70,4 +70,4 @@ protected:
 };
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

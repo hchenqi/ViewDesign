@@ -2,7 +2,7 @@
 #include "../common/reversion_wrapper.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 void OverlapLayout::AddChild(frame_ptr frame) {
@@ -94,4 +94,4 @@ ref_ptr<WndObject> OverlapLayout::HitTest(MouseMsg& msg) {
 }
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

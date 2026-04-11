@@ -8,7 +8,7 @@
 #include <algorithm>
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 class TableLayout : public WndType<Relative, Relative> {
@@ -214,4 +214,4 @@ protected:
 };
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

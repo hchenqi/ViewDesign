@@ -3,7 +3,7 @@
 #include "../geometry/geometry.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 struct ValuePixel {
@@ -99,4 +99,4 @@ constexpr ValueTag position_center = ValueTag(ValueTag::Type::Center, 0.0f);
 constexpr ValueTag position_auto = length_auto;
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

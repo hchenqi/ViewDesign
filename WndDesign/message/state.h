@@ -6,7 +6,7 @@
 #include <functional>
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 template<class T>
@@ -56,4 +56,4 @@ public:
 };
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

@@ -3,7 +3,7 @@
 #include "layer.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 struct SwapChain;
 struct CompositionTarget;
@@ -29,4 +29,4 @@ public:
 };
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

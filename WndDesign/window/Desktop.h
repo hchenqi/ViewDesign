@@ -7,7 +7,7 @@
 #include <unordered_set>
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 class DesktopFrame;
 
@@ -91,4 +91,4 @@ private:
 extern Desktop& desktop;
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

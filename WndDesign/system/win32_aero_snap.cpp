@@ -5,7 +5,7 @@
 #include <Windows.h>
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 struct DesktopFrameApi : DesktopFrame {
 	DesktopFrame::hwnd;
@@ -23,4 +23,4 @@ void AeroSnapBorderResizingEffect(WndObject& wnd, BorderPosition border_position
 }
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

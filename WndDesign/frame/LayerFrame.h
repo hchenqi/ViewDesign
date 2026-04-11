@@ -5,7 +5,7 @@
 #include "../geometry/region.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 class _LayerFrame_Base : public WndFrame {
@@ -52,4 +52,4 @@ template<class T>
 LayerFrame(uchar, T) -> LayerFrame<extract_width_type<T>, extract_height_type<T>>;
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

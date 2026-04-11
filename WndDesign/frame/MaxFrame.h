@@ -3,7 +3,7 @@
 #include "WndFrame.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 template<class WidthType = Auto, class HeightType = Auto>
@@ -77,4 +77,4 @@ template<class Size, class T>
 MaxFrame(Size, T) -> MaxFrame<std::conditional_t<IsAssigned<extract_width_type<T>>, Assigned, Auto>, std::conditional_t<IsAssigned<extract_height_type<T>>, Assigned, Auto>>;
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

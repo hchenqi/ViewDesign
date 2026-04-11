@@ -3,7 +3,7 @@
 #include "geometry.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 constexpr Point ScalePointBySize(Point point, Size size) {
@@ -38,4 +38,4 @@ public:
 };
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

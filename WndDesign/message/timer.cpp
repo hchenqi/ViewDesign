@@ -5,9 +5,9 @@
 #include <Windows.h>
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
-BEGIN_NAMESPACE(Anonymous)
+namespace {
 
 struct TimerSyncMap : public std::unordered_map<HANDLE, Timer&> {
 	~TimerSyncMap() { while (!empty()) { begin()->second.Stop(); } }
@@ -38,7 +38,7 @@ void KillTimerSync(HANDLE timer) {
 	timer_sync_map.erase(it);
 }
 
-END_NAMESPACE(Anonymous)
+} // namespace
 
 
 void Timer::Set(uint period) {
@@ -56,4 +56,4 @@ void Timer::Stop() {
 }
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

@@ -3,7 +3,7 @@
 #include "../common/core.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 struct Vector {
@@ -25,4 +25,4 @@ struct Vector {
 };
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

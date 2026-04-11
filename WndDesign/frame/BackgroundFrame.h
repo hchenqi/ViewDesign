@@ -4,7 +4,7 @@
 #include "../figure/shape.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 template<class WidthType, class HeightType>
@@ -39,4 +39,4 @@ template<class T>
 BackgroundFrame(Color, T) -> BackgroundFrame<extract_width_type<T>, extract_height_type<T>>;
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

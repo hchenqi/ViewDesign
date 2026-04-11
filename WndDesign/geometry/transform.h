@@ -5,7 +5,7 @@
 #include "scale.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 struct Transform {
@@ -13,8 +13,8 @@ struct Transform {
 
 	static Transform Identity();
 	static Transform Translation(Vector offset);
-	static Transform Scale(WndDesign::Scale scale, Point center);
-	static Transform Scale(WndDesign::Scale scale) { return Scale(scale, Point()); }
+	static Transform Scale(ViewDesign::Scale scale, Point center);
+	static Transform Scale(ViewDesign::Scale scale) { return Scale(scale, Point()); }
 	static Transform Rotation(float angle, Point center);
 	static Transform Rotation(float angle) { return Rotation(angle, Point()); }
 	static Transform Skew(float angle_x, float angle_y, Point center);
@@ -22,11 +22,11 @@ struct Transform {
 
 	Transform() : Transform(Identity()) {}
 	Transform(Vector vector) : Transform(Translation(vector)) {}
-	Transform(WndDesign::Scale scale) : Transform(Scale(scale)) {}
+	Transform(ViewDesign::Scale scale) : Transform(Scale(scale)) {}
 
 	Transform Invert() const;
 
-	WndDesign::Scale GetScale() const;
+	ViewDesign::Scale GetScale() const;
 	bool IsAxisAligned() const;
 };
 
@@ -38,4 +38,4 @@ Point operator*(Point point, const Transform& transform);
 inline Point& operator*=(Point& point, const Transform& transform) { return point = point * transform; }
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

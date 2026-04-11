@@ -5,7 +5,7 @@
 #include "../system/directx_helper.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 TextBlock::~TextBlock() {
@@ -46,7 +46,7 @@ void TextBlock::SetText(const TextBlockStyle& style, const std::wstring& text) {
 	std::vector<const wchar*> family_list; family_list.reserve(style.font._family_list.size());
 	for (auto& str : style.font._family_list) { family_list.push_back(str.c_str()); }
 	font_fallback_builder->AddMapping(&range, 1, family_list.data(), (uint)family_list.size());
-	
+
 	ComPtr<IDWriteFontFallback> system_font_fallback;
 	GetDWriteFactory().GetSystemFontFallback(&system_font_fallback);
 	font_fallback_builder->AddMappings(system_font_fallback.Get());
@@ -134,4 +134,4 @@ void TextBlockFigure::DrawOn(RenderTarget& target, Point point) const {
 }
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

@@ -4,7 +4,7 @@
 #include "../figure/text_block.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 class TextBox : public WndType<Relative, Auto> {
@@ -51,4 +51,4 @@ protected:
 };
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

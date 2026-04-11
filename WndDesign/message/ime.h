@@ -5,7 +5,7 @@
 #include <string>
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 class WndObject;
 
@@ -22,4 +22,4 @@ struct Ime {
 constexpr Ime ime;
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

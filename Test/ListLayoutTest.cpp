@@ -8,7 +8,7 @@
 #include "WndDesign/wrapper/HitTestHelper.h"
 
 
-using namespace WndDesign;
+using namespace ViewDesign;
 
 
 class MainFrame : public DesktopFrame {

@@ -4,7 +4,7 @@
 #include "bitmap.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 class FigureQueue;
 
@@ -37,4 +37,4 @@ struct LayerFigure : Figure {
 };
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

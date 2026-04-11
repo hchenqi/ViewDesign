@@ -5,7 +5,7 @@
 #include <string>
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 void SetClipboardData(std::wstring text);
@@ -13,4 +13,4 @@ void SetClipboardData(std::wstring text);
 void GetClipboardData(std::wstring& text);
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

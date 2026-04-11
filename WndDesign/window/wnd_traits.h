@@ -5,7 +5,7 @@
 #include <memory>
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 struct Relative {};
@@ -65,7 +65,7 @@ public:
 	child_ptr(alloc_ptr<ChildType> ptr) : child_ptr(std::unique_ptr<ChildType>(ptr)) {}
 public:
 	operator WndObject& () const { return **this; }
-	operator ref_ptr<WndObject> () const { return get(); }
+	operator ref_ptr<WndObject>() const { return get(); }
 };
 
 template<class WidthType, class HeightType>
@@ -111,4 +111,4 @@ struct Horizontal {};
 struct Bidirectional {};
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

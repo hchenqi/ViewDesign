@@ -5,7 +5,7 @@
 #include "interval.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 struct Rect {
@@ -62,4 +62,4 @@ struct Rect {
 };
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

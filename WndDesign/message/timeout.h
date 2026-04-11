@@ -6,7 +6,7 @@
 #include <memory>
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 class Timeout : private Timer {
@@ -37,4 +37,4 @@ inline TaskAwaitable<> SetTimeout(uint delay) {
 }
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

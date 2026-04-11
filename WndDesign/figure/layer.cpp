@@ -5,7 +5,7 @@
 #include "../system/directx_helper.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 inline alloc_ptr<ID2D1Bitmap1> D2DCreateBitmap(Size size) {
@@ -29,7 +29,7 @@ void Layer::DrawFigureQueue(const FigureQueue& figure_queue, Vector offset, Rect
 	device_context.PushAxisAlignedClip(AsD2DRect(clip_region), D2D1_ANTIALIAS_MODE_PER_PRIMITIVE);
 	device_context.Clear(AsD2DColor(color_transparent));
 	auto& groups = figure_queue.GetFigureGroups();
-	auto& figures = figure_queue.GetFigures(); 
+	auto& figures = figure_queue.GetFigures();
 	for (size_t figure_index = 0, group_index = 1; group_index < groups.size(); ++group_index) {
 		auto& group = groups[group_index];
 		for (; figure_index < group.figure_index; ++figure_index) {
@@ -57,4 +57,4 @@ void LayerFigure::DrawOn(RenderTarget& target, Point point) const {
 }
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

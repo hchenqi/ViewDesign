@@ -3,7 +3,7 @@
 #include "../system/win32_ime.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 void Ime::Enable(WndObject& wnd) { desktop.ImeEnable(wnd); }
@@ -17,4 +17,4 @@ std::wstring Ime::GetString() { return ImeGetString(); }
 size_t Ime::GetCursorPosition() { return ImeGetCursorPosition(); }
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

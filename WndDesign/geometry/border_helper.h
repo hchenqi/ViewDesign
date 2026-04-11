@@ -4,7 +4,7 @@
 #include "../style/cursor_style.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 enum class BorderPosition : uint {
@@ -25,17 +25,29 @@ inline BorderPosition HitTestBorderPosition(Size window_size, float border_width
 	float width = window_size.width, height = window_size.height;
 	float x = point.x, y = point.y;
 	if (x < x1) {
-		if (y < y1) { return BorderPosition::LeftTop; }
-		else if (y < y2) { return BorderPosition::Left; }
-		else { return BorderPosition::LeftBottom; }
+		if (y < y1) {
+			return BorderPosition::LeftTop;
+		} else if (y < y2) {
+			return BorderPosition::Left;
+		} else {
+			return BorderPosition::LeftBottom;
+		}
 	} else if (x < x2) {
-		if (y < y1) { return BorderPosition::Top; }
-		else if (y < y2) { return BorderPosition::None; }
-		else { return BorderPosition::Bottom; }
+		if (y < y1) {
+			return BorderPosition::Top;
+		} else if (y < y2) {
+			return BorderPosition::None;
+		} else {
+			return BorderPosition::Bottom;
+		}
 	} else {
-		if (y < y1) { return BorderPosition::RightTop; }
-		else if (y < y2) { return BorderPosition::Right; }
-		else { return BorderPosition::RightBottom; }
+		if (y < y1) {
+			return BorderPosition::RightTop;
+		} else if (y < y2) {
+			return BorderPosition::Right;
+		} else {
+			return BorderPosition::RightBottom;
+		}
 	}
 }
 
@@ -54,4 +66,4 @@ inline Cursor GetBorderPositionCursor(BorderPosition border_position) {
 }
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

@@ -7,13 +7,13 @@
 #include "../system/directx_resource.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
-BEGIN_NAMESPACE(Anonymous)
+namespace {
 
 inline float RoundWin32Length(float length) { length = floorf(length); return length < 14.0f ? 14.0f : length; }
 
-END_NAMESPACE(Anonymous)
+} // namespace
 
 
 DesktopFrame::DesktopFrame(std::wstring title, child_ptr<> child) : WndFrame(std::move(child)) {
@@ -111,4 +111,4 @@ void DesktopFrame::Redraw(Rect redraw_region) {
 }
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

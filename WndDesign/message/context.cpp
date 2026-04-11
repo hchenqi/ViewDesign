@@ -3,17 +3,17 @@
 #include <unordered_set>
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 struct WndObjectPrivateAccess : public WndObject {
 	ref_ptr<WndObjectPrivateAccess> Parent() { return static_cast<ref_ptr<WndObjectPrivateAccess>>(parent); }
 };
 
-BEGIN_NAMESPACE(Anonymous)
+namespace {
 
 std::unordered_set<ref_ptr<WndObject>> provider_set;
 
-END_NAMESPACE(Anonymous)
+} // namespace
 
 
 ContextProvider::ContextProvider(WndObject& provider) : provider(provider) {
@@ -36,4 +36,4 @@ ref_ptr<WndObject> Context::GetNextProvider(WndObject& user) {
 }
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

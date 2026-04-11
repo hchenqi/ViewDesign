@@ -4,7 +4,7 @@
 #include "../common/tuple_helper.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 class WndFrameMutable : public WndFrame {
@@ -97,4 +97,4 @@ protected:
 };
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

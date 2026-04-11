@@ -6,7 +6,7 @@
 #include <string>
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 enum class UTF16CharType : uchar {
@@ -47,4 +47,4 @@ public:
 };
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

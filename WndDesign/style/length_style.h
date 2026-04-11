@@ -4,7 +4,7 @@
 #include "../figure/color.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 struct LengthStyle {
@@ -46,4 +46,4 @@ struct PositionStyle {
 };
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

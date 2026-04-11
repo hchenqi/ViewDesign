@@ -5,7 +5,7 @@
 #include <list>
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 class OverlapFrame : protected WndFrame {
@@ -98,4 +98,4 @@ inline void OverlapFrame::SendToBack() { GetParent().SendToBack(*this); }
 inline void OverlapFrame::OverlapFrameRegionUpdated(Rect region) { if (HasParent()) { GetParent().OnOverlapFrameChildRegionUpdate(*this, region); } }
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

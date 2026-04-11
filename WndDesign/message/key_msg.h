@@ -3,7 +3,7 @@
 #include "../common/core.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 enum class Key : uchar;
@@ -123,4 +123,4 @@ constexpr Key CharKey(char ch) {
 }
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

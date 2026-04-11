@@ -5,7 +5,7 @@
 #include <tuple>
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 template<class Func>
@@ -31,4 +31,4 @@ template<class Ret, class Class, class... Args>
 struct function_traits<Ret(Class::*)(Args...) const> : public function_traits<Ret(Args...)> {};
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

@@ -7,7 +7,7 @@
 #include "../message/message.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 class WndObject : Uncopyable {
@@ -99,4 +99,4 @@ protected:
 };
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

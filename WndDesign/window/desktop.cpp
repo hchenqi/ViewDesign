@@ -6,7 +6,7 @@
 #include "../common/reversion_wrapper.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 Desktop& desktop = Desktop::Get();
 
@@ -172,7 +172,7 @@ void Desktop::SetFocus(WndObject& wnd) {
 		wnd_focus_map.emplace(trace.back(), wnd_focus_stack.size());
 	}
 	if (frame_focus) {
-		ime_enabled_wnd.contains(&wnd) ? WndDesign::ImeEnable(frame_focus->hwnd) : WndDesign::ImeDisable(frame_focus->hwnd);
+		ime_enabled_wnd.contains(&wnd) ? ViewDesign::ImeEnable(frame_focus->hwnd) : ViewDesign::ImeDisable(frame_focus->hwnd);
 	}
 	wnd.OnNotifyMsg(NotifyMsg::Focus);
 }
@@ -202,7 +202,7 @@ void Desktop::DispatchKeyMsg(KeyMsg msg) {
 
 void Desktop::ImeSetPosition(WndObject& wnd, Point point) {
 	DesktopFrame& frame = GetDesktopFramePoint(wnd, point);
-	WndDesign::ImeSetPosition(frame.hwnd, point);
+	ViewDesign::ImeSetPosition(frame.hwnd, point);
 }
 
 void Desktop::ReleaseWindow(WndObject& wnd) {
@@ -221,4 +221,4 @@ void Desktop::MessageLoop() { Win32::MessageLoop(); }
 void Desktop::Terminate() { frame_list.clear(); Win32::Terminate(); }
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

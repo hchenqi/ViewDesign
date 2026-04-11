@@ -3,7 +3,7 @@
 #include "../window/wnd_traits.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 class WndFrame : public WndObject {
@@ -60,4 +60,4 @@ protected:
 };
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

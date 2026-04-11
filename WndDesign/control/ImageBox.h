@@ -4,7 +4,7 @@
 #include "../figure/image.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 class ImageBox : public WndType<Auto, Auto> {
@@ -41,4 +41,4 @@ protected:
 };
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

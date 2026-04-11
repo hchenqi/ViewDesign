@@ -5,15 +5,15 @@
 #pragma comment(lib, "icu.lib")
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
-BEGIN_NAMESPACE(Anonymous)
+namespace {
 
 UErrorCode status = U_ZERO_ERROR;
 
 inline UBreakIterator* AsUBreakIterator(void* iter) { return static_cast<UBreakIterator*>(iter); }
 
-END_NAMESPACE(Anonymous)
+} // namespace
 
 static_assert(sizeof(wchar_t) == sizeof(UChar));
 
@@ -61,4 +61,4 @@ TextRange WordBreakIterator::Prev() {
 }
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

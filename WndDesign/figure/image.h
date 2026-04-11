@@ -7,7 +7,7 @@
 #include <string>
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 struct ImageSource;
 
@@ -52,4 +52,4 @@ struct ImageRepeatFigure : Figure {
 };
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

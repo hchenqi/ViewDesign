@@ -4,7 +4,7 @@
 #include "../geometry/clamp.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 struct LengthStyleHelper {
@@ -57,4 +57,4 @@ public:
 };
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

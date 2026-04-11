@@ -14,7 +14,7 @@
 #include <wrl/client.h>
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 using Microsoft::WRL::ComPtr;
@@ -70,4 +70,4 @@ inline float OpacityAsFloat(uchar opacity) { return opacity / (float)0xFF; }
 inline D2D1_COLOR_F AsD2DColor(Color color) { return D2D1::ColorF(color.AsUnsigned(), OpacityAsFloat(color.alpha)); }
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

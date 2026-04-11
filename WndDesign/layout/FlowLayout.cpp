@@ -3,7 +3,7 @@
 #include <algorithm>
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 FlowLayout::FlowLayout(float row_height, float column_gap, float row_gap) :
@@ -103,4 +103,4 @@ ref_ptr<WndObject> FlowLayout::HitTest(MouseMsg& msg) {
 }
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

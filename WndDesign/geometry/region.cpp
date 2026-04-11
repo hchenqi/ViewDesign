@@ -5,9 +5,9 @@
 #include <windowsx.h>
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
-BEGIN_NAMESPACE(Anonymous)
+namespace {
 
 inline RECT AsWin32Rect(Rect rect) {
 	return { (int)roundf(rect.left()), (int)roundf(rect.top()), (int)roundf(rect.right()), (int)roundf(rect.bottom()) };
@@ -22,7 +22,7 @@ Region region_temp;
 
 inline Region& TempRegion(Rect rect) { region_temp.Set(rect); return region_temp; }
 
-END_NAMESPACE(Anonymous)
+} // namespace
 
 
 Region::Region(Rect region) {
@@ -87,4 +87,4 @@ std::pair<Rect, std::vector<Rect>> Region::GetRects() const {
 }
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

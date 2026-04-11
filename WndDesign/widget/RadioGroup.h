@@ -7,7 +7,7 @@
 #include "../common/function_traits.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 template<class T>
@@ -82,4 +82,4 @@ template<class Func, class... Ts>
 RadioGroup(Func, Ts...) -> RadioGroup<typename function_traits<Func>::template argument_type<0>>;
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

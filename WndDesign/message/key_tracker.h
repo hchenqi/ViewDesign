@@ -4,7 +4,7 @@
 #include "../common/uncopyable.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 class KeyTracker : Uncopyable {
@@ -31,4 +31,4 @@ public:
 };
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

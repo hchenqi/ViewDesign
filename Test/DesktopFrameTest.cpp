@@ -6,7 +6,7 @@
 #include "WndDesign/system/win32_aero_snap.h"
 
 
-using namespace WndDesign;
+using namespace ViewDesign;
 
 
 class MainFrame : public DesktopFrame {

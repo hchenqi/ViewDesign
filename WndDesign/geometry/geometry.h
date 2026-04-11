@@ -7,7 +7,7 @@
 #include "scale.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 constexpr Vector vector_zero = Vector(0.0f, 0.0f);
@@ -52,4 +52,4 @@ constexpr Point& operator*=(Point& point, Scale scale) { return point = point * 
 constexpr Rect& operator*=(Rect& rect, Scale scale) { return rect = rect * scale; }
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

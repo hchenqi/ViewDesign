@@ -5,9 +5,9 @@
 #include "../system/directx_helper.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
-BEGIN_NAMESPACE(Anonymous)
+namespace {
 
 
 ComPtr<IWICFormatConverter> LoadFromDecoder(ComPtr<IWICBitmapDecoder> decoder) {
@@ -78,22 +78,14 @@ inline ComPtr<ID2D1Bitmap1> CreateD2DBitmapFromWicBitmap(IWICFormatConverter& co
 }
 
 
-END_NAMESPACE(Anonymous)
+} // namespace
 
 
-Image::Image(std::wstring file_name) :
-	source(static_cast<ImageSource*>(LoadImageFromFile(file_name).Detach())),
-	size(GetImageSize(*source)) {
-}
+Image::Image(std::wstring file_name) : source(static_cast<ImageSource*>(LoadImageFromFile(file_name).Detach())), size(GetImageSize(*source)) {}
 
-Image::Image(void* address, size_t size) :
-	source(static_cast<ImageSource*>(LoadImageFromMemory(address, size).Detach())),
-	size(GetImageSize(*source)) {
-}
+Image::Image(void* address, size_t size) : source(static_cast<ImageSource*>(LoadImageFromMemory(address, size).Detach())), size(GetImageSize(*source)) {}
 
-Image::~Image() {
-	SafeRelease(&source);
-}
+Image::~Image() { SafeRelease(&source); }
 
 void Image::CreateBitmap() const {
 	if (bitmap.IsEmpty()) {
@@ -127,4 +119,4 @@ void ImageRepeatFigure::DrawOn(RenderTarget& target, Point point) const {
 }
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

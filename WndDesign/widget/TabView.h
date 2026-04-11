@@ -24,7 +24,7 @@
 #include <unordered_set>
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 class TabView : public WndFrame, public LayoutType<Assigned, Assigned>, protected ContextProvider {
@@ -394,4 +394,4 @@ public:
 };
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

@@ -3,7 +3,7 @@
 #include "../common/core.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 enum class NotifyMsg : uchar {
@@ -18,4 +18,4 @@ enum class NotifyMsg : uchar {
 };
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

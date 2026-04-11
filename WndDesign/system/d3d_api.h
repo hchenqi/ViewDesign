@@ -6,10 +6,10 @@
 struct ID3D11Device;
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 ID3D11Device& GetD3DDevice();
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

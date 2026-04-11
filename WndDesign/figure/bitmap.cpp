@@ -4,7 +4,7 @@
 #include "../system/directx_helper.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 Bitmap::Bitmap() : bitmap(nullptr) { RegisterBitmap(*this); }
@@ -14,4 +14,4 @@ Bitmap::~Bitmap() { Destroy(); UnregisterBitmap(*this); }
 void Bitmap::Destroy() { SafeRelease(&bitmap); }
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

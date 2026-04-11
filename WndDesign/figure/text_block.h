@@ -8,7 +8,7 @@
 #include <vector>
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 struct TextLayout;
 
@@ -46,4 +46,4 @@ struct TextBlockFigure : Figure {
 };
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

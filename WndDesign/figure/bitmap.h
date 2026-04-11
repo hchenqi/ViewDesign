@@ -3,7 +3,7 @@
 #include "../common/uncopyable.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 struct BitmapResource;
 
@@ -21,4 +21,4 @@ public:
 };
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

@@ -11,9 +11,9 @@
 #include "../window/Global.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
-BEGIN_NAMESPACE(Anonymous)
+namespace {
 
 class Tooltip : public DesktopFrame {
 private:
@@ -158,7 +158,7 @@ public:
 	}
 };
 
-END_NAMESPACE(Anonymous)
+} // namespace
 
 
 void TooltipShow(const std::wstring& text) {
@@ -170,4 +170,4 @@ void TooltipHide() {
 }
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

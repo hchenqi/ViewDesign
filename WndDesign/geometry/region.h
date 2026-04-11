@@ -6,7 +6,7 @@
 #include <vector>
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 class Region : Uncopyable {
@@ -39,4 +39,4 @@ public:
 };
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

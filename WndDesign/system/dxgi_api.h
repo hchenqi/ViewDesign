@@ -8,7 +8,7 @@ struct IDXGIAdapter;
 struct IDXGIFactory2;
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 IDXGIDevice1& GetDXGIDevice();
@@ -16,4 +16,4 @@ IDXGIAdapter& GetDXGIAdapter();
 IDXGIFactory2& GetDXGIFactory();
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

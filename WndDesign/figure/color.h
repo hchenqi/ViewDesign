@@ -3,7 +3,7 @@
 #include "../common/core.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 struct Color {
@@ -15,9 +15,7 @@ public:
 
 public:
 	constexpr Color() : blue(), green(), red(), alpha() {}
-	constexpr Color(uint rgb, uchar alpha = 0xFF) :
-		blue(rgb & 0xFF), green((rgb >> 8) & 0xFF), red((rgb >> 16) & 0xFF), alpha(alpha) {
-	}
+	constexpr Color(uint rgb, uchar alpha = 0xFF) : blue(rgb & 0xFF), green((rgb >> 8) & 0xFF), red((rgb >> 16) & 0xFF), alpha(alpha) {}
 #pragma warning (push)
 #pragma warning (disable : 26812)  // Prefer 'enum class' over 'enum' (Enum.3)
 	enum Set : uint;
@@ -180,4 +178,4 @@ public:
 constexpr Color color_transparent = Color(0x000000, 0x00);
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

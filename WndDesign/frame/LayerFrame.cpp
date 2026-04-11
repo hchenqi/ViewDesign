@@ -2,7 +2,7 @@
 #include "../geometry/helper.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 Size _LayerFrame_Base::OnSizeRefUpdate(Size size_ref) {
@@ -46,4 +46,4 @@ void _LayerFrame_Base::OnDraw(FigureQueue& figure_queue, Rect draw_region) {
 }
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

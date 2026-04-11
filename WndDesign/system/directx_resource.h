@@ -3,7 +3,7 @@
 #include "../common/core.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 class Bitmap;
@@ -14,4 +14,4 @@ void UnregisterBitmap(Bitmap& bitmap);
 void DirectXRecreateResource();
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

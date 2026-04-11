@@ -4,7 +4,7 @@
 #include "../system/directx_helper.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 Transform Transform::Identity() {
@@ -15,7 +15,7 @@ Transform Transform::Translation(Vector offset) {
 	return AsTransform(D2D1::Matrix3x2F::Translation(offset.x, offset.y));
 }
 
-Transform Transform::Scale(WndDesign::Scale scale, Point center) {
+Transform Transform::Scale(ViewDesign::Scale scale, Point center) {
 	return AsTransform(D2D1::Matrix3x2F::Scale(scale.x, scale.y, AsD2DPoint(center)));
 }
 
@@ -33,8 +33,8 @@ Transform Transform::Invert() const {
 	return AsTransform(matrix);
 }
 
-WndDesign::Scale Transform::GetScale() const {
-	return WndDesign::Scale(sqrtf(square(matrix[0][0]) + square(matrix[0][1])), sqrtf(square(matrix[1][0]) + square(matrix[1][1])));
+ViewDesign::Scale Transform::GetScale() const {
+	return ViewDesign::Scale(sqrtf(square(matrix[0][0]) + square(matrix[0][1])), sqrtf(square(matrix[1][0]) + square(matrix[1][1])));
 }
 
 bool Transform::IsAxisAligned() const {
@@ -51,4 +51,4 @@ Point operator*(Point point, const Transform& transform) {
 }
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

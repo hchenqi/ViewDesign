@@ -3,7 +3,7 @@
 #include "../geometry/geometry.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 struct RenderTarget;
 
@@ -15,4 +15,4 @@ struct ABSTRACT_BASE Figure {
 const Size GetTargetSize(const RenderTarget& target);
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

@@ -5,7 +5,7 @@
 #include <memory>
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 class WndObject;
 class DesktopFrame;
@@ -26,4 +26,4 @@ struct Global {
 constexpr Global global;
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

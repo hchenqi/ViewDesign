@@ -7,7 +7,7 @@
 #include <vector>
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 enum class TextAlign : uchar {
@@ -110,7 +110,7 @@ struct TextBlockStyle {
 
 	struct FontFormat {
 	public:
-		std::vector<std::wstring> _family_list = { L"Segoe UI", L"DengXian"};
+		std::vector<std::wstring> _family_list = { L"Segoe UI", L"DengXian" };
 		std::wstring _locale = L"";
 		FontWeight _weight = FontWeight::Normal;
 		FontStyle _style = FontStyle::Normal;
@@ -130,4 +130,4 @@ struct TextBlockStyle {
 };
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

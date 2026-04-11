@@ -3,7 +3,7 @@
 #include "../common/core.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 struct IndexRange {
@@ -41,4 +41,4 @@ struct IndexRange {
 constexpr IndexRange index_range_empty = IndexRange();
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

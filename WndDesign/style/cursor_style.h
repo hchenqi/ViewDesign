@@ -3,7 +3,7 @@
 #include "../common/core.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 enum class Cursor : uint {
@@ -25,4 +25,4 @@ enum class Cursor : uint {
 };
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

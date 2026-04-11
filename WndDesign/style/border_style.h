@@ -3,7 +3,7 @@
 #include "../figure/color.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 struct Border {
@@ -21,4 +21,4 @@ struct Border {
 };
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

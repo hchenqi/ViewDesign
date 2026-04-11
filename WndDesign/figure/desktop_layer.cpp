@@ -7,7 +7,7 @@
 #include "../system/directx_helper.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 void DesktopLayer::Create(HANDLE hwnd, Size size) {
@@ -83,4 +83,4 @@ void DesktopLayer::Present(Rect rect) {
 }
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

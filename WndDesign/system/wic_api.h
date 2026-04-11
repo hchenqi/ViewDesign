@@ -6,10 +6,10 @@
 struct IWICImagingFactory2;
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 IWICImagingFactory2& GetWICFactory();
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

@@ -3,7 +3,7 @@
 #include "../system/clipboard.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 EditBox::EditBox(Style style, std::wstring text) : Base(style, text), style(style) {
@@ -323,4 +323,4 @@ void EditBox::OnNotifyMsg(NotifyMsg msg) {
 }
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

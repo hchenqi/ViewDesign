@@ -4,7 +4,7 @@
 #include "../geometry/helper.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 using Padding = Margin;
@@ -50,4 +50,4 @@ template<class T>
 PaddingFrame(Padding, T) -> PaddingFrame<extract_width_type<T>, extract_height_type<T>>;
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

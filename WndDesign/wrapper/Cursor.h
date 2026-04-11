@@ -3,7 +3,7 @@
 #include "../window/WndObject.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 template<class Wnd, Cursor cursor = Cursor::Arrow> requires std::is_base_of_v<WndObject, Wnd>
@@ -19,4 +19,4 @@ public:
 };
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

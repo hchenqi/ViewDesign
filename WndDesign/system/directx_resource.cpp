@@ -19,7 +19,7 @@
 #pragma comment(lib, "windowscodecs.lib")
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 struct DirectXResource {
@@ -194,4 +194,4 @@ void EndDraw() {
 }
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

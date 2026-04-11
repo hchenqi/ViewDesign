@@ -3,7 +3,7 @@
 #include "WndFrame.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 template<class WidthType = Assigned, class HeightType = Assigned>
@@ -85,4 +85,4 @@ protected:
 };
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

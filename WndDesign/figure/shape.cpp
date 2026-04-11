@@ -4,7 +4,7 @@
 #include "../system/directx_helper.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 inline D2D1_RECT_F ShrinkD2DRect(D2D1_RECT_F rect, float length) {
@@ -49,4 +49,4 @@ void Ellipse::DrawOn(RenderTarget& target, Point point) const {
 }
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

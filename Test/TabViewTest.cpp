@@ -4,7 +4,7 @@
 #include "WndDesign/control/EditBox.h"
 
 
-using namespace WndDesign;
+using namespace ViewDesign;
 
 
 struct MainFrameStyle : public TitleBarFrame::Style {

@@ -8,7 +8,7 @@
 #include <functional>
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 template<class T>
@@ -139,4 +139,4 @@ auto SetTask(Func task) {
 }
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

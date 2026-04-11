@@ -4,7 +4,7 @@
 #include "../wrapper/Background.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 template<class WidthType, class HeightType>
@@ -47,4 +47,4 @@ protected:
 };
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

@@ -12,7 +12,7 @@
 #include "WndDesign/wrapper/HitTestHelper.h"
 
 
-using namespace WndDesign;
+using namespace ViewDesign;
 
 
 struct MainFrameStyle : TitleBarFrame::Style {

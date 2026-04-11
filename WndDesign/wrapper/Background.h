@@ -4,7 +4,7 @@
 #include "../figure/shape.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 template<class Wnd, Color color = Color::White> requires std::is_base_of_v<WndObject, Wnd>
@@ -28,4 +28,4 @@ protected:
 };
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

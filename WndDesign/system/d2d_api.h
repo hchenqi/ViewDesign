@@ -8,7 +8,7 @@ struct ID2D1DeviceContext7;
 struct ID2D1SolidColorBrush;
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 ID2D1Factory8& GetD2DFactory();
@@ -19,4 +19,4 @@ void BeginDraw();
 void EndDraw();
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

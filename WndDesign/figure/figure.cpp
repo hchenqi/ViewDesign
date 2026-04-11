@@ -2,7 +2,7 @@
 #include "../system/directx_helper.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 const Size GetTargetSize(const RenderTarget& target) {
@@ -10,4 +10,4 @@ const Size GetTargetSize(const RenderTarget& target) {
 }
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

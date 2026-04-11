@@ -3,7 +3,7 @@
 #include "rect.h"
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 constexpr float clamp(float pos, float pos_min, float pos_max) {
@@ -31,4 +31,4 @@ constexpr Rect clamp(Rect rect, Rect region) {
 }
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

@@ -6,14 +6,14 @@
 #pragma comment(lib, "imm32.lib")
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
-BEGIN_NAMESPACE(Anonymous)
+namespace {
 
 std::wstring ime_string;
 size_t cursor_position;
 
-END_NAMESPACE(Anonymous)
+} // namespace
 
 
 #pragma warning (push)
@@ -58,4 +58,4 @@ std::wstring ImeGetString() { return std::move(ime_string); }
 size_t ImeGetCursorPosition() { return cursor_position; }
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign

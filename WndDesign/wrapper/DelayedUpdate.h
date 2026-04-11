@@ -5,7 +5,7 @@
 #include <optional>
 
 
-BEGIN_NAMESPACE(WndDesign)
+namespace ViewDesign {
 
 
 template<class Frame> requires std::is_base_of_v<WndFrame, Frame>
@@ -54,4 +54,4 @@ protected:
 };
 
 
-END_NAMESPACE(WndDesign)
+} // namespace ViewDesign
