@@ -44,16 +44,16 @@ struct Rect {
 
 	constexpr Rect Intersect(const Rect& rect) const {
 		Point posl1 = point, posl2 = rect.point, posh1 = RightBottom(), posh2 = rect.RightBottom();
-		Point posl = Point(max(posl1.x, posl2.x), max(posl1.y, posl2.y));
-		Point posh = Point(min(posh1.x, posh2.x), min(posh1.y, posh2.y));
+		Point posl = Point(std::max(posl1.x, posl2.x), std::max(posl1.y, posl2.y));
+		Point posh = Point(std::min(posh1.x, posh2.x), std::min(posh1.y, posh2.y));
 		return posh > posl ? Rect(posl, Size(posh.x - posl.x, posh.y - posl.y)) : Rect();
 	}
 
 	constexpr Rect Union(const Rect& rect) const {
 		if (IsEmpty()) { return rect; } if (rect.IsEmpty()) { return *this; }
 		Point posl1 = point, posl2 = rect.point, posh1 = RightBottom(), posh2 = rect.RightBottom();
-		Point posl = Point(min(posl1.x, posl2.x), min(posl1.y, posl2.y));
-		Point posh = Point(max(posh1.x, posh2.x), max(posh1.y, posh2.y));
+		Point posl = Point(std::min(posl1.x, posl2.x), std::min(posl1.y, posl2.y));
+		Point posh = Point(std::max(posh1.x, posh2.x), std::max(posh1.y, posh2.y));
 		return Rect(posl, Size(posh.x - posl.x, posh.y - posl.y));
 	}
 

@@ -1,5 +1,7 @@
 #include "unicode_helper.h"
 
+#include <cassert>
+
 #include <icu.h>
 
 #pragma comment(lib, "icu.lib")

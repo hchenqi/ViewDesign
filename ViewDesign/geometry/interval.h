@@ -25,13 +25,13 @@ struct Interval {
 	constexpr bool Contains(const Interval& interval) const { return interval.left() >= left() && interval.right() <= right(); }
 
 	constexpr Interval Intersect(const Interval& interval) const {
-		float left_max = max(left(), interval.left()), right_min = min(right(), interval.right());
+		float left_max = std::max(left(), interval.left()), right_min = std::min(right(), interval.right());
 		return right_min > left_max ? Interval(left_max, right_min - left_max) : Interval();
 	}
 
 	constexpr Interval Union(const Interval& interval) const {
 		if (IsEmpty()) { return interval; } if (interval.IsEmpty()) { return *this; }
-		float left_min = min(left(), interval.left()), right_max = max(right(), interval.right());
+		float left_min = std::min(left(), interval.left()), right_max = std::max(right(), interval.right());
 		return Interval(left_min, right_max - left_min);
 	}
 

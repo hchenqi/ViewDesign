@@ -169,7 +169,7 @@ void EditBox::DoSelect(const HitTestInfo& info) {
 	case SelectionMode::Word: current_range = GetWordRange(info.range.begin()); break;
 	case SelectionMode::Paragraph: current_range = GetParagraphRange(info.range.begin()); break;
 	}
-	size_t begin = min(current_range.begin(), selection_initial_range.begin()), end = max(current_range.end(), selection_initial_range.end());
+	size_t begin = std::min(current_range.begin(), selection_initial_range.begin()), end = std::max(current_range.end(), selection_initial_range.end());
 	UpdateCaret(begin < selection_initial_range.begin() ? begin : end);
 	UpdateSelection(TextRange(begin, end - begin));
 }

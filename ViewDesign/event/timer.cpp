@@ -1,6 +1,7 @@
 #include "timer.h"
 
 #include <unordered_map>
+#include <cassert>
 
 #include <Windows.h>
 

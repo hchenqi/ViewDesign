@@ -26,13 +26,13 @@ struct IndexRange {
 	constexpr bool Contains(const IndexRange& range) const { return range.begin() >= begin() && range.end() <= end(); }
 
 	constexpr IndexRange Intersect(const IndexRange& range) const {
-		size_t begin_max = max(begin(), range.begin()), end_min = min(end(), range.end());
+		size_t begin_max = std::max(begin(), range.begin()), end_min = std::min(end(), range.end());
 		return end_min > begin_max ? IndexRange(begin_max, end_min - begin_max) : IndexRange();
 	}
 
 	constexpr IndexRange Union(const IndexRange& range) const {
 		if (empty()) { return range; } if (range.empty()) { return *this; }
-		size_t begin_min = min(begin(), range.begin()), end_max = max(end(), range.end());
+		size_t begin_min = std::min(begin(), range.begin()), end_max = std::max(end(), range.end());
 		return IndexRange(begin_min, end_max - begin_min);
 	}
 };
