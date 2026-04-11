@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../frame/ViewFrame.h"
-#include "../frame/ViewFrameMutable.h"
 #include "../frame/BackgroundFrame.h"
 #include "../frame/ScrollFrame.h"
 #include "../frame/FixedFrame.h"
