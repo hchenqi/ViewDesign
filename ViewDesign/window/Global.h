@@ -7,17 +7,17 @@
 
 namespace ViewDesign {
 
-class WndObject;
+class ViewBase;
 class DesktopFrame;
 
 
 struct Global {
-	static DesktopFrame& AddWnd(std::unique_ptr<DesktopFrame> frame);
-	static DesktopFrame& AddWnd(alloc_ptr<DesktopFrame> frame);
-	static std::unique_ptr<DesktopFrame> RemoveWnd(DesktopFrame& frame);
+	static DesktopFrame& Add(std::unique_ptr<DesktopFrame> frame);
+	static DesktopFrame& Add(alloc_ptr<DesktopFrame> frame);
+	static std::unique_ptr<DesktopFrame> Remove(DesktopFrame& frame);
 
-	static DesktopFrame& GetDesktopFrame(WndObject& wnd);
-	static DesktopFrame& GetDesktopFramePoint(WndObject& wnd, Point& point);
+	static DesktopFrame& GetDesktopFrame(ViewBase& view);
+	static DesktopFrame& GetDesktopFramePoint(ViewBase& view, Point& point);
 
 	static void EventLoop();
 	static void Terminate();

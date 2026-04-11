@@ -52,7 +52,7 @@ void OverlapLayout::SendToBack(OverlapFrame& frame) {
 	Redraw((*it)->region);
 }
 
-Transform OverlapLayout::GetChildTransform(WndObject& child) const {
+Transform OverlapLayout::GetChildTransform(ViewBase& child) const {
 	return AsFrame(child).region.point - point_zero;
 }
 
@@ -62,14 +62,14 @@ Size OverlapLayout::OnSizeRefUpdate(Size size_ref) {
 	return size;
 }
 
-void OverlapLayout::OnOverlapFrameChildRegionUpdate(WndObject& child, Rect child_region) {
+void OverlapLayout::OnOverlapFrameChildRegionUpdate(ViewBase& child, Rect child_region) {
 	OverlapFrame& frame = AsFrame(child);
 	Rect redraw_region = frame.region.Union(child_region);
 	frame.region = child_region;
 	Redraw(redraw_region);
 }
 
-void OverlapLayout::OnChildRedraw(WndObject& child, Rect child_redraw_region) {
+void OverlapLayout::OnChildRedraw(ViewBase& child, Rect child_redraw_region) {
 	Redraw(child_redraw_region + (AsFrame(child).region.point - point_zero));
 }
 
@@ -79,12 +79,12 @@ void OverlapLayout::OnDraw(FigureQueue& figure_queue, Rect draw_region) {
 	}
 }
 
-ref_ptr<WndObject> OverlapLayout::HitTest(MouseEvent& event) {
+ref_ptr<ViewBase> OverlapLayout::HitTest(MouseEvent& event) {
 	MouseEvent event_copy = event;
 	for (auto& frame : reverse(frame_list)) {
 		if (frame->region.Contains(event.point)) {
 			event.point -= frame->region.point - point_zero;
-			if (ref_ptr<WndObject> res = HitTestChild(*frame.get(), event)) {
+			if (ref_ptr<ViewBase> res = HitTestChild(*frame.get(), event)) {
 				return res;
 			}
 			event = event_copy;

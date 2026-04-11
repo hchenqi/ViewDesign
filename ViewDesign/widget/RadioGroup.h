@@ -37,7 +37,7 @@ private:
 			if (selected) { group.selected_item = this; }
 		}
 	protected:
-		RadioGroup& GetParent() { return static_cast<RadioGroup&>(WndObject::GetParent()); }
+		RadioGroup& GetParent() { return static_cast<RadioGroup&>(ViewBase::GetParent()); }
 	private:
 		bool selected;
 	public:
@@ -51,7 +51,7 @@ private:
 			figure_queue.add(GetPaddingRegion().Center(), new Circle(6px, selected ? Color::Gray : color_transparent, 1.0f, Color::Gray));
 		}
 	private:
-		virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override { return selected ? PaddingFrame::HitTest(event) : this; }
+		virtual ref_ptr<ViewBase> HitTest(MouseEvent& event) override { return selected ? PaddingFrame::HitTest(event) : this; }
 	};
 
 	template<class T>

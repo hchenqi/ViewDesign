@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../window/wnd_traits.h"
+#include "../window/view_traits.h"
 #include "../style/value_tag.h"
 #include "../figure/shape.h"
 
@@ -11,7 +11,7 @@
 namespace ViewDesign {
 
 
-class TableLayout : public WndType<Relative, Relative> {
+class TableLayout : public ViewType<Relative, Relative> {
 public:
 	using child_type = child_ptr<Relative, Relative>;
 
@@ -81,8 +81,8 @@ protected:
 	};
 	std::vector<std::vector<ChildInfo>> table;
 protected:
-	void SetChildIndex(WndObject& child, TablePosition pos) { WndObject::SetChildData<TablePosition>(child, pos); }
-	TablePosition GetChildIndex(WndObject& child) const { return WndObject::GetChildData<TablePosition>(child); }
+	void SetChildIndex(ViewBase& child, TablePosition pos) { ViewBase::SetChildData<TablePosition>(child, pos); }
+	TablePosition GetChildIndex(ViewBase& child) const { return ViewBase::GetChildData<TablePosition>(child); }
 protected:
 	child_type& GetChild(TablePosition pos) { return table[pos.row][pos.column].child; }
 
@@ -112,7 +112,7 @@ protected:
 	Point GetGridOffset(TablePosition pos) const { return Point(column_list[pos.column].offset, row_list[pos.row].offset); }
 	Size GetGridSize(TablePosition pos) const { return Size(column_list[pos.column].length, row_list[pos.row].length); }
 	Rect GetGridRegion(TablePosition pos) const { return Rect(GetGridOffset(pos), GetGridSize(pos)); }
-	Rect GetChildRegion(WndObject& child) const { return GetGridRegion(GetChildIndex(child)); }
+	Rect GetChildRegion(ViewBase& child) const { return GetGridRegion(GetChildIndex(child)); }
 protected:
 	TablePosition HitTestGrid(Point point) {
 		static auto cmp = [](const GridInfo& item, float offset) { return offset >= item.offset; };
@@ -144,7 +144,7 @@ protected:
 		if (!column_list.empty()) { size.width -= column_list.back().gridline_width(); }
 	}
 protected:
-	virtual Transform GetChildTransform(WndObject& child) const override {
+	virtual Transform GetChildTransform(ViewBase& child) const override {
 		return GetChildRegion(child).point - point_zero;
 	}
 protected:
@@ -172,11 +172,11 @@ protected:
 		}
 		return size;
 	}
-	virtual void OnChildSizeUpdate(WndObject& child, Size child_size) override {}
+	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override {}
 
 	// paint
 protected:
-	virtual void OnChildRedraw(WndObject& child, Rect child_redraw_region) override {
+	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override {
 		Rect child_region = GetChildRegion(child);
 		Redraw(child_region.Intersect(child_redraw_region + (child_region.point - point_zero)));
 	}
@@ -204,7 +204,7 @@ protected:
 
 	// event
 protected:
-	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override {
+	virtual ref_ptr<ViewBase> HitTest(MouseEvent& event) override {
 		if (!Rect(point_zero, size).Contains(event.point)) { return nullptr; }
 		TablePosition pos = HitTestGrid(event.point);
 		Rect grid = GetGridRegion(pos); child_type& child = GetChild(pos);

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "WndFrame.h"
+#include "ViewFrame.h"
 #include "../geometry/clamp.h"
 
 
@@ -11,9 +11,9 @@ template<class Direction>
 class ScrollFrame;
 
 
-class _ScrollFrame_Base : public WndFrame, public LayoutType<Assigned, Assigned> {
+class _ScrollFrame_Base : public ViewFrame, public LayoutType<Assigned, Assigned> {
 protected:
-	_ScrollFrame_Base(child_ptr<> child) : WndFrame(std::move(child)) {}
+	_ScrollFrame_Base(child_ptr<> child) : ViewFrame(std::move(child)) {}
 
 	// layout
 protected:
@@ -27,7 +27,7 @@ protected:
 	Vector GetChildOffset() const { return point_zero - frame_offset; }
 	Rect GetChildRegion() const { return Rect(point_zero + GetChildOffset(), child_size); }
 protected:
-	virtual Transform GetChildTransform(WndObject& child) const override { return GetChildOffset(); }
+	virtual Transform GetChildTransform(ViewBase& child) const override { return GetChildOffset(); }
 
 	// scrolling
 protected:
@@ -60,7 +60,7 @@ public:
 
 	// paint
 protected:
-	virtual void OnChildRedraw(WndObject& child, Rect child_redraw_region) override {
+	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override {
 		Redraw(child_redraw_region + GetChildOffset());
 	}
 	virtual void OnDraw(FigureQueue& figure_queue, Rect draw_region) override {
@@ -69,7 +69,7 @@ protected:
 
 	// event
 protected:
-	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override { event.point -= GetChildOffset(); return WndFrame::HitTest(event); }
+	virtual ref_ptr<ViewBase> HitTest(MouseEvent& event) override { event.point -= GetChildOffset(); return ViewFrame::HitTest(event); }
 };
 
 
@@ -89,7 +89,7 @@ protected:
 		}
 		return size;
 	}
-	virtual void OnChildSizeUpdate(WndObject& child, Size child_size) override {
+	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override {
 		if (this->child_size != child_size) {
 			this->child_size = child_size;
 			frame_offset = ClampFrameOffset(frame_offset);
@@ -99,7 +99,7 @@ protected:
 
 	// event
 protected:
-	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override {
+	virtual ref_ptr<ViewBase> HitTest(MouseEvent& event) override {
 		if (!event.ctrl && (event.type == MouseEvent::WheelVertical || event.type == MouseEvent::WheelHorizontal)) { return this; }
 		return _ScrollFrame_Base::HitTest(event);
 	}
@@ -147,7 +147,7 @@ protected:
 		}
 		return size;
 	}
-	virtual void OnChildSizeUpdate(WndObject& child, Size child_size) override {
+	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override {
 		if (this->child_size.height != child_size.height) {
 			this->child_size.height = child_size.height;
 			frame_offset = ClampFrameOffset(frame_offset);
@@ -157,7 +157,7 @@ protected:
 
 	// event
 protected:
-	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override {
+	virtual ref_ptr<ViewBase> HitTest(MouseEvent& event) override {
 		if (!event.ctrl && event.type == MouseEvent::WheelVertical) { return this; }
 		return _ScrollFrame_Base::HitTest(event);
 	}
@@ -202,7 +202,7 @@ protected:
 		}
 		return size;
 	}
-	virtual void OnChildSizeUpdate(WndObject& child, Size child_size) override {
+	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override {
 		if (this->child_size.width != child_size.width) {
 			this->child_size.width = child_size.width;
 			frame_offset = ClampFrameOffset(frame_offset);
@@ -212,7 +212,7 @@ protected:
 
 	// event
 protected:
-	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override {
+	virtual ref_ptr<ViewBase> HitTest(MouseEvent& event) override {
 		if (!event.ctrl && event.type == MouseEvent::WheelHorizontal) { return this; }
 		return _ScrollFrame_Base::HitTest(event);
 	}

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "WndFrame.h"
+#include "ViewFrame.h"
 #include "../style/border_style.h"
 #include "../geometry/helper.h"
 #include "../figure/shape.h"
@@ -10,12 +10,12 @@ namespace ViewDesign {
 
 
 template<class WidthType, class HeightType>
-class BorderFrame : public WndFrame, public LayoutType<WidthType, HeightType> {
+class BorderFrame : public ViewFrame, public LayoutType<WidthType, HeightType> {
 public:
 	using child_type = child_ptr<WidthType, HeightType>;
 
 public:
-	BorderFrame(Border border, child_type child) : WndFrame(std::move(child)), border(border) {}
+	BorderFrame(Border border, child_type child) : ViewFrame(std::move(child)), border(border) {}
 
 	// style
 protected:
@@ -31,14 +31,14 @@ protected:
 	Vector GetChildOffset() const { return Vector(border._width, border._width); }
 	Rect GetChildRegion() const { return Rect(Point(border._width, border._width), child_size); }
 protected:
-	virtual Transform GetChildTransform(WndObject& child) const override { return GetChildOffset(); }
+	virtual Transform GetChildTransform(ViewBase& child) const override { return GetChildOffset(); }
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override { return size = Extend(child_size = UpdateChildSizeRef(child, Extend(size_ref, -border._width)), border._width); }
-	virtual void OnChildSizeUpdate(WndObject& child, Size child_size) override { SizeUpdated(size = Extend(this->child_size = child_size, border._width)); }
+	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override { SizeUpdated(size = Extend(this->child_size = child_size, border._width)); }
 
 	// paint
 protected:
-	virtual void OnChildRedraw(WndObject& child, Rect child_redraw_region) override {
+	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override {
 		Redraw(child_redraw_region + GetChildOffset());
 	}
 	virtual void OnDraw(FigureQueue& figure_queue, Rect draw_region) override {
@@ -54,10 +54,10 @@ protected:
 
 	// event
 protected:
-	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override {
+	virtual ref_ptr<ViewBase> HitTest(MouseEvent& event) override {
 		if (PointInRoundedRectangle(event.point, GetChildRegion(), border._radius)) {
 			event.point -= GetChildOffset();
-			return WndFrame::HitTest(event);
+			return ViewFrame::HitTest(event);
 		}
 		return nullptr;
 	}

@@ -57,7 +57,7 @@ std::vector<_ListLayoutAuto_Base::child_type> _ListLayoutAuto_Base::ExtractChild
 	return ptr_list;
 }
 
-Transform _ListLayoutAuto_Base::GetChildTransform(WndObject& child) const {
+Transform _ListLayoutAuto_Base::GetChildTransform(ViewBase& child) const {
 	return GetChildRegion(child).point - point_zero;
 }
 
@@ -65,7 +65,7 @@ Size _ListLayoutAuto_Base::OnSizeRefUpdate(Size size_ref) {
 	return size;
 }
 
-void _ListLayoutAuto_Base::OnChildRedraw(WndObject& child, Rect child_redraw_region) {
+void _ListLayoutAuto_Base::OnChildRedraw(ViewBase& child, Rect child_redraw_region) {
 	Rect child_region = GetChildRegion(child);
 	Redraw(child_region.Intersect(child_redraw_region + (child_region.point - point_zero)));
 }
@@ -119,7 +119,7 @@ size_t ListLayoutAuto<Vertical>::HitTestIndex(Point point) {
 	return std::lower_bound(child_list.begin(), child_list.end(), point.y, cmp) - child_list.begin() - 1;
 }
 
-void ListLayoutAuto<Vertical>::OnChildSizeUpdate(WndObject& child, Size child_size) {
+void ListLayoutAuto<Vertical>::OnChildSizeUpdate(ViewBase& child, Size child_size) {
 	size_t index = GetChildIndex(child); ChildInfo& info = child_list[index];
 	Size child_size_old = info.region.size; float width_old = size.width;
 	info.region.size = child_size;
@@ -143,7 +143,7 @@ void ListLayoutAuto<Vertical>::OnDraw(FigureQueue& figure_queue, Rect draw_regio
 	for (size_t index = index_begin; index <= index_end; ++index) { DrawChild(GetChild(index), GetChildRegion(index), figure_queue, draw_region); }
 }
 
-ref_ptr<WndObject> ListLayoutAuto<Vertical>::HitTest(MouseEvent& event) {
+ref_ptr<ViewBase> ListLayoutAuto<Vertical>::HitTest(MouseEvent& event) {
 	size_t index = HitTestIndex(event.point); if (index >= Length()) { return this; }
 	Rect child_region = GetChildRegion(index); if (!child_region.Contains(event.point)) { return this; }
 	event.point -= child_region.point - point_zero;
@@ -199,7 +199,7 @@ size_t ListLayoutAuto<Horizontal>::HitTestIndex(Point point) {
 	return std::lower_bound(child_list.begin(), child_list.end(), point.x, cmp) - child_list.begin() - 1;
 }
 
-void ListLayoutAuto<Horizontal>::OnChildSizeUpdate(WndObject& child, Size child_size) {
+void ListLayoutAuto<Horizontal>::OnChildSizeUpdate(ViewBase& child, Size child_size) {
 	size_t index = GetChildIndex(child); ChildInfo& info = child_list[index];
 	Size child_size_old = info.region.size; float height_old = size.height;
 	info.region.size = child_size;
@@ -223,7 +223,7 @@ void ListLayoutAuto<Horizontal>::OnDraw(FigureQueue& figure_queue, Rect draw_reg
 	for (size_t index = index_begin; index <= index_end; ++index) { DrawChild(GetChild(index), GetChildRegion(index), figure_queue, draw_region); }
 }
 
-ref_ptr<WndObject> ListLayoutAuto<Horizontal>::HitTest(MouseEvent& event) {
+ref_ptr<ViewBase> ListLayoutAuto<Horizontal>::HitTest(MouseEvent& event) {
 	size_t index = HitTestIndex(event.point); if (index >= Length()) { return this; }
 	Rect child_region = GetChildRegion(index); if (!child_region.Contains(event.point)) { return this; }
 	event.point -= child_region.point - point_zero;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "WndFrame.h"
+#include "ViewFrame.h"
 #include "../style/border_style.h"
 #include "../figure/shape.h"
 
@@ -9,12 +9,12 @@ namespace ViewDesign {
 
 
 template<class WidthType, class HeightType>
-class InnerBorderFrame : public WndFrame, public LayoutType<WidthType, HeightType> {
+class InnerBorderFrame : public ViewFrame, public LayoutType<WidthType, HeightType> {
 public:
 	using child_type = child_ptr<WidthType, HeightType>;
 
 public:
-	InnerBorderFrame(Border border, child_type child) : WndFrame(std::move(child)), border(border) {}
+	InnerBorderFrame(Border border, child_type child) : ViewFrame(std::move(child)), border(border) {}
 
 	// style
 protected:
@@ -27,7 +27,7 @@ protected:
 	Size size;
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override { return size = UpdateChildSizeRef(child, size_ref); }
-	virtual void OnChildSizeUpdate(WndObject& child, Size child_size) override { SizeUpdated(size = child_size); }
+	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override { SizeUpdated(size = child_size); }
 
 	// paint
 protected:

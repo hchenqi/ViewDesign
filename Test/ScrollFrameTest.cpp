@@ -34,7 +34,7 @@ class ScaleLayer : public ScaleFrame<Assigned, Auto> {
 public:
 	ScaleLayer(child_type child) : ScaleFrame(Scale(1.0), std::move(child)) {}
 private:
-	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override {
+	virtual ref_ptr<ViewBase> HitTest(MouseEvent& event) override {
 		if (event.ctrl && event.type == MouseEvent::WheelVertical) {
 			return this;
 		}
@@ -66,7 +66,7 @@ public:
 
 
 int main() {
-	global.AddWnd(
+	global.Add(
 		new MainFrame(
 			L"ScrollFrameTest",
 			new ScrollFrame<Vertical>(

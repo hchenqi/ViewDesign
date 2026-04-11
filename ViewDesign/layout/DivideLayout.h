@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../window/wnd_traits.h"
+#include "../window/view_traits.h"
 
 #include <vector>
 
@@ -12,7 +12,7 @@ template<class Direction>
 class DivideLayout;
 
 
-class _DivideLayout_Base : public WndType<Assigned, Assigned> {
+class _DivideLayout_Base : public ViewType<Assigned, Assigned> {
 public:
 	using child_type = child_ptr<Assigned, Assigned>;
 
@@ -23,8 +23,8 @@ protected:
 protected:
 	std::vector<child_type> child_list;
 protected:
-	void SetChildIndex(WndObject& child, size_t index) { WndObject::SetChildData<size_t>(child, index); }
-	size_t GetChildIndex(WndObject& child) const { return WndObject::GetChildData<size_t>(child); }
+	void SetChildIndex(ViewBase& child, size_t index) { ViewBase::SetChildData<size_t>(child, index); }
+	size_t GetChildIndex(ViewBase& child) const { return ViewBase::GetChildData<size_t>(child); }
 
 	// layout
 protected:
@@ -47,9 +47,9 @@ public:
 	// layout
 protected:
 	Rect GetChildRegion(size_t index) const { return Rect(Point(0.0f, index * child_length), Size(size.width, child_length)); }
-	Rect GetChildRegion(WndObject& child) const { return GetChildRegion(GetChildIndex(child)); }
+	Rect GetChildRegion(ViewBase& child) const { return GetChildRegion(GetChildIndex(child)); }
 protected:
-	virtual Transform GetChildTransform(WndObject& child) const override {
+	virtual Transform GetChildTransform(ViewBase& child) const override {
 		return GetChildRegion(child).point - point_zero;
 	}
 protected:
@@ -68,7 +68,7 @@ protected:
 
 	// paint
 protected:
-	virtual void OnChildRedraw(WndObject& child, Rect child_redraw_region) override {
+	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override {
 		Rect child_region = GetChildRegion(child);
 		Redraw(child_region.Intersect(child_redraw_region + (child_region.point - point_zero)));
 	}
@@ -81,7 +81,7 @@ protected:
 
 	// event
 protected:
-	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override {
+	virtual ref_ptr<ViewBase> HitTest(MouseEvent& event) override {
 		float offset = event.point.y;
 		if (offset < 0.0f || offset >= size.height || child_list.empty()) { return nullptr; }
 		size_t index = HitTestItem(offset); event.point.y -= index * child_length;
@@ -102,9 +102,9 @@ public:
 	// layout
 protected:
 	Rect GetChildRegion(size_t index) const { return Rect(Point(index * child_length, 0.0f), Size(child_length, size.height)); }
-	Rect GetChildRegion(WndObject& child) const { return GetChildRegion(GetChildIndex(child)); }
+	Rect GetChildRegion(ViewBase& child) const { return GetChildRegion(GetChildIndex(child)); }
 protected:
-	virtual Transform GetChildTransform(WndObject& child) const override {
+	virtual Transform GetChildTransform(ViewBase& child) const override {
 		return GetChildRegion(child).point - point_zero;
 	}
 protected:
@@ -123,7 +123,7 @@ protected:
 
 	// paint
 protected:
-	virtual void OnChildRedraw(WndObject& child, Rect child_redraw_region) override {
+	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override {
 		Rect child_region = GetChildRegion(child);
 		Redraw(child_region.Intersect(child_redraw_region + (child_region.point - point_zero)));
 	}
@@ -136,7 +136,7 @@ protected:
 
 	// event
 protected:
-	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override {
+	virtual ref_ptr<ViewBase> HitTest(MouseEvent& event) override {
 		float offset = event.point.x;
 		if (offset < 0.0f || offset >= size.width || child_list.empty()) { return nullptr; }
 		size_t index = HitTestItem(offset); event.point.x -= index * child_length;

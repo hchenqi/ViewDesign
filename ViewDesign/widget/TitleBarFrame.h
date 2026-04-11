@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../frame/DesktopFrame.h"
-#include "../frame/WndFrameMutable.h"
+#include "../frame/ViewFrameMutable.h"
 #include "../frame/PaddingFrame.h"
 #include "../frame/BorderFrame.h"
 #include "../frame/CenterFrame.h"
@@ -101,7 +101,7 @@ protected:
 	protected:
 		class ButtonBase : public Button<Auto, Assigned>, protected Context {
 		public:
-			ButtonBase(Color background, Color foreground, const std::wstring& tooltip_text) : Button<Auto, Assigned>(50.0f), Context(AsWndObject()), foreground(foreground), tooltip_text(tooltip_text) {
+			ButtonBase(Color background, Color foreground, const std::wstring& tooltip_text) : Button<Auto, Assigned>(50.0f), Context(AsViewBase()), foreground(foreground), tooltip_text(tooltip_text) {
 				this->background = this->background_normal = background;
 			}
 		protected:
@@ -181,7 +181,7 @@ protected:
 					)
 				)
 			)
-		), Context(AsWndObject()), ContextProvider(AsWndObject()) {
+		), Context(AsViewBase()), ContextProvider(AsViewBase()) {
 			background = style._background_color;
 		}
 
@@ -199,12 +199,12 @@ protected:
 public:
 	TitleBarFrame(Style style, child_type child, child_type_menu menu = new Placeholder<Auto, Assigned>(0.0f)) : DesktopFrame(
 		style.title.text,
-		outer_frame = new WndFrameMutable(
+		outer_frame = new ViewFrameMutable(
 			new PaddingFrame(
 				style.padding,
 				border = new ResizeBorder(
 					style.border,
-					child_ptr<Assigned, Assigned>() = inner_frame = new WndFrameMutable(
+					child_ptr<Assigned, Assigned>() = inner_frame = new ViewFrameMutable(
 						new SplitLayoutVertical(
 							new TitleBar(
 								style.title.bar,
@@ -220,7 +220,7 @@ public:
 				)
 			)
 		)
-	), ContextProvider(AsWndObject()), style(style) {}
+	), ContextProvider(AsViewBase()), style(style) {}
 
 	// style
 protected:
@@ -244,8 +244,8 @@ protected:
 
 	// state
 protected:
-	ref_ptr<WndFrameMutable> outer_frame;
-	ref_ptr<WndFrameMutable> inner_frame;
+	ref_ptr<ViewFrameMutable> outer_frame;
+	ref_ptr<ViewFrameMutable> inner_frame;
 	child_ptr<Assigned, Assigned> inner_frame_placeholder = new Placeholder<Assigned, Assigned>;
 	child_ptr<Assigned, Assigned> outer_frame_placeholder = child_ptr<Assigned, Assigned>();
 protected:
@@ -254,8 +254,8 @@ protected:
 protected:
 	virtual void OnStateChange(State state) {
 		switch (state) {
-		case State::Normal: if (outer_frame_placeholder) { WndFrameMutable::Rotate(*inner_frame, *outer_frame, outer_frame_placeholder, inner_frame_placeholder); } break;
-		case State::Maximized: if (inner_frame_placeholder) { WndFrameMutable::Rotate(*inner_frame, inner_frame_placeholder, outer_frame_placeholder, *outer_frame); } break;
+		case State::Normal: if (outer_frame_placeholder) { ViewFrameMutable::Rotate(*inner_frame, *outer_frame, outer_frame_placeholder, inner_frame_placeholder); } break;
+		case State::Maximized: if (inner_frame_placeholder) { ViewFrameMutable::Rotate(*inner_frame, inner_frame_placeholder, outer_frame_placeholder, *outer_frame); } break;
 		}
 	}
 };

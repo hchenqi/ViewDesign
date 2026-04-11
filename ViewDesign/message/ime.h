@@ -7,13 +7,13 @@
 
 namespace ViewDesign {
 
-class WndObject;
+class ViewBase;
 
 
 struct Ime {
-	static void Enable(WndObject& wnd);
-	static void Disable(WndObject& wnd);
-	static void SetPosition(WndObject& wnd, Point point);
+	static void Enable(ViewBase& view);
+	static void Disable(ViewBase& view);
+	static void SetPosition(ViewBase& view, Point point);
 
 	static std::wstring GetString();
 	static size_t GetCursorPosition();

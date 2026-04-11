@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../window/wnd_traits.h"
+#include "../window/view_traits.h"
 
 #include <vector>
 
@@ -13,7 +13,7 @@ class ListLayout;
 
 
 template<>
-class ListLayout<Vertical> : public WndType<Assigned, Auto> {
+class ListLayout<Vertical> : public ViewType<Assigned, Auto> {
 public:
 	using child_type = child_ptr<Assigned, Auto>;
 
@@ -38,10 +38,10 @@ protected:
 public:
 	bool Empty() const { return child_list.empty(); }
 	size_t Length() const { return child_list.size(); }
-	WndObject& GetChild(size_t index) const { return child_list[index].child; }
-	size_t GetChildIndex(WndObject& child) const { return WndObject::GetChildData<size_t>(child); }
+	ViewBase& GetChild(size_t index) const { return child_list[index].child; }
+	size_t GetChildIndex(ViewBase& child) const { return ViewBase::GetChildData<size_t>(child); }
 protected:
-	void SetChildIndex(WndObject& child, size_t index) { WndObject::SetChildData<size_t>(child, index); }
+	void SetChildIndex(ViewBase& child, size_t index) { ViewBase::SetChildData<size_t>(child, index); }
 	void UpdateIndex(size_t begin);
 public:
 	void InsertChild(size_t index, child_type child);
@@ -59,27 +59,27 @@ protected:
 	void UpdateLayout(size_t index);
 protected:
 	Rect GetChildRegion(size_t index) const { return Rect(Point(0.0f, child_list[index].offset), Size(size.width, child_list[index].length)); }
-	Rect GetChildRegion(WndObject& child) const { return GetChildRegion(GetChildIndex(child)); }
+	Rect GetChildRegion(ViewBase& child) const { return GetChildRegion(GetChildIndex(child)); }
 	size_t HitTestIndex(Point point);
 protected:
-	virtual Transform GetChildTransform(WndObject& child) const override;
+	virtual Transform GetChildTransform(ViewBase& child) const override;
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override;
-	virtual void OnChildSizeUpdate(WndObject& child, Size child_size) override;
+	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override;
 
 	// paint
 protected:
-	virtual void OnChildRedraw(WndObject& child, Rect child_redraw_region) override;
+	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override;
 	virtual void OnDraw(FigureQueue& figure_queue, Rect draw_region) override;
 
 	// event
 protected:
-	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override;
+	virtual ref_ptr<ViewBase> HitTest(MouseEvent& event) override;
 };
 
 
 template<>
-class ListLayout<Horizontal> : public WndType<Auto, Assigned> {
+class ListLayout<Horizontal> : public ViewType<Auto, Assigned> {
 public:
 	using child_type = child_ptr<Auto, Assigned>;
 
@@ -104,10 +104,10 @@ protected:
 public:
 	bool Empty() const { return child_list.empty(); }
 	size_t Length() const { return child_list.size(); }
-	WndObject& GetChild(size_t index) const { return child_list[index].child; }
-	size_t GetChildIndex(WndObject& child) const { return WndObject::GetChildData<size_t>(child); }
+	ViewBase& GetChild(size_t index) const { return child_list[index].child; }
+	size_t GetChildIndex(ViewBase& child) const { return ViewBase::GetChildData<size_t>(child); }
 protected:
-	void SetChildIndex(WndObject& child, size_t index) { WndObject::SetChildData<size_t>(child, index); }
+	void SetChildIndex(ViewBase& child, size_t index) { ViewBase::SetChildData<size_t>(child, index); }
 	void UpdateIndex(size_t begin);
 public:
 	void InsertChild(size_t index, child_type child);
@@ -125,22 +125,22 @@ protected:
 	void UpdateLayout(size_t index);
 protected:
 	Rect GetChildRegion(size_t index) const { return Rect(Point(child_list[index].offset, 0.0f), Size(child_list[index].length, size.height)); }
-	Rect GetChildRegion(WndObject& child) const { return GetChildRegion(GetChildIndex(child)); }
+	Rect GetChildRegion(ViewBase& child) const { return GetChildRegion(GetChildIndex(child)); }
 	size_t HitTestIndex(Point point);
 protected:
-	virtual Transform GetChildTransform(WndObject& child) const override;
+	virtual Transform GetChildTransform(ViewBase& child) const override;
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override;
-	virtual void OnChildSizeUpdate(WndObject& child, Size child_size) override;
+	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override;
 
 	// paint
 protected:
-	virtual void OnChildRedraw(WndObject& child, Rect child_redraw_region) override;
+	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override;
 	virtual void OnDraw(FigureQueue& figure_queue, Rect draw_region) override;
 
 	// event
 protected:
-	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override;
+	virtual ref_ptr<ViewBase> HitTest(MouseEvent& event) override;
 };
 
 

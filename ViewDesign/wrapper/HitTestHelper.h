@@ -1,37 +1,37 @@
 #pragma once
 
-#include "../frame/WndFrame.h"
+#include "../frame/ViewFrame.h"
 
 
 namespace ViewDesign {
 
 
-template<class Wnd> requires std::is_base_of_v<WndObject, Wnd>
-class HitSelf : public Wnd {
+template<class View> requires std::is_base_of_v<ViewBase, View>
+class HitSelf : public View {
 protected:
 	using Base = HitSelf;
 
 public:
-	using Wnd::Wnd;
+	using View::View;
 
 protected:
-	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override { return this; }
+	virtual ref_ptr<ViewBase> HitTest(MouseEvent& event) override { return this; }
 };
 
 
-template<class Wnd> requires std::is_base_of_v<WndObject, Wnd>
-class HitSelfFallback : public Wnd {
+template<class View> requires std::is_base_of_v<ViewBase, View>
+class HitSelfFallback : public View {
 protected:
 	using Base = HitSelfFallback;
 
 public:
-	using Wnd::Wnd;
+	using View::View;
 
 protected:
-	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override {
+	virtual ref_ptr<ViewBase> HitTest(MouseEvent& event) override {
 		MouseEvent event_copy = event;
-		if (ref_ptr<WndObject> wnd = Wnd::HitTest(event)) {
-			return wnd;
+		if (ref_ptr<ViewBase> view = View::HitTest(event)) {
+			return view;
 		}
 		event = event_copy;
 		return this;
@@ -39,23 +39,23 @@ protected:
 };
 
 
-template<class Wnd> requires std::is_base_of_v<WndObject, Wnd>
-class HitSelfFallbackNext : public Wnd {
+template<class View> requires std::is_base_of_v<ViewBase, View>
+class HitSelfFallbackNext : public View {
 protected:
 	using Base = HitSelfFallbackNext;
 
 public:
-	using Wnd::Wnd;
+	using View::View;
 
 protected:
-	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override {
+	virtual ref_ptr<ViewBase> HitTest(MouseEvent& event) override {
 		MouseEvent event_copy = event;
-		if (ref_ptr<WndObject> wnd = Wnd::HitTest(event)) {
-			if (wnd == this) {
+		if (ref_ptr<ViewBase> view = View::HitTest(event)) {
+			if (view == this) {
 				return this;
 			} else {
-				if (wnd = WndObject::HitTestChild(*wnd, event)) {
-					return wnd;
+				if (view = ViewBase::HitTestChild(*view, event)) {
+					return view;
 				}
 			}
 		}
@@ -65,29 +65,29 @@ protected:
 };
 
 
-template<class Wnd> requires std::is_base_of_v<WndObject, Wnd>
-class HitSelfFallbackRecursive : public Wnd {
+template<class View> requires std::is_base_of_v<ViewBase, View>
+class HitSelfFallbackRecursive : public View {
 protected:
 	using Base = HitSelfFallbackRecursive;
 
 public:
-	using Wnd::Wnd;
+	using View::View;
 
 protected:
-	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override {
+	virtual ref_ptr<ViewBase> HitTest(MouseEvent& event) override {
 		MouseEvent event_copy = event;
-		if (ref_ptr<WndObject> wnd = Wnd::HitTest(event)) {
-			if (wnd == this) {
+		if (ref_ptr<ViewBase> view = View::HitTest(event)) {
+			if (view == this) {
 				return this;
 			} else {
 				for (;;) {
-					ref_ptr<WndObject> next = WndObject::HitTestChild(*wnd, event);
+					ref_ptr<ViewBase> next = ViewBase::HitTestChild(*view, event);
 					if (next == nullptr) {
 						break;
-					} else if (next == wnd) {
-						return wnd;
+					} else if (next == view) {
+						return view;
 					} else {
-						wnd = next;
+						view = next;
 					}
 				}
 			}
@@ -98,38 +98,38 @@ protected:
 };
 
 
-template<class Wnd> requires std::is_base_of_v<WndObject, Wnd>
-class HitThrough : public Wnd {
+template<class View> requires std::is_base_of_v<ViewBase, View>
+class HitThrough : public View {
 protected:
 	using Base = HitThrough;
 
 public:
-	using Wnd::Wnd;
+	using View::View;
 
 protected:
-	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override { return nullptr; }
+	virtual ref_ptr<ViewBase> HitTest(MouseEvent& event) override { return nullptr; }
 };
 
 
-template<class Wnd> requires std::is_base_of_v<WndObject, Wnd>
-class HitThroughFallback : public Wnd {
+template<class View> requires std::is_base_of_v<ViewBase, View>
+class HitThroughFallback : public View {
 protected:
 	using Base = HitThroughFallback;
 
 public:
-	using Wnd::Wnd;
+	using View::View;
 
 protected:
-	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override {
-		if (ref_ptr<WndObject> wnd = Wnd::HitTest(event); wnd != this) {
-			return wnd;
+	virtual ref_ptr<ViewBase> HitTest(MouseEvent& event) override {
+		if (ref_ptr<ViewBase> view = View::HitTest(event); view != this) {
+			return view;
 		}
 		return nullptr;
 	}
 };
 
 
-template<class Frame> requires std::is_base_of_v<WndFrame, Frame>
+template<class Frame> requires std::is_base_of_v<ViewFrame, Frame>
 class HitThroughMargin : public Frame {
 protected:
 	using Base = HitThroughMargin;
@@ -138,10 +138,10 @@ public:
 	using Frame::Frame;
 
 protected:
-	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override {
+	virtual ref_ptr<ViewBase> HitTest(MouseEvent& event) override {
 		if (Frame::GetChildRegion().Contains(event.point)) {
 			event.point -= Frame::GetChildOffset();
-			return WndFrame::HitTest(event);
+			return ViewFrame::HitTest(event);
 		}
 		return nullptr;
 	}

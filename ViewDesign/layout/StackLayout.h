@@ -1,13 +1,13 @@
 #pragma once
 
-#include "../window/wnd_traits.h"
+#include "../window/view_traits.h"
 #include "../common/reversion_wrapper.h"
 
 
 namespace ViewDesign {
 
 
-class _StackLayout_Base : public WndObject {
+class _StackLayout_Base : public ViewBase {
 protected:
 	_StackLayout_Base(child_ptr<> child_first, child_ptr<> child_second) : child_first(std::move(child_first)), child_second(std::move(child_second)) {
 		RegisterChild(this->child_first); RegisterChild(this->child_second);
@@ -22,11 +22,11 @@ protected:
 protected:
 	Size size;
 protected:
-	virtual Transform GetChildTransform(WndObject& child) const override { return Transform::Identity(); }
+	virtual Transform GetChildTransform(ViewBase& child) const override { return Transform::Identity(); }
 
 	// paint
 protected:
-	virtual void OnChildRedraw(WndObject& child, Rect child_redraw_region) override { Redraw(child_redraw_region); }
+	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override { Redraw(child_redraw_region); }
 	virtual void OnDraw(FigureQueue& figure_queue, Rect draw_region) override {
 		DrawChild(child_first, point_zero, figure_queue, draw_region);
 		DrawChild(child_second, point_zero, figure_queue, draw_region);
@@ -34,9 +34,9 @@ protected:
 
 	// event
 protected:
-	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override {
+	virtual ref_ptr<ViewBase> HitTest(MouseEvent& event) override {
 		MouseEvent event_copy = event;
-		if (ref_ptr<WndObject> res = HitTestChild(child_second, event)) { return res; }
+		if (ref_ptr<ViewBase> res = HitTestChild(child_second, event)) { return res; }
 		return HitTestChild(child_first, event = event_copy);
 	}
 };
@@ -77,7 +77,7 @@ protected:
 
 		return size;
 	}
-	virtual void OnChildSizeUpdate(WndObject& child, Size child_size) override {
+	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override {
 		if (&child == child_first.get()) {
 			if constexpr (!IsAssigned<WidthTypeFirst> || !IsAssigned<HeightTypeFirst>) {
 				size = child_size;
@@ -99,7 +99,7 @@ template<class T1, class T2>
 StackLayout(T1, T2) -> StackLayout<extract_width_type<T1>, extract_height_type<T1>, extract_width_type<T2>, extract_height_type<T2>>;
 
 
-class StackLayoutMultiple : public WndType<Assigned, Assigned> {
+class StackLayoutMultiple : public ViewType<Assigned, Assigned> {
 public:
 	using child_type = child_ptr<Assigned, Assigned>;
 
@@ -116,22 +116,22 @@ protected:
 
 	// layout
 protected:
-	virtual Transform GetChildTransform(WndObject& child) const override { return Transform::Identity(); }
+	virtual Transform GetChildTransform(ViewBase& child) const override { return Transform::Identity(); }
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override { for (auto& child : child_list) { UpdateChildSizeRef(child, size_ref); } return size_ref; }
-	virtual void OnChildSizeUpdate(WndObject& child, Size child_size) override {}
+	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override {}
 
 	// paint
 protected:
-	virtual void OnChildRedraw(WndObject& child, Rect child_redraw_region) override { Redraw(child_redraw_region); }
+	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override { Redraw(child_redraw_region); }
 	virtual void OnDraw(FigureQueue& figure_queue, Rect draw_region) override { for (auto& child : child_list) { DrawChild(child, point_zero, figure_queue, draw_region); } }
 
 	// event
 protected:
-	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override {
+	virtual ref_ptr<ViewBase> HitTest(MouseEvent& event) override {
 		MouseEvent event_copy = event;
 		for (auto& child : reverse(child_list)) {
-			if (ref_ptr<WndObject> res = HitTestChild(child, event)) {
+			if (ref_ptr<ViewBase> res = HitTestChild(child, event)) {
 				return res;
 			}
 			event = event_copy;

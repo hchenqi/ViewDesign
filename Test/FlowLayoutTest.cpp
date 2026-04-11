@@ -66,7 +66,7 @@ private:
 
 
 int main() {
-	global.AddWnd(
+	global.Add(
 		new TitleBarFrame(
 			MainFrameStyle(),
 			new ScrollFrame<Vertical>(

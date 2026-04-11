@@ -16,7 +16,7 @@ inline float RoundWin32Length(float length) { length = floorf(length); return le
 } // namespace
 
 
-DesktopFrame::DesktopFrame(std::wstring title, child_ptr<> child) : WndFrame(std::move(child)) {
+DesktopFrame::DesktopFrame(std::wstring title, child_ptr<> child) : ViewFrame(std::move(child)) {
 	hwnd = Win32::CreateWnd(region_empty, title);
 	Win32::SetWndUserData(hwnd, this);
 	scale = Scale(Win32::GetWndDpiScale(hwnd));

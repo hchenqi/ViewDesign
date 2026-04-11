@@ -1,6 +1,6 @@
 #pragma once
 
-#include "WndObject.h"
+#include "ViewBase.h"
 
 #include <memory>
 
@@ -25,21 +25,21 @@ struct LayoutType {
 };
 
 template<class WidthType, class HeightType>
-class WndType : public WndObject, public LayoutType<WidthType, HeightType> {};
+class ViewType : public ViewBase, public LayoutType<WidthType, HeightType> {};
 
 
 template<class WidthType = Relative, class HeightType = Relative>
 class child_ref;
 
 template<>
-class child_ref<Relative, Relative> : public std::reference_wrapper<WndObject> {
+class child_ref<Relative, Relative> : public std::reference_wrapper<ViewBase> {
 public:
 	template<class ChildType>
-	child_ref(ChildType& ref) : std::reference_wrapper<WndObject>(ref) {}
+	child_ref(ChildType& ref) : std::reference_wrapper<ViewBase>(ref) {}
 public:
-	operator WndObject& () const { return get(); }
-	operator ref_ptr<WndObject>() const { return &get(); }
-	ref_ptr<WndObject> operator->() const { return &get(); }
+	operator ViewBase& () const { return get(); }
+	operator ref_ptr<ViewBase>() const { return &get(); }
+	ref_ptr<ViewBase> operator->() const { return &get(); }
 };
 
 template<class WidthType, class HeightType>
@@ -56,16 +56,16 @@ template<class WidthType = Relative, class HeightType = Relative>
 class child_ptr;
 
 template<>
-class child_ptr<Relative, Relative> : public std::unique_ptr<WndObject> {
+class child_ptr<Relative, Relative> : public std::unique_ptr<ViewBase> {
 public:
 	child_ptr() {}
 	template<class ChildType>
-	child_ptr(std::unique_ptr<ChildType> ptr) : std::unique_ptr<WndObject>(ptr.release()) {}
+	child_ptr(std::unique_ptr<ChildType> ptr) : std::unique_ptr<ViewBase>(ptr.release()) {}
 	template<class ChildType>
 	child_ptr(alloc_ptr<ChildType> ptr) : child_ptr(std::unique_ptr<ChildType>(ptr)) {}
 public:
-	operator WndObject& () const { return **this; }
-	operator ref_ptr<WndObject>() const { return get(); }
+	operator ViewBase& () const { return **this; }
+	operator ref_ptr<ViewBase>() const { return get(); }
 };
 
 template<class WidthType, class HeightType>

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "WndFrame.h"
+#include "ViewFrame.h"
 #include "../geometry/helper.h"
 
 
@@ -8,12 +8,12 @@ namespace ViewDesign {
 
 
 template<class WidthType, class HeightType>
-class ScaleFrame : public WndFrame, public LayoutType<WidthType, HeightType> {
+class ScaleFrame : public ViewFrame, public LayoutType<WidthType, HeightType> {
 public:
 	using child_type = child_ptr<WidthType, HeightType>;
 
 public:
-	ScaleFrame(Scale scale, child_type child) : WndFrame(std::move(child)), scale(scale) {}
+	ScaleFrame(Scale scale, child_type child) : ViewFrame(std::move(child)), scale(scale) {}
 
 	// style
 protected:
@@ -31,14 +31,14 @@ protected:
 protected:
 	Size size_ref;
 protected:
-	virtual Transform GetChildTransform(WndObject& child) const override { return scale; }
+	virtual Transform GetChildTransform(ViewBase& child) const override { return scale; }
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override { return UpdateChildSizeRef(child, (this->size_ref = size_ref) * scale.Invert()) * scale; }
-	virtual void OnChildSizeUpdate(WndObject& child, Size child_size) override { SizeUpdated(child_size * scale); }
+	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override { SizeUpdated(child_size * scale); }
 
 	// paint
 protected:
-	virtual void OnChildRedraw(WndObject& child, Rect child_redraw_region) override {
+	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override {
 		Redraw(child_redraw_region * scale);
 	}
 	virtual void OnDraw(FigureQueue& figure_queue, Rect draw_region) override {
@@ -49,7 +49,7 @@ protected:
 
 	// event
 protected:
-	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override { event.point *= scale.Invert(); return WndFrame::HitTest(event); }
+	virtual ref_ptr<ViewBase> HitTest(MouseEvent& event) override { event.point *= scale.Invert(); return ViewFrame::HitTest(event); }
 };
 
 

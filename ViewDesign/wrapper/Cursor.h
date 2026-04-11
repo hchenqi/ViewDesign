@@ -1,19 +1,19 @@
 #pragma once
 
-#include "../window/WndObject.h"
+#include "../window/ViewBase.h"
 
 
 namespace ViewDesign {
 
 
-template<class Wnd, Cursor cursor = Cursor::Arrow> requires std::is_base_of_v<WndObject, Wnd>
-class CustomizedCursor : public Wnd {
+template<class View, Cursor cursor = Cursor::Arrow> requires std::is_base_of_v<ViewBase, View>
+class CustomizedCursor : public View {
 protected:
 	using Base = CustomizedCursor;
 
 public:
 	template <typename... Args>
-	CustomizedCursor(Args&&... args) : Wnd(std::forward<Args>(args)...) {
+	CustomizedCursor(Args&&... args) : View(std::forward<Args>(args)...) {
 		this->cursor = cursor;
 	}
 };

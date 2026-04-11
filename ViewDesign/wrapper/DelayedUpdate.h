@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../frame/WndFrame.h"
+#include "../frame/ViewFrame.h"
 
 #include <optional>
 
@@ -8,7 +8,7 @@
 namespace ViewDesign {
 
 
-template<class Frame> requires std::is_base_of_v<WndFrame, Frame>
+template<class Frame> requires std::is_base_of_v<ViewFrame, Frame>
 class DelayedReflow : public Frame {
 protected:
 	using Base = DelayedReflow;
@@ -27,11 +27,11 @@ public:
 	}
 
 protected:
-	virtual void OnChildSizeUpdate(WndObject& child, Size child_size) override { current_child_size = child_size; }
+	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override { current_child_size = child_size; }
 };
 
 
-template<class Frame> requires std::is_base_of_v<WndFrame, Frame>
+template<class Frame> requires std::is_base_of_v<ViewFrame, Frame>
 class DelayedRedraw : public Frame {
 protected:
 	using Base = DelayedRedraw;
@@ -50,7 +50,7 @@ public:
 	}
 
 protected:
-	virtual void OnChildRedraw(WndObject& child, Rect child_redraw_region) override { current_child_redraw_region = current_child_redraw_region.Union(child_redraw_region); }
+	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override { current_child_redraw_region = current_child_redraw_region.Union(child_redraw_region); }
 };
 
 

@@ -67,7 +67,7 @@ private:
 	private:
 		class Content : public Placeholder<Assigned, Assigned>, Context {
 		public:
-			Content() : Placeholder(), Context(AsWndObject()) {}
+			Content() : Placeholder(), Context(AsViewBase()) {}
 		private:
 			virtual void OnMouseEvent(MouseEvent event) override {
 				switch (event.type) {
@@ -84,7 +84,7 @@ private:
 
 
 int main() {
-	global.AddWnd(new TitleBarFrame(MainFrameStyle(), new MyTabView()));
+	global.Add(new TitleBarFrame(MainFrameStyle(), new MyTabView()));
 	global.EventLoop();
 	return 0;
 }

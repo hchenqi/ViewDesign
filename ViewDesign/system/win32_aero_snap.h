@@ -5,12 +5,12 @@
 
 namespace ViewDesign {
 
-class WndObject;
+class ViewBase;
 
 
-void AeroSnapDraggingEffect(WndObject& wnd);
+void AeroSnapDraggingEffect(ViewBase& view);
 
-void AeroSnapBorderResizingEffect(WndObject& wnd, BorderPosition border_position);
+void AeroSnapBorderResizingEffect(ViewBase& view, BorderPosition border_position);
 
 
 } // namespace ViewDesign

@@ -6,11 +6,11 @@
 namespace ViewDesign {
 
 
-void Ime::Enable(WndObject& wnd) { desktop.ImeEnable(wnd); }
+void Ime::Enable(ViewBase& view) { desktop.ImeEnable(view); }
 
-void Ime::Disable(WndObject& wnd) { desktop.ImeDisable(wnd); }
+void Ime::Disable(ViewBase& view) { desktop.ImeDisable(view); }
 
-void Ime::SetPosition(WndObject& wnd, Point point) { desktop.ImeSetPosition(wnd, point); }
+void Ime::SetPosition(ViewBase& view, Point point) { desktop.ImeSetPosition(view, point); }
 
 std::wstring Ime::GetString() { return ImeGetString(); }
 

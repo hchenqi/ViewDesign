@@ -38,7 +38,7 @@ class ScaleLayer : public ScaleFrame<Assigned, Assigned> {
 public:
 	ScaleLayer(child_type child) : ScaleFrame(Scale(1.0), std::move(child)) {}
 private:
-	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override {
+	virtual ref_ptr<ViewBase> HitTest(MouseEvent& event) override {
 		if (event.ctrl && event.type == MouseEvent::WheelVertical) {
 			return this;
 		}
@@ -55,7 +55,7 @@ class ResizeBorder : public InnerBorderFrame<Assigned, Assigned> {
 public:
 	ResizeBorder(child_type child) : InnerBorderFrame<Assigned, Assigned>(Border(5.0, Color(Color::Yellow, 127)), std::move(child)) {}
 private:
-	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override {
+	virtual ref_ptr<ViewBase> HitTest(MouseEvent& event) override {
 		if (PointInRoundedRectangle(event.point, Extend(Rect(point_zero, size), -border._width), border._radius)) { return child; }
 		return this;
 	}
@@ -81,7 +81,7 @@ struct TextBoxStyle : TextBlockStyle {
 
 
 int main() {
-	global.AddWnd(
+	global.Add(
 		new MainFrame(
 			L"TextBoxTest",
 			new ScaleLayer(

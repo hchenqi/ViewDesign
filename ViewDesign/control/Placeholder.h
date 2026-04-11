@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../window/wnd_traits.h"
+#include "../window/view_traits.h"
 
 
 namespace ViewDesign {
@@ -11,7 +11,7 @@ class Placeholder;
 
 
 template<>
-class Placeholder<Auto, Auto> : public WndType<Auto, Auto> {
+class Placeholder<Auto, Auto> : public ViewType<Auto, Auto> {
 public:
 	Placeholder(Size size) : size(size) {}
 protected:
@@ -24,7 +24,7 @@ protected:
 
 
 template<>
-class Placeholder<Auto, Assigned> : public WndType<Auto, Assigned> {
+class Placeholder<Auto, Assigned> : public ViewType<Auto, Assigned> {
 public:
 	Placeholder(float width) : size(width, 0.0f) {}
 protected:
@@ -37,7 +37,7 @@ protected:
 
 
 template<>
-class Placeholder<Assigned, Auto> : public WndType<Assigned, Auto> {
+class Placeholder<Assigned, Auto> : public ViewType<Assigned, Auto> {
 public:
 	Placeholder(float height) : size(0.0f, height) {}
 protected:
@@ -50,7 +50,7 @@ protected:
 
 
 template<>
-class Placeholder<Assigned, Assigned> : public WndType<Assigned, Assigned> {};
+class Placeholder<Assigned, Assigned> : public ViewType<Assigned, Assigned> {};
 
 
 } // namespace ViewDesign

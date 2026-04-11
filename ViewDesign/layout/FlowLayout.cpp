@@ -9,7 +9,7 @@ namespace ViewDesign {
 FlowLayout::FlowLayout(float row_height, float column_gap, float row_gap) :
 	row_height(row_height), column_gap(column_gap), row_gap(row_gap), row_list({ 0 }) {}
 
-Rect FlowLayout::GetChildRegion(WndObject& child) const {
+Rect FlowLayout::GetChildRegion(ViewBase& child) const {
 	auto [row, column] = GetChildData(child); const ChildInfo& info = child_list[row_list[row] + column];
 	return Rect(Point(info.offset, GetRowOffset(row)), Size(info.width, row_height));
 }
@@ -54,7 +54,7 @@ bool FlowLayout::UpdateLayout(child_index child_index) {
 	size.height = height; return true;
 }
 
-Transform FlowLayout::GetChildTransform(WndObject& child) const {
+Transform FlowLayout::GetChildTransform(ViewBase& child) const {
 	return GetChildRegion(child).point - point_zero;
 }
 
@@ -66,7 +66,7 @@ Size FlowLayout::OnSizeRefUpdate(Size size_ref) {
 	return size;
 }
 
-void FlowLayout::OnChildSizeUpdate(WndObject& child, Size child_size) {
+void FlowLayout::OnChildSizeUpdate(ViewBase& child, Size child_size) {
 	auto [row, column] = GetChildData(child);
 	child_index child_index = row_list[row] + column;
 	ChildInfo& info = child_list[child_index];
@@ -76,7 +76,7 @@ void FlowLayout::OnChildSizeUpdate(WndObject& child, Size child_size) {
 	}
 }
 
-void FlowLayout::OnChildRedraw(WndObject& child, Rect child_redraw_region) {
+void FlowLayout::OnChildRedraw(ViewBase& child, Rect child_redraw_region) {
 	Rect child_region = GetChildRegion(child);
 	Redraw(child_region.Intersect(child_redraw_region + (child_region.point - point_zero)));
 }
@@ -94,7 +94,7 @@ void FlowLayout::OnDraw(FigureQueue& figure_queue, Rect draw_region) {
 	}
 }
 
-ref_ptr<WndObject> FlowLayout::HitTest(MouseEvent& event) {
+ref_ptr<ViewBase> FlowLayout::HitTest(MouseEvent& event) {
 	if (!Rect(point_zero, size).Contains(event.point)) { return nullptr; }
 	row_index row = HitTestRow(event.point.y); if (event.point.y - GetRowOffset(row) >= row_height) { return this; }
 	auto it = HitTestColumn(row, event.point.x); if (event.point.x - it->offset >= it->width) { return this; }

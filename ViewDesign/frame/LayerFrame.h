@@ -1,6 +1,6 @@
 #pragma once
 
-#include "WndFrame.h"
+#include "ViewFrame.h"
 #include "../figure/layer.h"
 #include "../geometry/region.h"
 
@@ -8,9 +8,9 @@
 namespace ViewDesign {
 
 
-class _LayerFrame_Base : public WndFrame {
+class _LayerFrame_Base : public ViewFrame {
 protected:
-	_LayerFrame_Base(uchar opacity, child_ptr<> child) : WndFrame(std::move(child)), opacity(opacity) {}
+	_LayerFrame_Base(uchar opacity, child_ptr<> child) : ViewFrame(std::move(child)), opacity(opacity) {}
 
 	// style
 protected:
@@ -24,7 +24,7 @@ protected:
 	Size size;
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override;
-	virtual void OnChildSizeUpdate(WndObject& child, Size child_size) override;
+	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override;
 
 	// paint
 protected:
@@ -32,7 +32,7 @@ protected:
 	Layer layer;
 	Region invalid_region;
 protected:
-	virtual void OnChildRedraw(WndObject& child, Rect child_redraw_region) override;
+	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override;
 	virtual void OnDraw(FigureQueue& figure_queue, Rect draw_region) override;
 };
 

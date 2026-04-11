@@ -31,7 +31,7 @@ private:
 		region.point = CalculateCenterPosition(region.size, size_ref);
 		return region;
 	}
-	virtual void OnChildSizeUpdate(WndObject& child, Size child_size) override {
+	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override {
 		DesktopFrameRegionUpdated(Rect(CalculateCenterPosition(child_size, size_ref), child_size));
 	}
 };
@@ -52,7 +52,7 @@ struct TextBoxStyle : TextBlockStyle {
 
 
 int main() {
-	global.AddWnd(
+	global.Add(
 		new MainFrame(
 			L"SplitLayoutTest",
 			new InnerBorderFrame(

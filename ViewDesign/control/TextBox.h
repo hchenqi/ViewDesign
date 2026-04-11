@@ -1,13 +1,13 @@
 #pragma once
 
-#include "../window/wnd_traits.h"
+#include "../window/view_traits.h"
 #include "../figure/text_block.h"
 
 
 namespace ViewDesign {
 
 
-class TextBox : public WndType<Relative, Auto> {
+class TextBox : public ViewType<Relative, Auto> {
 public:
 	using Style = TextBlockStyle;
 

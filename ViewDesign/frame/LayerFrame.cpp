@@ -11,11 +11,11 @@ Size _LayerFrame_Base::OnSizeRefUpdate(Size size_ref) {
 	return size;
 }
 
-void _LayerFrame_Base::OnChildSizeUpdate(WndObject& child, Size child_size) {
+void _LayerFrame_Base::OnChildSizeUpdate(ViewBase& child, Size child_size) {
 	if (size != child_size) { size = child_size; layer.Destroy(); SizeUpdated(size); }
 }
 
-void _LayerFrame_Base::OnChildRedraw(WndObject& child, Rect child_redraw_region) {
+void _LayerFrame_Base::OnChildRedraw(ViewBase& child, Rect child_redraw_region) {
 	child_redraw_region = child_redraw_region.Intersect(Rect(point_zero, size));
 	if (!layer.IsEmpty()) { invalid_region.Union(child_redraw_region * scale); }
 	Redraw(child_redraw_region);

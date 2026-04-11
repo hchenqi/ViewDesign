@@ -1,13 +1,13 @@
 #pragma once
 
-#include "../window/wnd_traits.h"
+#include "../window/view_traits.h"
 #include "../figure/image.h"
 
 
 namespace ViewDesign {
 
 
-class ImageBox : public WndType<Auto, Auto> {
+class ImageBox : public ViewType<Auto, Auto> {
 public:
 	ImageBox(std::wstring image_file) : image(image_file) {}
 protected:
@@ -24,7 +24,7 @@ protected:
 };
 
 
-class ImageRepeatBox : public WndType<Assigned, Assigned> {
+class ImageRepeatBox : public ViewType<Assigned, Assigned> {
 public:
 	ImageRepeatBox(std::wstring image_file, Point offset = point_zero) : image(image_file), offset(offset - point_zero) {}
 protected:

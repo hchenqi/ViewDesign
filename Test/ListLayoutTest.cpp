@@ -68,7 +68,7 @@ struct EditBoxStyle2 : EditBox::Style {
 
 
 int main() {
-	global.AddWnd(
+	global.Add(
 		new MainFrame(
 			L"ListLayoutTest",
 			new ScrollFrame(

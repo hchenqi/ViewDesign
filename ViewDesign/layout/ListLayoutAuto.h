@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../window/wnd_traits.h"
+#include "../window/view_traits.h"
 
 #include <vector>
 
@@ -12,7 +12,7 @@ template<class Direction>
 class ListLayoutAuto;
 
 
-class _ListLayoutAuto_Base : public WndType<Auto, Auto> {
+class _ListLayoutAuto_Base : public ViewType<Auto, Auto> {
 public:
 	using child_type = child_ptr<Auto, Auto>;
 
@@ -32,10 +32,10 @@ protected:
 public:
 	bool Empty() const { return child_list.empty(); }
 	size_t Length() const { return child_list.size(); }
-	WndObject& GetChild(size_t index) const { return child_list[index].child; }
-	size_t GetChildIndex(WndObject& child) const { return WndObject::GetChildData<size_t>(child); }
+	ViewBase& GetChild(size_t index) const { return child_list[index].child; }
+	size_t GetChildIndex(ViewBase& child) const { return ViewBase::GetChildData<size_t>(child); }
 private:
-	void SetChildIndex(WndObject& child, size_t index) { WndObject::SetChildData<size_t>(child, index); }
+	void SetChildIndex(ViewBase& child, size_t index) { ViewBase::SetChildData<size_t>(child, index); }
 	void UpdateIndex(size_t begin);
 protected:
 	size_t InsertChild(size_t index, child_type child);
@@ -50,15 +50,15 @@ protected:
 	float gap = 0.0f;
 protected:
 	Rect GetChildRegion(size_t index) const { return child_list[index].region; }
-	Rect GetChildRegion(WndObject& child) const { return GetChildRegion(GetChildIndex(child)); }
+	Rect GetChildRegion(ViewBase& child) const { return GetChildRegion(GetChildIndex(child)); }
 protected:
-	virtual Transform GetChildTransform(WndObject& child) const override;
+	virtual Transform GetChildTransform(ViewBase& child) const override;
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override;
 
 	// paint
 protected:
-	virtual void OnChildRedraw(WndObject& child, Rect child_redraw_region) override;
+	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override;
 };
 
 
@@ -91,7 +91,7 @@ private:
 protected:
 	size_t HitTestIndex(Point point);
 protected:
-	virtual void OnChildSizeUpdate(WndObject& child, Size child_size) override;
+	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override;
 
 	// paint
 protected:
@@ -99,7 +99,7 @@ protected:
 
 	// event
 protected:
-	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override;
+	virtual ref_ptr<ViewBase> HitTest(MouseEvent& event) override;
 };
 
 
@@ -132,7 +132,7 @@ private:
 protected:
 	size_t HitTestIndex(Point point);
 protected:
-	virtual void OnChildSizeUpdate(WndObject& child, Size child_size) override;
+	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override;
 
 	// paint
 protected:
@@ -140,7 +140,7 @@ protected:
 
 	// event
 protected:
-	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override;
+	virtual ref_ptr<ViewBase> HitTest(MouseEvent& event) override;
 };
 
 

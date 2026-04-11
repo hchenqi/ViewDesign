@@ -1,6 +1,6 @@
 #pragma once
 
-#include "WndFrame.h"
+#include "ViewFrame.h"
 #include "../figure/desktop_layer.h"
 #include "../geometry/scale.h"
 #include "../geometry/region.h"
@@ -9,7 +9,7 @@
 namespace ViewDesign {
 
 
-class DesktopFrame : public WndFrame {
+class DesktopFrame : public ViewFrame {
 private:
 	friend class Desktop;
 	friend struct DesktopFrameApi;
@@ -36,11 +36,11 @@ private:
 protected:
 	void DesktopFrameRegionUpdated(Rect region);
 private:
-	virtual Transform GetChildTransform(WndObject& child) const override final { return scale; }
+	virtual Transform GetChildTransform(ViewBase& child) const override final { return scale; }
 protected:
 	virtual std::pair<Size, Size> CalculateMinMaxSize(Size size_ref) { return { size_empty, size_ref }; }
 	virtual Rect OnDesktopFrameSizeRefUpdate(Size size_ref) { UpdateChildSizeRef(child, size_ref); return Rect(point_zero, size_ref); }
-	virtual void OnChildSizeUpdate(WndObject& child, Size child_size) override {}
+	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override {}
 private:
 	void SizeUpdated() {}  // never used
 	virtual Size OnSizeRefUpdate(Size size_ref) override final { return size_ref; }  // never used
@@ -80,16 +80,16 @@ private:
 	void RecreateLayer();
 protected:
 	void Redraw(Rect redraw_region);
-	WndFrame::OnDraw;
+	ViewFrame::OnDraw;
 private:
-	virtual void OnChildRedraw(WndObject& child, Rect child_redraw_region) override final { Redraw(child_redraw_region); }
+	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override final { Redraw(child_redraw_region); }
 	void OnDraw();
 
 	// event
 public:
 	Point GetDesktopCursorPosition() const;
 private:
-	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override final { event.point *= scale.Invert(); return WndFrame::HitTest(event); }
+	virtual ref_ptr<ViewBase> HitTest(MouseEvent& event) override final { event.point *= scale.Invert(); return ViewFrame::HitTest(event); }
 };
 
 

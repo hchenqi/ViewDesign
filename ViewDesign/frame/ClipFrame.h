@@ -1,6 +1,6 @@
 #pragma once
 
-#include "WndFrame.h"
+#include "ViewFrame.h"
 
 
 namespace ViewDesign {
@@ -20,9 +20,9 @@ template<class WidthType, class HeightType, class Position>
 class ClipFrame;
 
 
-class _ClipFrame_Base : public WndFrame {
+class _ClipFrame_Base : public ViewFrame {
 protected:
-	_ClipFrame_Base(child_ptr<> child) : WndFrame(std::move(child)) {}
+	_ClipFrame_Base(child_ptr<> child) : ViewFrame(std::move(child)) {}
 
 	// layout
 protected:
@@ -32,16 +32,16 @@ protected:
 	Vector GetChildOffset() const { return child_region.point - point_zero; }
 	Rect GetChildRegion() const { return child_region; }
 protected:
-	virtual Transform GetChildTransform(WndObject& child) const override { return GetChildOffset(); }
+	virtual Transform GetChildTransform(ViewBase& child) const override { return GetChildOffset(); }
 
 	// paint
 protected:
-	virtual void OnChildRedraw(WndObject& child, Rect child_redraw_region) override { Redraw(child_redraw_region + GetChildOffset()); }
+	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override { Redraw(child_redraw_region + GetChildOffset()); }
 	virtual void OnDraw(FigureQueue& figure_queue, Rect draw_region) override { return DrawChild(child, point_zero + GetChildOffset(), figure_queue, draw_region); }
 
 	// event
 protected:
-	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override { event.point -= GetChildOffset(); return WndFrame::HitTest(event); }
+	virtual ref_ptr<ViewBase> HitTest(MouseEvent& event) override { event.point -= GetChildOffset(); return ViewFrame::HitTest(event); }
 };
 
 
@@ -54,7 +54,7 @@ protected:
 		child_region.size = UpdateChildSizeRef(child, size = size_ref);
 		return size;
 	}
-	virtual void OnChildSizeUpdate(WndObject& child, Size child_size) override {
+	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override {
 		child_region.size = child_size;
 		Redraw(region_infinite);
 	}
@@ -70,7 +70,7 @@ protected:
 		child_region.point.x = size.width - child_region.size.width;
 		return size;
 	}
-	virtual void OnChildSizeUpdate(WndObject& child, Size child_size) override {
+	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override {
 		child_region.size = child_size;
 		child_region.point.x = size.width - child_region.size.width;
 		Redraw(region_infinite);
@@ -87,7 +87,7 @@ protected:
 		child_region.point.y = size.height - child_region.size.height;
 		return size;
 	}
-	virtual void OnChildSizeUpdate(WndObject& child, Size child_size) override {
+	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override {
 		child_region.size = child_size;
 		child_region.point.y = size.height - child_region.size.height;
 		Redraw(region_infinite);
@@ -104,7 +104,7 @@ protected:
 		child_region.point = Point(size.width - child_region.size.width, size.height - child_region.size.height);
 		return size;
 	}
-	virtual void OnChildSizeUpdate(WndObject& child, Size child_size) override {
+	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override {
 		child_region.size = child_size;
 		child_region.point = Point(size.width - child_region.size.width, size.height - child_region.size.height);
 		Redraw(region_infinite);
@@ -122,7 +122,7 @@ protected:
 		size.height = child_region.size.height;
 		return size;
 	}
-	virtual void OnChildSizeUpdate(WndObject& child, Size child_size) override {
+	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override {
 		child_region.size = child_size;
 		if (size.height != child_size.height) {
 			size.height = child_size.height;
@@ -144,7 +144,7 @@ protected:
 		size.height = child_region.size.height;
 		return size;
 	}
-	virtual void OnChildSizeUpdate(WndObject& child, Size child_size) override {
+	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override {
 		child_region.size = child_size;
 		child_region.point.x = size.width - child_region.size.width;
 		if (size.height != child_size.height) {
@@ -167,7 +167,7 @@ protected:
 		size.width = child_region.size.width;
 		return size;
 	}
-	virtual void OnChildSizeUpdate(WndObject& child, Size child_size) override {
+	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override {
 		child_region.size = child_size;
 		if (size.width != child_size.width) {
 			size.width = child_size.width;
@@ -189,7 +189,7 @@ protected:
 		size.width = child_region.size.width;
 		return size;
 	}
-	virtual void OnChildSizeUpdate(WndObject& child, Size child_size) override {
+	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override {
 		child_region.size = child_size;
 		child_region.point.y = size.height - child_region.size.height;
 		if (size.width != child_size.width) {

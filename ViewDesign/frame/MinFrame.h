@@ -1,6 +1,6 @@
 #pragma once
 
-#include "WndFrame.h"
+#include "ViewFrame.h"
 
 
 namespace ViewDesign {
@@ -11,9 +11,9 @@ class MinFrame;
 
 
 template<>
-class MinFrame<Auto, Auto> : public WndFrame, public LayoutType<Auto, Auto> {
+class MinFrame<Auto, Auto> : public ViewFrame, public LayoutType<Auto, Auto> {
 public:
-	MinFrame(Size size_min, child_ptr<Relative, Relative> child) : WndFrame(std::move(child)), size_min(size_min) {
+	MinFrame(Size size_min, child_ptr<Relative, Relative> child) : ViewFrame(std::move(child)), size_min(size_min) {
 		Size child_size = UpdateChildSizeRef(this->child, size_min);
 		size = Size(std::max(size_min.width, child_size.width), std::max(size_min.height, child_size.height));
 	}
@@ -22,7 +22,7 @@ protected:
 	Size size_min;
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override { return size; }
-	virtual void OnChildSizeUpdate(WndObject& child, Size child_size) override {
+	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override {
 		child_size = Size(std::max(size_min.width, child_size.width), std::max(size_min.height, child_size.height));
 		if (size != child_size) { size = child_size; SizeUpdated(size); }
 	}
@@ -30,9 +30,9 @@ protected:
 
 
 template<>
-class MinFrame<Assigned, Auto> : public WndFrame, public LayoutType<Assigned, Auto> {
+class MinFrame<Assigned, Auto> : public ViewFrame, public LayoutType<Assigned, Auto> {
 public:
-	MinFrame(float height_min, child_ptr<Assigned, Relative> child) : WndFrame(std::move(child)), height_min(height_min) {}
+	MinFrame(float height_min, child_ptr<Assigned, Relative> child) : ViewFrame(std::move(child)), height_min(height_min) {}
 protected:
 	Size size;
 	float height_min;
@@ -44,7 +44,7 @@ protected:
 		}
 		return size;
 	}
-	virtual void OnChildSizeUpdate(WndObject& child, Size child_size) override {
+	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override {
 		float height = std::max(height_min, child_size.height);
 		if (size.height != height) { size.height = height; SizeUpdated(size); }
 	}
@@ -52,9 +52,9 @@ protected:
 
 
 template<>
-class MinFrame<Auto, Assigned> : public WndFrame, public LayoutType<Auto, Assigned> {
+class MinFrame<Auto, Assigned> : public ViewFrame, public LayoutType<Auto, Assigned> {
 public:
-	MinFrame(float width_min, child_ptr<Relative, Assigned> child) : WndFrame(std::move(child)), width_min(width_min) {}
+	MinFrame(float width_min, child_ptr<Relative, Assigned> child) : ViewFrame(std::move(child)), width_min(width_min) {}
 protected:
 	Size size;
 	float width_min;
@@ -66,7 +66,7 @@ protected:
 		}
 		return size;
 	}
-	virtual void OnChildSizeUpdate(WndObject& child, Size child_size) override {
+	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override {
 		float width = std::max(width_min, child_size.width);
 		if (size.width != width) { size.width = width; SizeUpdated(size); }
 	}

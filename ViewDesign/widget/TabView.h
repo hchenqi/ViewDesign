@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../frame/WndFrame.h"
-#include "../frame/WndFrameMutable.h"
+#include "../frame/ViewFrame.h"
+#include "../frame/ViewFrameMutable.h"
 #include "../frame/BackgroundFrame.h"
 #include "../frame/ScrollFrame.h"
 #include "../frame/FixedFrame.h"
@@ -27,9 +27,9 @@
 namespace ViewDesign {
 
 
-class TabView : public WndFrame, public LayoutType<Assigned, Assigned>, protected ContextProvider {
+class TabView : public ViewFrame, public LayoutType<Assigned, Assigned>, protected ContextProvider {
 public:
-	class Tab : public HitSelfFallback<WndFrame>, public LayoutType<Assigned, Auto>, protected Context, protected ContextProvider {
+	class Tab : public HitSelfFallback<ViewFrame>, public LayoutType<Assigned, Auto>, protected Context, protected ContextProvider {
 	public:
 		class Title : public CenterFrame<Auto, Assigned> {
 		protected:
@@ -64,7 +64,7 @@ public:
 
 		class CloseButton : public Placeholder<Auto, Assigned>, protected Context {
 		public:
-			CloseButton() : Placeholder(30px), Context(AsWndObject()) {}
+			CloseButton() : Placeholder(30px), Context(AsViewBase()) {}
 		protected:
 			static constexpr Point center = Point(15px, 15px);
 			static constexpr Color background_hover = Color(Color::Black, 32);
@@ -110,7 +110,7 @@ public:
 		};
 
 	public:
-		Tab(child_ptr<Assigned, Auto> tab) : Base(std::move(tab)), Context(AsWndObject()), ContextProvider(AsWndObject()) {}
+		Tab(child_ptr<Assigned, Auto> tab) : Base(std::move(tab)), Context(AsViewBase()), ContextProvider(AsViewBase()) {}
 		Tab(child_ptr<Auto, Assigned> title, child_ptr<Auto, Assigned> close_button = new CloseButton()) : Tab(new Bar(std::move(title), std::move(close_button))) {}
 
 		// state
@@ -139,7 +139,7 @@ public:
 	protected:
 		virtual void OnDraw(FigureQueue& figure_queue, Rect draw_region) override {
 			figure_queue.add(draw_region.point, new Rectangle(draw_region.size, selected ? background_selected : active ? background_active : hover ? background_hover : background_normal));
-			WndFrame::OnDraw(figure_queue, draw_region);
+			ViewFrame::OnDraw(figure_queue, draw_region);
 		}
 
 		// event
@@ -166,7 +166,7 @@ protected:
 	protected:
 		class ResizeControl : public CustomizedCursor<Placeholder<Auto, Assigned>, Cursor::ResizeWE>, protected Context {
 		public:
-			ResizeControl() : Base(5px), Context(AsWndObject()) {}
+			ResizeControl() : Base(5px), Context(AsViewBase()) {}
 		protected:
 			static constexpr Color background_normal = Color::WhiteSmoke;
 			static constexpr Color background_hover = Color::LightGray;
@@ -211,7 +211,7 @@ protected:
 				),
 				new ResizeControl()
 			)
-		), ContextProvider(AsWndObject()) {}
+		), ContextProvider(AsViewBase()) {}
 
 	protected:
 		static constexpr float default_width = 200px;
@@ -258,8 +258,8 @@ protected:
 			UpdateIndex(begin); UpdateLayout(begin);
 		}
 	protected:
-		void SelectChild(WndObject& child) { selection_index_set.insert(GetChildIndex(child)); SetFocus(); }
-		void UnselectChild(WndObject& child) { selection_index_set.erase(GetChildIndex(child)); SetFocus(); }
+		void SelectChild(ViewBase& child) { selection_index_set.insert(GetChildIndex(child)); SetFocus(); }
+		void UnselectChild(ViewBase& child) { selection_index_set.erase(GetChildIndex(child)); SetFocus(); }
 
 		// active selection
 	protected:
@@ -275,7 +275,7 @@ protected:
 			selecting_index_range = index_range_empty;
 			SetFocus(); SetCapture();
 		}
-		void BeginSelect(WndObject& child, Point point) {
+		void BeginSelect(ViewBase& child, Point point) {
 			BeginSelect(ConvertDescendentPoint(child, point));
 		}
 		void DoSelect(Point point) {
@@ -343,20 +343,20 @@ protected:
 	};
 
 public:
-	TabView() : WndFrame(
+	TabView() : ViewFrame(
 		new SplitLayoutHorizontal(
 			new SideBar(
 				new ScrollFrame<Vertical>(
 					tab_list = new TabList()
 				)
 			),
-			child_ptr<Assigned, Assigned>() = content_frame = new WndFrameMutable(new Placeholder<Assigned, Assigned>)
+			child_ptr<Assigned, Assigned>() = content_frame = new ViewFrameMutable(new Placeholder<Assigned, Assigned>)
 		)
-	), ContextProvider(AsWndObject()) {}
+	), ContextProvider(AsViewBase()) {}
 
 private:
 	ref_ptr<TabList> tab_list;
-	ref_ptr<WndFrameMutable> content_frame;
+	ref_ptr<ViewFrameMutable> content_frame;
 	ref_ptr<Tab> active_tab = nullptr;
 
 private:

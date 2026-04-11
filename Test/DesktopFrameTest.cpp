@@ -45,13 +45,13 @@ private:
 
 
 int main() {
-	global.AddWnd(new MainFrame(L"DesktopFrameTest", new EmptyWindow()));
+	global.Add(new MainFrame(L"DesktopFrameTest", new EmptyWindow()));
 	global.EventLoop();
 
-	global.AddWnd(new MainFrame(L"DesktopFrameTest", new WndFrame(new EmptyWindow())));
+	global.Add(new MainFrame(L"DesktopFrameTest", new ViewFrame(new EmptyWindow())));
 	global.EventLoop();
 
 	std::unique_ptr<EmptyWindow> window(new EmptyWindow());
-	global.AddWnd(new MainFrame(L"DesktopFrameTest", new WndFrameRef(*window)));
+	global.Add(new MainFrame(L"DesktopFrameTest", new ViewFrameRef(*window)));
 	global.EventLoop();
 }

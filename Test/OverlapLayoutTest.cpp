@@ -31,9 +31,9 @@ private:
 	}
 
 private:
-	class Wnd : public SolidColorBackground<Placeholder<Assigned, Assigned>> {
+	class View : public SolidColorBackground<Placeholder<Assigned, Assigned>> {
 	public:
-		Wnd(Color background_color) { background = background_color; }
+		View(Color background_color) { background = background_color; }
 	public:
 		void SetColor(Color color) { background = color; Redraw(region_infinite); }
 	};
@@ -43,7 +43,7 @@ private:
 		Frame(Point point) : Base(
 			new BorderFrame(
 				Border(5px, Color::Wheat),
-				wnd = new Wnd(Color(Color::Indigo, 64))
+				view = new View(Color(Color::Indigo, 64))
 			)
 		), region(point, Size(300, 300)) {
 			UpdateChildSizeRef(child, region.size);
@@ -51,7 +51,7 @@ private:
 
 		// child
 	private:
-		ref_ptr<Wnd> wnd;
+		ref_ptr<View> view;
 
 		// layout
 	private:
@@ -72,7 +72,7 @@ private:
 			switch (mouse_tracker.Track(event)) {
 			case MouseTrackEvent::LeftClick:
 				SetFocus();
-				wnd->SetColor(Color(Color::Indigo, 128));
+				view->SetColor(Color(Color::Indigo, 128));
 				break;
 			case MouseTrackEvent::LeftDrag:
 				region.point += event.point - mouse_tracker.mouse_down_position;
@@ -94,7 +94,7 @@ private:
 		}
 		virtual void OnFocusEvent(FocusEvent event) override {
 			if (event == FocusEvent::Blur) {
-				wnd->SetColor(Color(Color::Indigo, 64));
+				view->SetColor(Color(Color::Indigo, 64));
 			}
 		}
 	};
@@ -102,7 +102,7 @@ private:
 
 
 int main() {
-	global.AddWnd(
+	global.Add(
 		new TitleBarFrame(
 			MainFrameStyle(),
 			new MainWindow

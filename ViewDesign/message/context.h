@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../window/WndObject.h"
+#include "../window/ViewBase.h"
 
 
 namespace ViewDesign {
@@ -8,35 +8,35 @@ namespace ViewDesign {
 
 class ContextProvider : Uncopyable {
 private:
-	WndObject& provider;
+	ViewBase& provider;
 public:
-	ContextProvider(WndObject& provider);
+	ContextProvider(ViewBase& provider);
 	~ContextProvider();
 };
 
 
 class Context : Uncopyable {
 private:
-	WndObject& user;
-	ref_ptr<WndObject> provider;
+	ViewBase& user;
+	ref_ptr<ViewBase> provider;
 private:
-	static ref_ptr<WndObject> GetNextProvider(WndObject& user);
+	static ref_ptr<ViewBase> GetNextProvider(ViewBase& user);
 public:
-	Context(WndObject& user) : user(user), provider(nullptr) {}
+	Context(ViewBase& user) : user(user), provider(nullptr) {}
 public:
-	template<class Wnd> requires std::is_base_of_v<WndObject, Wnd>
-	Wnd& Get() {
-		if (!provider || !dynamic_cast<ref_ptr<Wnd>>(provider)) {
-			ref_ptr<WndObject> next = &user;
+	template<class View> requires std::is_base_of_v<ViewBase, View>
+	View& Get() {
+		if (!provider || !dynamic_cast<ref_ptr<View>>(provider)) {
+			ref_ptr<ViewBase> next = &user;
 			do {
 				next = GetNextProvider(*next);
 				if (next == nullptr) {
 					throw std::invalid_argument("context provider not found");
 				}
-				provider = dynamic_cast<ref_ptr<Wnd>>(next);
+				provider = dynamic_cast<ref_ptr<View>>(next);
 			} while (!provider);
 		}
-		return static_cast<Wnd&>(*provider);
+		return static_cast<View&>(*provider);
 	}
 };
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../window/wnd_traits.h"
+#include "../window/view_traits.h"
 
 #include <vector>
 
@@ -8,7 +8,7 @@
 namespace ViewDesign {
 
 
-class FlowLayout : public WndType<Assigned, Auto> {
+class FlowLayout : public ViewType<Assigned, Auto> {
 public:
 	using child_type = child_ptr<Auto, Assigned>;
 
@@ -37,10 +37,10 @@ protected:
 	using row_index = uint; using column_index = uint;
 	using ChildData = std::pair<row_index, column_index>;
 protected:
-	void SetChildData(WndObject& child, ChildData data) { WndObject::SetChildData<ChildData>(child, data); }
-	ChildData GetChildData(WndObject& child) const { return WndObject::GetChildData<ChildData>(child); }
+	void SetChildData(ViewBase& child, ChildData data) { ViewBase::SetChildData<ChildData>(child, data); }
+	ChildData GetChildData(ViewBase& child) const { return ViewBase::GetChildData<ChildData>(child); }
 protected:
-	Rect GetChildRegion(WndObject& child) const;
+	Rect GetChildRegion(ViewBase& child) const;
 	float GetRowOffset(uint row) const;
 	uint GetRowNumber() const;
 	uint HitTestRow(float y) const;
@@ -54,19 +54,19 @@ protected:
 protected:
 	bool UpdateLayout(child_index child_index);
 protected:
-	virtual Transform GetChildTransform(WndObject& child) const override;
+	virtual Transform GetChildTransform(ViewBase& child) const override;
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override;
-	virtual void OnChildSizeUpdate(WndObject& child, Size child_size) override;
+	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override;
 
 	// paint
 protected:
-	virtual void OnChildRedraw(WndObject& child, Rect child_redraw_region) override;
+	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override;
 	virtual void OnDraw(FigureQueue& figure_queue, Rect draw_region) override;
 
 	// event
 protected:
-	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override;
+	virtual ref_ptr<ViewBase> HitTest(MouseEvent& event) override;
 };
 
 

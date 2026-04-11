@@ -50,7 +50,7 @@ private:
 private:
 	virtual std::pair<Size, Size> CalculateMinMaxSize(Size size_ref) override { return { region.size, region.size }; }
 	virtual Rect OnDesktopFrameSizeRefUpdate(Size size_ref) override { return region; }
-	virtual void OnChildSizeUpdate(WndObject& child, Size child_size) override { region.size = child_size; }
+	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override { region.size = child_size; }
 
 private:
 	std::unique_ptr<Tooltip> self;
@@ -64,8 +64,8 @@ public:
 		return tooltip;
 	}
 private:
-	void ShowWnd() { global.AddWnd(std::move(self)); }
-	void HideWnd() { self.reset(static_cast<alloc_ptr<Tooltip>>(global.RemoveWnd(*this).release())); }
+	void ShowSelf() { global.Add(std::move(self)); }
+	void HideSelf() { self.reset(static_cast<alloc_ptr<Tooltip>>(global.Remove(*this).release())); }
 	void SetOpacity(uchar opacity) { Win32::SetWndOpacity(GetHWND(), opacity); }
 
 private:
@@ -91,7 +91,7 @@ private:
 			timer.Set(animation_interval);
 			region.point = GetDesktopCursorPosition() + Vector(0, 10);
 			SetOpacity(0);
-			ShowWnd();
+			ShowSelf();
 			break;
 		case State::Showing:
 			if (animation_step < animation_step_max) {
@@ -114,7 +114,7 @@ private:
 			} else {
 				timer.Stop();
 				state = State::Hidden;
-				HideWnd();
+				HideSelf();
 			}
 			break;
 		}
@@ -132,7 +132,7 @@ public:
 		case State::Showing:
 		case State::Shown:
 		case State::Hiding:
-			HideWnd();
+			HideSelf();
 			state = State::Waiting;
 			timer.Set(switch_interval);
 			break;
