@@ -1,4 +1,4 @@
-#include "../window/global.h"
+#include "../view/global.h"
 
 #include <Windows.h>
 

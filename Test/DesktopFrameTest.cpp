@@ -1,8 +1,8 @@
-#include "ViewDesign/window/Global.h"
-#include "ViewDesign/frame/DesktopFrame.h"
-#include "ViewDesign/control/Placeholder.h"
-#include "ViewDesign/wrapper/Background.h"
-#include "ViewDesign/wrapper/Cursor.h"
+#include "ViewDesign/view/Global.h"
+#include "ViewDesign/view/DesktopFrame.h"
+#include "ViewDesign/view/control/Placeholder.h"
+#include "ViewDesign/view/wrapper/Background.h"
+#include "ViewDesign/view/wrapper/Cursor.h"
 #include "ViewDesign/system/win32_aero_snap.h"
 
 

@@ -1,6 +1,6 @@
 #include "win32_aero_snap.h"
-#include "../window/global.h"
-#include "../frame/DesktopFrame.h"
+#include "../view/global.h"
+#include "../view/DesktopFrame.h"
 
 #include <Windows.h>
 

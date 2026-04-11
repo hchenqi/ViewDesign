@@ -1,11 +1,11 @@
-#include "ViewDesign/frame/PaddingFrame.h"
-#include "ViewDesign/frame/ClipFrame.h"
-#include "ViewDesign/frame/ScaleFrame.h"
-#include "ViewDesign/frame/ScrollFrame.h"
-#include "ViewDesign/frame/DesktopFrame.h"
-#include "ViewDesign/control/EditBox.h"
-#include "ViewDesign/wrapper/Background.h"
-#include "ViewDesign/window/Global.h"
+#include "ViewDesign/view/Global.h"
+#include "ViewDesign/view/DesktopFrame.h"
+#include "ViewDesign/view/frame/PaddingFrame.h"
+#include "ViewDesign/view/frame/ClipFrame.h"
+#include "ViewDesign/view/frame/ScaleFrame.h"
+#include "ViewDesign/view/frame/ScrollFrame.h"
+#include "ViewDesign/view/control/EditBox.h"
+#include "ViewDesign/view/wrapper/Background.h"
 
 
 using namespace ViewDesign;

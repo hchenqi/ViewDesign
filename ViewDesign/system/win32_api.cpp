@@ -1,7 +1,7 @@
 #include "win32_api.h"
 #include "win32_ime.h"
-#include "../window/desktop.h"
-#include "../frame/DesktopFrame.h"
+#include "../view/Desktop.h"
+#include "../view/DesktopFrame.h"
 
 #include <Windows.h>
 #include <windowsx.h>
