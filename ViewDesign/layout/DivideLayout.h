@@ -14,7 +14,7 @@ class DivideLayout;
 
 class _DivideLayout_Base : public ViewType<Assigned, Assigned> {
 public:
-	using child_type = child_ptr<Assigned, Assigned>;
+	using child_type = view_ptr<Assigned, Assigned>;
 
 protected:
 	_DivideLayout_Base() : child_list() {}

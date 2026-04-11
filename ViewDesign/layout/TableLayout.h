@@ -13,7 +13,7 @@ namespace ViewDesign {
 
 class TableLayout : public ViewType<Relative, Relative> {
 public:
-	using child_type = child_ptr<Relative, Relative>;
+	using child_type = view_ptr<Relative, Relative>;
 
 public:
 	struct TableSize {

@@ -13,7 +13,7 @@ class ScrollFrame;
 
 class _ScrollFrame_Base : public ViewFrame, public LayoutType<Assigned, Assigned> {
 protected:
-	_ScrollFrame_Base(child_ptr<> child) : ViewFrame(std::move(child)) {}
+	_ScrollFrame_Base(view_ptr<> child) : ViewFrame(std::move(child)) {}
 
 	// layout
 protected:
@@ -76,7 +76,7 @@ protected:
 template<>
 class ScrollFrame<Bidirectional> : public _ScrollFrame_Base {
 public:
-	ScrollFrame(child_ptr<Auto, Auto> child) : _ScrollFrame_Base(std::move(child)) {
+	ScrollFrame(view_ptr<Auto, Auto> child) : _ScrollFrame_Base(std::move(child)) {
 		child_size = UpdateChildSizeRef(this->child, size_empty);
 	}
 
@@ -116,7 +116,7 @@ protected:
 template<>
 class ScrollFrame<Vertical> : public _ScrollFrame_Base {
 public:
-	ScrollFrame(child_ptr<Assigned, Auto> child) : _ScrollFrame_Base(std::move(child)) {}
+	ScrollFrame(view_ptr<Assigned, Auto> child) : _ScrollFrame_Base(std::move(child)) {}
 
 	// layout
 public:
@@ -171,7 +171,7 @@ protected:
 template<>
 class ScrollFrame<Horizontal> : public _ScrollFrame_Base {
 public:
-	ScrollFrame(child_ptr<Auto, Assigned> child) : _ScrollFrame_Base(std::move(child)) {}
+	ScrollFrame(view_ptr<Auto, Assigned> child) : _ScrollFrame_Base(std::move(child)) {}
 
 	// layout
 public:

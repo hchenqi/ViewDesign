@@ -9,11 +9,11 @@ namespace ViewDesign {
 
 class ViewFrameMutable : public ViewFrame {
 public:
-	ViewFrameMutable(child_ptr<> child) : ViewFrame(std::move(child)) {}
+	ViewFrameMutable(view_ptr<> child) : ViewFrame(std::move(child)) {}
 
 	// child
 public:
-	template<size_t K = 1, class... T> requires ((std::is_same_v<ViewFrameMutable, T> || std::is_base_of_v<child_ptr<>, T>) && ...)
+	template<size_t K = 1, class... T> requires ((std::is_same_v<ViewFrameMutable, T> || std::is_base_of_v<view_ptr<>, T>) && ...)
 	static void Rotate(T&... other) {
 		if constexpr (sizeof...(other) <= 1) {
 			throw std::invalid_argument("ViewFrameMutable::Rotate: there should be at least 2 arguments");
@@ -25,10 +25,10 @@ public:
 			}
 		}(other), ...);
 
-		auto map_to_child = [](auto& other) -> child_ptr<>& { if constexpr (std::is_same_v<ViewFrameMutable&, decltype(other)>) { return other.child; } else { return other; }};
-		auto child_ptr_ref_tuple = std::tie(map_to_child(other)...);
-		auto child_ptr_tuple_rotated = move_rotate_tuple<K>(std::make_tuple((std::move(map_to_child(other)))...));
-		move_assign_tuple(std::move(child_ptr_tuple_rotated), child_ptr_ref_tuple);
+		auto map_to_child = [](auto& other) -> view_ptr<>& { if constexpr (std::is_same_v<ViewFrameMutable&, decltype(other)>) { return other.child; } else { return other; }};
+		auto view_ptr_ref_tuple = std::tie(map_to_child(other)...);
+		auto view_ptr_tuple_rotated = move_rotate_tuple<K>(std::make_tuple((std::move(map_to_child(other)))...));
+		move_assign_tuple(std::move(view_ptr_tuple_rotated), view_ptr_ref_tuple);
 
 		([](auto& other) {
 			if constexpr (std::is_same_v<ViewFrameMutable&, decltype(other)>) {
@@ -39,7 +39,7 @@ public:
 		}(other), ...);
 	}
 public:
-	child_ptr<> Reset(child_ptr<> child) { Rotate(*this, child); return child; }
+	view_ptr<> Reset(view_ptr<> child) { Rotate(*this, child); return child; }
 	void SwapWith(ViewFrameMutable& other) { Rotate(*this, other); }
 
 	// layout
@@ -54,11 +54,11 @@ protected:
 
 class ViewFrameRefMutable : public ViewFrameRef {
 public:
-	ViewFrameRefMutable(child_ref<> child) : ViewFrameRef(child) {}
+	ViewFrameRefMutable(view_ref<> child) : ViewFrameRef(child) {}
 
 	// child
 public:
-	template<size_t K = 1, class... T> requires ((std::is_same_v<ViewFrameRefMutable, T> || std::is_base_of_v<child_ref<>, T>) && ...)
+	template<size_t K = 1, class... T> requires ((std::is_same_v<ViewFrameRefMutable, T> || std::is_base_of_v<view_ref<>, T>) && ...)
 	static void Rotate(T&... other) {
 		if constexpr (sizeof...(other) <= 1) {
 			throw std::invalid_argument("ViewFrameMutable::Rotate: there should be at least 2 arguments");
@@ -70,10 +70,10 @@ public:
 			}
 		}(other), ...);
 
-		auto map_to_child = [](auto& other) -> child_ref<>& { if constexpr (std::is_same_v<ViewFrameRefMutable&, decltype(other)>) { return other.child; } else { return other; }};
-		auto child_ptr_ref_tuple = std::tie(map_to_child(other)...);
-		auto child_ptr_tuple_rotated = move_rotate_tuple<K>(std::make_tuple((std::move(map_to_child(other)))...));
-		move_assign_tuple(std::move(child_ptr_tuple_rotated), child_ptr_ref_tuple);
+		auto map_to_child = [](auto& other) -> view_ref<>& { if constexpr (std::is_same_v<ViewFrameRefMutable&, decltype(other)>) { return other.child; } else { return other; }};
+		auto view_ptr_ref_tuple = std::tie(map_to_child(other)...);
+		auto view_ptr_tuple_rotated = move_rotate_tuple<K>(std::make_tuple((std::move(map_to_child(other)))...));
+		move_assign_tuple(std::move(view_ptr_tuple_rotated), view_ptr_ref_tuple);
 
 		([](auto& other) {
 			if constexpr (std::is_same_v<ViewFrameRefMutable&, decltype(other)>) {
@@ -84,7 +84,7 @@ public:
 		}(other), ...);
 	}
 public:
-	child_ref<> Reset(child_ref<> child) { Rotate(*this, child); return child; }
+	view_ref<> Reset(view_ref<> child) { Rotate(*this, child); return child; }
 	void SwapWith(ViewFrameRefMutable& other) { Rotate(*this, other); }
 
 	// layout

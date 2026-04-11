@@ -8,7 +8,7 @@ namespace ViewDesign {
 
 class _SplitLayout_Base : public ViewBase {
 protected:
-	using child_type = child_ptr<>;
+	using child_type = view_ptr<>;
 
 protected:
 	_SplitLayout_Base(child_type child_first, child_type child_second) : child_first(std::move(child_first)), child_second(std::move(child_second)) {
@@ -112,8 +112,8 @@ public:
 	using width_type = std::conditional_t<IsAssigned<WidthTypeFirst> && IsAssigned<WidthTypeSecond>, Assigned, std::conditional_t<IsRelative<WidthTypeFirst> || IsRelative<WidthTypeSecond>, Relative, Auto>>;
 	using height_type = std::conditional_t<IsAssigned<HeightTypeFirst> || IsAssigned<HeightTypeSecond>, Assigned, std::conditional_t<IsRelative<HeightTypeFirst> || IsRelative<HeightTypeSecond>, Relative, Auto>>;
 public:
-	using child_type_first = child_ptr<WidthTypeFirst, HeightTypeFirst>;
-	using child_type_second = child_ptr<WidthTypeSecond, HeightTypeSecond>;
+	using child_type_first = view_ptr<WidthTypeFirst, HeightTypeFirst>;
+	using child_type_second = view_ptr<WidthTypeSecond, HeightTypeSecond>;
 
 public:
 	SplitLayoutVertical(child_type_first child_first, child_type_second child_second) : _SplitLayout_Base_Vertical(std::move(child_first), std::move(child_second)) {}
@@ -233,8 +233,8 @@ public:
 	using width_type = std::conditional_t<IsAssigned<WidthTypeFirst> || IsAssigned<WidthTypeSecond>, Assigned, std::conditional_t<IsRelative<WidthTypeFirst> || IsRelative<WidthTypeSecond>, Relative, Auto>>;
 	using height_type = std::conditional_t<IsAssigned<HeightTypeFirst> && IsAssigned<HeightTypeSecond>, Assigned, std::conditional_t<IsRelative<HeightTypeFirst> || IsRelative<HeightTypeSecond>, Relative, Auto>>;
 public:
-	using child_type_first = child_ptr<WidthTypeFirst, HeightTypeFirst>;
-	using child_type_second = child_ptr<WidthTypeSecond, HeightTypeSecond>;
+	using child_type_first = view_ptr<WidthTypeFirst, HeightTypeFirst>;
+	using child_type_second = view_ptr<WidthTypeSecond, HeightTypeSecond>;
 
 public:
 	SplitLayoutHorizontal(child_type_first child_first, child_type_second child_second) : _SplitLayout_Base_Horizontal(std::move(child_first), std::move(child_second)) {}

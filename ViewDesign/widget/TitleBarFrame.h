@@ -30,8 +30,8 @@ namespace ViewDesign {
 
 class TitleBarFrame : public DesktopFrame, ContextProvider {
 public:
-	using child_type = child_ptr<Assigned, Assigned>;
-	using child_type_menu = child_ptr<Auto, Assigned>;
+	using child_type = view_ptr<Assigned, Assigned>;
+	using child_type_menu = view_ptr<Auto, Assigned>;
 
 public:
 	struct TitleBarStyle : TextBlockStyle {
@@ -204,7 +204,7 @@ public:
 				style.padding,
 				border = new ResizeBorder(
 					style.border,
-					child_ptr<Assigned, Assigned>() = inner_frame = new ViewFrameMutable(
+					view_ptr<Assigned, Assigned>() = inner_frame = new ViewFrameMutable(
 						new SplitLayoutVertical(
 							new TitleBar(
 								style.title.bar,
@@ -246,8 +246,8 @@ protected:
 protected:
 	ref_ptr<ViewFrameMutable> outer_frame;
 	ref_ptr<ViewFrameMutable> inner_frame;
-	child_ptr<Assigned, Assigned> inner_frame_placeholder = new Placeholder<Assigned, Assigned>;
-	child_ptr<Assigned, Assigned> outer_frame_placeholder = child_ptr<Assigned, Assigned>();
+	view_ptr<Assigned, Assigned> inner_frame_placeholder = new Placeholder<Assigned, Assigned>;
+	view_ptr<Assigned, Assigned> outer_frame_placeholder = view_ptr<Assigned, Assigned>();
 protected:
 	bool IsMaximized() { return GetState() == State::Maximized; }
 	void MaximizeOrRestore() { if (GetState() == State::Normal) { Maximize(); } else if (GetState() == State::Maximized) { Restore(); } }

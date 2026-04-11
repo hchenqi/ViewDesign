@@ -22,7 +22,7 @@ class ClipFrame;
 
 class _ClipFrame_Base : public ViewFrame {
 protected:
-	_ClipFrame_Base(child_ptr<> child) : ViewFrame(std::move(child)) {}
+	_ClipFrame_Base(view_ptr<> child) : ViewFrame(std::move(child)) {}
 
 	// layout
 protected:
@@ -48,7 +48,7 @@ protected:
 template<>
 class ClipFrame<Assigned, Assigned, TopLeft> : public _ClipFrame_Base, public LayoutType<Assigned, Assigned> {
 public:
-	ClipFrame(child_ptr<> child) : _ClipFrame_Base(std::move(child)) { child_region.point = point_zero; }
+	ClipFrame(view_ptr<> child) : _ClipFrame_Base(std::move(child)) { child_region.point = point_zero; }
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override {
 		child_region.size = UpdateChildSizeRef(child, size = size_ref);
@@ -63,7 +63,7 @@ protected:
 template<>
 class ClipFrame<Assigned, Assigned, TopRight> : public _ClipFrame_Base, public LayoutType<Assigned, Assigned> {
 public:
-	ClipFrame(child_ptr<> child) : _ClipFrame_Base(std::move(child)) { child_region.point.y = 0; }
+	ClipFrame(view_ptr<> child) : _ClipFrame_Base(std::move(child)) { child_region.point.y = 0; }
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override {
 		child_region.size = UpdateChildSizeRef(child, size = size_ref);
@@ -80,7 +80,7 @@ protected:
 template<>
 class ClipFrame<Assigned, Assigned, BottomLeft> : public _ClipFrame_Base, public LayoutType<Assigned, Assigned> {
 public:
-	ClipFrame(child_ptr<> child) : _ClipFrame_Base(std::move(child)) { child_region.point.x = 0; }
+	ClipFrame(view_ptr<> child) : _ClipFrame_Base(std::move(child)) { child_region.point.x = 0; }
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override {
 		child_region.size = UpdateChildSizeRef(child, size = size_ref);
@@ -97,7 +97,7 @@ protected:
 template<>
 class ClipFrame<Assigned, Assigned, BottomRight> : public _ClipFrame_Base, public LayoutType<Assigned, Assigned> {
 public:
-	ClipFrame(child_ptr<> child) : _ClipFrame_Base(std::move(child)) {}
+	ClipFrame(view_ptr<> child) : _ClipFrame_Base(std::move(child)) {}
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override {
 		child_region.size = UpdateChildSizeRef(child, size = size_ref);
@@ -115,7 +115,7 @@ protected:
 template<>
 class ClipFrame<Assigned, Auto, Left> : public _ClipFrame_Base, public LayoutType<Assigned, Auto> {
 public:
-	ClipFrame(child_ptr<Relative, Auto> child) : _ClipFrame_Base(std::move(child)) { child_region.point = point_zero; }
+	ClipFrame(view_ptr<Relative, Auto> child) : _ClipFrame_Base(std::move(child)) { child_region.point = point_zero; }
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override {
 		child_region.size = UpdateChildSizeRef(child, size = size_ref);
@@ -136,7 +136,7 @@ protected:
 template<>
 class ClipFrame<Assigned, Auto, Right> : public _ClipFrame_Base, public LayoutType<Assigned, Auto> {
 public:
-	ClipFrame(child_ptr<Relative, Auto> child) : _ClipFrame_Base(std::move(child)) { child_region.point.y = 0; }
+	ClipFrame(view_ptr<Relative, Auto> child) : _ClipFrame_Base(std::move(child)) { child_region.point.y = 0; }
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override {
 		child_region.size = UpdateChildSizeRef(child, size = size_ref);
@@ -160,7 +160,7 @@ protected:
 template<>
 class ClipFrame<Auto, Assigned, Top> : public _ClipFrame_Base, public LayoutType<Auto, Assigned> {
 public:
-	ClipFrame(child_ptr<Auto, Relative> child) : _ClipFrame_Base(std::move(child)) {}
+	ClipFrame(view_ptr<Auto, Relative> child) : _ClipFrame_Base(std::move(child)) {}
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override {
 		child_region.size = UpdateChildSizeRef(child, size = size_ref);
@@ -181,7 +181,7 @@ protected:
 template<>
 class ClipFrame<Auto, Assigned, Bottom> : public _ClipFrame_Base, public LayoutType<Auto, Assigned> {
 public:
-	ClipFrame(child_ptr<Auto, Relative> child) : _ClipFrame_Base(std::move(child)) { child_region.point.x = 0; }
+	ClipFrame(view_ptr<Auto, Relative> child) : _ClipFrame_Base(std::move(child)) { child_region.point.x = 0; }
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override {
 		child_region.size = UpdateChildSizeRef(child, size = size_ref);

@@ -13,7 +13,7 @@ using Padding = Margin;
 template<class WidthType, class HeightType>
 class PaddingFrame : public ViewFrame, public LayoutType<WidthType, HeightType> {
 public:
-	using child_type = child_ptr<WidthType, HeightType>;
+	using child_type = view_ptr<WidthType, HeightType>;
 
 public:
 	PaddingFrame(Padding padding, child_type child) : ViewFrame(std::move(child)), padding(padding) {}

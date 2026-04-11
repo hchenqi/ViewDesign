@@ -13,7 +13,7 @@ class MaxFrame;
 template<>
 class MaxFrame<Auto, Auto> : public ViewFrame, public LayoutType<Auto, Auto> {
 public:
-	MaxFrame(Size size_max, child_ptr<Relative, Relative> child) : ViewFrame(std::move(child)), size_max(size_max) {
+	MaxFrame(Size size_max, view_ptr<Relative, Relative> child) : ViewFrame(std::move(child)), size_max(size_max) {
 		Size child_size = UpdateChildSizeRef(this->child, size_max);
 		size = Size(std::min(size_max.width, child_size.width), std::min(size_max.height, child_size.height));
 	}
@@ -32,7 +32,7 @@ protected:
 template<>
 class MaxFrame<Assigned, Auto> : public ViewFrame, public LayoutType<Assigned, Auto> {
 public:
-	MaxFrame(float height_max, child_ptr<Assigned, Relative> child) : ViewFrame(std::move(child)), height_max(height_max) {}
+	MaxFrame(float height_max, view_ptr<Assigned, Relative> child) : ViewFrame(std::move(child)), height_max(height_max) {}
 protected:
 	Size size;
 	float height_max;
@@ -54,7 +54,7 @@ protected:
 template<>
 class MaxFrame<Auto, Assigned> : public ViewFrame, public LayoutType<Auto, Assigned> {
 public:
-	MaxFrame(float width_max, child_ptr<Relative, Assigned> child) : ViewFrame(std::move(child)), width_max(width_max) {}
+	MaxFrame(float width_max, view_ptr<Relative, Assigned> child) : ViewFrame(std::move(child)), width_max(width_max) {}
 protected:
 	Size size;
 	float width_max;

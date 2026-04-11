@@ -12,7 +12,7 @@ namespace ViewDesign {
 template<class WidthType, class HeightType>
 class BorderFrame : public ViewFrame, public LayoutType<WidthType, HeightType> {
 public:
-	using child_type = child_ptr<WidthType, HeightType>;
+	using child_type = view_ptr<WidthType, HeightType>;
 
 public:
 	BorderFrame(Border border, child_type child) : ViewFrame(std::move(child)), border(border) {}

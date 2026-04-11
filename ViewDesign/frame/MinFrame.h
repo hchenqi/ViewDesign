@@ -13,7 +13,7 @@ class MinFrame;
 template<>
 class MinFrame<Auto, Auto> : public ViewFrame, public LayoutType<Auto, Auto> {
 public:
-	MinFrame(Size size_min, child_ptr<Relative, Relative> child) : ViewFrame(std::move(child)), size_min(size_min) {
+	MinFrame(Size size_min, view_ptr<Relative, Relative> child) : ViewFrame(std::move(child)), size_min(size_min) {
 		Size child_size = UpdateChildSizeRef(this->child, size_min);
 		size = Size(std::max(size_min.width, child_size.width), std::max(size_min.height, child_size.height));
 	}
@@ -32,7 +32,7 @@ protected:
 template<>
 class MinFrame<Assigned, Auto> : public ViewFrame, public LayoutType<Assigned, Auto> {
 public:
-	MinFrame(float height_min, child_ptr<Assigned, Relative> child) : ViewFrame(std::move(child)), height_min(height_min) {}
+	MinFrame(float height_min, view_ptr<Assigned, Relative> child) : ViewFrame(std::move(child)), height_min(height_min) {}
 protected:
 	Size size;
 	float height_min;
@@ -54,7 +54,7 @@ protected:
 template<>
 class MinFrame<Auto, Assigned> : public ViewFrame, public LayoutType<Auto, Assigned> {
 public:
-	MinFrame(float width_min, child_ptr<Relative, Assigned> child) : ViewFrame(std::move(child)), width_min(width_min) {}
+	MinFrame(float width_min, view_ptr<Relative, Assigned> child) : ViewFrame(std::move(child)), width_min(width_min) {}
 protected:
 	Size size;
 	float width_min;

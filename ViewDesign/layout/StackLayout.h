@@ -9,14 +9,14 @@ namespace ViewDesign {
 
 class _StackLayout_Base : public ViewBase {
 protected:
-	_StackLayout_Base(child_ptr<> child_first, child_ptr<> child_second) : child_first(std::move(child_first)), child_second(std::move(child_second)) {
+	_StackLayout_Base(view_ptr<> child_first, view_ptr<> child_second) : child_first(std::move(child_first)), child_second(std::move(child_second)) {
 		RegisterChild(this->child_first); RegisterChild(this->child_second);
 	}
 
 	// child
 protected:
-	child_ptr<> child_first;
-	child_ptr<> child_second;
+	view_ptr<> child_first;
+	view_ptr<> child_second;
 
 	// layout
 protected:
@@ -50,8 +50,8 @@ public:
 	using width_type = std::conditional_t<IsAssigned<WidthTypeFirst>, WidthTypeSecond, WidthTypeFirst>;
 	using height_type = std::conditional_t<IsAssigned<HeightTypeFirst>, HeightTypeSecond, HeightTypeFirst>;
 public:
-	using child_type_first = child_ptr<WidthTypeFirst, HeightTypeFirst>;
-	using child_type_second = child_ptr<WidthTypeSecond, HeightTypeSecond>;
+	using child_type_first = view_ptr<WidthTypeFirst, HeightTypeFirst>;
+	using child_type_second = view_ptr<WidthTypeSecond, HeightTypeSecond>;
 
 public:
 	StackLayout(child_type_first child_first, child_type_second child_second) : _StackLayout_Base(std::move(child_first), std::move(child_second)) {}
@@ -101,7 +101,7 @@ StackLayout(T1, T2) -> StackLayout<extract_width_type<T1>, extract_height_type<T
 
 class StackLayoutMultiple : public ViewType<Assigned, Assigned> {
 public:
-	using child_type = child_ptr<Assigned, Assigned>;
+	using child_type = view_ptr<Assigned, Assigned>;
 
 public:
 	template<class... Ts>

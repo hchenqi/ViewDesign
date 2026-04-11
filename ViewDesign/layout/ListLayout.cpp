@@ -44,7 +44,7 @@ void ListLayout<Vertical>::EraseChild(size_t begin, size_t count) {
 ListLayout<Vertical>::child_type ListLayout<Vertical>::ExtractChild(size_t index) {
 	if (index >= child_list.size()) { throw std::invalid_argument("invalid child index"); }
 	UnregisterChild(child_list[index].child);
-	child_ptr ptr(std::move(child_list[index].child));
+	view_ptr ptr(std::move(child_list[index].child));
 	EraseChild(index, 1);
 	return ptr;
 }

@@ -14,7 +14,7 @@ class ListLayoutAuto;
 
 class _ListLayoutAuto_Base : public ViewType<Auto, Auto> {
 public:
-	using child_type = child_ptr<Auto, Auto>;
+	using child_type = view_ptr<Auto, Auto>;
 
 protected:
 	_ListLayoutAuto_Base(float gap) : child_list(), gap(gap) {}
@@ -69,7 +69,7 @@ public:
 	ListLayoutAuto(float gap, Ts... child_args) : _ListLayoutAuto_Base(gap) {
 		if constexpr (sizeof...(Ts) > 0) {
 			child_type list[] = { std::move(child_args)... };
-			InsertChild(0, std::vector<child_ptr>(std::make_move_iterator(std::begin(list)), std::make_move_iterator(std::end(list))));
+			InsertChild(0, std::vector<view_ptr>(std::make_move_iterator(std::begin(list)), std::make_move_iterator(std::end(list))));
 		}
 	}
 

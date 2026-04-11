@@ -10,7 +10,7 @@ namespace ViewDesign {
 
 class _LayerFrame_Base : public ViewFrame {
 protected:
-	_LayerFrame_Base(uchar opacity, child_ptr<> child) : ViewFrame(std::move(child)), opacity(opacity) {}
+	_LayerFrame_Base(uchar opacity, view_ptr<> child) : ViewFrame(std::move(child)), opacity(opacity) {}
 
 	// style
 protected:
@@ -40,8 +40,8 @@ protected:
 template<class WidthType, class HeightType>
 class LayerFrame : public _LayerFrame_Base, public LayoutType<WidthType, HeightType> {
 public:
-	LayerFrame(child_ptr<WidthType, HeightType> child) : LayerFrame(0xFF, std::move(child)) {}
-	LayerFrame(uchar opacity, child_ptr<WidthType, HeightType> child) : _LayerFrame_Base(opacity, std::move(child)) {}
+	LayerFrame(view_ptr<WidthType, HeightType> child) : LayerFrame(0xFF, std::move(child)) {}
+	LayerFrame(uchar opacity, view_ptr<WidthType, HeightType> child) : _LayerFrame_Base(opacity, std::move(child)) {}
 };
 
 

@@ -93,7 +93,7 @@ void ListLayoutAuto<Vertical>::EraseChild(size_t begin, size_t count) {
 }
 
 ListLayoutAuto<Vertical>::child_type ListLayoutAuto<Vertical>::ExtractChild(size_t index) {
-	child_ptr ptr = _ListLayoutAuto_Base::ExtractChild(index);
+	view_ptr ptr = _ListLayoutAuto_Base::ExtractChild(index);
 	EraseChild(index, 1);
 	return ptr;
 }
@@ -173,7 +173,7 @@ void ListLayoutAuto<Horizontal>::EraseChild(size_t begin, size_t count) {
 }
 
 ListLayoutAuto<Horizontal>::child_type ListLayoutAuto<Horizontal>::ExtractChild(size_t index) {
-	child_ptr ptr = _ListLayoutAuto_Base::ExtractChild(index);
+	view_ptr ptr = _ListLayoutAuto_Base::ExtractChild(index);
 	EraseChild(index, 1);
 	return ptr;
 }

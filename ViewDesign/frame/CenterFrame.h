@@ -12,7 +12,7 @@ class CenterFrame;
 
 class _CenterFrame_Base : public ViewFrame {
 protected:
-	_CenterFrame_Base(child_ptr<> child) : ViewFrame(std::move(child)) {}
+	_CenterFrame_Base(view_ptr<> child) : ViewFrame(std::move(child)) {}
 
 	// layout
 protected:
@@ -38,7 +38,7 @@ protected:
 template<>
 class CenterFrame<Assigned, Assigned> : public _CenterFrame_Base, public LayoutType<Assigned, Assigned> {
 public:
-	CenterFrame(child_ptr<Relative, Relative> child) : _CenterFrame_Base(std::move(child)) {}
+	CenterFrame(view_ptr<Relative, Relative> child) : _CenterFrame_Base(std::move(child)) {}
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override { child_size = UpdateChildSizeRef(child, size = size_ref); return size; }
 	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override { this->child_size = child_size; Redraw(region_infinite); }
@@ -48,7 +48,7 @@ protected:
 template<>
 class CenterFrame<Assigned, Auto> : public _CenterFrame_Base, public LayoutType<Assigned, Auto> {
 public:
-	CenterFrame(child_ptr<Relative, Auto> child) : _CenterFrame_Base(std::move(child)) {}
+	CenterFrame(view_ptr<Relative, Auto> child) : _CenterFrame_Base(std::move(child)) {}
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override {
 		child_size = UpdateChildSizeRef(this->child, size_ref);
@@ -68,7 +68,7 @@ protected:
 template<>
 class CenterFrame<Auto, Assigned> : public _CenterFrame_Base, public LayoutType<Auto, Assigned> {
 public:
-	CenterFrame(child_ptr<Auto, Relative> child) : _CenterFrame_Base(std::move(child)) {}
+	CenterFrame(view_ptr<Auto, Relative> child) : _CenterFrame_Base(std::move(child)) {}
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override {
 		child_size = UpdateChildSizeRef(this->child, size_ref);

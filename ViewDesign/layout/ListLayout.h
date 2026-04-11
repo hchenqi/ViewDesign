@@ -15,7 +15,7 @@ class ListLayout;
 template<>
 class ListLayout<Vertical> : public ViewType<Assigned, Auto> {
 public:
-	using child_type = child_ptr<Assigned, Auto>;
+	using child_type = view_ptr<Assigned, Auto>;
 
 public:
 	template<class... Ts>
@@ -81,7 +81,7 @@ protected:
 template<>
 class ListLayout<Horizontal> : public ViewType<Auto, Assigned> {
 public:
-	using child_type = child_ptr<Auto, Assigned>;
+	using child_type = view_ptr<Auto, Assigned>;
 
 public:
 	template<class... Ts>

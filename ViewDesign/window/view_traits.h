@@ -29,13 +29,13 @@ class ViewType : public ViewBase, public LayoutType<WidthType, HeightType> {};
 
 
 template<class WidthType = Relative, class HeightType = Relative>
-class child_ref;
+class view_ref;
 
 template<>
-class child_ref<Relative, Relative> : public std::reference_wrapper<ViewBase> {
+class view_ref<Relative, Relative> : public std::reference_wrapper<ViewBase> {
 public:
-	template<class ChildType>
-	child_ref(ChildType& ref) : std::reference_wrapper<ViewBase>(ref) {}
+	template<class View>
+	view_ref(View& ref) : std::reference_wrapper<ViewBase>(ref) {}
 public:
 	operator ViewBase& () const { return get(); }
 	operator ref_ptr<ViewBase>() const { return &get(); }
@@ -43,41 +43,41 @@ public:
 };
 
 template<class WidthType, class HeightType>
-class child_ref : public child_ref<> {
+class view_ref : public view_ref<> {
 public:
-	template<class ChildType> requires (std::is_base_of_v<WidthType, typename ChildType::width_type>&& std::is_base_of_v<HeightType, typename ChildType::height_type>)
-		child_ref(ChildType& ref) : child_ref<>(ref) {}
+	template<class View> requires (std::is_base_of_v<WidthType, typename View::width_type> && std::is_base_of_v<HeightType, typename View::height_type>)
+	view_ref(View& ref) : view_ref<>(ref) {}
 public:
-	child_ref&& operator=(child_ref<>&& ref) { child_ref<>::operator=(ref); return *this; }
+	view_ref&& operator=(view_ref<>&& ref) { view_ref<>::operator=(ref); return *this; }
 };
 
 
 template<class WidthType = Relative, class HeightType = Relative>
-class child_ptr;
+class view_ptr;
 
 template<>
-class child_ptr<Relative, Relative> : public std::unique_ptr<ViewBase> {
+class view_ptr<Relative, Relative> : public std::unique_ptr<ViewBase> {
 public:
-	child_ptr() {}
-	template<class ChildType>
-	child_ptr(std::unique_ptr<ChildType> ptr) : std::unique_ptr<ViewBase>(ptr.release()) {}
-	template<class ChildType>
-	child_ptr(alloc_ptr<ChildType> ptr) : child_ptr(std::unique_ptr<ChildType>(ptr)) {}
+	view_ptr() {}
+	template<class View>
+	view_ptr(std::unique_ptr<View> ptr) : std::unique_ptr<ViewBase>(ptr.release()) {}
+	template<class View>
+	view_ptr(alloc_ptr<View> ptr) : view_ptr(std::unique_ptr<View>(ptr)) {}
 public:
 	operator ViewBase& () const { return **this; }
 	operator ref_ptr<ViewBase>() const { return get(); }
 };
 
 template<class WidthType, class HeightType>
-class child_ptr : public child_ptr<> {
+class view_ptr : public view_ptr<> {
 public:
-	child_ptr() {}
-	template<class ChildType> requires (std::is_base_of_v<WidthType, typename ChildType::width_type> && std::is_base_of_v<HeightType, typename ChildType::height_type>)
-	child_ptr(std::unique_ptr<ChildType> ptr) : child_ptr<>(std::move(ptr)) {}
-	template<class ChildType> requires (std::is_base_of_v<WidthType, typename ChildType::width_type> && std::is_base_of_v<HeightType, typename ChildType::height_type>)
-	child_ptr(alloc_ptr<ChildType> ptr) : child_ptr(std::unique_ptr<ChildType>(ptr)) {}
+	view_ptr() {}
+	template<class View> requires (std::is_base_of_v<WidthType, typename View::width_type> && std::is_base_of_v<HeightType, typename View::height_type>)
+	view_ptr(std::unique_ptr<View> ptr) : view_ptr<>(std::move(ptr)) {}
+	template<class View> requires (std::is_base_of_v<WidthType, typename View::width_type> && std::is_base_of_v<HeightType, typename View::height_type>)
+	view_ptr(alloc_ptr<View> ptr) : view_ptr(std::unique_ptr<View>(ptr)) {}
 public:
-	child_ptr&& operator=(child_ptr<>&& ptr) { child_ptr<>::operator=(std::move(ptr)); return std::move(*this); }
+	view_ptr&& operator=(view_ptr<>&& ptr) { view_ptr<>::operator=(std::move(ptr)); return std::move(*this); }
 };
 
 
@@ -85,19 +85,19 @@ template<class T>
 struct extract_layout_type;
 
 template<class WidthType, class HeightType>
-struct extract_layout_type<child_ptr<WidthType, HeightType>> {
+struct extract_layout_type<view_ptr<WidthType, HeightType>> {
 	using width_type = WidthType;
 	using height_type = HeightType;
 };
 
-template<class ChildType>
-struct extract_layout_type<alloc_ptr<ChildType>> {
-	using width_type = typename ChildType::width_type;
-	using height_type = typename ChildType::height_type;
+template<class View>
+struct extract_layout_type<alloc_ptr<View>> {
+	using width_type = typename View::width_type;
+	using height_type = typename View::height_type;
 };
 
-template<class ChildType>
-struct extract_layout_type<std::unique_ptr<ChildType>> : public extract_layout_type<alloc_ptr<ChildType>> {};
+template<class View>
+struct extract_layout_type<std::unique_ptr<View>> : public extract_layout_type<alloc_ptr<View>> {};
 
 template<class T>
 using extract_width_type = typename extract_layout_type<T>::width_type;

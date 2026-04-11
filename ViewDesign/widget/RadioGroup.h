@@ -13,7 +13,7 @@ namespace ViewDesign {
 template<class T>
 struct RadioItem {
 	T value;
-	child_ptr<Assigned, Auto> child;
+	view_ptr<Assigned, Auto> child;
 	bool selected = false;
 };
 
@@ -30,7 +30,7 @@ public:
 private:
 	class ItemFrameBase : public PaddingFrame<Assigned, Auto> {
 	protected:
-		ItemFrameBase(RadioGroup& group, bool selected, child_ptr child) : PaddingFrame(
+		ItemFrameBase(RadioGroup& group, bool selected, view_ptr child) : PaddingFrame(
 			Padding(20px, 0px, 0px, 0px),
 			std::move(child)
 		), selected(selected) {

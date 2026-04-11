@@ -15,7 +15,7 @@ private:
 	friend struct DesktopFrameApi;
 
 public:
-	DesktopFrame(std::wstring title, child_ptr<> child);
+	DesktopFrame(std::wstring title, view_ptr<> child);
 	~DesktopFrame();
 
 	// style

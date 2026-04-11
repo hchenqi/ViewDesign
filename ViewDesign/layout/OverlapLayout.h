@@ -13,7 +13,7 @@ private:
 	friend class OverlapLayout;
 
 public:
-	OverlapFrame(child_ptr<Relative, Relative> child) : ViewFrame(std::move(child)) {}
+	OverlapFrame(view_ptr<Relative, Relative> child) : ViewFrame(std::move(child)) {}
 	~OverlapFrame() {}
 
 	// parent

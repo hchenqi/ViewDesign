@@ -56,7 +56,7 @@ private:
 			}
 		};
 	private:
-		virtual child_ptr<Assigned, Assigned> OnShow() override {
+		virtual view_ptr<Assigned, Assigned> OnShow() override {
 			return new ClipFrame<Assigned, Assigned, TopLeft>(new PaddingFrame(Padding(20px), new MyEditBox(*this)));
 		};
 	};
@@ -76,7 +76,7 @@ private:
 			}
 		};
 	private:
-		virtual child_ptr<Assigned, Assigned> OnShow() override {
+		virtual view_ptr<Assigned, Assigned> OnShow() override {
 			return new Content();
 		};
 	};
