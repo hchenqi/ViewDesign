@@ -145,14 +145,14 @@ protected:
 	void Copy();
 	void Paste();
 
-	// message
+	// event
 protected:
 	MouseTracker mouse_tracker;
 	KeyTracker key_tracker;
 protected:
-	virtual void OnMouseMsg(MouseMsg msg) override;
-	virtual void OnKeyMsg(KeyMsg msg) override;
-	virtual void OnNotifyMsg(NotifyMsg msg) override;
+	virtual void OnMouseEvent(MouseEvent event) override;
+	virtual void OnKeyEvent(KeyEvent event) override;
+	virtual void OnFocusEvent(FocusEvent event) override;
 };
 
 

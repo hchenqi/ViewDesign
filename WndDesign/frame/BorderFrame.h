@@ -52,12 +52,12 @@ protected:
 		}
 	}
 
-	// message
+	// event
 protected:
-	virtual ref_ptr<WndObject> HitTest(MouseMsg& msg) override {
-		if (PointInRoundedRectangle(msg.point, GetChildRegion(), border._radius)) {
-			msg.point -= GetChildOffset();
-			return WndFrame::HitTest(msg);
+	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override {
+		if (PointInRoundedRectangle(event.point, GetChildRegion(), border._radius)) {
+			event.point -= GetChildOffset();
+			return WndFrame::HitTest(event);
 		}
 		return nullptr;
 	}

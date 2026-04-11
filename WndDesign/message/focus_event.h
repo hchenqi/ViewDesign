@@ -6,7 +6,7 @@
 namespace ViewDesign {
 
 
-enum class NotifyMsg : uchar {
+enum class FocusEvent : uchar {
 	MouseEnter,
 	MouseLeave,
 	MouseOver,

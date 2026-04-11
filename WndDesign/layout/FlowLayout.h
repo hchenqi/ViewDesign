@@ -64,9 +64,9 @@ protected:
 	virtual void OnChildRedraw(WndObject& child, Rect child_redraw_region) override;
 	virtual void OnDraw(FigureQueue& figure_queue, Rect draw_region) override;
 
-	// message
+	// event
 protected:
-	virtual ref_ptr<WndObject> HitTest(MouseMsg& msg) override;
+	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override;
 };
 
 

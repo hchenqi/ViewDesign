@@ -19,7 +19,7 @@ struct Global {
 	static DesktopFrame& GetDesktopFrame(WndObject& wnd);
 	static DesktopFrame& GetDesktopFramePoint(WndObject& wnd, Point& point);
 
-	static void MessageLoop();
+	static void EventLoop();
 	static void Terminate();
 };
 

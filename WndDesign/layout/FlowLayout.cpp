@@ -94,11 +94,11 @@ void FlowLayout::OnDraw(FigureQueue& figure_queue, Rect draw_region) {
 	}
 }
 
-ref_ptr<WndObject> FlowLayout::HitTest(MouseMsg& msg) {
-	if (!Rect(point_zero, size).Contains(msg.point)) { return nullptr; }
-	row_index row = HitTestRow(msg.point.y); if (msg.point.y - GetRowOffset(row) >= row_height) { return this; }
-	auto it = HitTestColumn(row, msg.point.x); if (msg.point.x - it->offset >= it->width) { return this; }
-	msg.point.x -= it->offset; msg.point.y -= GetRowOffset(row);
+ref_ptr<WndObject> FlowLayout::HitTest(MouseEvent& event) {
+	if (!Rect(point_zero, size).Contains(event.point)) { return nullptr; }
+	row_index row = HitTestRow(event.point.y); if (event.point.y - GetRowOffset(row) >= row_height) { return this; }
+	auto it = HitTestColumn(row, event.point.x); if (event.point.x - it->offset >= it->width) { return this; }
+	event.point.x -= it->offset; event.point.y -= GetRowOffset(row);
 	return it->child;
 }
 

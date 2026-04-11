@@ -44,8 +44,8 @@ private:
 		return names[next >= 26 ? next : next++];
 	}
 private:
-	virtual void OnMouseMsg(MouseMsg msg) override {
-		if (msg.type == MouseMsg::LeftDown) {
+	virtual void OnMouseEvent(MouseEvent event) override {
+		if (event.type == MouseEvent::LeftDown) {
 			AppendChild(
 				new BorderFrame(
 					Border(3px, 12px, Color::CadetBlue),
@@ -77,5 +77,5 @@ int main() {
 			)
 		)
 	);
-	global.MessageLoop();
+	global.EventLoop();
 }

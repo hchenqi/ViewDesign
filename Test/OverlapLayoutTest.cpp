@@ -24,9 +24,9 @@ public:
 	MainWindow() {}
 
 private:
-	virtual void OnMouseMsg(MouseMsg msg) override {
-		switch (msg.type) {
-		case MouseMsg::LeftDown: AddChild(new Frame(msg.point)); break;
+	virtual void OnMouseEvent(MouseEvent event) override {
+		switch (event.type) {
+		case MouseEvent::LeftDown: AddChild(new Frame(event.point)); break;
 		}
 	}
 
@@ -59,41 +59,41 @@ private:
 	private:
 		virtual Rect OnOverlapFrameSizeRefUpdate(Size size_ref) override { return region; }
 
-		// message
+		// event
 	private:
 		MouseTracker mouse_tracker;
 		KeyTracker key_tracker;
 	private:
-		virtual void OnMouseMsg(MouseMsg msg) override {
-			switch (msg.type) {
-			case MouseMsg::LeftDown: SetCapture(); break;
-			case MouseMsg::LeftUp: ReleaseCapture(); break;
+		virtual void OnMouseEvent(MouseEvent event) override {
+			switch (event.type) {
+			case MouseEvent::LeftDown: SetCapture(); break;
+			case MouseEvent::LeftUp: ReleaseCapture(); break;
 			}
-			switch (mouse_tracker.Track(msg)) {
-			case MouseTrackMsg::LeftClick:
+			switch (mouse_tracker.Track(event)) {
+			case MouseTrackEvent::LeftClick:
 				SetFocus();
 				wnd->SetColor(Color(Color::Indigo, 128));
 				break;
-			case MouseTrackMsg::LeftDrag:
-				region.point += msg.point - mouse_tracker.mouse_down_position;
+			case MouseTrackEvent::LeftDrag:
+				region.point += event.point - mouse_tracker.mouse_down_position;
 				OverlapFrameRegionUpdated(region);
 				break;
-			case MouseTrackMsg::LeftDoubleClick:
+			case MouseTrackEvent::LeftDoubleClick:
 				GetParent().RemoveChild(*this);
 				break;
 			}
 		}
-		virtual void OnKeyMsg(KeyMsg msg) override {
-			key_tracker.Track(msg);
-			if (msg.type == KeyMsg::KeyDown) {
-				switch (msg.key) {
+		virtual void OnKeyEvent(KeyEvent event) override {
+			key_tracker.Track(event);
+			if (event.type == KeyEvent::KeyDown) {
+				switch (event.key) {
 				case CharKey('F'): key_tracker.ctrl ? BringToFront() : BringForward(); break;
 				case CharKey('B'): key_tracker.ctrl ? SendToBack() : SendBackward(); break;
 				}
 			}
 		}
-		virtual void OnNotifyMsg(NotifyMsg msg) override {
-			if (msg == NotifyMsg::Blur) {
+		virtual void OnFocusEvent(FocusEvent event) override {
+			if (event == FocusEvent::Blur) {
 				wnd->SetColor(Color(Color::Indigo, 64));
 			}
 		}
@@ -108,5 +108,5 @@ int main() {
 			new MainWindow
 		)
 	);
-	global.MessageLoop();
+	global.EventLoop();
 }

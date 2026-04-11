@@ -69,9 +69,9 @@ private:
 		public:
 			Content() : Placeholder(), Context(AsWndObject()) {}
 		private:
-			virtual void OnMouseMsg(MouseMsg msg) override {
-				switch (msg.type) {
-				case MouseMsg::LeftDown: Context::Get<TabView>().AddTab(std::make_unique<MyTab>()); break;
+			virtual void OnMouseEvent(MouseEvent event) override {
+				switch (event.type) {
+				case MouseEvent::LeftDown: Context::Get<TabView>().AddTab(std::make_unique<MyTab>()); break;
 				}
 			}
 		};
@@ -85,6 +85,6 @@ private:
 
 int main() {
 	global.AddWnd(new TitleBarFrame(MainFrameStyle(), new MyTabView()));
-	global.MessageLoop();
+	global.EventLoop();
 	return 0;
 }

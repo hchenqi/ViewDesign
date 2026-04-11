@@ -75,28 +75,28 @@ void Desktop::SetTrack(WndObject& wnd) {
 			break;
 		}
 		if (wnd_track_map.contains(curr)) {
-			wnd_track_stack.back()->OnNotifyMsg(NotifyMsg::MouseOut);
+			wnd_track_stack.back()->OnFocusEvent(FocusEvent::MouseOut);
 			for (size_t index = wnd_track_map[curr]; wnd_track_stack.size() > index; wnd_track_stack.pop_back()) {
-				wnd_track_stack.back()->OnNotifyMsg(NotifyMsg::MouseLeave);
+				wnd_track_stack.back()->OnFocusEvent(FocusEvent::MouseLeave);
 				wnd_track_map.erase(wnd_track_stack.back());
 			}
 			break;
 		}
 	}
 	for (; !trace.empty(); trace.pop_back()) {
-		trace.back()->OnNotifyMsg(NotifyMsg::MouseEnter);
+		trace.back()->OnFocusEvent(FocusEvent::MouseEnter);
 		wnd_track_stack.push_back(trace.back());
 		wnd_track_map.emplace(trace.back(), wnd_track_stack.size());
 	}
-	wnd.OnNotifyMsg(NotifyMsg::MouseOver);
+	wnd.OnFocusEvent(FocusEvent::MouseOver);
 	SetCursor(wnd.cursor);
 }
 
 void Desktop::LoseTrack() {
 	if (wnd_track_stack.empty()) { return; }
-	wnd_track_stack.back()->OnNotifyMsg(NotifyMsg::MouseOut);
+	wnd_track_stack.back()->OnFocusEvent(FocusEvent::MouseOut);
 	for (auto wnd : reverse(wnd_track_stack)) {
-		wnd->OnNotifyMsg(NotifyMsg::MouseLeave);
+		wnd->OnFocusEvent(FocusEvent::MouseLeave);
 	}
 	wnd_track_stack.clear();
 	wnd_track_map.clear();
@@ -120,18 +120,18 @@ void Desktop::LoseCapture() {
 	frame_capture = nullptr; wnd_capture = nullptr;
 }
 
-void Desktop::DispatchMouseMsg(DesktopFrame& frame, MouseMsg msg) {
+void Desktop::DispatchMouseEvent(DesktopFrame& frame, MouseEvent event) {
 	if (wnd_capture != nullptr) {
-		msg.point *= frame.GetDescendentTransform(*wnd_capture).Invert();
-		wnd_capture->OnMouseMsg(msg);
+		event.point *= frame.GetDescendentTransform(*wnd_capture).Invert();
+		wnd_capture->OnMouseEvent(event);
 	} else {
 		for (ref_ptr<WndObject> curr = &frame;;) {
-			ref_ptr<WndObject> next = curr->HitTest(msg);
+			ref_ptr<WndObject> next = curr->HitTest(event);
 			if (next == nullptr) {
 				return;
 			} else if (next == curr) {
 				SetTrack(*curr);
-				curr->OnMouseMsg(msg);
+				curr->OnMouseEvent(event);
 				return;
 			} else {
 				curr = next;
@@ -157,9 +157,9 @@ void Desktop::SetFocus(WndObject& wnd) {
 			break;
 		}
 		if (wnd_focus_map.contains(curr)) {
-			wnd_focus_stack.back()->OnNotifyMsg(NotifyMsg::Blur);
+			wnd_focus_stack.back()->OnFocusEvent(FocusEvent::Blur);
 			for (size_t index = wnd_focus_map[curr]; wnd_focus_stack.size() > index; wnd_focus_stack.pop_back()) {
-				wnd_focus_stack.back()->OnNotifyMsg(NotifyMsg::FocusOut);
+				wnd_focus_stack.back()->OnFocusEvent(FocusEvent::FocusOut);
 				wnd_focus_map.erase(wnd_focus_stack.back());
 			}
 			break;
@@ -167,14 +167,14 @@ void Desktop::SetFocus(WndObject& wnd) {
 		curr = next;
 	}
 	for (; !trace.empty(); trace.pop_back()) {
-		trace.back()->OnNotifyMsg(NotifyMsg::FocusIn);
+		trace.back()->OnFocusEvent(FocusEvent::FocusIn);
 		wnd_focus_stack.push_back(trace.back());
 		wnd_focus_map.emplace(trace.back(), wnd_focus_stack.size());
 	}
 	if (frame_focus) {
 		ime_enabled_wnd.contains(&wnd) ? ViewDesign::ImeEnable(frame_focus->hwnd) : ViewDesign::ImeDisable(frame_focus->hwnd);
 	}
-	wnd.OnNotifyMsg(NotifyMsg::Focus);
+	wnd.OnFocusEvent(FocusEvent::Focus);
 }
 
 void Desktop::ReleaseFocus(WndObject& wnd) {
@@ -185,18 +185,18 @@ void Desktop::ReleaseFocus(WndObject& wnd) {
 
 void Desktop::LoseFocus() {
 	if (wnd_focus_stack.empty()) { return; }
-	wnd_focus_stack.back()->OnNotifyMsg(NotifyMsg::Blur);
+	wnd_focus_stack.back()->OnFocusEvent(FocusEvent::Blur);
 	for (auto wnd : reverse(wnd_focus_stack)) {
-		wnd->OnNotifyMsg(NotifyMsg::FocusOut);
+		wnd->OnFocusEvent(FocusEvent::FocusOut);
 	}
 	wnd_focus_stack.clear();
 	wnd_focus_map.clear();
 	frame_focus = nullptr;
 }
 
-void Desktop::DispatchKeyMsg(KeyMsg msg) {
+void Desktop::DispatchKeyEvent(KeyEvent event) {
 	if (!wnd_focus_stack.empty()) {
-		wnd_focus_stack.back()->OnKeyMsg(msg);
+		wnd_focus_stack.back()->OnKeyEvent(event);
 	}
 }
 
@@ -216,7 +216,7 @@ void Desktop::ReleaseWindow(WndObject& wnd) {
 	ImeDisable(wnd);
 }
 
-void Desktop::MessageLoop() { Win32::MessageLoop(); }
+void Desktop::EventLoop() { Win32::MessageLoop(); }
 
 void Desktop::Terminate() { frame_list.clear(); Win32::Terminate(); }
 

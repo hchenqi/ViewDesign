@@ -27,9 +27,9 @@ protected:
 	virtual void OnChildRedraw(WndObject& child, Rect child_redraw_region) override { Redraw(child_redraw_region); }
 	virtual void OnDraw(FigureQueue& figure_queue, Rect draw_region) override { DrawChild(child, point_zero, figure_queue, draw_region); }
 
-	// message
+	// event
 protected:
-	virtual ref_ptr<WndObject> HitTest(MouseMsg& msg) override { return HitTestChild(child, msg); }
+	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override { return HitTestChild(child, event); }
 };
 
 
@@ -54,9 +54,9 @@ protected:
 	virtual void OnChildRedraw(WndObject& child, Rect child_redraw_region) override { Redraw(child_redraw_region); }
 	virtual void OnDraw(FigureQueue& figure_queue, Rect draw_region) override { DrawChild(child, point_zero, figure_queue, draw_region); }
 
-	// message
+	// event
 protected:
-	virtual ref_ptr<WndObject> HitTest(MouseMsg& msg) override { return HitTestChild(child, msg); }
+	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override { return HitTestChild(child, event); }
 };
 
 

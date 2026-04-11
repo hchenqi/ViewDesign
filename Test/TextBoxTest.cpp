@@ -38,15 +38,15 @@ class ScaleLayer : public ScaleFrame<Assigned, Assigned> {
 public:
 	ScaleLayer(child_type child) : ScaleFrame(Scale(1.0), std::move(child)) {}
 private:
-	virtual ref_ptr<WndObject> HitTest(MouseMsg& msg) override {
-		if (msg.ctrl && msg.type == MouseMsg::WheelVertical) {
+	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override {
+		if (event.ctrl && event.type == MouseEvent::WheelVertical) {
 			return this;
 		}
-		return ScaleFrame::HitTest(msg);
+		return ScaleFrame::HitTest(event);
 	}
 private:
-	virtual void OnMouseMsg(MouseMsg msg) override {
-		SetScale(scale * Scale(powf(1.1f, msg.wheel_delta / 120.0f)));
+	virtual void OnMouseEvent(MouseEvent event) override {
+		SetScale(scale * Scale(powf(1.1f, event.wheel_delta / 120.0f)));
 	}
 };
 
@@ -55,15 +55,15 @@ class ResizeBorder : public InnerBorderFrame<Assigned, Assigned> {
 public:
 	ResizeBorder(child_type child) : InnerBorderFrame<Assigned, Assigned>(Border(5.0, Color(Color::Yellow, 127)), std::move(child)) {}
 private:
-	virtual ref_ptr<WndObject> HitTest(MouseMsg& msg) override {
-		if (PointInRoundedRectangle(msg.point, Extend(Rect(point_zero, size), -border._width), border._radius)) { return child; }
+	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override {
+		if (PointInRoundedRectangle(event.point, Extend(Rect(point_zero, size), -border._width), border._radius)) { return child; }
 		return this;
 	}
 private:
-	virtual void OnMouseMsg(MouseMsg msg) override {
-		if (msg.type == MouseMsg::Move || msg.type == MouseMsg::LeftDown) {
-			BorderPosition border_position = HitTestBorderPosition(size, border._width + border._radius, msg.point);
-			if (msg.type == MouseMsg::Move) {
+	virtual void OnMouseEvent(MouseEvent event) override {
+		if (event.type == MouseEvent::Move || event.type == MouseEvent::LeftDown) {
+			BorderPosition border_position = HitTestBorderPosition(size, border._width + border._radius, event.point);
+			if (event.type == MouseEvent::Move) {
 				SetCursor(GetBorderPositionCursor(border_position));
 			} else {
 				AeroSnapBorderResizingEffect(*this, border_position);
@@ -96,5 +96,5 @@ int main() {
 			)
 		)
 	);
-	global.MessageLoop();
+	global.EventLoop();
 }

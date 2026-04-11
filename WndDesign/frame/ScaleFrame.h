@@ -47,9 +47,9 @@ protected:
 		});
 	}
 
-	// message
+	// event
 protected:
-	virtual ref_ptr<WndObject> HitTest(MouseMsg& msg) override { msg.point *= scale.Invert(); return WndFrame::HitTest(msg); }
+	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override { event.point *= scale.Invert(); return WndFrame::HitTest(event); }
 };
 
 

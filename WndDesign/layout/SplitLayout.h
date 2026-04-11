@@ -56,12 +56,12 @@ protected:
 		DrawChild(child_second, GetRegionSecond(), figure_queue, draw_region);
 	}
 
-	// message
+	// event
 protected:
-	virtual ref_ptr<WndObject> HitTest(MouseMsg& msg) override {
-		if (msg.point.y < length_first) { return child_first; }
-		msg.point.y -= length_first;
-		if (msg.point.y < length_second) { return child_second; }
+	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override {
+		if (event.point.y < length_first) { return child_first; }
+		event.point.y -= length_first;
+		if (event.point.y < length_second) { return child_second; }
 		return nullptr;
 	}
 };
@@ -91,12 +91,12 @@ protected:
 		DrawChild(child_second, GetRegionSecond(), figure_queue, draw_region);
 	}
 
-	// message
+	// event
 protected:
-	virtual ref_ptr<WndObject> HitTest(MouseMsg& msg) override {
-		if (msg.point.x < length_first) { return child_first; }
-		msg.point.x -= length_first;
-		if (msg.point.x < length_second) { return child_second; }
+	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override {
+		if (event.point.x < length_first) { return child_first; }
+		event.point.x -= length_first;
+		if (event.point.x < length_second) { return child_second; }
 		return nullptr;
 	}
 };

@@ -43,7 +43,7 @@ private:
 private:
 	virtual void OnChildRedraw(WndObject& child, Rect child_redraw_region) override;
 
-	// mouse message
+	// mouse event
 private:
 	std::vector<ref_ptr<WndObject>> wnd_track_stack;
 	std::unordered_map<ref_ptr<WndObject>, size_t> wnd_track_map;
@@ -56,9 +56,9 @@ private:
 	void ReleaseCapture(WndObject& wnd);
 	void LoseCapture();
 private:
-	void DispatchMouseMsg(DesktopFrame& frame, MouseMsg msg);
+	void DispatchMouseEvent(DesktopFrame& frame, MouseEvent event);
 
-	// key message
+	// key event
 private:
 	std::vector<ref_ptr<WndObject>> wnd_focus_stack;
 	std::unordered_map<ref_ptr<WndObject>, size_t> wnd_focus_map;
@@ -68,9 +68,9 @@ private:
 	void ReleaseFocus(WndObject& wnd);
 	void LoseFocus();
 private:
-	void DispatchKeyMsg(KeyMsg msg);
+	void DispatchKeyEvent(KeyEvent event);
 
-	// ime
+	// ime event
 private:
 	std::unordered_set<ref_ptr<WndObject>> ime_enabled_wnd;
 private:
@@ -78,13 +78,13 @@ private:
 	void ImeDisable(WndObject& wnd) { ime_enabled_wnd.erase(&wnd); }
 	void ImeSetPosition(WndObject& wnd, Point point);
 
-	// message
+	// event
 private:
 	void ReleaseWindow(WndObject& wnd);
 
 	// global
 private:
-	void MessageLoop();
+	void EventLoop();
 	void Terminate();
 };
 

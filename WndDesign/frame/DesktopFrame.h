@@ -85,11 +85,11 @@ private:
 	virtual void OnChildRedraw(WndObject& child, Rect child_redraw_region) override final { Redraw(child_redraw_region); }
 	void OnDraw();
 
-	// message
+	// event
 public:
 	Point GetDesktopCursorPosition() const;
 private:
-	virtual ref_ptr<WndObject> HitTest(MouseMsg& msg) override final { msg.point *= scale.Invert(); return WndFrame::HitTest(msg); }
+	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override final { event.point *= scale.Invert(); return WndFrame::HitTest(event); }
 };
 
 

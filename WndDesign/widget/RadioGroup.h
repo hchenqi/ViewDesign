@@ -51,7 +51,7 @@ private:
 			figure_queue.add(GetPaddingRegion().Center(), new Circle(6px, selected ? Color::Gray : color_transparent, 1.0f, Color::Gray));
 		}
 	private:
-		virtual ref_ptr<WndObject> HitTest(MouseMsg& msg) override { return selected ? PaddingFrame::HitTest(msg) : this; }
+		virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override { return selected ? PaddingFrame::HitTest(event) : this; }
 	};
 
 	template<class T>
@@ -63,7 +63,7 @@ private:
 	private:
 		void Select() { ItemFrameBase::GetParent().SelectItem(*this, value); }
 	private:
-		virtual void OnMouseMsg(MouseMsg msg) override { if (msg.type == MouseMsg::LeftDown) { Select(); } }
+		virtual void OnMouseEvent(MouseEvent event) override { if (event.type == MouseEvent::LeftDown) { Select(); } }
 	};
 
 private:

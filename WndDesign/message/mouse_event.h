@@ -6,7 +6,7 @@
 namespace ViewDesign {
 
 
-struct MouseMsg {
+struct MouseEvent {
 	Point point;
 	enum : uchar {
 		LeftDown,

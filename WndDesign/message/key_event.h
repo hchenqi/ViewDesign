@@ -9,7 +9,7 @@ namespace ViewDesign {
 enum class Key : uchar;
 
 
-struct KeyMsg {
+struct KeyEvent {
 	enum : uchar {
 		Char,
 		KeyDown,

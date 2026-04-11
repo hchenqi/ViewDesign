@@ -34,15 +34,15 @@ class ScaleLayer : public ScaleFrame<Assigned, Auto> {
 public:
 	ScaleLayer(child_type child) : ScaleFrame(Scale(1.0), std::move(child)) {}
 private:
-	virtual ref_ptr<WndObject> HitTest(MouseMsg& msg) override {
-		if (msg.ctrl && msg.type == MouseMsg::WheelVertical) {
+	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override {
+		if (event.ctrl && event.type == MouseEvent::WheelVertical) {
 			return this;
 		}
-		return ScaleFrame::HitTest(msg);
+		return ScaleFrame::HitTest(event);
 	}
 private:
-	virtual void OnMouseMsg(MouseMsg msg) override {
-		SetScale(scale * Scale(powf(1.1f, msg.wheel_delta / 120.0f)));
+	virtual void OnMouseEvent(MouseEvent event) override {
+		SetScale(scale * Scale(powf(1.1f, event.wheel_delta / 120.0f)));
 	}
 };
 
@@ -76,5 +76,5 @@ int main() {
 			)
 		)
 	);
-	global.MessageLoop();
+	global.EventLoop();
 }

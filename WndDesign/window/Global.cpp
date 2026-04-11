@@ -15,7 +15,7 @@ std::unique_ptr<DesktopFrame> Global::RemoveWnd(DesktopFrame& frame) { return de
 DesktopFrame& Global::GetDesktopFrame(WndObject& wnd) { return desktop.GetDesktopFrame(wnd); }
 DesktopFrame& Global::GetDesktopFramePoint(WndObject& wnd, Point& point) { return desktop.GetDesktopFramePoint(wnd, point); }
 
-void Global::MessageLoop() { desktop.MessageLoop(); }
+void Global::EventLoop() { desktop.EventLoop(); }
 void Global::Terminate() { desktop.Terminate(); }
 
 

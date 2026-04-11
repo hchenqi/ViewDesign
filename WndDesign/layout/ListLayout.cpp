@@ -113,10 +113,10 @@ void ListLayout<Vertical>::OnDraw(FigureQueue& figure_queue, Rect draw_region) {
 	for (size_t index = index_begin; index <= index_end; ++index) { DrawChild(GetChild(index), GetChildRegion(index), figure_queue, draw_region); }
 }
 
-ref_ptr<WndObject> ListLayout<Vertical>::HitTest(MouseMsg& msg) {
-	size_t index = HitTestIndex(msg.point); if (index >= Length()) { return this; }
-	Rect child_region = GetChildRegion(index); if (!child_region.Contains(msg.point)) { return this; }
-	msg.point -= child_region.point - point_zero;
+ref_ptr<WndObject> ListLayout<Vertical>::HitTest(MouseEvent& event) {
+	size_t index = HitTestIndex(event.point); if (index >= Length()) { return this; }
+	Rect child_region = GetChildRegion(index); if (!child_region.Contains(event.point)) { return this; }
+	event.point -= child_region.point - point_zero;
 	return &GetChild(index);
 }
 
@@ -225,10 +225,10 @@ void ListLayout<Horizontal>::OnDraw(FigureQueue& figure_queue, Rect draw_region)
 	for (size_t index = index_begin; index <= index_end; ++index) { DrawChild(GetChild(index), GetChildRegion(index), figure_queue, draw_region); }
 }
 
-ref_ptr<WndObject> ListLayout<Horizontal>::HitTest(MouseMsg& msg) {
-	size_t index = HitTestIndex(msg.point); if (index >= Length()) { return this; }
-	Rect child_region = GetChildRegion(index); if (!child_region.Contains(msg.point)) { return this; }
-	msg.point -= child_region.point - point_zero;
+ref_ptr<WndObject> ListLayout<Horizontal>::HitTest(MouseEvent& event) {
+	size_t index = HitTestIndex(event.point); if (index >= Length()) { return this; }
+	Rect child_region = GetChildRegion(index); if (!child_region.Contains(event.point)) { return this; }
+	event.point -= child_region.point - point_zero;
 	return &GetChild(index);
 }
 

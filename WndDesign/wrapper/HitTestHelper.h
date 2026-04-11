@@ -15,7 +15,7 @@ public:
 	using Wnd::Wnd;
 
 protected:
-	virtual ref_ptr<WndObject> HitTest(MouseMsg& msg) override { return this; }
+	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override { return this; }
 };
 
 
@@ -28,12 +28,12 @@ public:
 	using Wnd::Wnd;
 
 protected:
-	virtual ref_ptr<WndObject> HitTest(MouseMsg& msg) override {
-		MouseMsg msg_copy = msg;
-		if (ref_ptr<WndObject> wnd = Wnd::HitTest(msg)) {
+	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override {
+		MouseEvent event_copy = event;
+		if (ref_ptr<WndObject> wnd = Wnd::HitTest(event)) {
 			return wnd;
 		}
-		msg = msg_copy;
+		event = event_copy;
 		return this;
 	}
 };
@@ -48,18 +48,18 @@ public:
 	using Wnd::Wnd;
 
 protected:
-	virtual ref_ptr<WndObject> HitTest(MouseMsg& msg) override {
-		MouseMsg msg_copy = msg;
-		if (ref_ptr<WndObject> wnd = Wnd::HitTest(msg)) {
+	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override {
+		MouseEvent event_copy = event;
+		if (ref_ptr<WndObject> wnd = Wnd::HitTest(event)) {
 			if (wnd == this) {
 				return this;
 			} else {
-				if (wnd = WndObject::HitTestChild(*wnd, msg)) {
+				if (wnd = WndObject::HitTestChild(*wnd, event)) {
 					return wnd;
 				}
 			}
 		}
-		msg = msg_copy;
+		event = event_copy;
 		return this;
 	}
 };
@@ -74,14 +74,14 @@ public:
 	using Wnd::Wnd;
 
 protected:
-	virtual ref_ptr<WndObject> HitTest(MouseMsg& msg) override {
-		MouseMsg msg_copy = msg;
-		if (ref_ptr<WndObject> wnd = Wnd::HitTest(msg)) {
+	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override {
+		MouseEvent event_copy = event;
+		if (ref_ptr<WndObject> wnd = Wnd::HitTest(event)) {
 			if (wnd == this) {
 				return this;
 			} else {
 				for (;;) {
-					ref_ptr<WndObject> next = WndObject::HitTestChild(*wnd, msg);
+					ref_ptr<WndObject> next = WndObject::HitTestChild(*wnd, event);
 					if (next == nullptr) {
 						break;
 					} else if (next == wnd) {
@@ -92,7 +92,7 @@ protected:
 				}
 			}
 		}
-		msg = msg_copy;
+		event = event_copy;
 		return this;
 	}
 };
@@ -107,7 +107,7 @@ public:
 	using Wnd::Wnd;
 
 protected:
-	virtual ref_ptr<WndObject> HitTest(MouseMsg& msg) override { return nullptr; }
+	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override { return nullptr; }
 };
 
 
@@ -120,8 +120,8 @@ public:
 	using Wnd::Wnd;
 
 protected:
-	virtual ref_ptr<WndObject> HitTest(MouseMsg& msg) override {
-		if (ref_ptr<WndObject> wnd = Wnd::HitTest(msg); wnd != this) {
+	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override {
+		if (ref_ptr<WndObject> wnd = Wnd::HitTest(event); wnd != this) {
 			return wnd;
 		}
 		return nullptr;
@@ -138,10 +138,10 @@ public:
 	using Frame::Frame;
 
 protected:
-	virtual ref_ptr<WndObject> HitTest(MouseMsg& msg) override {
-		if (Frame::GetChildRegion().Contains(msg.point)) {
-			msg.point -= Frame::GetChildOffset();
-			return WndFrame::HitTest(msg);
+	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override {
+		if (Frame::GetChildRegion().Contains(event.point)) {
+			event.point -= Frame::GetChildOffset();
+			return WndFrame::HitTest(event);
 		}
 		return nullptr;
 	}

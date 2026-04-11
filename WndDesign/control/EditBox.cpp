@@ -268,24 +268,24 @@ void EditBox::Paste() {
 	if (!str.empty()) { Insert(str); }
 }
 
-void EditBox::OnMouseMsg(MouseMsg msg) {
-	switch (msg.type) {
-	case MouseMsg::LeftDown: SetCaret(msg.point); SetFocus(); SetCapture(); break;
-	case MouseMsg::LeftUp: ReleaseCapture(); break;
+void EditBox::OnMouseEvent(MouseEvent event) {
+	switch (event.type) {
+	case MouseEvent::LeftDown: SetCaret(event.point); SetFocus(); SetCapture(); break;
+	case MouseEvent::LeftUp: ReleaseCapture(); break;
 	}
-	switch (mouse_tracker.Track(msg)) {
-	case MouseTrackMsg::LeftDoubleClick: SelectWord(); break;
-	case MouseTrackMsg::LeftTripleClick: SelectParagraph(); break;
-	case MouseTrackMsg::LeftDrag: DoSelect(msg.point); break;
+	switch (mouse_tracker.Track(event)) {
+	case MouseTrackEvent::LeftDoubleClick: SelectWord(); break;
+	case MouseTrackEvent::LeftTripleClick: SelectParagraph(); break;
+	case MouseTrackEvent::LeftDrag: DoSelect(event.point); break;
 	}
 	StartBlinkingCaret();
 }
 
-void EditBox::OnKeyMsg(KeyMsg msg) {
-	key_tracker.Track(msg);
-	switch (msg.type) {
-	case KeyMsg::KeyDown:
-		switch (msg.key) {
+void EditBox::OnKeyEvent(KeyEvent event) {
+	key_tracker.Track(event);
+	switch (event.type) {
+	case KeyEvent::KeyDown:
+		switch (event.key) {
 		case Key::Left: MoveCaret(CaretMoveDirection::Left); break;
 		case Key::Right: MoveCaret(CaretMoveDirection::Right); break;
 		case Key::Up: MoveCaret(CaretMoveDirection::Up); break;
@@ -305,20 +305,20 @@ void EditBox::OnKeyMsg(KeyMsg msg) {
 		case CharKey('V'): if (key_tracker.ctrl) { Paste(); } break;
 		}
 		break;
-	case KeyMsg::Char:
+	case KeyEvent::Char:
 		if (key_tracker.ctrl) { break; }
-		if (!iswcntrl(msg.ch)) { Insert(msg.ch); };
+		if (!iswcntrl(event.ch)) { Insert(event.ch); };
 		break;
-	case KeyMsg::ImeBegin: OnImeBegin(); break;
-	case KeyMsg::ImeString: OnImeString(); break;
-	case KeyMsg::ImeEnd: OnImeEnd(); break;
+	case KeyEvent::ImeBegin: OnImeBegin(); break;
+	case KeyEvent::ImeString: OnImeString(); break;
+	case KeyEvent::ImeEnd: OnImeEnd(); break;
 	}
 	StartBlinkingCaret();
 }
 
-void EditBox::OnNotifyMsg(NotifyMsg msg) {
-	switch (msg) {
-	case NotifyMsg::Blur: HideCaret(); ClearSelection(); ClearImeComposition(); break;
+void EditBox::OnFocusEvent(FocusEvent event) {
+	switch (event) {
+	case FocusEvent::Blur: HideCaret(); ClearSelection(); ClearImeComposition(); break;
 	}
 }
 

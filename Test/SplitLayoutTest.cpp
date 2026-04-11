@@ -77,5 +77,5 @@ int main() {
 			)
 		)
 	);
-	global.MessageLoop();
+	global.EventLoop();
 }

@@ -67,9 +67,9 @@ protected:
 		DrawChild(child, point_zero + GetChildOffset(), figure_queue, draw_region);
 	}
 
-	// message
+	// event
 protected:
-	virtual ref_ptr<WndObject> HitTest(MouseMsg& msg) override { msg.point -= GetChildOffset(); return WndFrame::HitTest(msg); }
+	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override { event.point -= GetChildOffset(); return WndFrame::HitTest(event); }
 };
 
 
@@ -97,17 +97,17 @@ protected:
 		}
 	}
 
-	// message
+	// event
 protected:
-	virtual ref_ptr<WndObject> HitTest(MouseMsg& msg) override {
-		if (!msg.ctrl && (msg.type == MouseMsg::WheelVertical || msg.type == MouseMsg::WheelHorizontal)) { return this; }
-		return _ScrollFrame_Base::HitTest(msg);
+	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override {
+		if (!event.ctrl && (event.type == MouseEvent::WheelVertical || event.type == MouseEvent::WheelHorizontal)) { return this; }
+		return _ScrollFrame_Base::HitTest(event);
 	}
 protected:
-	virtual void OnMouseMsg(MouseMsg msg) override {
-		switch (msg.type) {
-		case MouseMsg::WheelVertical: Scroll(Vector(0, -(float)msg.wheel_delta)); break;
-		case MouseMsg::WheelHorizontal: Scroll(Vector(-(float)msg.wheel_delta, 0)); break;
+	virtual void OnMouseEvent(MouseEvent event) override {
+		switch (event.type) {
+		case MouseEvent::WheelVertical: Scroll(Vector(0, -(float)event.wheel_delta)); break;
+		case MouseEvent::WheelHorizontal: Scroll(Vector(-(float)event.wheel_delta, 0)); break;
 		}
 	}
 };
@@ -155,15 +155,15 @@ protected:
 		}
 	}
 
-	// message
+	// event
 protected:
-	virtual ref_ptr<WndObject> HitTest(MouseMsg& msg) override {
-		if (!msg.ctrl && msg.type == MouseMsg::WheelVertical) { return this; }
-		return _ScrollFrame_Base::HitTest(msg);
+	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override {
+		if (!event.ctrl && event.type == MouseEvent::WheelVertical) { return this; }
+		return _ScrollFrame_Base::HitTest(event);
 	}
 protected:
-	virtual void OnMouseMsg(MouseMsg msg) override {
-		Scroll(-(float)msg.wheel_delta);
+	virtual void OnMouseEvent(MouseEvent event) override {
+		Scroll(-(float)event.wheel_delta);
 	}
 };
 
@@ -210,15 +210,15 @@ protected:
 		}
 	}
 
-	// message
+	// event
 protected:
-	virtual ref_ptr<WndObject> HitTest(MouseMsg& msg) override {
-		if (!msg.ctrl && msg.type == MouseMsg::WheelHorizontal) { return this; }
-		return _ScrollFrame_Base::HitTest(msg);
+	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override {
+		if (!event.ctrl && event.type == MouseEvent::WheelHorizontal) { return this; }
+		return _ScrollFrame_Base::HitTest(event);
 	}
 protected:
-	virtual void OnMouseMsg(MouseMsg msg) override {
-		Scroll(-(float)msg.wheel_delta);
+	virtual void OnMouseEvent(MouseEvent event) override {
+		Scroll(-(float)event.wheel_delta);
 	}
 };
 

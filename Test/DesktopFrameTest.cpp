@@ -26,18 +26,18 @@ class EmptyWindow : public CustomizedCursor<SolidColorBackground<Placeholder<Ass
 public:
 	EmptyWindow() {}
 private:
-	virtual void OnMouseMsg(MouseMsg msg) override {
-		switch (msg.type) {
-		case MouseMsg::RightDown:
+	virtual void OnMouseEvent(MouseEvent event) override {
+		switch (event.type) {
+		case MouseEvent::RightDown:
 			SetFocus();
 			background = background == Color::Gray ? Color::White : Color::Gray;
 			Redraw(region_infinite);
 			break;
-		case MouseMsg::LeftDown: AeroSnapDraggingEffect(*this); break;
+		case MouseEvent::LeftDown: AeroSnapDraggingEffect(*this); break;
 		}
 	}
-	virtual void OnKeyMsg(KeyMsg msg) override {
-		if (msg.key == Key::Escape) {
+	virtual void OnKeyEvent(KeyEvent event) override {
+		if (event.key == Key::Escape) {
 			global.Terminate();
 		}
 	}
@@ -46,12 +46,12 @@ private:
 
 int main() {
 	global.AddWnd(new MainFrame(L"DesktopFrameTest", new EmptyWindow()));
-	global.MessageLoop();
+	global.EventLoop();
 
 	global.AddWnd(new MainFrame(L"DesktopFrameTest", new WndFrame(new EmptyWindow())));
-	global.MessageLoop();
+	global.EventLoop();
 
 	std::unique_ptr<EmptyWindow> window(new EmptyWindow());
 	global.AddWnd(new MainFrame(L"DesktopFrameTest", new WndFrameRef(*window)));
-	global.MessageLoop();
+	global.EventLoop();
 }

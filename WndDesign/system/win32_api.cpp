@@ -25,8 +25,8 @@ struct DesktopApi : Desktop {
 	Desktop::LoseTrack;
 	Desktop::LoseCapture;
 	Desktop::LoseFocus;
-	Desktop::DispatchMouseMsg;
-	Desktop::DispatchKeyMsg;
+	Desktop::DispatchMouseEvent;
+	Desktop::DispatchKeyEvent;
 };
 
 namespace {
@@ -48,12 +48,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 
 	// mouse message
 	if (IsMouseMsg(msg)) {
-		MouseMsg mouse_msg;
-		mouse_msg.point = Point((float)GET_X_LPARAM(lparam), (float)GET_Y_LPARAM(lparam));
-		mouse_msg._key_state = (uchar)GET_KEYSTATE_WPARAM(wparam);;
-		mouse_msg.wheel_delta = GET_WHEEL_DELTA_WPARAM(wparam);
+		MouseEvent mouse_event;
+		mouse_event.point = Point((float)GET_X_LPARAM(lparam), (float)GET_Y_LPARAM(lparam));
+		mouse_event._key_state = (uchar)GET_KEYSTATE_WPARAM(wparam);;
+		mouse_event.wheel_delta = GET_WHEEL_DELTA_WPARAM(wparam);
 		switch (msg) {
-		case WM_MOUSEMOVE: mouse_msg.type = MouseMsg::Move;
+		case WM_MOUSEMOVE: mouse_event.type = MouseEvent::Move;
 			if (!is_mouse_tracked) {
 				TRACKMOUSEEVENT track_mouse_event;
 				track_mouse_event.cbSize = sizeof(TRACKMOUSEEVENT);
@@ -64,35 +64,35 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 				is_mouse_tracked = true;
 			}
 			break;
-		case WM_LBUTTONDOWN: mouse_msg.type = MouseMsg::LeftDown; break;
-		case WM_LBUTTONUP: mouse_msg.type = MouseMsg::LeftUp; break;
-		case WM_RBUTTONDOWN: mouse_msg.type = MouseMsg::RightDown; break;
-		case WM_RBUTTONUP: mouse_msg.type = MouseMsg::RightUp; break;
-		case WM_MBUTTONDOWN: mouse_msg.type = MouseMsg::MiddleDown; break;
-		case WM_MBUTTONUP: mouse_msg.type = MouseMsg::MiddleUp; break;
-		case WM_MOUSEWHEEL: mouse_msg.type = MouseMsg::WheelVertical; mouse_msg.point -= frame->GetRegion().point - point_zero; break;
-		case WM_MOUSEHWHEEL: mouse_msg.type = MouseMsg::WheelHorizontal; mouse_msg.point -= frame->GetRegion().point - point_zero; break;
+		case WM_LBUTTONDOWN: mouse_event.type = MouseEvent::LeftDown; break;
+		case WM_LBUTTONUP: mouse_event.type = MouseEvent::LeftUp; break;
+		case WM_RBUTTONDOWN: mouse_event.type = MouseEvent::RightDown; break;
+		case WM_RBUTTONUP: mouse_event.type = MouseEvent::RightUp; break;
+		case WM_MBUTTONDOWN: mouse_event.type = MouseEvent::MiddleDown; break;
+		case WM_MBUTTONUP: mouse_event.type = MouseEvent::MiddleUp; break;
+		case WM_MOUSEWHEEL: mouse_event.type = MouseEvent::WheelVertical; mouse_event.point -= frame->GetRegion().point - point_zero; break;
+		case WM_MOUSEHWHEEL: mouse_event.type = MouseEvent::WheelHorizontal; mouse_event.point -= frame->GetRegion().point - point_zero; break;
 		default: return DefWindowProc(hwnd, msg, wparam, lparam);
 		}
-		desktop.DispatchMouseMsg(*frame, mouse_msg);
+		desktop.DispatchMouseEvent(*frame, mouse_event);
 		return 0;
 	}
 
 	// keyboard message
 	if (IsKeyboardMsg(msg)) {
-		KeyMsg key_msg;
-		key_msg.key = static_cast<Key>(wparam);
-		key_msg.ch = static_cast<wchar>(wparam);
+		KeyEvent key_event;
+		key_event.key = static_cast<Key>(wparam);
+		key_event.ch = static_cast<wchar>(wparam);
 		switch (msg) {
-		case WM_KEYDOWN: key_msg.type = KeyMsg::KeyDown; break;
-		case WM_KEYUP: key_msg.type = KeyMsg::KeyUp; break;
-		case WM_CHAR: key_msg.type = KeyMsg::Char; break;
-		case WM_IME_STARTCOMPOSITION: key_msg.type = KeyMsg::ImeBegin; break;
-		case WM_IME_COMPOSITION: key_msg.type = KeyMsg::ImeString; ImeUpdateString(hwnd, (uint)lparam); break;
-		case WM_IME_ENDCOMPOSITION: key_msg.type = KeyMsg::ImeEnd; break;
+		case WM_KEYDOWN: key_event.type = KeyEvent::KeyDown; break;
+		case WM_KEYUP: key_event.type = KeyEvent::KeyUp; break;
+		case WM_CHAR: key_event.type = KeyEvent::Char; break;
+		case WM_IME_STARTCOMPOSITION: key_event.type = KeyEvent::ImeBegin; break;
+		case WM_IME_COMPOSITION: key_event.type = KeyEvent::ImeString; ImeUpdateString(hwnd, (uint)lparam); break;
+		case WM_IME_ENDCOMPOSITION: key_event.type = KeyEvent::ImeEnd; break;
 		default: return DefWindowProc(hwnd, msg, wparam, lparam);
 		}
-		desktop.DispatchKeyMsg(key_msg);
+		desktop.DispatchKeyEvent(key_event);
 		return 0;
 	}
 

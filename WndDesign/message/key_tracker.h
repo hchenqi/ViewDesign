@@ -1,6 +1,6 @@
 #pragma once
 
-#include "key_msg.h"
+#include "key_event.h"
 #include "../common/uncopyable.h"
 
 
@@ -12,16 +12,16 @@ public:
 	bool ctrl = false;
 	bool shift = false;
 public:
-	void Track(KeyMsg msg) {
-		switch (msg.type) {
-		case KeyMsg::KeyDown:
-			switch (msg.key) {
+	void Track(KeyEvent event) {
+		switch (event.type) {
+		case KeyEvent::KeyDown:
+			switch (event.key) {
 			case Key::Ctrl: ctrl = true; break;
 			case Key::Shift: shift = true; break;
 			}
 			break;
-		case KeyMsg::KeyUp:
-			switch (msg.key) {
+		case KeyEvent::KeyUp:
+			switch (event.key) {
 			case Key::Ctrl: ctrl = false; break;
 			case Key::Shift: shift = false; break;
 			}

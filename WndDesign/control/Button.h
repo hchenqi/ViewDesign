@@ -22,7 +22,7 @@ protected:
 private:
 	void SetBackgroundColor(Color color) { if (this->background != color) { this->background = color; this->Redraw(region_infinite); } }
 
-	// message
+	// event
 private:
 	enum class State { Normal, Hover, Press } state = State::Normal;
 private:
@@ -32,16 +32,16 @@ private:
 protected:
 	virtual void OnClick() {}
 protected:
-	virtual void OnMouseMsg(MouseMsg msg) override {
-		switch (msg.type) {
-		case MouseMsg::LeftDown: state = State::Press; OnPress(); break;
-		case MouseMsg::LeftUp: if (state == State::Press) { state = State::Hover; OnHover(); OnClick(); } break;
+	virtual void OnMouseEvent(MouseEvent event) override {
+		switch (event.type) {
+		case MouseEvent::LeftDown: state = State::Press; OnPress(); break;
+		case MouseEvent::LeftUp: if (state == State::Press) { state = State::Hover; OnHover(); OnClick(); } break;
 		}
 	}
-	virtual void OnNotifyMsg(NotifyMsg msg) override {
-		switch (msg) {
-		case NotifyMsg::MouseEnter: if (state == State::Normal) { state = State::Hover; OnHover(); } break;
-		case NotifyMsg::MouseLeave: state = State::Normal; OnLeave(); break;
+	virtual void OnFocusEvent(FocusEvent event) override {
+		switch (event) {
+		case FocusEvent::MouseEnter: if (state == State::Normal) { state = State::Hover; OnHover(); } break;
+		case FocusEvent::MouseLeave: state = State::Normal; OnLeave(); break;
 		}
 	}
 };

@@ -32,12 +32,12 @@ protected:
 		DrawChild(child_second, point_zero, figure_queue, draw_region);
 	}
 
-	// message
+	// event
 protected:
-	virtual ref_ptr<WndObject> HitTest(MouseMsg& msg) override {
-		MouseMsg msg_copy = msg;
-		if (ref_ptr<WndObject> res = HitTestChild(child_second, msg)) { return res; }
-		return HitTestChild(child_first, msg = msg_copy);
+	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override {
+		MouseEvent event_copy = event;
+		if (ref_ptr<WndObject> res = HitTestChild(child_second, event)) { return res; }
+		return HitTestChild(child_first, event = event_copy);
 	}
 };
 
@@ -126,15 +126,15 @@ protected:
 	virtual void OnChildRedraw(WndObject& child, Rect child_redraw_region) override { Redraw(child_redraw_region); }
 	virtual void OnDraw(FigureQueue& figure_queue, Rect draw_region) override { for (auto& child : child_list) { DrawChild(child, point_zero, figure_queue, draw_region); } }
 
-	// message
+	// event
 protected:
-	virtual ref_ptr<WndObject> HitTest(MouseMsg& msg) override {
-		MouseMsg msg_copy = msg;
+	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override {
+		MouseEvent event_copy = event;
 		for (auto& child : reverse(child_list)) {
-			if (ref_ptr<WndObject> res = HitTestChild(child, msg)) {
+			if (ref_ptr<WndObject> res = HitTestChild(child, event)) {
 				return res;
 			}
-			msg = msg_copy;
+			event = event_copy;
 		}
 		return nullptr;
 	}

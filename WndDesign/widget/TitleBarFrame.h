@@ -79,10 +79,10 @@ protected:
 	public:
 		using Base::Base;
 	protected:
-		virtual void OnMouseMsg(MouseMsg msg) override {
-			if (msg.type == MouseMsg::Move || msg.type == MouseMsg::LeftDown) {
-				BorderPosition border_position = HitTestBorderPosition(size, border._width + border._radius, msg.point);
-				if (msg.type == MouseMsg::Move) {
+		virtual void OnMouseEvent(MouseEvent event) override {
+			if (event.type == MouseEvent::Move || event.type == MouseEvent::LeftDown) {
+				BorderPosition border_position = HitTestBorderPosition(size, border._width + border._radius, event.point);
+				if (event.type == MouseEvent::Move) {
 					SetCursor(GetBorderPositionCursor(border_position));
 				} else {
 					AeroSnapBorderResizingEffect(*this, border_position);
@@ -108,11 +108,11 @@ protected:
 			Color foreground;
 			std::wstring tooltip_text;
 		protected:
-			virtual void OnNotifyMsg(NotifyMsg msg) override {
-				Button::OnNotifyMsg(msg);
-				switch (msg) {
-				case NotifyMsg::MouseEnter: TooltipShow(tooltip_text); break;
-				case NotifyMsg::MouseLeave: TooltipHide(); break;
+			virtual void OnFocusEvent(FocusEvent event) override {
+				Button::OnFocusEvent(event);
+				switch (event) {
+				case FocusEvent::MouseEnter: TooltipShow(tooltip_text); break;
+				case FocusEvent::MouseLeave: TooltipHide(); break;
 				}
 			}
 		};
@@ -188,10 +188,10 @@ protected:
 	protected:
 		MouseTracker mouse_tracker;
 	protected:
-		virtual void OnMouseMsg(MouseMsg msg) override {
-			switch (mouse_tracker.Track(msg)) {
-			case MouseTrackMsg::LeftDown: AeroSnapDraggingEffect(*this); break;
-			case MouseTrackMsg::LeftDoubleClick: Context::Get<TitleBarFrame>().MaximizeOrRestore(); break;
+		virtual void OnMouseEvent(MouseEvent event) override {
+			switch (mouse_tracker.Track(event)) {
+			case MouseTrackEvent::LeftDown: AeroSnapDraggingEffect(*this); break;
+			case MouseTrackEvent::LeftDoubleClick: Context::Get<TitleBarFrame>().MaximizeOrRestore(); break;
 			}
 		}
 	};

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "mouse_msg.h"
+#include "mouse_event.h"
 #include "timer.h"
 #include "../geometry/helper.h"
 
@@ -8,7 +8,7 @@
 namespace ViewDesign {
 
 
-enum class MouseTrackMsg {
+enum class MouseTrackEvent {
 	None,
 	LeftDown,
 	LeftUp,
@@ -31,31 +31,31 @@ public:
 private:
 	static constexpr float move_tolerate_range = 5.0f;  // 5px
 public:
-	MouseTrackMsg Track(MouseMsg msg) {
-		MouseTrackMsg ret;
-		switch (msg.type) {
-		case MouseMsg::LeftDown:
+	MouseTrackEvent Track(MouseEvent event) {
+		MouseTrackEvent ret;
+		switch (event.type) {
+		case MouseEvent::LeftDown:
 			switch (hit_count) {
-			case 1: ret = MouseTrackMsg::LeftDoubleClick; break;
-			case 2: ret = MouseTrackMsg::LeftTripleClick; break;
-			case 0: default: ret = MouseTrackMsg::LeftDown; hit_count = 0; break;
+			case 1: ret = MouseTrackEvent::LeftDoubleClick; break;
+			case 2: ret = MouseTrackEvent::LeftTripleClick; break;
+			case 0: default: ret = MouseTrackEvent::LeftDown; hit_count = 0; break;
 			}
-			if (square_distance(msg.point, mouse_down_position) > square(move_tolerate_range)) {
-				ret = MouseTrackMsg::LeftDown; hit_count = 0;
+			if (square_distance(event.point, mouse_down_position) > square(move_tolerate_range)) {
+				ret = MouseTrackEvent::LeftDown; hit_count = 0;
 			}
 			hit_count++; timer.Set(timer_interval);
 			is_mouse_down = true;
-			mouse_down_position = msg.point;
+			mouse_down_position = event.point;
 			break;
-		case MouseMsg::LeftUp:
-			ret = is_mouse_down ? MouseTrackMsg::LeftClick : MouseTrackMsg::LeftUp;
+		case MouseEvent::LeftUp:
+			ret = is_mouse_down ? MouseTrackEvent::LeftClick : MouseTrackEvent::LeftUp;
 			is_mouse_down = false;
 			break;
-		case MouseMsg::Move:
-			ret = is_mouse_down ? MouseTrackMsg::LeftDrag : MouseTrackMsg::MouseMove;
+		case MouseEvent::Move:
+			ret = is_mouse_down ? MouseTrackEvent::LeftDrag : MouseTrackEvent::MouseMove;
 			break;
 		default:
-			ret = MouseTrackMsg::None;
+			ret = MouseTrackEvent::None;
 			break;
 		}
 		return ret;

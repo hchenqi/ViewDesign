@@ -35,10 +35,10 @@ class HighlightFocus : public InnerBorderFrame {
 public:
 	HighlightFocus(InnerBorderFrame::child_type child) : InnerBorderFrame(Border(1.0f, Color::Black), std::move(child)) {}
 private:
-	virtual void OnNotifyMsg(NotifyMsg msg) override {
-		switch (msg) {
-		case NotifyMsg::FocusIn: InnerBorderFrame::SetBorder(Border(2.0f, Color::Red)); break;
-		case NotifyMsg::FocusOut: InnerBorderFrame::SetBorder(Border(1.0f, Color::Black)); break;
+	virtual void OnFocusEvent(FocusEvent event) override {
+		switch (event) {
+		case FocusEvent::FocusIn: InnerBorderFrame::SetBorder(Border(2.0f, Color::Red)); break;
+		case FocusEvent::FocusOut: InnerBorderFrame::SetBorder(Border(1.0f, Color::Black)); break;
 		}
 	}
 };
@@ -93,5 +93,5 @@ int main() {
 			)
 		)
 	);
-	global.MessageLoop();
+	global.EventLoop();
 }

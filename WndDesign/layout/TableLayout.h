@@ -202,14 +202,14 @@ protected:
 		}
 	}
 
-	//message
+	// event
 protected:
-	virtual ref_ptr<WndObject> HitTest(MouseMsg& msg) override {
-		if (!Rect(point_zero, size).Contains(msg.point)) { return nullptr; }
-		TablePosition pos = HitTestGrid(msg.point);
+	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override {
+		if (!Rect(point_zero, size).Contains(event.point)) { return nullptr; }
+		TablePosition pos = HitTestGrid(event.point);
 		Rect grid = GetGridRegion(pos); child_type& child = GetChild(pos);
-		if (!grid.Contains(msg.point) || child == nullptr) { return this; }
-		msg.point -= grid.point - point_zero; return child;
+		if (!grid.Contains(event.point) || child == nullptr) { return this; }
+		event.point -= grid.point - point_zero; return child;
 	}
 };
 

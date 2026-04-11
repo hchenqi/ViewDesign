@@ -79,12 +79,12 @@ protected:
 		for (size_t index = begin; index <= end; ++index) { DrawChild(child_list[index], GetChildRegion(index), figure_queue, draw_region); }
 	}
 
-	// message
+	// event
 protected:
-	virtual ref_ptr<WndObject> HitTest(MouseMsg& msg) override {
-		float offset = msg.point.y;
+	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override {
+		float offset = event.point.y;
 		if (offset < 0.0f || offset >= size.height || child_list.empty()) { return nullptr; }
-		size_t index = HitTestItem(offset); msg.point.y -= index * child_length;
+		size_t index = HitTestItem(offset); event.point.y -= index * child_length;
 		return child_list[index];
 	}
 };
@@ -134,12 +134,12 @@ protected:
 		for (size_t index = begin; index <= end; ++index) { DrawChild(child_list[index], GetChildRegion(index), figure_queue, draw_region); }
 	}
 
-	// message
+	// event
 protected:
-	virtual ref_ptr<WndObject> HitTest(MouseMsg& msg) override {
-		float offset = msg.point.x;
+	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) override {
+		float offset = event.point.x;
 		if (offset < 0.0f || offset >= size.width || child_list.empty()) { return nullptr; }
-		size_t index = HitTestItem(offset); msg.point.x -= index * child_length;
+		size_t index = HitTestItem(offset); event.point.x -= index * child_length;
 		return child_list[index];
 	}
 };

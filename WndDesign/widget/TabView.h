@@ -84,16 +84,16 @@ public:
 				figure_queue.add(center, new Line(Vector(3px, -3px), Vector(-3px, 3px), 1.0f, foreground));
 			}
 		protected:
-			virtual void OnMouseMsg(MouseMsg msg) override {
-				switch (mouse_tracker.Track(msg)) {
-				case MouseTrackMsg::LeftDown: state = State::Press; Redraw(region_infinite); break;
-				case MouseTrackMsg::LeftClick: Context::Get<Tab>().Close(); break;
+			virtual void OnMouseEvent(MouseEvent event) override {
+				switch (mouse_tracker.Track(event)) {
+				case MouseTrackEvent::LeftDown: state = State::Press; Redraw(region_infinite); break;
+				case MouseTrackEvent::LeftClick: Context::Get<Tab>().Close(); break;
 				}
 			}
-			virtual void OnNotifyMsg(NotifyMsg msg) override {
-				switch (msg) {
-				case NotifyMsg::MouseEnter: state = State::Hover; Redraw(region_infinite); break;
-				case NotifyMsg::MouseLeave: state = State::Normal; Redraw(region_infinite); break;
+			virtual void OnFocusEvent(FocusEvent event) override {
+				switch (event) {
+				case FocusEvent::MouseEnter: state = State::Hover; Redraw(region_infinite); break;
+				case FocusEvent::MouseLeave: state = State::Normal; Redraw(region_infinite); break;
 				}
 			}
 		};
@@ -142,21 +142,21 @@ public:
 			WndFrame::OnDraw(figure_queue, draw_region);
 		}
 
-		// message
+		// event
 	private:
 		MouseTracker mouse_tracker;
 	protected:
-		virtual void OnMouseMsg(MouseMsg msg) override {
-			switch (mouse_tracker.Track(msg)) {
-			case MouseTrackMsg::LeftDown: msg.ctrl ? void() : (SetFocus(), active ? void() : Show()); break;
-			case MouseTrackMsg::LeftClick: msg.ctrl ? (selected ? Unselect() : Select()) : void(); break;
-			case MouseTrackMsg::LeftDrag: msg.ctrl ? Context::Get<TabView>().BeginSelect(*this, msg.point) : void(); break;
+		virtual void OnMouseEvent(MouseEvent event) override {
+			switch (mouse_tracker.Track(event)) {
+			case MouseTrackEvent::LeftDown: event.ctrl ? void() : (SetFocus(), active ? void() : Show()); break;
+			case MouseTrackEvent::LeftClick: event.ctrl ? (selected ? Unselect() : Select()) : void(); break;
+			case MouseTrackEvent::LeftDrag: event.ctrl ? Context::Get<TabView>().BeginSelect(*this, event.point) : void(); break;
 			}
 		}
-		virtual void OnNotifyMsg(NotifyMsg msg) override {
-			switch (msg) {
-			case NotifyMsg::MouseEnter: hover = true; Redraw(region_infinite); break;
-			case NotifyMsg::MouseLeave: hover = false; Redraw(region_infinite); break;
+		virtual void OnFocusEvent(FocusEvent event) override {
+			switch (event) {
+			case FocusEvent::MouseEnter: hover = true; Redraw(region_infinite); break;
+			case FocusEvent::MouseLeave: hover = false; Redraw(region_infinite); break;
 			}
 		}
 	};
@@ -186,15 +186,15 @@ protected:
 				}
 			}
 		protected:
-			virtual void OnMouseMsg(MouseMsg msg) override {
-				switch (msg.type) {
-				case MouseMsg::LeftDown: Context::Get<SideBar>().BeginDrag(msg.point.x - size.width); break;
+			virtual void OnMouseEvent(MouseEvent event) override {
+				switch (event.type) {
+				case MouseEvent::LeftDown: Context::Get<SideBar>().BeginDrag(event.point.x - size.width); break;
 				}
 			}
-			virtual void OnNotifyMsg(NotifyMsg msg) override {
-				switch (msg) {
-				case NotifyMsg::MouseEnter: hover = true; Redraw(region_infinite); break;
-				case NotifyMsg::MouseLeave: hover = false; Redraw(region_infinite); break;
+			virtual void OnFocusEvent(FocusEvent event) override {
+				switch (event) {
+				case FocusEvent::MouseEnter: hover = true; Redraw(region_infinite); break;
+				case FocusEvent::MouseLeave: hover = false; Redraw(region_infinite); break;
 				}
 			}
 		};
@@ -223,10 +223,10 @@ protected:
 			SetCapture();
 		}
 	protected:
-		virtual void OnMouseMsg(MouseMsg msg) override {
-			switch (msg.type) {
-			case MouseMsg::Move: SetWidth(msg.point.x - drag_offset); break;
-			case MouseMsg::LeftUp: ReleaseCapture(); break;
+		virtual void OnMouseEvent(MouseEvent event) override {
+			switch (event.type) {
+			case MouseEvent::Move: SetWidth(event.point.x - drag_offset); break;
+			case MouseEvent::LeftUp: ReleaseCapture(); break;
 			}
 		}
 	};
@@ -313,31 +313,31 @@ protected:
 			}
 		}
 
-		// message
+		// event
 	private:
 		MouseTracker mouse_tracker;
 	private:
-		virtual void OnMouseMsg(MouseMsg msg) override {
-			switch (mouse_tracker.Track(msg)) {
-			case MouseTrackMsg::LeftClick: is_selecting ? void() : ClearSelection(); break;
-			case MouseTrackMsg::LeftDrag: is_selecting ? void() : BeginSelect(msg.point); break;
+		virtual void OnMouseEvent(MouseEvent event) override {
+			switch (mouse_tracker.Track(event)) {
+			case MouseTrackEvent::LeftClick: is_selecting ? void() : ClearSelection(); break;
+			case MouseTrackEvent::LeftDrag: is_selecting ? void() : BeginSelect(event.point); break;
 			}
-			switch (msg.type) {
-			case MouseMsg::Move: is_selecting ? DoSelect(msg.point) : void(); break;
-			case MouseMsg::LeftUp: is_selecting ? EndSelect() : void(); break;
+			switch (event.type) {
+			case MouseEvent::Move: is_selecting ? DoSelect(event.point) : void(); break;
+			case MouseEvent::LeftUp: is_selecting ? EndSelect() : void(); break;
 			}
 		}
-		virtual void OnKeyMsg(KeyMsg msg) override {
-			switch (msg.type) {
-			case KeyMsg::KeyDown:
-				switch (msg.key) {
+		virtual void OnKeyEvent(KeyEvent event) override {
+			switch (event.type) {
+			case KeyEvent::KeyDown:
+				switch (event.key) {
 				case Key::Delete: DeleteSelection(); break;
 				}
 			}
 		}
-		virtual void OnNotifyMsg(NotifyMsg msg) override {
-			switch (msg) {
-			case NotifyMsg::Blur: ClearSelection(); break;
+		virtual void OnFocusEvent(FocusEvent event) override {
+			switch (event) {
+			case FocusEvent::Blur: ClearSelection(); break;
 			}
 		}
 	};

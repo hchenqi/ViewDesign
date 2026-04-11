@@ -4,7 +4,7 @@
 #include "../style/cursor_style.h"
 #include "../geometry/geometry.h"
 #include "../figure/figure_queue.h"
-#include "../message/message.h"
+#include "../message/event.h"
 
 
 namespace ViewDesign {
@@ -82,20 +82,20 @@ protected:
 	virtual void OnChildRedraw(WndObject& child, Rect child_redraw_region) {}
 	virtual void OnDraw(FigureQueue& figure_queue, Rect draw_region) {}
 
-	// message
+	// event
 protected:
 	void SetCapture();
 	void ReleaseCapture();
 	void SetFocus();
 	void ReleaseFocus();
 protected:
-	ref_ptr<WndObject> HitTestChild(WndObject& child, MouseMsg& msg) { return child.HitTest(msg); }
+	ref_ptr<WndObject> HitTestChild(WndObject& child, MouseEvent& event) { return child.HitTest(event); }
 protected:
-	virtual ref_ptr<WndObject> HitTest(MouseMsg& msg) { return this; }
+	virtual ref_ptr<WndObject> HitTest(MouseEvent& event) { return this; }
 protected:
-	virtual void OnMouseMsg(MouseMsg msg) {}
-	virtual void OnKeyMsg(KeyMsg msg) {}
-	virtual void OnNotifyMsg(NotifyMsg msg) {}
+	virtual void OnMouseEvent(MouseEvent event) {}
+	virtual void OnKeyEvent(KeyEvent event) {}
+	virtual void OnFocusEvent(FocusEvent event) {}
 };
 
 
