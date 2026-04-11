@@ -42,16 +42,16 @@ protected:
 };
 
 
-template<class WidthTypeFirst, class HeightTypeFirst, class WidthTypeSecond, class HeightTypeSecond>
+template<class WidthTraitFirst, class HeightTraitFirst, class WidthTraitSecond, class HeightTraitSecond>
 class StackLayout : public _StackLayout_Base {
 public:
-	static_assert((IsAssigned<WidthTypeFirst>&& IsAssigned<HeightTypeFirst>) || (IsAssigned<WidthTypeSecond> && IsAssigned<HeightTypeSecond>), "At least one child window's width type and height type should be Assigned.");
+	static_assert((IsFixed<WidthTraitFirst>&& IsFixed<HeightTraitFirst>) || (IsFixed<WidthTraitSecond> && IsFixed<HeightTraitSecond>), "At least one child window's width type and height type should be Fixed.");
 public:
-	using width_type = std::conditional_t<IsAssigned<WidthTypeFirst>, WidthTypeSecond, WidthTypeFirst>;
-	using height_type = std::conditional_t<IsAssigned<HeightTypeFirst>, HeightTypeSecond, HeightTypeFirst>;
+	using width_trait = std::conditional_t<IsFixed<WidthTraitFirst>, WidthTraitSecond, WidthTraitFirst>;
+	using height_trait = std::conditional_t<IsFixed<HeightTraitFirst>, HeightTraitSecond, HeightTraitFirst>;
 public:
-	using child_type_first = view_ptr<WidthTypeFirst, HeightTypeFirst>;
-	using child_type_second = view_ptr<WidthTypeSecond, HeightTypeSecond>;
+	using child_type_first = view_ptr<WidthTraitFirst, HeightTraitFirst>;
+	using child_type_second = view_ptr<WidthTraitSecond, HeightTraitSecond>;
 
 public:
 	StackLayout(child_type_first child_first, child_type_second child_second) : _StackLayout_Base(std::move(child_first), std::move(child_second)) {}
@@ -61,17 +61,17 @@ protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override {
 		size = size_ref;
 
-		if constexpr (!IsAssigned<WidthTypeFirst> || !IsAssigned<HeightTypeFirst>) {
+		if constexpr (!IsFixed<WidthTraitFirst> || !IsFixed<HeightTraitFirst>) {
 			size = UpdateChildSizeRef(child_first, size);
 		}
-		if constexpr (!IsAssigned<WidthTypeSecond> || !IsAssigned<HeightTypeSecond>) {
+		if constexpr (!IsFixed<WidthTraitSecond> || !IsFixed<HeightTraitSecond>) {
 			size = UpdateChildSizeRef(child_second, size);
 		}
 
-		if constexpr (IsAssigned<WidthTypeFirst> && IsAssigned<HeightTypeFirst>) {
+		if constexpr (IsFixed<WidthTraitFirst> && IsFixed<HeightTraitFirst>) {
 			UpdateChildSizeRef(child_first, size);
 		}
-		if constexpr (IsAssigned<WidthTypeSecond> && IsAssigned<HeightTypeSecond>) {
+		if constexpr (IsFixed<WidthTraitSecond> && IsFixed<HeightTraitSecond>) {
 			UpdateChildSizeRef(child_second, size);
 		}
 
@@ -79,13 +79,13 @@ protected:
 	}
 	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override {
 		if (&child == child_first.get()) {
-			if constexpr (!IsAssigned<WidthTypeFirst> || !IsAssigned<HeightTypeFirst>) {
+			if constexpr (!IsFixed<WidthTraitFirst> || !IsFixed<HeightTraitFirst>) {
 				size = child_size;
 				UpdateChildSizeRef(child_second, size);
 				SizeUpdated(size);
 			}
 		} else {
-			if constexpr (!IsAssigned<WidthTypeSecond> || !IsAssigned<HeightTypeSecond>) {
+			if constexpr (!IsFixed<WidthTraitSecond> || !IsFixed<HeightTraitSecond>) {
 				size = child_size;
 				UpdateChildSizeRef(child_first, size);
 				SizeUpdated(size);
@@ -96,12 +96,12 @@ protected:
 
 
 template<class T1, class T2>
-StackLayout(T1, T2) -> StackLayout<extract_width_type<T1>, extract_height_type<T1>, extract_width_type<T2>, extract_height_type<T2>>;
+StackLayout(T1, T2) -> StackLayout<extract_width_trait<T1>, extract_height_trait<T1>, extract_width_trait<T2>, extract_height_trait<T2>>;
 
 
-class StackLayoutMultiple : public ViewType<Assigned, Assigned> {
+class StackLayoutMultiple : public ViewType<Fixed, Fixed> {
 public:
-	using child_type = view_ptr<Assigned, Assigned>;
+	using child_type = view_ptr<Fixed, Fixed>;
 
 public:
 	template<class... Ts>

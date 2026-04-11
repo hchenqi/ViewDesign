@@ -7,10 +7,10 @@
 namespace ViewDesign {
 
 
-template<class WidthType, class HeightType>
-class Button : public SolidColorBackground<Placeholder<WidthType, HeightType>> {
+template<class WidthTrait, class HeightTrait>
+class Button : public SolidColorBackground<Placeholder<WidthTrait, HeightTrait>> {
 public:
-	using SolidColorBackground<Placeholder<WidthType, HeightType>>::SolidColorBackground;
+	using SolidColorBackground<Placeholder<WidthTrait, HeightTrait>>::SolidColorBackground;
 
 	// style
 protected:

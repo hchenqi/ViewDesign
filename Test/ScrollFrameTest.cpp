@@ -30,7 +30,7 @@ private:
 };
 
 
-class ScaleLayer : public ScaleFrame<Assigned, Auto> {
+class ScaleLayer : public ScaleFrame<Fixed, Auto> {
 public:
 	ScaleLayer(child_type child) : ScaleFrame(Scale(1.0), std::move(child)) {}
 private:
@@ -60,7 +60,7 @@ protected:
 	MyEditBox() : Base(Style(), L"Hello World!") {}
 public:
 	static auto Create() {
-		return new ClipFrame<Assigned, Auto, Left>(new PaddingFrame(Padding(30px), new MyEditBox()));
+		return new ClipFrame<Fixed, Auto, Left>(new PaddingFrame(Padding(30px), new MyEditBox()));
 	}
 };
 

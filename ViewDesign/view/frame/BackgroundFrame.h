@@ -7,10 +7,10 @@
 namespace ViewDesign {
 
 
-template<class WidthType, class HeightType>
-class BackgroundFrame : public ViewFrame, public LayoutType<WidthType, HeightType> {
+template<class WidthTrait, class HeightTrait>
+class BackgroundFrame : public ViewFrame, public SizeTrait<WidthTrait, HeightTrait> {
 public:
-	using child_type = view_ptr<WidthType, HeightType>;
+	using child_type = view_ptr<WidthTrait, HeightTrait>;
 
 public:
 	BackgroundFrame(Color background, child_type child) : ViewFrame(std::move(child)), background(background) {}
@@ -36,7 +36,7 @@ protected:
 
 
 template<class T>
-BackgroundFrame(Color, T) -> BackgroundFrame<extract_width_type<T>, extract_height_type<T>>;
+BackgroundFrame(Color, T) -> BackgroundFrame<extract_width_trait<T>, extract_height_trait<T>>;
 
 
 } // namespace ViewDesign

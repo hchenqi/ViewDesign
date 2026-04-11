@@ -8,9 +8,9 @@
 namespace ViewDesign {
 
 
-class FlowLayout : public ViewType<Assigned, Auto> {
+class FlowLayout : public ViewType<Fixed, Auto> {
 public:
-	using child_type = view_ptr<Auto, Assigned>;
+	using child_type = view_ptr<Auto, Fixed>;
 
 public:
 	FlowLayout(float row_height, float column_gap, float row_gap);

@@ -12,9 +12,9 @@ template<class Direction>
 class DivideLayout;
 
 
-class _DivideLayout_Base : public ViewType<Assigned, Assigned> {
+class _DivideLayout_Base : public ViewType<Fixed, Fixed> {
 public:
-	using child_type = view_ptr<Assigned, Assigned>;
+	using child_type = view_ptr<Fixed, Fixed>;
 
 protected:
 	_DivideLayout_Base() : child_list() {}

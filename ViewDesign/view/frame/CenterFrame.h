@@ -6,7 +6,7 @@
 namespace ViewDesign {
 
 
-template<class WidthType = Assigned, class HeightType = Assigned>
+template<class WidthTrait = Fixed, class HeightTrait = Fixed>
 class CenterFrame;
 
 
@@ -36,7 +36,7 @@ protected:
 
 
 template<>
-class CenterFrame<Assigned, Assigned> : public _CenterFrame_Base, public LayoutType<Assigned, Assigned> {
+class CenterFrame<Fixed, Fixed> : public _CenterFrame_Base, public SizeTrait<Fixed, Fixed> {
 public:
 	CenterFrame(view_ptr<Relative, Relative> child) : _CenterFrame_Base(std::move(child)) {}
 protected:
@@ -46,7 +46,7 @@ protected:
 
 
 template<>
-class CenterFrame<Assigned, Auto> : public _CenterFrame_Base, public LayoutType<Assigned, Auto> {
+class CenterFrame<Fixed, Auto> : public _CenterFrame_Base, public SizeTrait<Fixed, Auto> {
 public:
 	CenterFrame(view_ptr<Relative, Auto> child) : _CenterFrame_Base(std::move(child)) {}
 protected:
@@ -66,7 +66,7 @@ protected:
 
 
 template<>
-class CenterFrame<Auto, Assigned> : public _CenterFrame_Base, public LayoutType<Auto, Assigned> {
+class CenterFrame<Auto, Fixed> : public _CenterFrame_Base, public SizeTrait<Auto, Fixed> {
 public:
 	CenterFrame(view_ptr<Auto, Relative> child) : _CenterFrame_Base(std::move(child)) {}
 protected:

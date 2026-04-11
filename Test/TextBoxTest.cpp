@@ -34,7 +34,7 @@ private:
 };
 
 
-class ScaleLayer : public ScaleFrame<Assigned, Assigned> {
+class ScaleLayer : public ScaleFrame<Fixed, Fixed> {
 public:
 	ScaleLayer(child_type child) : ScaleFrame(Scale(1.0), std::move(child)) {}
 private:
@@ -51,9 +51,9 @@ private:
 };
 
 
-class ResizeBorder : public InnerBorderFrame<Assigned, Assigned> {
+class ResizeBorder : public InnerBorderFrame<Fixed, Fixed> {
 public:
-	ResizeBorder(child_type child) : InnerBorderFrame<Assigned, Assigned>(Border(5.0, Color(Color::Yellow, 127)), std::move(child)) {}
+	ResizeBorder(child_type child) : InnerBorderFrame<Fixed, Fixed>(Border(5.0, Color(Color::Yellow, 127)), std::move(child)) {}
 private:
 	virtual ref_ptr<ViewBase> HitTest(MouseEvent& event) override {
 		if (PointInRoundedRectangle(event.point, Extend(Rect(point_zero, size), -border._width), border._radius)) { return child; }
@@ -86,7 +86,7 @@ int main() {
 			L"TextBoxTest",
 			new ScaleLayer(
 				new ResizeBorder(
-					new ClipFrame<Assigned, Assigned, TopLeft>(
+					new ClipFrame<Fixed, Fixed, TopLeft>(
 						new InnerBorderFrame(
 							Border(1.0, Color::Black),
 							new TextBox(TextBoxStyle(), L"Hello World!")

@@ -102,18 +102,18 @@ protected:
 };
 
 
-template<class WidthTypeFirst, class HeightTypeFirst, class WidthTypeSecond, class HeightTypeSecond>
+template<class WidthTraitFirst, class HeightTraitFirst, class WidthTraitSecond, class HeightTraitSecond>
 class SplitLayoutVertical : public _SplitLayout_Base_Vertical {
 public:
-	static_assert(IsAssigned<WidthTypeFirst> || IsAssigned<WidthTypeSecond>, "At least one child window's width type should be Assigned.");
-	static_assert(!IsAssigned<HeightTypeFirst> || !IsAssigned<HeightTypeSecond>, "At least one child window's height type should not be Assigned.");
-	static_assert((IsAssigned<WidthTypeFirst> || !IsAssigned<HeightTypeFirst>) && (IsAssigned<WidthTypeSecond> || !IsAssigned<HeightTypeSecond>), "Child window's width type must be Assigned if its height type is Assigned.");
+	static_assert(IsFixed<WidthTraitFirst> || IsFixed<WidthTraitSecond>, "At least one child window's width type should be Fixed.");
+	static_assert(!IsFixed<HeightTraitFirst> || !IsFixed<HeightTraitSecond>, "At least one child window's height type should not be Fixed.");
+	static_assert((IsFixed<WidthTraitFirst> || !IsFixed<HeightTraitFirst>) && (IsFixed<WidthTraitSecond> || !IsFixed<HeightTraitSecond>), "Child window's width type must be Fixed if its height type is Fixed.");
 public:
-	using width_type = std::conditional_t<IsAssigned<WidthTypeFirst> && IsAssigned<WidthTypeSecond>, Assigned, std::conditional_t<IsRelative<WidthTypeFirst> || IsRelative<WidthTypeSecond>, Relative, Auto>>;
-	using height_type = std::conditional_t<IsAssigned<HeightTypeFirst> || IsAssigned<HeightTypeSecond>, Assigned, std::conditional_t<IsRelative<HeightTypeFirst> || IsRelative<HeightTypeSecond>, Relative, Auto>>;
+	using width_trait = std::conditional_t<IsFixed<WidthTraitFirst> && IsFixed<WidthTraitSecond>, Fixed, std::conditional_t<IsRelative<WidthTraitFirst> || IsRelative<WidthTraitSecond>, Relative, Auto>>;
+	using height_trait = std::conditional_t<IsFixed<HeightTraitFirst> || IsFixed<HeightTraitSecond>, Fixed, std::conditional_t<IsRelative<HeightTraitFirst> || IsRelative<HeightTraitSecond>, Relative, Auto>>;
 public:
-	using child_type_first = view_ptr<WidthTypeFirst, HeightTypeFirst>;
-	using child_type_second = view_ptr<WidthTypeSecond, HeightTypeSecond>;
+	using child_type_first = view_ptr<WidthTraitFirst, HeightTraitFirst>;
+	using child_type_second = view_ptr<WidthTraitSecond, HeightTraitSecond>;
 
 public:
 	SplitLayoutVertical(child_type_first child_first, child_type_second child_second) : _SplitLayout_Base_Vertical(std::move(child_first), std::move(child_second)) {}
@@ -123,46 +123,46 @@ protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override {
 		this->size_ref = size_ref;
 
-		if constexpr (!IsAssigned<WidthTypeFirst> || (IsAssigned<width_type> && !IsAssigned<HeightTypeFirst>)) {
+		if constexpr (!IsFixed<WidthTraitFirst> || (IsFixed<width_trait> && !IsFixed<HeightTraitFirst>)) {
 			Size child_size = UpdateChildSizeRef(child_first, size_ref);
-			if constexpr (!IsAssigned<WidthTypeFirst>) {
+			if constexpr (!IsFixed<WidthTraitFirst>) {
 				size.width = child_size.width;
 			}
-			if constexpr (!IsAssigned<HeightTypeFirst>) {
+			if constexpr (!IsFixed<HeightTraitFirst>) {
 				length_first = child_size.height;
 			}
 		}
-		if constexpr (!IsAssigned<WidthTypeSecond> || (IsAssigned<width_type> && !IsAssigned<HeightTypeSecond>)) {
+		if constexpr (!IsFixed<WidthTraitSecond> || (IsFixed<width_trait> && !IsFixed<HeightTraitSecond>)) {
 			Size child_size = UpdateChildSizeRef(child_second, size_ref);
-			if constexpr (!IsAssigned<WidthTypeSecond>) {
+			if constexpr (!IsFixed<WidthTraitSecond>) {
 				size.width = child_size.width;
 			}
-			if constexpr (!IsAssigned<HeightTypeSecond>) {
+			if constexpr (!IsFixed<HeightTraitSecond>) {
 				length_second = child_size.height;
 			}
 		}
-		if constexpr (IsAssigned<width_type>) {
+		if constexpr (IsFixed<width_trait>) {
 			size.width = size_ref.width;
 		}
 
-		if constexpr (IsAssigned<height_type>) {
+		if constexpr (IsFixed<height_trait>) {
 			size.height = size_ref.height;
 		}
-		if constexpr (IsAssigned<WidthTypeFirst> && (!IsAssigned<width_type> || IsAssigned<HeightTypeFirst>)) {
-			if constexpr (IsAssigned<HeightTypeFirst>) {
+		if constexpr (IsFixed<WidthTraitFirst> && (!IsFixed<width_trait> || IsFixed<HeightTraitFirst>)) {
+			if constexpr (IsFixed<HeightTraitFirst>) {
 				UpdateChildSizeRef(child_first, Size(size.width, length_first = size.height - length_second));
 			} else {
 				length_first = UpdateChildSizeRef(child_first, Size(size.width, size_ref.height)).height;
 			}
 		}
-		if constexpr (IsAssigned<WidthTypeSecond> && (!IsAssigned<width_type> || IsAssigned<HeightTypeSecond>)) {
-			if constexpr (IsAssigned<HeightTypeSecond>) {
+		if constexpr (IsFixed<WidthTraitSecond> && (!IsFixed<width_trait> || IsFixed<HeightTraitSecond>)) {
+			if constexpr (IsFixed<HeightTraitSecond>) {
 				UpdateChildSizeRef(child_second, Size(size.width, length_second = size.height - length_first));
 			} else {
 				length_second = UpdateChildSizeRef(child_second, Size(size.width, size_ref.height)).height;
 			}
 		}
-		if constexpr (!IsAssigned<height_type>) {
+		if constexpr (!IsFixed<height_trait>) {
 			size.height = length_first + length_second;
 		}
 
@@ -170,11 +170,11 @@ protected:
 	}
 	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override {
 		if (IsFirst(child)) {
-			if constexpr (!IsAssigned<HeightTypeFirst>) {
-				if (IsAssigned<WidthTypeFirst> || size.width == child_size.width) {
+			if constexpr (!IsFixed<HeightTraitFirst>) {
+				if (IsFixed<WidthTraitFirst> || size.width == child_size.width) {
 					if (length_first != child_size.height) {
 						length_first = child_size.height;
-						if constexpr (IsAssigned<HeightTypeSecond>) {
+						if constexpr (IsFixed<HeightTraitSecond>) {
 							UpdateChildSizeRef(child_second, Size(size.width, length_second = size.height - length_first));
 							Redraw(GetRegionSecond());
 						} else {
@@ -185,7 +185,7 @@ protected:
 				} else {
 					size.width = child_size.width;
 					length_first = child_size.height;
-					if constexpr (IsAssigned<HeightTypeSecond>) {
+					if constexpr (IsFixed<HeightTraitSecond>) {
 						UpdateChildSizeRef(child_second, Size(size.width, length_second = size.height - length_first));
 					} else {
 						length_second = UpdateChildSizeRef(child_second, Size(size.width, size_ref.height)).height;
@@ -195,11 +195,11 @@ protected:
 				}
 			}
 		} else {
-			if constexpr (!IsAssigned<HeightTypeSecond>) {
-				if (IsAssigned<WidthTypeSecond> || size.width == child_size.width) {
+			if constexpr (!IsFixed<HeightTraitSecond>) {
+				if (IsFixed<WidthTraitSecond> || size.width == child_size.width) {
 					if (length_second != child_size.height) {
 						length_second = child_size.height;
-						if constexpr (IsAssigned<HeightTypeFirst>) {
+						if constexpr (IsFixed<HeightTraitFirst>) {
 							UpdateChildSizeRef(child_first, Size(size.width, length_first = size.height - length_second));
 							Redraw(GetRegionFirst());
 						} else {
@@ -210,7 +210,7 @@ protected:
 				} else {
 					size.width = child_size.width;
 					length_second = child_size.height;
-					if constexpr (IsAssigned<HeightTypeFirst>) {
+					if constexpr (IsFixed<HeightTraitFirst>) {
 						UpdateChildSizeRef(child_first, Size(size.width, length_first = size.height - length_second));
 					} else {
 						length_second = UpdateChildSizeRef(child_first, Size(size.width, size_ref.height)).height;
@@ -223,18 +223,18 @@ protected:
 	}
 };
 
-template<class WidthTypeFirst, class HeightTypeFirst, class WidthTypeSecond, class HeightTypeSecond>
+template<class WidthTraitFirst, class HeightTraitFirst, class WidthTraitSecond, class HeightTraitSecond>
 class SplitLayoutHorizontal : public _SplitLayout_Base_Horizontal {
 public:
-	static_assert(!IsAssigned<WidthTypeFirst> || !IsAssigned<WidthTypeSecond>, "At least one child window's width type should not be Assigned.");
-	static_assert(IsAssigned<HeightTypeFirst> || IsAssigned<HeightTypeSecond>, "At least one child window's height type should be Assigned.");
-	static_assert((!IsAssigned<WidthTypeFirst> || IsAssigned<HeightTypeFirst>) && (!IsAssigned<WidthTypeSecond> || IsAssigned<HeightTypeSecond>), "Child window's height type must be Assigned if its width type is Assigned.");
+	static_assert(!IsFixed<WidthTraitFirst> || !IsFixed<WidthTraitSecond>, "At least one child window's width type should not be Fixed.");
+	static_assert(IsFixed<HeightTraitFirst> || IsFixed<HeightTraitSecond>, "At least one child window's height type should be Fixed.");
+	static_assert((!IsFixed<WidthTraitFirst> || IsFixed<HeightTraitFirst>) && (!IsFixed<WidthTraitSecond> || IsFixed<HeightTraitSecond>), "Child window's height type must be Fixed if its width type is Fixed.");
 public:
-	using width_type = std::conditional_t<IsAssigned<WidthTypeFirst> || IsAssigned<WidthTypeSecond>, Assigned, std::conditional_t<IsRelative<WidthTypeFirst> || IsRelative<WidthTypeSecond>, Relative, Auto>>;
-	using height_type = std::conditional_t<IsAssigned<HeightTypeFirst> && IsAssigned<HeightTypeSecond>, Assigned, std::conditional_t<IsRelative<HeightTypeFirst> || IsRelative<HeightTypeSecond>, Relative, Auto>>;
+	using width_trait = std::conditional_t<IsFixed<WidthTraitFirst> || IsFixed<WidthTraitSecond>, Fixed, std::conditional_t<IsRelative<WidthTraitFirst> || IsRelative<WidthTraitSecond>, Relative, Auto>>;
+	using height_trait = std::conditional_t<IsFixed<HeightTraitFirst> && IsFixed<HeightTraitSecond>, Fixed, std::conditional_t<IsRelative<HeightTraitFirst> || IsRelative<HeightTraitSecond>, Relative, Auto>>;
 public:
-	using child_type_first = view_ptr<WidthTypeFirst, HeightTypeFirst>;
-	using child_type_second = view_ptr<WidthTypeSecond, HeightTypeSecond>;
+	using child_type_first = view_ptr<WidthTraitFirst, HeightTraitFirst>;
+	using child_type_second = view_ptr<WidthTraitSecond, HeightTraitSecond>;
 
 public:
 	SplitLayoutHorizontal(child_type_first child_first, child_type_second child_second) : _SplitLayout_Base_Horizontal(std::move(child_first), std::move(child_second)) {}
@@ -244,46 +244,46 @@ protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override {
 		this->size_ref = size_ref;
 
-		if constexpr (!IsAssigned<HeightTypeFirst> || (IsAssigned<height_type> && !IsAssigned<WidthTypeFirst>)) {
+		if constexpr (!IsFixed<HeightTraitFirst> || (IsFixed<height_trait> && !IsFixed<WidthTraitFirst>)) {
 			Size child_size = UpdateChildSizeRef(child_first, size_ref);
-			if constexpr (!IsAssigned<HeightTypeFirst>) {
+			if constexpr (!IsFixed<HeightTraitFirst>) {
 				size.height = child_size.height;
 			}
-			if constexpr (!IsAssigned<WidthTypeFirst>) {
+			if constexpr (!IsFixed<WidthTraitFirst>) {
 				length_first = child_size.width;
 			}
 		}
-		if constexpr (!IsAssigned<HeightTypeSecond> || (IsAssigned<height_type> && !IsAssigned<WidthTypeSecond>)) {
+		if constexpr (!IsFixed<HeightTraitSecond> || (IsFixed<height_trait> && !IsFixed<WidthTraitSecond>)) {
 			Size child_size = UpdateChildSizeRef(child_second, size_ref);
-			if constexpr (!IsAssigned<HeightTypeSecond>) {
+			if constexpr (!IsFixed<HeightTraitSecond>) {
 				size.height = child_size.height;
 			}
-			if constexpr (!IsAssigned<WidthTypeSecond>) {
+			if constexpr (!IsFixed<WidthTraitSecond>) {
 				length_second = child_size.width;
 			}
 		}
-		if constexpr (IsAssigned<height_type>) {
+		if constexpr (IsFixed<height_trait>) {
 			size.height = size_ref.height;
 		}
 
-		if constexpr (IsAssigned<width_type>) {
+		if constexpr (IsFixed<width_trait>) {
 			size.width = size_ref.width;
 		}
-		if constexpr (IsAssigned<HeightTypeFirst> && (!IsAssigned<height_type> || IsAssigned<WidthTypeFirst>)) {
-			if constexpr (IsAssigned<WidthTypeFirst>) {
+		if constexpr (IsFixed<HeightTraitFirst> && (!IsFixed<height_trait> || IsFixed<WidthTraitFirst>)) {
+			if constexpr (IsFixed<WidthTraitFirst>) {
 				UpdateChildSizeRef(child_first, Size(length_first = size.width - length_second, size.height));
 			} else {
 				length_first = UpdateChildSizeRef(child_first, Size(size_ref.width, size.height)).width;
 			}
 		}
-		if constexpr (IsAssigned<HeightTypeSecond> && (!IsAssigned<height_type> || IsAssigned<WidthTypeSecond>)) {
-			if constexpr (IsAssigned<WidthTypeSecond>) {
+		if constexpr (IsFixed<HeightTraitSecond> && (!IsFixed<height_trait> || IsFixed<WidthTraitSecond>)) {
+			if constexpr (IsFixed<WidthTraitSecond>) {
 				UpdateChildSizeRef(child_second, Size(length_second = size.width - length_first, size.height));
 			} else {
 				length_second = UpdateChildSizeRef(child_second, Size(size_ref.width, size.height)).width;
 			}
 		}
-		if constexpr (!IsAssigned<height_type>) {
+		if constexpr (!IsFixed<height_trait>) {
 			size.width = length_first + length_second;
 		}
 
@@ -291,11 +291,11 @@ protected:
 	}
 	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override {
 		if (IsFirst(child)) {
-			if constexpr (!IsAssigned<WidthTypeFirst>) {
-				if (IsAssigned<HeightTypeFirst> || size.height == child_size.height) {
+			if constexpr (!IsFixed<WidthTraitFirst>) {
+				if (IsFixed<HeightTraitFirst> || size.height == child_size.height) {
 					if (length_first != child_size.width) {
 						length_first = child_size.width;
-						if constexpr (IsAssigned<WidthTypeSecond>) {
+						if constexpr (IsFixed<WidthTraitSecond>) {
 							UpdateChildSizeRef(child_second, Size(length_second = size.width - length_first, size.height));
 							Redraw(GetRegionSecond());
 						} else {
@@ -306,7 +306,7 @@ protected:
 				} else {
 					size.height = child_size.height;
 					length_first = child_size.width;
-					if constexpr (IsAssigned<WidthTypeSecond>) {
+					if constexpr (IsFixed<WidthTraitSecond>) {
 						UpdateChildSizeRef(child_second, Size(length_second = size.width - length_first, size.height));
 					} else {
 						length_second = UpdateChildSizeRef(child_second, Size(size_ref.width, size.height)).width;
@@ -316,11 +316,11 @@ protected:
 				}
 			}
 		} else {
-			if constexpr (!IsAssigned<WidthTypeSecond>) {
-				if (IsAssigned<HeightTypeSecond> || size.height == child_size.height) {
+			if constexpr (!IsFixed<WidthTraitSecond>) {
+				if (IsFixed<HeightTraitSecond> || size.height == child_size.height) {
 					if (length_second != child_size.width) {
 						length_second = child_size.width;
-						if constexpr (IsAssigned<WidthTypeFirst>) {
+						if constexpr (IsFixed<WidthTraitFirst>) {
 							UpdateChildSizeRef(child_first, Size(length_first = size.width - length_second, size.height));
 							Redraw(GetRegionFirst());
 						} else {
@@ -331,7 +331,7 @@ protected:
 				} else {
 					size.height = child_size.height;
 					length_second = child_size.width;
-					if constexpr (IsAssigned<WidthTypeFirst>) {
+					if constexpr (IsFixed<WidthTraitFirst>) {
 						UpdateChildSizeRef(child_first, Size(length_first = size.width - length_second, size.height));
 					} else {
 						length_second = UpdateChildSizeRef(child_first, Size(size_ref.width, size.height)).width;
@@ -346,10 +346,10 @@ protected:
 
 
 template<class T1, class T2>
-SplitLayoutVertical(T1, T2) -> SplitLayoutVertical<extract_width_type<T1>, extract_height_type<T1>, extract_width_type<T2>, extract_height_type<T2>>;
+SplitLayoutVertical(T1, T2) -> SplitLayoutVertical<extract_width_trait<T1>, extract_height_trait<T1>, extract_width_trait<T2>, extract_height_trait<T2>>;
 
 template<class T1, class T2>
-SplitLayoutHorizontal(T1, T2) -> SplitLayoutHorizontal<extract_width_type<T1>, extract_height_type<T1>, extract_width_type<T2>, extract_height_type<T2>>;
+SplitLayoutHorizontal(T1, T2) -> SplitLayoutHorizontal<extract_width_trait<T1>, extract_height_trait<T1>, extract_width_trait<T2>, extract_height_trait<T2>>;
 
 
 } // namespace ViewDesign

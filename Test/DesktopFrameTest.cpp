@@ -22,7 +22,7 @@ private:
 };
 
 
-class EmptyWindow : public CustomizedCursor<SolidColorBackground<Placeholder<Assigned, Assigned>, Color::Gray>, Cursor::Hand> {
+class EmptyWindow : public CustomizedCursor<SolidColorBackground<Placeholder<Fixed, Fixed>, Color::Gray>, Cursor::Hand> {
 public:
 	EmptyWindow() {}
 private:

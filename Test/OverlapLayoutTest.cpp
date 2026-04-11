@@ -31,7 +31,7 @@ private:
 	}
 
 private:
-	class View : public SolidColorBackground<Placeholder<Assigned, Assigned>> {
+	class View : public SolidColorBackground<Placeholder<Fixed, Fixed>> {
 	public:
 		View(Color background_color) { background = background_color; }
 	public:

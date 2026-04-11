@@ -44,7 +44,7 @@ private:
 };
 
 template<class T>
-HighlightFocus(T) -> HighlightFocus<InnerBorderFrame<extract_width_type<T>, extract_height_type<T>>>;
+HighlightFocus(T) -> HighlightFocus<InnerBorderFrame<extract_width_trait<T>, extract_height_trait<T>>>;
 
 
 struct TextBoxStyle : TextBox::Style {
@@ -75,17 +75,17 @@ int main() {
 				new ListLayout<Vertical>(
 					20,
 					new HighlightFocus(
-						new ClipFrame<Assigned, Auto, Left>(
+						new ClipFrame<Fixed, Auto, Left>(
 							new TextBox(TextBoxStyle(), L"ListLayoutTest")
 						)
 					),
 					new HighlightFocus(
-						new ClipFrame<Assigned, Auto, Left>(
+						new ClipFrame<Fixed, Auto, Left>(
 							new EditBox(EditBoxStyle1(), L"EditBox")
 						)
 					),
 					new HighlightFocus(
-						new HitThroughMargin<ClipFrame<Assigned, Auto, Right>>(
+						new HitThroughMargin<ClipFrame<Fixed, Auto, Right>>(
 							new EditBox(EditBoxStyle2(), L"EditBox2")
 						)
 					)

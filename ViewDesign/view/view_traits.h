@@ -9,26 +9,26 @@ namespace ViewDesign {
 
 
 struct Relative {};
-struct Assigned : Relative {};
+struct Fixed : Relative {};
 struct Auto : Relative {};
 
 template<class T> constexpr bool IsRelative = std::is_same_v<T, Relative>;
-template<class T> constexpr bool IsAssigned = std::is_same_v<T, Assigned>;
+template<class T> constexpr bool IsFixed = std::is_same_v<T, Fixed>;
 template<class T> constexpr bool IsAuto = std::is_same_v<T, Auto>;
 
-template<class WidthType, class HeightType>
-struct LayoutType {
-	static_assert(std::is_base_of_v<Relative, WidthType> && std::is_base_of_v<Relative, HeightType>, "invalid layout type");
+template<class WidthTrait, class HeightTrait>
+struct SizeTrait {
+	static_assert(std::is_base_of_v<Relative, WidthTrait> && std::is_base_of_v<Relative, HeightTrait>, "invalid size trait");
 
-	using width_type = WidthType;
-	using height_type = HeightType;
+	using width_trait = WidthTrait;
+	using height_trait = HeightTrait;
 };
 
-template<class WidthType, class HeightType>
-class ViewType : public ViewBase, public LayoutType<WidthType, HeightType> {};
+template<class WidthTrait, class HeightTrait>
+class ViewType : public ViewBase, public SizeTrait<WidthTrait, HeightTrait> {};
 
 
-template<class WidthType = Relative, class HeightType = Relative>
+template<class WidthTrait = Relative, class HeightTrait = Relative>
 class view_ref;
 
 template<>
@@ -42,17 +42,17 @@ public:
 	ref_ptr<ViewBase> operator->() const { return &get(); }
 };
 
-template<class WidthType, class HeightType>
+template<class WidthTrait, class HeightTrait>
 class view_ref : public view_ref<> {
 public:
-	template<class View> requires (std::is_base_of_v<WidthType, typename View::width_type> && std::is_base_of_v<HeightType, typename View::height_type>)
+	template<class View> requires (std::is_base_of_v<WidthTrait, typename View::width_trait> && std::is_base_of_v<HeightTrait, typename View::height_trait>)
 	view_ref(View& ref) : view_ref<>(ref) {}
 public:
 	view_ref&& operator=(view_ref<>&& ref) { view_ref<>::operator=(ref); return *this; }
 };
 
 
-template<class WidthType = Relative, class HeightType = Relative>
+template<class WidthTrait = Relative, class HeightTrait = Relative>
 class view_ptr;
 
 template<>
@@ -68,13 +68,13 @@ public:
 	operator ref_ptr<ViewBase>() const { return get(); }
 };
 
-template<class WidthType, class HeightType>
+template<class WidthTrait, class HeightTrait>
 class view_ptr : public view_ptr<> {
 public:
 	view_ptr() {}
-	template<class View> requires (std::is_base_of_v<WidthType, typename View::width_type> && std::is_base_of_v<HeightType, typename View::height_type>)
+	template<class View> requires (std::is_base_of_v<WidthTrait, typename View::width_trait> && std::is_base_of_v<HeightTrait, typename View::height_trait>)
 	view_ptr(std::unique_ptr<View> ptr) : view_ptr<>(std::move(ptr)) {}
-	template<class View> requires (std::is_base_of_v<WidthType, typename View::width_type> && std::is_base_of_v<HeightType, typename View::height_type>)
+	template<class View> requires (std::is_base_of_v<WidthTrait, typename View::width_trait> && std::is_base_of_v<HeightTrait, typename View::height_trait>)
 	view_ptr(alloc_ptr<View> ptr) : view_ptr(std::unique_ptr<View>(ptr)) {}
 public:
 	view_ptr&& operator=(view_ptr<>&& ptr) { view_ptr<>::operator=(std::move(ptr)); return std::move(*this); }
@@ -82,28 +82,28 @@ public:
 
 
 template<class T>
-struct extract_layout_type;
+struct extract_size_trait;
 
-template<class WidthType, class HeightType>
-struct extract_layout_type<view_ptr<WidthType, HeightType>> {
-	using width_type = WidthType;
-	using height_type = HeightType;
+template<class WidthTrait, class HeightTrait>
+struct extract_size_trait<view_ptr<WidthTrait, HeightTrait>> {
+	using width_trait = WidthTrait;
+	using height_trait = HeightTrait;
 };
 
 template<class View>
-struct extract_layout_type<alloc_ptr<View>> {
-	using width_type = typename View::width_type;
-	using height_type = typename View::height_type;
+struct extract_size_trait<alloc_ptr<View>> {
+	using width_trait = typename View::width_trait;
+	using height_trait = typename View::height_trait;
 };
 
 template<class View>
-struct extract_layout_type<std::unique_ptr<View>> : public extract_layout_type<alloc_ptr<View>> {};
+struct extract_size_trait<std::unique_ptr<View>> : public extract_size_trait<alloc_ptr<View>> {};
 
 template<class T>
-using extract_width_type = typename extract_layout_type<T>::width_type;
+using extract_width_trait = typename extract_size_trait<T>::width_trait;
 
 template<class T>
-using extract_height_type = typename extract_layout_type<T>::height_type;
+using extract_height_trait = typename extract_size_trait<T>::height_trait;
 
 
 struct Vertical {};

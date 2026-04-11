@@ -26,11 +26,11 @@
 namespace ViewDesign {
 
 
-class TabView : public ViewFrame, public LayoutType<Assigned, Assigned>, protected ContextProvider {
+class TabView : public ViewFrame, public SizeTrait<Fixed, Fixed>, protected ContextProvider {
 public:
-	class Tab : public HitSelfFallback<ViewFrame>, public LayoutType<Assigned, Auto>, protected Context, protected ContextProvider {
+	class Tab : public HitSelfFallback<ViewFrame>, public SizeTrait<Fixed, Auto>, protected Context, protected ContextProvider {
 	public:
-		class Title : public CenterFrame<Auto, Assigned> {
+		class Title : public CenterFrame<Auto, Fixed> {
 		protected:
 			class Text : public TextBox {
 			protected:
@@ -61,7 +61,7 @@ public:
 			}
 		};
 
-		class CloseButton : public Placeholder<Auto, Assigned>, protected Context {
+		class CloseButton : public Placeholder<Auto, Fixed>, protected Context {
 		public:
 			CloseButton() : Placeholder(30px), Context(AsViewBase()) {}
 		protected:
@@ -97,20 +97,20 @@ public:
 			}
 		};
 
-		class Bar : public FixedFrame<Assigned, Auto> {
+		class Bar : public FixedFrame<Fixed, Auto> {
 		public:
-			Bar(view_ptr<Auto, Assigned> title, view_ptr<Auto, Assigned> close_button) : FixedFrame(
+			Bar(view_ptr<Auto, Fixed> title, view_ptr<Auto, Fixed> close_button) : FixedFrame(
 				30px,
 				new StackLayout(
-					new HitThrough<ClipFrame<Assigned, Assigned, TopLeft>>(std::move(title)),
-					new HitThroughMargin<ClipFrame<Assigned, Assigned, TopRight>>(std::move(close_button))
+					new HitThrough<ClipFrame<Fixed, Fixed, TopLeft>>(std::move(title)),
+					new HitThroughMargin<ClipFrame<Fixed, Fixed, TopRight>>(std::move(close_button))
 				)
 			) {}
 		};
 
 	public:
-		Tab(view_ptr<Assigned, Auto> tab) : Base(std::move(tab)), Context(AsViewBase()), ContextProvider(AsViewBase()) {}
-		Tab(view_ptr<Auto, Assigned> title, view_ptr<Auto, Assigned> close_button = new CloseButton()) : Tab(new Bar(std::move(title), std::move(close_button))) {}
+		Tab(view_ptr<Fixed, Auto> tab) : Base(std::move(tab)), Context(AsViewBase()), ContextProvider(AsViewBase()) {}
+		Tab(view_ptr<Auto, Fixed> title, view_ptr<Auto, Fixed> close_button = new CloseButton()) : Tab(new Bar(std::move(title), std::move(close_button))) {}
 
 		// state
 	private:
@@ -121,13 +121,13 @@ public:
 		bool selected = false;
 	protected:
 		void Show() { active = true; Redraw(region_infinite); Context::Get<TabView>().ShowTab(*this, OnShow()); }
-		void Hide(view_ptr<Assigned, Assigned> content) { active = false; Redraw(region_infinite); OnHide(std::move(content)); }
+		void Hide(view_ptr<Fixed, Fixed> content) { active = false; Redraw(region_infinite); OnHide(std::move(content)); }
 		void Close() { Context::Get<TabView>().CloseTab(*this); }
 		void Select() { if (!selected) { selected = true; Redraw(region_infinite); Context::Get<TabView>().SelectTab(*this); } }
 		void Unselect() { if (selected) { selected = false; Redraw(region_infinite); Context::Get<TabView>().UnselectTab(*this); } }
 	protected:
-		virtual view_ptr<Assigned, Assigned> OnShow() { return new Placeholder<Assigned, Assigned>(); }
-		virtual void OnHide(view_ptr<Assigned, Assigned> content) {}
+		virtual view_ptr<Fixed, Fixed> OnShow() { return new Placeholder<Fixed, Fixed>(); }
+		virtual void OnHide(view_ptr<Fixed, Fixed> content) {}
 
 		// paint
 	protected:
@@ -161,9 +161,9 @@ public:
 	};
 
 protected:
-	class SideBar : public FixedFrame<Auto, Assigned>, protected ContextProvider {
+	class SideBar : public FixedFrame<Auto, Fixed>, protected ContextProvider {
 	protected:
-		class ResizeControl : public CustomizedCursor<Placeholder<Auto, Assigned>, Cursor::ResizeWE>, protected Context {
+		class ResizeControl : public CustomizedCursor<Placeholder<Auto, Fixed>, Cursor::ResizeWE>, protected Context {
 		public:
 			ResizeControl() : Base(5px), Context(AsViewBase()) {}
 		protected:
@@ -201,7 +201,7 @@ protected:
 		static constexpr Color background = Color::LightYellow;
 
 	public:
-		SideBar(view_ptr<Assigned, Assigned> child) : FixedFrame(
+		SideBar(view_ptr<Fixed, Fixed> child) : FixedFrame(
 			default_width,
 			new SplitLayoutHorizontal(
 				new BackgroundFrame(
@@ -349,7 +349,7 @@ public:
 					tab_list = new TabList()
 				)
 			),
-			view_ptr<Assigned, Assigned>() = content_frame = new ViewFrameMutable(new Placeholder<Assigned, Assigned>)
+			view_ptr<Fixed, Fixed>() = content_frame = new ViewFrameMutable(new Placeholder<Fixed, Fixed>)
 		)
 	), ContextProvider(AsViewBase()) {}
 
@@ -359,16 +359,16 @@ private:
 	ref_ptr<Tab> active_tab = nullptr;
 
 private:
-	void ShowTab(Tab& tab, view_ptr<Assigned, Assigned> content) {
+	void ShowTab(Tab& tab, view_ptr<Fixed, Fixed> content) {
 		view_ptr<> previous_content = content_frame->Reset(std::move(content));
 		if (active_tab != nullptr) {
-			active_tab->Hide(view_ptr<Assigned, Assigned>() = std::move(previous_content));
+			active_tab->Hide(view_ptr<Fixed, Fixed>() = std::move(previous_content));
 		}
 		active_tab = &tab;
 	}
 	void CloseTab(Tab& tab) {
 		if (active_tab == &tab) {
-			tab.Hide(view_ptr<Assigned, Assigned>() = content_frame->Reset(new Placeholder<Assigned, Assigned>));
+			tab.Hide(view_ptr<Fixed, Fixed>() = content_frame->Reset(new Placeholder<Fixed, Fixed>));
 			active_tab = nullptr;
 		}
 		tab_list->ClearSelection();

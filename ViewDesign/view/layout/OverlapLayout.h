@@ -39,7 +39,7 @@ private:
 };
 
 
-class OverlapLayout : public ViewType<Assigned, Assigned> {
+class OverlapLayout : public ViewType<Fixed, Fixed> {
 private:
 	friend class OverlapFrame;
 

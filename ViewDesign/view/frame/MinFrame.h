@@ -6,12 +6,12 @@
 namespace ViewDesign {
 
 
-template<class WidthType = Auto, class HeightType = Auto>
+template<class WidthTrait = Auto, class HeightTrait = Auto>
 class MinFrame;
 
 
 template<>
-class MinFrame<Auto, Auto> : public ViewFrame, public LayoutType<Auto, Auto> {
+class MinFrame<Auto, Auto> : public ViewFrame, public SizeTrait<Auto, Auto> {
 public:
 	MinFrame(Size size_min, view_ptr<Relative, Relative> child) : ViewFrame(std::move(child)), size_min(size_min) {
 		Size child_size = UpdateChildSizeRef(this->child, size_min);
@@ -30,9 +30,9 @@ protected:
 
 
 template<>
-class MinFrame<Assigned, Auto> : public ViewFrame, public LayoutType<Assigned, Auto> {
+class MinFrame<Fixed, Auto> : public ViewFrame, public SizeTrait<Fixed, Auto> {
 public:
-	MinFrame(float height_min, view_ptr<Assigned, Relative> child) : ViewFrame(std::move(child)), height_min(height_min) {}
+	MinFrame(float height_min, view_ptr<Fixed, Relative> child) : ViewFrame(std::move(child)), height_min(height_min) {}
 protected:
 	Size size;
 	float height_min;
@@ -52,9 +52,9 @@ protected:
 
 
 template<>
-class MinFrame<Auto, Assigned> : public ViewFrame, public LayoutType<Auto, Assigned> {
+class MinFrame<Auto, Fixed> : public ViewFrame, public SizeTrait<Auto, Fixed> {
 public:
-	MinFrame(float width_min, view_ptr<Relative, Assigned> child) : ViewFrame(std::move(child)), width_min(width_min) {}
+	MinFrame(float width_min, view_ptr<Relative, Fixed> child) : ViewFrame(std::move(child)), width_min(width_min) {}
 protected:
 	Size size;
 	float width_min;
@@ -74,7 +74,7 @@ protected:
 
 
 template<class Size, class T>
-MinFrame(Size, T) -> MinFrame<std::conditional_t<IsAssigned<extract_width_type<T>>, Assigned, Auto>, std::conditional_t<IsAssigned<extract_height_type<T>>, Assigned, Auto>>;
+MinFrame(Size, T) -> MinFrame<std::conditional_t<IsFixed<extract_width_trait<T>>, Fixed, Auto>, std::conditional_t<IsFixed<extract_height_trait<T>>, Fixed, Auto>>;
 
 
 } // namespace ViewDesign

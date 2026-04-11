@@ -56,16 +56,16 @@ private:
 			}
 		};
 	private:
-		virtual view_ptr<Assigned, Assigned> OnShow() override {
-			return new ClipFrame<Assigned, Assigned, TopLeft>(new PaddingFrame(Padding(20px), new MyEditBox(*this)));
+		virtual view_ptr<Fixed, Fixed> OnShow() override {
+			return new ClipFrame<Fixed, Fixed, TopLeft>(new PaddingFrame(Padding(20px), new MyEditBox(*this)));
 		};
 	};
 
 	class HomePage : public Tab {
 	public:
-		HomePage() : Tab(new Title(L"Home"), new Placeholder<Auto, Assigned>(0px)) {}
+		HomePage() : Tab(new Title(L"Home"), new Placeholder<Auto, Fixed>(0px)) {}
 	private:
-		class Content : public Placeholder<Assigned, Assigned>, Context {
+		class Content : public Placeholder<Fixed, Fixed>, Context {
 		public:
 			Content() : Placeholder(), Context(AsViewBase()) {}
 		private:
@@ -76,7 +76,7 @@ private:
 			}
 		};
 	private:
-		virtual view_ptr<Assigned, Assigned> OnShow() override {
+		virtual view_ptr<Fixed, Fixed> OnShow() override {
 			return new Content();
 		};
 	};

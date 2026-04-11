@@ -6,22 +6,22 @@
 namespace ViewDesign {
 
 
-template<class WidthType = Auto, class HeightType = Auto>
+template<class WidthTrait = Auto, class HeightTrait = Auto>
 class FixedFrame;
 
 
 template<>
-class FixedFrame<Auto, Auto> : public ViewFrame, public LayoutType<Auto, Auto> {
+class FixedFrame<Auto, Auto> : public ViewFrame, public SizeTrait<Auto, Auto> {
 public:
-	FixedFrame(float width, view_ptr<Assigned, Auto> child) : ViewFrame(std::move(child)) {
+	FixedFrame(float width, view_ptr<Fixed, Auto> child) : ViewFrame(std::move(child)) {
 		SetChildData<uint>(this->child, child_assigned_auto);
 		size = Size(width, UpdateChildSizeRef(this->child, Size(width, length_min)).height);
 	}
-	FixedFrame(float height, view_ptr<Auto, Assigned> child) : ViewFrame(std::move(child)) {
+	FixedFrame(float height, view_ptr<Auto, Fixed> child) : ViewFrame(std::move(child)) {
 		SetChildData<uint>(this->child, child_auto_assigned);
 		size = Size(UpdateChildSizeRef(this->child, Size(length_min, height)).width, height);
 	}
-	FixedFrame(Size size, view_ptr<Assigned, Assigned> child) : ViewFrame(std::move(child)) {
+	FixedFrame(Size size, view_ptr<Fixed, Fixed> child) : ViewFrame(std::move(child)) {
 		SetChildData<uint>(this->child, child_assigned_assigned);
 		this->size = size; UpdateChildSizeRef(this->child, size);
 	}
@@ -70,9 +70,9 @@ protected:
 
 
 template<>
-class FixedFrame<Auto, Assigned> : public ViewFrame, public LayoutType<Auto, Assigned> {
+class FixedFrame<Auto, Fixed> : public ViewFrame, public SizeTrait<Auto, Fixed> {
 public:
-	FixedFrame(float width, view_ptr<Assigned, Assigned> child) : ViewFrame(std::move(child)), size(width, 0.0f) {}
+	FixedFrame(float width, view_ptr<Fixed, Fixed> child) : ViewFrame(std::move(child)), size(width, 0.0f) {}
 protected:
 	Size size;
 public:
@@ -94,9 +94,9 @@ protected:
 
 
 template<>
-class FixedFrame<Assigned, Auto> : public ViewFrame, public LayoutType<Assigned, Auto> {
+class FixedFrame<Fixed, Auto> : public ViewFrame, public SizeTrait<Fixed, Auto> {
 public:
-	FixedFrame(float height, view_ptr<Assigned, Assigned> child) : ViewFrame(std::move(child)), size(0.0f, height) {}
+	FixedFrame(float height, view_ptr<Fixed, Fixed> child) : ViewFrame(std::move(child)), size(0.0f, height) {}
 protected:
 	Size size;
 public:

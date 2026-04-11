@@ -13,7 +13,7 @@ namespace ViewDesign {
 template<class T>
 struct RadioItem {
 	T value;
-	view_ptr<Assigned, Auto> child;
+	view_ptr<Fixed, Auto> child;
 	bool selected = false;
 };
 
@@ -28,7 +28,7 @@ public:
 		selected_item(selected_item ? selected_item : nullptr) {}
 
 private:
-	class ItemFrameBase : public PaddingFrame<Assigned, Auto> {
+	class ItemFrameBase : public PaddingFrame<Fixed, Auto> {
 	protected:
 		ItemFrameBase(RadioGroup& group, bool selected, view_ptr child) : PaddingFrame(
 			Padding(20px, 0px, 0px, 0px),

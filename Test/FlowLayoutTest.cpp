@@ -51,7 +51,7 @@ private:
 					Border(3px, 12px, Color::CadetBlue),
 					new PaddingFrame(
 						Padding(6, 0),
-						new ClipFrame<Auto, Assigned, Bottom>(
+						new ClipFrame<Auto, Fixed, Bottom>(
 							new MaxFrame(
 								size_max,
 								new EditBox(EditBoxStyle(), NextName())

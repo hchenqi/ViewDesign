@@ -24,7 +24,7 @@ protected:
 };
 
 
-class ImageRepeatBox : public ViewType<Assigned, Assigned> {
+class ImageRepeatBox : public ViewType<Fixed, Fixed> {
 public:
 	ImageRepeatBox(std::wstring image_file, Point offset = point_zero) : image(image_file), offset(offset - point_zero) {}
 protected:

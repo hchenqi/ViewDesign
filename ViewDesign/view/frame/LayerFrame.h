@@ -37,19 +37,19 @@ protected:
 };
 
 
-template<class WidthType, class HeightType>
-class LayerFrame : public _LayerFrame_Base, public LayoutType<WidthType, HeightType> {
+template<class WidthTrait, class HeightTrait>
+class LayerFrame : public _LayerFrame_Base, public SizeTrait<WidthTrait, HeightTrait> {
 public:
-	LayerFrame(view_ptr<WidthType, HeightType> child) : LayerFrame(0xFF, std::move(child)) {}
-	LayerFrame(uchar opacity, view_ptr<WidthType, HeightType> child) : _LayerFrame_Base(opacity, std::move(child)) {}
+	LayerFrame(view_ptr<WidthTrait, HeightTrait> child) : LayerFrame(0xFF, std::move(child)) {}
+	LayerFrame(uchar opacity, view_ptr<WidthTrait, HeightTrait> child) : _LayerFrame_Base(opacity, std::move(child)) {}
 };
 
 
 template<class T>
-LayerFrame(T) -> LayerFrame<extract_width_type<T>, extract_height_type<T>>;
+LayerFrame(T) -> LayerFrame<extract_width_trait<T>, extract_height_trait<T>>;
 
 template<class T>
-LayerFrame(uchar, T) -> LayerFrame<extract_width_type<T>, extract_height_type<T>>;
+LayerFrame(uchar, T) -> LayerFrame<extract_width_trait<T>, extract_height_trait<T>>;
 
 
 } // namespace ViewDesign

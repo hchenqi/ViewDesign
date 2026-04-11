@@ -6,7 +6,7 @@
 namespace ViewDesign {
 
 
-template<class WidthType, class HeightType>
+template<class WidthTrait, class HeightTrait>
 class Placeholder;
 
 
@@ -24,7 +24,7 @@ protected:
 
 
 template<>
-class Placeholder<Auto, Assigned> : public ViewType<Auto, Assigned> {
+class Placeholder<Auto, Fixed> : public ViewType<Auto, Fixed> {
 public:
 	Placeholder(float width) : size(width, 0.0f) {}
 protected:
@@ -37,7 +37,7 @@ protected:
 
 
 template<>
-class Placeholder<Assigned, Auto> : public ViewType<Assigned, Auto> {
+class Placeholder<Fixed, Auto> : public ViewType<Fixed, Auto> {
 public:
 	Placeholder(float height) : size(0.0f, height) {}
 protected:
@@ -50,7 +50,7 @@ protected:
 
 
 template<>
-class Placeholder<Assigned, Assigned> : public ViewType<Assigned, Assigned> {};
+class Placeholder<Fixed, Fixed> : public ViewType<Fixed, Fixed> {};
 
 
 } // namespace ViewDesign

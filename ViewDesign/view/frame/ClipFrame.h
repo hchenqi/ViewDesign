@@ -16,7 +16,7 @@ struct BottomLeft {};
 struct BottomRight {};
 
 
-template<class WidthType, class HeightType, class Position>
+template<class WidthTrait, class HeightTrait, class Position>
 class ClipFrame;
 
 
@@ -46,7 +46,7 @@ protected:
 
 
 template<>
-class ClipFrame<Assigned, Assigned, TopLeft> : public _ClipFrame_Base, public LayoutType<Assigned, Assigned> {
+class ClipFrame<Fixed, Fixed, TopLeft> : public _ClipFrame_Base, public SizeTrait<Fixed, Fixed> {
 public:
 	ClipFrame(view_ptr<> child) : _ClipFrame_Base(std::move(child)) { child_region.point = point_zero; }
 protected:
@@ -61,7 +61,7 @@ protected:
 };
 
 template<>
-class ClipFrame<Assigned, Assigned, TopRight> : public _ClipFrame_Base, public LayoutType<Assigned, Assigned> {
+class ClipFrame<Fixed, Fixed, TopRight> : public _ClipFrame_Base, public SizeTrait<Fixed, Fixed> {
 public:
 	ClipFrame(view_ptr<> child) : _ClipFrame_Base(std::move(child)) { child_region.point.y = 0; }
 protected:
@@ -78,7 +78,7 @@ protected:
 };
 
 template<>
-class ClipFrame<Assigned, Assigned, BottomLeft> : public _ClipFrame_Base, public LayoutType<Assigned, Assigned> {
+class ClipFrame<Fixed, Fixed, BottomLeft> : public _ClipFrame_Base, public SizeTrait<Fixed, Fixed> {
 public:
 	ClipFrame(view_ptr<> child) : _ClipFrame_Base(std::move(child)) { child_region.point.x = 0; }
 protected:
@@ -95,7 +95,7 @@ protected:
 };
 
 template<>
-class ClipFrame<Assigned, Assigned, BottomRight> : public _ClipFrame_Base, public LayoutType<Assigned, Assigned> {
+class ClipFrame<Fixed, Fixed, BottomRight> : public _ClipFrame_Base, public SizeTrait<Fixed, Fixed> {
 public:
 	ClipFrame(view_ptr<> child) : _ClipFrame_Base(std::move(child)) {}
 protected:
@@ -113,7 +113,7 @@ protected:
 
 
 template<>
-class ClipFrame<Assigned, Auto, Left> : public _ClipFrame_Base, public LayoutType<Assigned, Auto> {
+class ClipFrame<Fixed, Auto, Left> : public _ClipFrame_Base, public SizeTrait<Fixed, Auto> {
 public:
 	ClipFrame(view_ptr<Relative, Auto> child) : _ClipFrame_Base(std::move(child)) { child_region.point = point_zero; }
 protected:
@@ -134,7 +134,7 @@ protected:
 };
 
 template<>
-class ClipFrame<Assigned, Auto, Right> : public _ClipFrame_Base, public LayoutType<Assigned, Auto> {
+class ClipFrame<Fixed, Auto, Right> : public _ClipFrame_Base, public SizeTrait<Fixed, Auto> {
 public:
 	ClipFrame(view_ptr<Relative, Auto> child) : _ClipFrame_Base(std::move(child)) { child_region.point.y = 0; }
 protected:
@@ -158,7 +158,7 @@ protected:
 
 
 template<>
-class ClipFrame<Auto, Assigned, Top> : public _ClipFrame_Base, public LayoutType<Auto, Assigned> {
+class ClipFrame<Auto, Fixed, Top> : public _ClipFrame_Base, public SizeTrait<Auto, Fixed> {
 public:
 	ClipFrame(view_ptr<Auto, Relative> child) : _ClipFrame_Base(std::move(child)) {}
 protected:
@@ -179,7 +179,7 @@ protected:
 };
 
 template<>
-class ClipFrame<Auto, Assigned, Bottom> : public _ClipFrame_Base, public LayoutType<Auto, Assigned> {
+class ClipFrame<Auto, Fixed, Bottom> : public _ClipFrame_Base, public SizeTrait<Auto, Fixed> {
 public:
 	ClipFrame(view_ptr<Auto, Relative> child) : _ClipFrame_Base(std::move(child)) { child_region.point.x = 0; }
 protected:

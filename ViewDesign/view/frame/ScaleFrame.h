@@ -7,10 +7,10 @@
 namespace ViewDesign {
 
 
-template<class WidthType, class HeightType>
-class ScaleFrame : public ViewFrame, public LayoutType<WidthType, HeightType> {
+template<class WidthTrait, class HeightTrait>
+class ScaleFrame : public ViewFrame, public SizeTrait<WidthTrait, HeightTrait> {
 public:
-	using child_type = view_ptr<WidthType, HeightType>;
+	using child_type = view_ptr<WidthTrait, HeightTrait>;
 
 public:
 	ScaleFrame(Scale scale, child_type child) : ViewFrame(std::move(child)), scale(scale) {}
@@ -54,7 +54,7 @@ protected:
 
 
 template<class T>
-ScaleFrame(Scale, T) -> ScaleFrame<extract_width_type<T>, extract_height_type<T>>;
+ScaleFrame(Scale, T) -> ScaleFrame<extract_width_trait<T>, extract_height_trait<T>>;
 
 
 } // namespace ViewDesign

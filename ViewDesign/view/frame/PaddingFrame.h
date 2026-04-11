@@ -10,10 +10,10 @@ namespace ViewDesign {
 using Padding = Margin;
 
 
-template<class WidthType, class HeightType>
-class PaddingFrame : public ViewFrame, public LayoutType<WidthType, HeightType> {
+template<class WidthTrait, class HeightTrait>
+class PaddingFrame : public ViewFrame, public SizeTrait<WidthTrait, HeightTrait> {
 public:
-	using child_type = view_ptr<WidthType, HeightType>;
+	using child_type = view_ptr<WidthTrait, HeightTrait>;
 
 public:
 	PaddingFrame(Padding padding, child_type child) : ViewFrame(std::move(child)), padding(padding) {}
@@ -47,7 +47,7 @@ protected:
 
 
 template<class T>
-PaddingFrame(Padding, T) -> PaddingFrame<extract_width_type<T>, extract_height_type<T>>;
+PaddingFrame(Padding, T) -> PaddingFrame<extract_width_trait<T>, extract_height_trait<T>>;
 
 
 } // namespace ViewDesign

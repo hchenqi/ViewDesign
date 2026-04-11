@@ -11,7 +11,7 @@ template<class Direction>
 class ScrollFrame;
 
 
-class _ScrollFrame_Base : public ViewFrame, public LayoutType<Assigned, Assigned> {
+class _ScrollFrame_Base : public ViewFrame, public SizeTrait<Fixed, Fixed> {
 protected:
 	_ScrollFrame_Base(view_ptr<> child) : ViewFrame(std::move(child)) {}
 
@@ -116,7 +116,7 @@ protected:
 template<>
 class ScrollFrame<Vertical> : public _ScrollFrame_Base {
 public:
-	ScrollFrame(view_ptr<Assigned, Auto> child) : _ScrollFrame_Base(std::move(child)) {}
+	ScrollFrame(view_ptr<Fixed, Auto> child) : _ScrollFrame_Base(std::move(child)) {}
 
 	// layout
 public:
@@ -171,7 +171,7 @@ protected:
 template<>
 class ScrollFrame<Horizontal> : public _ScrollFrame_Base {
 public:
-	ScrollFrame(view_ptr<Auto, Assigned> child) : _ScrollFrame_Base(std::move(child)) {}
+	ScrollFrame(view_ptr<Auto, Fixed> child) : _ScrollFrame_Base(std::move(child)) {}
 
 	// layout
 public:
@@ -223,7 +223,7 @@ protected:
 };
 
 
-template<class WidthType, class HeightType>
+template<class WidthTrait, class HeightTrait>
 struct deduce_scroll_frame_direction;
 
 template<>
@@ -232,18 +232,18 @@ struct deduce_scroll_frame_direction<Auto, Auto> {
 };
 
 template<>
-struct deduce_scroll_frame_direction<Assigned, Auto> {
+struct deduce_scroll_frame_direction<Fixed, Auto> {
 	using type = Vertical;
 };
 
 template<>
-struct deduce_scroll_frame_direction<Auto, Assigned> {
+struct deduce_scroll_frame_direction<Auto, Fixed> {
 	using type = Horizontal;
 };
 
 
 template<class T>
-ScrollFrame(T) -> ScrollFrame<typename deduce_scroll_frame_direction<extract_width_type<T>, extract_height_type<T>>::type>;
+ScrollFrame(T) -> ScrollFrame<typename deduce_scroll_frame_direction<extract_width_trait<T>, extract_height_trait<T>>::type>;
 
 
 } // namespace ViewDesign

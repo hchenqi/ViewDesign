@@ -6,12 +6,12 @@
 namespace ViewDesign {
 
 
-template<class WidthType = Auto, class HeightType = Auto>
+template<class WidthTrait = Auto, class HeightTrait = Auto>
 class MaxFrame;
 
 
 template<>
-class MaxFrame<Auto, Auto> : public ViewFrame, public LayoutType<Auto, Auto> {
+class MaxFrame<Auto, Auto> : public ViewFrame, public SizeTrait<Auto, Auto> {
 public:
 	MaxFrame(Size size_max, view_ptr<Relative, Relative> child) : ViewFrame(std::move(child)), size_max(size_max) {
 		Size child_size = UpdateChildSizeRef(this->child, size_max);
@@ -30,9 +30,9 @@ protected:
 
 
 template<>
-class MaxFrame<Assigned, Auto> : public ViewFrame, public LayoutType<Assigned, Auto> {
+class MaxFrame<Fixed, Auto> : public ViewFrame, public SizeTrait<Fixed, Auto> {
 public:
-	MaxFrame(float height_max, view_ptr<Assigned, Relative> child) : ViewFrame(std::move(child)), height_max(height_max) {}
+	MaxFrame(float height_max, view_ptr<Fixed, Relative> child) : ViewFrame(std::move(child)), height_max(height_max) {}
 protected:
 	Size size;
 	float height_max;
@@ -52,9 +52,9 @@ protected:
 
 
 template<>
-class MaxFrame<Auto, Assigned> : public ViewFrame, public LayoutType<Auto, Assigned> {
+class MaxFrame<Auto, Fixed> : public ViewFrame, public SizeTrait<Auto, Fixed> {
 public:
-	MaxFrame(float width_max, view_ptr<Relative, Assigned> child) : ViewFrame(std::move(child)), width_max(width_max) {}
+	MaxFrame(float width_max, view_ptr<Relative, Fixed> child) : ViewFrame(std::move(child)), width_max(width_max) {}
 protected:
 	Size size;
 	float width_max;
@@ -74,7 +74,7 @@ protected:
 
 
 template<class Size, class T>
-MaxFrame(Size, T) -> MaxFrame<std::conditional_t<IsAssigned<extract_width_type<T>>, Assigned, Auto>, std::conditional_t<IsAssigned<extract_height_type<T>>, Assigned, Auto>>;
+MaxFrame(Size, T) -> MaxFrame<std::conditional_t<IsFixed<extract_width_trait<T>>, Fixed, Auto>, std::conditional_t<IsFixed<extract_height_trait<T>>, Fixed, Auto>>;
 
 
 } // namespace ViewDesign

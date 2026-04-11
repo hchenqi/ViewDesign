@@ -9,10 +9,10 @@
 namespace ViewDesign {
 
 
-template<class WidthType, class HeightType>
-class BorderFrame : public ViewFrame, public LayoutType<WidthType, HeightType> {
+template<class WidthTrait, class HeightTrait>
+class BorderFrame : public ViewFrame, public SizeTrait<WidthTrait, HeightTrait> {
 public:
-	using child_type = view_ptr<WidthType, HeightType>;
+	using child_type = view_ptr<WidthTrait, HeightTrait>;
 
 public:
 	BorderFrame(Border border, child_type child) : ViewFrame(std::move(child)), border(border) {}
@@ -65,7 +65,7 @@ protected:
 
 
 template<class T>
-BorderFrame(Border, T) -> BorderFrame<extract_width_type<T>, extract_height_type<T>>;
+BorderFrame(Border, T) -> BorderFrame<extract_width_trait<T>, extract_height_trait<T>>;
 
 
 } // namespace ViewDesign

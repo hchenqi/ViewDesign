@@ -29,8 +29,8 @@ namespace ViewDesign {
 
 class TitleBarFrame : public DesktopFrame, ContextProvider {
 public:
-	using child_type = view_ptr<Assigned, Assigned>;
-	using child_type_menu = view_ptr<Auto, Assigned>;
+	using child_type = view_ptr<Fixed, Fixed>;
+	using child_type_menu = view_ptr<Auto, Fixed>;
 
 public:
 	struct TitleBarStyle : TextBlockStyle {
@@ -74,7 +74,7 @@ public:
 	};
 
 protected:
-	class ResizeBorder : public CustomizedCursor<HitSelfFallback<BorderFrame<Assigned, Assigned>>, Cursor::Default> {
+	class ResizeBorder : public CustomizedCursor<HitSelfFallback<BorderFrame<Fixed, Fixed>>, Cursor::Default> {
 	public:
 		using Base::Base;
 	protected:
@@ -90,7 +90,7 @@ protected:
 		}
 	};
 
-	class TitleBar : public HitSelfFallback<SolidColorBackground<FixedFrame<Assigned, Auto>>>, Context, ContextProvider {
+	class TitleBar : public HitSelfFallback<SolidColorBackground<FixedFrame<Fixed, Auto>>>, Context, ContextProvider {
 	public:
 		class Title : public TextBox {
 		public:
@@ -98,9 +98,9 @@ protected:
 		};
 
 	protected:
-		class ButtonBase : public Button<Auto, Assigned>, protected Context {
+		class ButtonBase : public Button<Auto, Fixed>, protected Context {
 		public:
-			ButtonBase(Color background, Color foreground, const std::wstring& tooltip_text) : Button<Auto, Assigned>(50.0f), Context(AsViewBase()), foreground(foreground), tooltip_text(tooltip_text) {
+			ButtonBase(Color background, Color foreground, const std::wstring& tooltip_text) : Button<Auto, Fixed>(50.0f), Context(AsViewBase()), foreground(foreground), tooltip_text(tooltip_text) {
 				this->background = this->background_normal = background;
 			}
 		protected:
@@ -162,16 +162,16 @@ protected:
 		TitleBar(const TitleBarStyle::BarStyle& style, child_type_menu menu, alloc_ptr<Title> title) : Base(
 			style._height,
 			new StackLayoutMultiple(
-				new HitThrough<CenterFrame<Assigned, Assigned>>(
+				new HitThrough<CenterFrame<Fixed, Fixed>>(
 					new MaxFrame(
 						Size(style._max_title_length, length_max),
 						std::move(title)
 					)
 				),
-				new HitThroughMargin<ClipFrame<Assigned, Assigned, TopLeft>>(
+				new HitThroughMargin<ClipFrame<Fixed, Fixed, TopLeft>>(
 					std::move(menu)
 				),
-				new HitThroughMargin<ClipFrame<Assigned, Assigned, TopRight>>(
+				new HitThroughMargin<ClipFrame<Fixed, Fixed, TopRight>>(
 					new ListLayout<Horizontal>(
 						0.0f,
 						new MinimizeButton(style._background_color, style._foreground_color, L"minimize"),
@@ -196,14 +196,14 @@ protected:
 	};
 
 public:
-	TitleBarFrame(Style style, child_type child, child_type_menu menu = new Placeholder<Auto, Assigned>(0.0f)) : DesktopFrame(
+	TitleBarFrame(Style style, child_type child, child_type_menu menu = new Placeholder<Auto, Fixed>(0.0f)) : DesktopFrame(
 		style.title.text,
 		outer_frame = new ViewFrameMutable(
 			new PaddingFrame(
 				style.padding,
 				border = new ResizeBorder(
 					style.border,
-					view_ptr<Assigned, Assigned>() = inner_frame = new ViewFrameMutable(
+					view_ptr<Fixed, Fixed>() = inner_frame = new ViewFrameMutable(
 						new SplitLayoutVertical(
 							new TitleBar(
 								style.title.bar,
@@ -245,8 +245,8 @@ protected:
 protected:
 	ref_ptr<ViewFrameMutable> outer_frame;
 	ref_ptr<ViewFrameMutable> inner_frame;
-	view_ptr<Assigned, Assigned> inner_frame_placeholder = new Placeholder<Assigned, Assigned>;
-	view_ptr<Assigned, Assigned> outer_frame_placeholder = view_ptr<Assigned, Assigned>();
+	view_ptr<Fixed, Fixed> inner_frame_placeholder = new Placeholder<Fixed, Fixed>;
+	view_ptr<Fixed, Fixed> outer_frame_placeholder = view_ptr<Fixed, Fixed>();
 protected:
 	bool IsMaximized() { return GetState() == State::Maximized; }
 	void MaximizeOrRestore() { if (GetState() == State::Normal) { Maximize(); } else if (GetState() == State::Maximized) { Restore(); } }
