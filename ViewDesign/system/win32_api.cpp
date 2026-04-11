@@ -166,7 +166,7 @@ FrameIrrelevantMessages:
 	return 0;
 }
 
-static const wchar_t wnd_class_name[] = L"WndDesignFrame";
+static const wchar_t wnd_class_name[] = L"ViewDesignFrame";
 HINSTANCE hInstance = NULL;
 
 inline void RegisterWndClass() {

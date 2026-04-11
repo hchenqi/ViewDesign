@@ -1,9 +1,10 @@
-# WndDesign
+# ViewDesign
 
 A C++ GUI library
 
-## Build Prerequisites
+## Building Steps
 
-- Visual Studio
-- CMake
-- Ninja
+The library and test executables can be built with CMake with Visual Studio and Ninja on Windows.
+
+## Concepts
+

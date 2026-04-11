@@ -1,11 +1,11 @@
-#include "WndDesign/window/Global.h"
-#include "WndDesign/frame/DesktopFrame.h"
-#include "WndDesign/frame/ScrollFrame.h"
-#include "WndDesign/frame/ClipFrame.h"
-#include "WndDesign/frame/InnerBorderFrame.h"
-#include "WndDesign/layout/ListLayout.h"
-#include "WndDesign/control/EditBox.h"
-#include "WndDesign/wrapper/HitTestHelper.h"
+#include "ViewDesign/window/Global.h"
+#include "ViewDesign/frame/DesktopFrame.h"
+#include "ViewDesign/frame/ScrollFrame.h"
+#include "ViewDesign/frame/ClipFrame.h"
+#include "ViewDesign/frame/InnerBorderFrame.h"
+#include "ViewDesign/layout/ListLayout.h"
+#include "ViewDesign/control/EditBox.h"
+#include "ViewDesign/wrapper/HitTestHelper.h"
 
 
 using namespace ViewDesign;

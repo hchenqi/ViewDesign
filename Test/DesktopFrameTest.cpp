@@ -1,9 +1,9 @@
-#include "WndDesign/window/Global.h"
-#include "WndDesign/frame/DesktopFrame.h"
-#include "WndDesign/control/Placeholder.h"
-#include "WndDesign/wrapper/Background.h"
-#include "WndDesign/wrapper/Cursor.h"
-#include "WndDesign/system/win32_aero_snap.h"
+#include "ViewDesign/window/Global.h"
+#include "ViewDesign/frame/DesktopFrame.h"
+#include "ViewDesign/control/Placeholder.h"
+#include "ViewDesign/wrapper/Background.h"
+#include "ViewDesign/wrapper/Cursor.h"
+#include "ViewDesign/system/win32_aero_snap.h"
 
 
 using namespace ViewDesign;

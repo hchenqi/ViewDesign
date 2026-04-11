@@ -1,13 +1,13 @@
-#include "WndDesign/window/Global.h"
-#include "WndDesign/frame/DesktopFrame.h"
-#include "WndDesign/frame/ClipFrame.h"
-#include "WndDesign/frame/InnerBorderFrame.h"
-#include "WndDesign/frame/ScaleFrame.h"
-#include "WndDesign/control/TextBox.h"
-#include "WndDesign/style/border_style.h"
-#include "WndDesign/geometry/helper.h"
-#include "WndDesign/system/cursor.h"
-#include "WndDesign/system/win32_aero_snap.h"
+#include "ViewDesign/window/Global.h"
+#include "ViewDesign/frame/DesktopFrame.h"
+#include "ViewDesign/frame/ClipFrame.h"
+#include "ViewDesign/frame/InnerBorderFrame.h"
+#include "ViewDesign/frame/ScaleFrame.h"
+#include "ViewDesign/control/TextBox.h"
+#include "ViewDesign/style/border_style.h"
+#include "ViewDesign/geometry/helper.h"
+#include "ViewDesign/system/cursor.h"
+#include "ViewDesign/system/win32_aero_snap.h"
 
 #include <cmath>
 

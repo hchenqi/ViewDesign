@@ -1,11 +1,11 @@
-#include "WndDesign/window/Global.h"
-#include "WndDesign/layout/OverlapLayout.h"
-#include "WndDesign/frame/BorderFrame.h"
-#include "WndDesign/widget/TitleBarFrame.h"
-#include "WndDesign/message/mouse_tracker.h"
-#include "WndDesign/message/key_tracker.h"
-#include "WndDesign/wrapper/Background.h"
-#include "WndDesign/wrapper/HitTestHelper.h"
+#include "ViewDesign/window/Global.h"
+#include "ViewDesign/layout/OverlapLayout.h"
+#include "ViewDesign/frame/BorderFrame.h"
+#include "ViewDesign/widget/TitleBarFrame.h"
+#include "ViewDesign/message/mouse_tracker.h"
+#include "ViewDesign/message/key_tracker.h"
+#include "ViewDesign/wrapper/Background.h"
+#include "ViewDesign/wrapper/HitTestHelper.h"
 
 
 using namespace ViewDesign;

@@ -1,7 +1,7 @@
-#include "WndDesign/window/Global.h"
-#include "WndDesign/widget/TitleBarFrame.h"
-#include "WndDesign/widget/TabView.h"
-#include "WndDesign/control/EditBox.h"
+#include "ViewDesign/window/Global.h"
+#include "ViewDesign/widget/TitleBarFrame.h"
+#include "ViewDesign/widget/TabView.h"
+#include "ViewDesign/control/EditBox.h"
 
 
 using namespace ViewDesign;

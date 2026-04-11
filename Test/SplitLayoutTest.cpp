@@ -1,11 +1,11 @@
-#include "WndDesign/window/Global.h"
-#include "WndDesign/frame/DesktopFrame.h"
-#include "WndDesign/frame/InnerBorderFrame.h"
-#include "WndDesign/frame/PaddingFrame.h"
-#include "WndDesign/frame/ClipFrame.h"
-#include "WndDesign/frame/MaxFrame.h"
-#include "WndDesign/layout/SplitLayout.h"
-#include "WndDesign/control/EditBox.h"
+#include "ViewDesign/window/Global.h"
+#include "ViewDesign/frame/DesktopFrame.h"
+#include "ViewDesign/frame/InnerBorderFrame.h"
+#include "ViewDesign/frame/PaddingFrame.h"
+#include "ViewDesign/frame/ClipFrame.h"
+#include "ViewDesign/frame/MaxFrame.h"
+#include "ViewDesign/layout/SplitLayout.h"
+#include "ViewDesign/control/EditBox.h"
 
 
 using namespace ViewDesign;
