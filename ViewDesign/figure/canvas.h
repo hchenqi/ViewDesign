@@ -10,7 +10,7 @@
 namespace ViewDesign {
 
 
-class FigureQueue {
+class Canvas {
 	// offset
 private:
 	Vector offset = vector_zero;
@@ -37,15 +37,15 @@ private:
 public:
 	const std::vector<FigureItem>& GetFigures() const { return figures; }
 public:
-	void add(Point offset, std::unique_ptr<const Figure> figure) {
+	void draw(Point offset, std::unique_ptr<const Figure> figure) {
 		figures.emplace_back(FigureItem{ offset + this->offset, std::move(figure) });
 	}
-	void add(Point offset, alloc_ptr<const Figure> figure) {
-		add(offset, std::unique_ptr<const Figure>(figure));
+	void draw(Point offset, alloc_ptr<const Figure> figure) {
+		draw(offset, std::unique_ptr<const Figure>(figure));
 	}
 	template<class FigureType>
-	void add(Point offset, auto&&... args) {
-		add(offset, std::make_unique<FigureType>(std::forward<decltype(args)>(args)...));
+	void draw(Point offset, auto&&... args) {
+		draw(offset, std::make_unique<FigureType>(std::forward<decltype(args)>(args)...));
 	}
 
 	// group
@@ -79,7 +79,7 @@ public:
 	}
 
 public:
-	FigureQueue(auto func) {
+	Canvas(auto func) {
 		Group(Transform::Identity(), region_infinite, [&]() { func(*this); });
 	}
 };

@@ -6,7 +6,7 @@
 
 namespace ViewDesign {
 
-class FigureQueue;
+class Canvas;
 
 
 class Layer : Uncopyable {
@@ -20,7 +20,7 @@ public:
 	void Create(Size size);
 	void Destroy() { bitmap.Destroy(); }
 public:
-	void DrawFigureQueue(const FigureQueue& figure_queue, Vector offset, Rect clip_region);
+	void DrawCanvas(const Canvas& canvas, Vector offset, Rect clip_region);
 };
 
 

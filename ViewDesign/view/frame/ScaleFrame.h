@@ -41,9 +41,9 @@ protected:
 	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override {
 		Redraw(child_redraw_region * scale);
 	}
-	virtual void OnDraw(FigureQueue& figure_queue, Rect draw_region) override {
-		figure_queue.Group(scale, region_infinite, [&]() {
-			DrawChild(child, point_zero, figure_queue, draw_region * scale.Invert());
+	virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
+		canvas.Group(scale, region_infinite, [&]() {
+			DrawChild(child, point_zero, canvas, draw_region * scale.Invert());
 		});
 	}
 

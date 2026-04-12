@@ -120,9 +120,9 @@ protected:
 		public:
 			using ButtonBase::ButtonBase;
 		protected:
-			virtual void OnDraw(FigureQueue& figure_queue, Rect draw_region) override {
-				ButtonBase::OnDraw(figure_queue, draw_region);
-				figure_queue.add(Point(20.0f, 15.0f), new Rectangle(Size(10.0f, 1.0f), 1.0f, foreground));
+			virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
+				ButtonBase::OnDraw(canvas, draw_region);
+				canvas.draw(Point(20.0f, 15.0f), new Rectangle(Size(10.0f, 1.0f), 1.0f, foreground));
 			}
 		protected:
 			virtual void OnClick() override { Context::Get<TitleBarFrame>().Minimize(); }
@@ -132,13 +132,13 @@ protected:
 		public:
 			using ButtonBase::ButtonBase;
 		protected:
-			virtual void OnDraw(FigureQueue& figure_queue, Rect draw_region) override {
-				ButtonBase::OnDraw(figure_queue, draw_region);
+			virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
+				ButtonBase::OnDraw(canvas, draw_region);
 				if (Context::Get<TitleBarFrame>().IsMaximized()) {
-					figure_queue.add(Point(22.0f, 10.0f), new Rectangle(Size(8.0f, 8.0f), 1.0f, foreground));
-					figure_queue.add(Point(20.0f, 12.0f), new Rectangle(Size(8.0f, 8.0f), background, 1.0f, foreground));
+					canvas.draw(Point(22.0f, 10.0f), new Rectangle(Size(8.0f, 8.0f), 1.0f, foreground));
+					canvas.draw(Point(20.0f, 12.0f), new Rectangle(Size(8.0f, 8.0f), background, 1.0f, foreground));
 				} else {
-					figure_queue.add(Point(20.0f, 10.0f), new Rectangle(Size(10.0f, 10.0f), 1.0f, foreground));
+					canvas.draw(Point(20.0f, 10.0f), new Rectangle(Size(10.0f, 10.0f), 1.0f, foreground));
 				}
 			}
 		protected:
@@ -157,10 +157,10 @@ protected:
 		public:
 			using ButtonBase::ButtonBase;
 		protected:
-			virtual void OnDraw(FigureQueue& figure_queue, Rect draw_region) override {
-				ButtonBase::OnDraw(figure_queue, draw_region);
-				figure_queue.add(Point(20.0f, 10.0f), new Line(Vector(10.0f, 10.0f), 1.0f, foreground));
-				figure_queue.add(Point(20.0f, 20.0f), new Line(Vector(10.0f, -10.0f), 1.0f, foreground));
+			virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
+				ButtonBase::OnDraw(canvas, draw_region);
+				canvas.draw(Point(20.0f, 10.0f), new Line(Vector(10.0f, 10.0f), 1.0f, foreground));
+				canvas.draw(Point(20.0f, 20.0f), new Line(Vector(10.0f, -10.0f), 1.0f, foreground));
 			}
 		protected:
 			virtual void OnClick() override { Context::Get<TitleBarFrame>().Destroy(); }

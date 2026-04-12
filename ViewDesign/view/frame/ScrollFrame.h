@@ -63,8 +63,8 @@ protected:
 	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override {
 		Redraw(child_redraw_region + GetChildOffset());
 	}
-	virtual void OnDraw(FigureQueue& figure_queue, Rect draw_region) override {
-		DrawChild(child, point_zero + GetChildOffset(), figure_queue, draw_region);
+	virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
+		DrawChild(child, point_zero + GetChildOffset(), canvas, draw_region);
 	}
 
 	// event

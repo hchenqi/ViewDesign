@@ -73,9 +73,9 @@ void OverlapLayout::OnChildRedraw(ViewBase& child, Rect child_redraw_region) {
 	Redraw(child_redraw_region + (AsFrame(child).region.point - point_zero));
 }
 
-void OverlapLayout::OnDraw(FigureQueue& figure_queue, Rect draw_region) {
+void OverlapLayout::OnDraw(Canvas& canvas, Rect draw_region) {
 	for (auto& frame : frame_list) {
-		DrawChild(*frame, frame->region, figure_queue, draw_region);
+		DrawChild(*frame, frame->region, canvas, draw_region);
 	}
 }
 

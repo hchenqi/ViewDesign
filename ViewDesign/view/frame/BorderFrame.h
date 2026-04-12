@@ -41,13 +41,13 @@ protected:
 	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override {
 		Redraw(child_redraw_region + GetChildOffset());
 	}
-	virtual void OnDraw(FigureQueue& figure_queue, Rect draw_region) override {
-		DrawChild(child, point_zero + GetChildOffset(), figure_queue, draw_region);
+	virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
+		DrawChild(child, point_zero + GetChildOffset(), canvas, draw_region);
 		if (border._width > 0.0f && border._color.IsVisible()) {
 			if (border._radius > 0.0f) {
-				figure_queue.add(point_zero, new RoundedRectangle(size, border._radius, border._width, border._color));
+				canvas.draw(point_zero, new RoundedRectangle(size, border._radius, border._width, border._color));
 			} else {
-				figure_queue.add(point_zero, new Rectangle(size, border._width, border._color));
+				canvas.draw(point_zero, new Rectangle(size, border._width, border._color));
 			}
 		}
 	}

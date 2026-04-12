@@ -177,23 +177,23 @@ protected:
 		Rect child_region = GetChildRegion(child);
 		Redraw(child_region.Intersect(child_redraw_region + (child_region.point - point_zero)));
 	}
-	virtual void OnDraw(FigureQueue& figure_queue, Rect draw_region) override {
+	virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
 		draw_region = draw_region.Intersect(Rect(point_zero, size)); if (draw_region.IsEmpty()) { return; }
 		TablePosition begin = HitTestGrid(draw_region.LeftTop()), end = HitTestGrid(Point(ceilf(draw_region.right()) - 1.0f, ceilf(draw_region.bottom()) - 1.0f));
 		for (uint row_index = begin.row; row_index <= end.row; row_index++) {
 			if (GridStyle::GridlineStyle gridline = row_list[row_index].style.gridline; gridline.width > 0.0f && gridline.color.IsVisible()) {
-				figure_queue.add(Point(0.0f, row_list[row_index].end()), new Rectangle(Size(size.width, gridline.width), gridline.color));
+				canvas.draw(Point(0.0f, row_list[row_index].end()), new Rectangle(Size(size.width, gridline.width), gridline.color));
 			}
 		}
 		for (uint column_index = begin.column; column_index <= end.column; column_index++) {
 			if (GridStyle::GridlineStyle gridline = column_list[column_index].style.gridline; gridline.width > 0.0f && gridline.color.IsVisible()) {
-				figure_queue.add(Point(column_list[column_index].end(), 0.0f), new Rectangle(Size(gridline.width, size.height), gridline.color));
+				canvas.draw(Point(column_list[column_index].end(), 0.0f), new Rectangle(Size(gridline.width, size.height), gridline.color));
 			}
 		}
 		for (uint row_index = begin.row; row_index <= end.row; row_index++) {
 			for (uint column_index = begin.column; column_index <= end.column; column_index++) {
 				if (auto& item = table[row_index][column_index]; item.child != nullptr) {
-					DrawChild(item.child, GetGridRegion({ row_index, column_index }), figure_queue, draw_region);
+					DrawChild(item.child, GetGridRegion({ row_index, column_index }), canvas, draw_region);
 				}
 			}
 		}

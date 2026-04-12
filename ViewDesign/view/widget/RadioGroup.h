@@ -45,9 +45,9 @@ private:
 	private:
 		Rect GetPaddingRegion() const { return Rect(Point(0, 0), Size(padding.left, size.height)); }
 	private:
-		virtual void OnDraw(FigureQueue& figure_queue, Rect draw_region) override {
-			PaddingFrame::OnDraw(figure_queue, draw_region);
-			figure_queue.add(GetPaddingRegion().Center(), new Circle(6px, selected ? Color::Gray : color_transparent, 1.0f, Color::Gray));
+		virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
+			PaddingFrame::OnDraw(canvas, draw_region);
+			canvas.draw(GetPaddingRegion().Center(), new Circle(6px, selected ? Color::Gray : color_transparent, 1.0f, Color::Gray));
 		}
 	private:
 		virtual ref_ptr<ViewBase> HitTest(MouseEvent& event) override { return selected ? PaddingFrame::HitTest(event) : this; }

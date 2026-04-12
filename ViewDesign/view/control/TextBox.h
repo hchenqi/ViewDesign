@@ -45,8 +45,8 @@ protected:
 
 	// paint
 protected:
-	virtual void OnDraw(FigureQueue& figure_queue, Rect draw_region) override {
-		figure_queue.add(point_zero, new TextBlockFigure(text_block, style.font._color));
+	virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
+		canvas.draw(point_zero, new TextBlockFigure(text_block, style.font._color));
 	}
 };
 

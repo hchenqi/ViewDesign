@@ -25,7 +25,7 @@ public:
 	void Destroy();
 	void Resize(Size size);
 	void Present(Rect dirty_rect);
-	Layer::DrawFigureQueue;
+	Layer::DrawCanvas;
 };
 
 

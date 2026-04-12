@@ -3,7 +3,7 @@
 #include "../common/uncopyable.h"
 #include "../style/cursor_style.h"
 #include "../geometry/geometry.h"
-#include "../figure/figure_queue.h"
+#include "../figure/canvas.h"
 #include "../event/event.h"
 
 
@@ -76,11 +76,11 @@ protected:
 	// paint
 protected:
 	void Redraw(Rect redraw_region) { if (HasParent() && !redraw_region.IsEmpty()) { GetParent().OnChildRedraw(*this, redraw_region); } }
-	void DrawChild(ViewBase& child, Point child_offset, FigureQueue& figure_queue, Rect draw_region);
-	void DrawChild(ViewBase& child, Rect child_region, FigureQueue& figure_queue, Rect draw_region);
+	void DrawChild(ViewBase& child, Point child_offset, Canvas& canvas, Rect draw_region);
+	void DrawChild(ViewBase& child, Rect child_region, Canvas& canvas, Rect draw_region);
 protected:
 	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) {}
-	virtual void OnDraw(FigureQueue& figure_queue, Rect draw_region) {}
+	virtual void OnDraw(Canvas& canvas, Rect draw_region) {}
 
 	// event
 protected:

@@ -38,19 +38,19 @@ Size EditBox::OnSizeRefUpdate(Size size_ref) {
 	return size;
 }
 
-void EditBox::OnDraw(FigureQueue& figure_queue, Rect draw_region) {
-	TextBox::OnDraw(figure_queue, draw_region);
+void EditBox::OnDraw(Canvas& canvas, Rect draw_region) {
+	TextBox::OnDraw(canvas, draw_region);
 	if (IsCaretVisible()) {
-		figure_queue.add(caret_region.point, new Rectangle(caret_region.size, style.edit._caret_color));
+		canvas.draw(caret_region.point, new Rectangle(caret_region.size, style.edit._caret_color));
 	}
 	if (HasSelection()) {
 		for (auto& rect : selection_region_list) {
-			figure_queue.add(rect.point, new Rectangle(rect.size, style.edit._selection_color));
+			canvas.draw(rect.point, new Rectangle(rect.size, style.edit._selection_color));
 		}
 	}
 	if (HasImeComposition()) {
 		for (auto& rect : ime_composition_region_list) {
-			figure_queue.add(Point(rect.left(), rect.top() + rect.height() - ime_composition_underline_height), new Rectangle(Size(rect.width(), ime_composition_underline_height), style.edit._ime_composition_underline_color));
+			canvas.draw(Point(rect.left(), rect.top() + rect.height() - ime_composition_underline_height), new Rectangle(Size(rect.width(), ime_composition_underline_height), style.edit._ime_composition_underline_color));
 		}
 	}
 }

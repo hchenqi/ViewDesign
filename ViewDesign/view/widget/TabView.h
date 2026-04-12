@@ -73,14 +73,14 @@ public:
 			enum class State { Normal, Hover, Press } state = State::Normal;
 			MouseTracker mouse_tracker;
 		protected:
-			virtual void OnDraw(FigureQueue& figure_queue, Rect draw_region) override {
+			virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
 				if (auto& tab = Context::Get<Tab>(); !(tab.hover || tab.active)) { return; }
 				switch (state) {
-				case State::Hover: figure_queue.add(center, new Circle(7px, background_hover)); break;
-				case State::Press: figure_queue.add(center, new Circle(7px, background_press)); break;
+				case State::Hover: canvas.draw(center, new Circle(7px, background_hover)); break;
+				case State::Press: canvas.draw(center, new Circle(7px, background_press)); break;
 				}
-				figure_queue.add(center, new Line(Vector(-3px, -3px), Vector(3px, 3px), 1.0f, foreground));
-				figure_queue.add(center, new Line(Vector(3px, -3px), Vector(-3px, 3px), 1.0f, foreground));
+				canvas.draw(center, new Line(Vector(-3px, -3px), Vector(3px, 3px), 1.0f, foreground));
+				canvas.draw(center, new Line(Vector(3px, -3px), Vector(-3px, 3px), 1.0f, foreground));
 			}
 		protected:
 			virtual void OnMouseEvent(MouseEvent event) override {
@@ -136,9 +136,9 @@ public:
 		static constexpr Color background_active = Color(Color::Black, 48);
 		static constexpr Color background_selected = Color(Color::Black, 80);
 	protected:
-		virtual void OnDraw(FigureQueue& figure_queue, Rect draw_region) override {
-			figure_queue.add(draw_region.point, new Rectangle(draw_region.size, selected ? background_selected : active ? background_active : hover ? background_hover : background_normal));
-			ViewFrame::OnDraw(figure_queue, draw_region);
+		virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
+			canvas.draw(draw_region.point, new Rectangle(draw_region.size, selected ? background_selected : active ? background_active : hover ? background_hover : background_normal));
+			ViewFrame::OnDraw(canvas, draw_region);
 		}
 
 		// event
@@ -173,15 +173,15 @@ protected:
 		protected:
 			bool hover = false;
 		protected:
-			virtual void OnDraw(FigureQueue& figure_queue, Rect draw_region) override {
+			virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
 				if (hover) {
-					figure_queue.add(draw_region.point, new Rectangle(draw_region.size, background_hover));
+					canvas.draw(draw_region.point, new Rectangle(draw_region.size, background_hover));
 				} else {
-					figure_queue.add(draw_region.point, new Rectangle(draw_region.size, background_normal));
+					canvas.draw(draw_region.point, new Rectangle(draw_region.size, background_normal));
 					Point center = Rect(point_zero, size).Center();
-					figure_queue.add(center - Vector(0px, 8px), new Circle(1.5px, foreground));
-					figure_queue.add(center + Vector(0px, 0px), new Circle(1.5px, foreground));
-					figure_queue.add(center + Vector(0px, 8px), new Circle(1.5px, foreground));
+					canvas.draw(center - Vector(0px, 8px), new Circle(1.5px, foreground));
+					canvas.draw(center + Vector(0px, 0px), new Circle(1.5px, foreground));
+					canvas.draw(center + Vector(0px, 8px), new Circle(1.5px, foreground));
 				}
 			}
 		protected:
@@ -305,10 +305,10 @@ protected:
 
 		// paint
 	private:
-		virtual void OnDraw(FigureQueue& figure_queue, Rect draw_region) override {
-			ListLayout::OnDraw(figure_queue, draw_region);
+		virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
+			ListLayout::OnDraw(canvas, draw_region);
 			if (is_selecting) {
-				figure_queue.add(selecting_region.point, new Rectangle(selecting_region.size, Color(Color::Black, 32), 1px, Color::Gray));
+				canvas.draw(selecting_region.point, new Rectangle(selecting_region.size, Color(Color::Black, 32), 1px, Color::Gray));
 			}
 		}
 

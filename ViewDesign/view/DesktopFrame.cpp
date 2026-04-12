@@ -84,12 +84,12 @@ void DesktopFrame::RecreateLayer() {
 void DesktopFrame::OnDraw() {
 	Rect render_rect = invalid_region.GetBoundingRect(); if (render_rect.IsEmpty()) { return; }
 	BeginDraw();
-	FigureQueue figure_queue([&](FigureQueue& figure_queue) {
-		figure_queue.Group(scale, region_infinite, [&]() {
-			OnDraw(figure_queue, render_rect * scale.Invert());
+	Canvas canvas([&](Canvas& canvas) {
+		canvas.Group(scale, region_infinite, [&]() {
+			OnDraw(canvas, render_rect * scale.Invert());
 		});
 	});
-	layer.DrawFigureQueue(figure_queue, vector_zero, render_rect);
+	layer.DrawCanvas(canvas, vector_zero, render_rect);
 	try {
 		EndDraw();
 	} catch (std::runtime_error&) {

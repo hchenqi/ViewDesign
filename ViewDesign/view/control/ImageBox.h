@@ -17,9 +17,9 @@ protected:
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override { return GetSize(); }
 protected:
-	virtual void OnDraw(FigureQueue& figure_queue, Rect draw_region) override {
+	virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
 		draw_region = draw_region.Intersect(Rect(point_zero, GetSize())); if (draw_region.IsEmpty()) { return; }
-		figure_queue.add(draw_region.point, new ImageFigure(image, draw_region));
+		canvas.draw(draw_region.point, new ImageFigure(image, draw_region));
 	}
 };
 
@@ -35,8 +35,8 @@ protected:
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override { return size = size_ref; }
 protected:
-	virtual void OnDraw(FigureQueue& figure_queue, Rect draw_region) override {
-		figure_queue.add(draw_region.point, new ImageRepeatFigure(image, Rect(draw_region.point + offset, draw_region.size)));
+	virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
+		canvas.draw(draw_region.point, new ImageRepeatFigure(image, Rect(draw_region.point + offset, draw_region.size)));
 	}
 };
 

@@ -28,9 +28,9 @@ protected:
 
 	// paint
 protected:
-	virtual void OnDraw(FigureQueue& figure_queue, Rect draw_region) override {
-		figure_queue.add(draw_region.point, new Rectangle(draw_region.size, background));
-		ViewFrame::OnDraw(figure_queue, draw_region);
+	virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
+		canvas.draw(draw_region.point, new Rectangle(draw_region.size, background));
+		ViewFrame::OnDraw(canvas, draw_region);
 	}
 };
 

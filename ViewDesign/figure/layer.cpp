@@ -1,5 +1,5 @@
 #include "layer.h"
-#include "figure_queue.h"
+#include "canvas.h"
 
 #include "../system/d2d_api.h"
 #include "../system/directx_helper.h"
@@ -23,13 +23,13 @@ void Layer::Create(Size size) {
 	bitmap.Set(static_cast<BitmapResource*>(D2DCreateBitmap(size)));
 }
 
-void Layer::DrawFigureQueue(const FigureQueue& figure_queue, Vector offset, Rect clip_region) {
+void Layer::DrawCanvas(const Canvas& canvas, Vector offset, Rect clip_region) {
 	ID2D1DeviceContext& device_context = GetD2DDeviceContext(); device_context.SetTarget(bitmap.Get());
 	device_context.SetTransform(AsD2DTransform(offset));
 	device_context.PushAxisAlignedClip(AsD2DRect(clip_region), D2D1_ANTIALIAS_MODE_PER_PRIMITIVE);
 	device_context.Clear(AsD2DColor(color_transparent));
-	auto& groups = figure_queue.GetFigureGroups();
-	auto& figures = figure_queue.GetFigures();
+	auto& groups = canvas.GetFigureGroups();
+	auto& figures = canvas.GetFigures();
 	for (size_t figure_index = 0, group_index = 1; group_index < groups.size(); ++group_index) {
 		auto& group = groups[group_index];
 		for (; figure_index < group.figure_index; ++figure_index) {

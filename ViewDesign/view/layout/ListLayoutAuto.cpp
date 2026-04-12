@@ -137,10 +137,10 @@ void ListLayoutAuto<Vertical>::OnChildSizeUpdate(ViewBase& child, Size child_siz
 	}
 }
 
-void ListLayoutAuto<Vertical>::OnDraw(FigureQueue& figure_queue, Rect draw_region) {
+void ListLayoutAuto<Vertical>::OnDraw(Canvas& canvas, Rect draw_region) {
 	draw_region = draw_region.Intersect(Rect(point_zero, size)); if (draw_region.IsEmpty()) { return; }
 	size_t index_begin = HitTestIndex(draw_region.LeftTop()), index_end = HitTestIndex(draw_region.RightBottom());
-	for (size_t index = index_begin; index <= index_end; ++index) { DrawChild(GetChild(index), GetChildRegion(index), figure_queue, draw_region); }
+	for (size_t index = index_begin; index <= index_end; ++index) { DrawChild(GetChild(index), GetChildRegion(index), canvas, draw_region); }
 }
 
 ref_ptr<ViewBase> ListLayoutAuto<Vertical>::HitTest(MouseEvent& event) {
@@ -217,10 +217,10 @@ void ListLayoutAuto<Horizontal>::OnChildSizeUpdate(ViewBase& child, Size child_s
 	}
 }
 
-void ListLayoutAuto<Horizontal>::OnDraw(FigureQueue& figure_queue, Rect draw_region) {
+void ListLayoutAuto<Horizontal>::OnDraw(Canvas& canvas, Rect draw_region) {
 	draw_region = draw_region.Intersect(Rect(point_zero, size)); if (draw_region.IsEmpty()) { return; }
 	size_t index_begin = HitTestIndex(draw_region.LeftTop()), index_end = HitTestIndex(draw_region.RightBottom());
-	for (size_t index = index_begin; index <= index_end; ++index) { DrawChild(GetChild(index), GetChildRegion(index), figure_queue, draw_region); }
+	for (size_t index = index_begin; index <= index_end; ++index) { DrawChild(GetChild(index), GetChildRegion(index), canvas, draw_region); }
 }
 
 ref_ptr<ViewBase> ListLayoutAuto<Horizontal>::HitTest(MouseEvent& event) {

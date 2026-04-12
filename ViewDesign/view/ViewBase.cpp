@@ -38,18 +38,18 @@ Point ViewBase::ConvertDescendentPoint(ViewBase& descendent, Point point) const 
 	return point;
 }
 
-void ViewBase::DrawChild(ViewBase& child, Point child_offset, FigureQueue& figure_queue, Rect draw_region) {
+void ViewBase::DrawChild(ViewBase& child, Point child_offset, Canvas& canvas, Rect draw_region) {
 	VerifyChild(child);
 	if (draw_region.IsEmpty()) { return; }
 	Vector offset = child_offset - point_zero; draw_region -= offset;
-	figure_queue.Offset(offset, [&]() { child.OnDraw(figure_queue, draw_region); });
+	canvas.Offset(offset, [&]() { child.OnDraw(canvas, draw_region); });
 }
 
-void ViewBase::DrawChild(ViewBase& child, Rect child_region, FigureQueue& figure_queue, Rect draw_region) {
+void ViewBase::DrawChild(ViewBase& child, Rect child_region, Canvas& canvas, Rect draw_region) {
 	VerifyChild(child);
 	draw_region = draw_region.Intersect(child_region); if (draw_region.IsEmpty()) { return; }
 	Vector offset = child_region.point - point_zero; draw_region -= offset;
-	figure_queue.Group(offset, draw_region, [&]() { child.OnDraw(figure_queue, draw_region); });
+	canvas.Group(offset, draw_region, [&]() { child.OnDraw(canvas, draw_region); });
 }
 
 

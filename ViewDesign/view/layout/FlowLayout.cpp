@@ -81,7 +81,7 @@ void FlowLayout::OnChildRedraw(ViewBase& child, Rect child_redraw_region) {
 	Redraw(child_region.Intersect(child_redraw_region + (child_region.point - point_zero)));
 }
 
-void FlowLayout::OnDraw(FigureQueue& figure_queue, Rect draw_region) {
+void FlowLayout::OnDraw(Canvas& canvas, Rect draw_region) {
 	draw_region = draw_region.Intersect(Rect(point_zero, size)); if (draw_region.IsEmpty()) { return; }
 	row_index row_begin = HitTestRow(draw_region.top()), row_end = HitTestRow(ceilf(draw_region.bottom()) - 1.0f);
 	for (row_index row = row_begin; row <= row_end; ++row) {
@@ -89,7 +89,7 @@ void FlowLayout::OnDraw(FigureQueue& figure_queue, Rect draw_region) {
 		auto it_begin = HitTestColumn(row, draw_region.left()), it_end = HitTestColumn(row, ceilf(draw_region.right()) - 1.0f);
 		for (auto it = it_begin; it <= it_end; ++it) {
 			Rect child_region(Point(it->offset, row_offset), Size(it->width, row_height));
-			DrawChild(it->child, child_region, figure_queue, draw_region);
+			DrawChild(it->child, child_region, canvas, draw_region);
 		}
 	}
 }

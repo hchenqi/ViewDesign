@@ -61,7 +61,7 @@ protected:
 
 	// paint
 protected:
-	virtual void OnDraw(FigureQueue& figure_queue, Rect draw_region) override;
+	virtual void OnDraw(Canvas& canvas, Rect draw_region) override;
 
 	// caret
 protected:

@@ -51,9 +51,9 @@ protected:
 		Rect child_region = GetChildRegion(child);
 		Redraw(child_region.Intersect(child_redraw_region + (child_region.point - point_zero)));
 	}
-	virtual void OnDraw(FigureQueue& figure_queue, Rect draw_region) override {
-		DrawChild(child_first, GetRegionFirst(), figure_queue, draw_region);
-		DrawChild(child_second, GetRegionSecond(), figure_queue, draw_region);
+	virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
+		DrawChild(child_first, GetRegionFirst(), canvas, draw_region);
+		DrawChild(child_second, GetRegionSecond(), canvas, draw_region);
 	}
 
 	// event
@@ -86,9 +86,9 @@ protected:
 		Rect child_region = GetChildRegion(child);
 		Redraw(child_region.Intersect(child_redraw_region + (child_region.point - point_zero)));
 	}
-	virtual void OnDraw(FigureQueue& figure_queue, Rect draw_region) override {
-		DrawChild(child_first, GetRegionFirst(), figure_queue, draw_region);
-		DrawChild(child_second, GetRegionSecond(), figure_queue, draw_region);
+	virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
+		DrawChild(child_first, GetRegionFirst(), canvas, draw_region);
+		DrawChild(child_second, GetRegionSecond(), canvas, draw_region);
 	}
 
 	// event
