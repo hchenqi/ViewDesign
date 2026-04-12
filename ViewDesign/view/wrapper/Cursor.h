@@ -12,8 +12,7 @@ protected:
 	using Base = CustomizedCursor;
 
 public:
-	template <typename... Args>
-	CustomizedCursor(Args&&... args) : View(std::forward<Args>(args)...) {
+	CustomizedCursor(auto&&... args) : View(std::forward<decltype(args)>(args)...) {
 		this->cursor = cursor;
 	}
 };

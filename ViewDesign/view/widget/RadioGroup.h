@@ -21,9 +21,8 @@ struct RadioItem {
 template<class T>
 class RadioGroup : public ListLayout<Vertical> {
 public:
-	template<class... Ts>
-	RadioGroup(std::function<void(const T&)> callback, Ts... child_args) :
-		ListLayout(0px, (new ItemFrame(*this, std::move(child_args)))...),
+	RadioGroup(std::function<void(const T&)> callback, auto... child) :
+		ListLayout(0px, (new ItemFrame(*this, std::move(child)))...),
 		callback(callback),
 		selected_item(selected_item ? selected_item : nullptr) {}
 

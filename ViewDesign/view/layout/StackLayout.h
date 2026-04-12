@@ -104,9 +104,8 @@ public:
 	using child_type = view_ptr<Fixed, Fixed>;
 
 public:
-	template<class... Ts>
-	StackLayoutMultiple(Ts... child_args) : child_list() {
-		child_list.reserve(sizeof...(Ts)); (child_list.emplace_back(std::move(child_args)), ...);
+	StackLayoutMultiple(auto... child) : child_list() {
+		child_list.reserve(sizeof...(child)); (child_list.emplace_back(std::move(child)), ...);
 		for (auto& child : child_list) { RegisterChild(child); }
 	}
 

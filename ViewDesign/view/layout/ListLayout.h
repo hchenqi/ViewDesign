@@ -18,9 +18,8 @@ public:
 	using child_type = view_ptr<Fixed, Auto>;
 
 public:
-	template<class... Ts>
-	ListLayout(float gap, Ts... child_args) : child_list(), gap(gap) {
-		child_list.reserve(sizeof...(Ts)); (child_list.emplace_back(std::move(child_args)), ...);
+	ListLayout(float gap, auto... child) : child_list(), gap(gap) {
+		child_list.reserve(sizeof...(child)); (child_list.emplace_back(std::move(child)), ...);
 		uint index = 0;	for (auto& info : child_list) { RegisterChild(info.child); SetChildIndex(info.child, index++); }
 	}
 
@@ -84,9 +83,8 @@ public:
 	using child_type = view_ptr<Auto, Fixed>;
 
 public:
-	template<class... Ts>
-	ListLayout(float gap, Ts... child_args) : child_list(), gap(gap) {
-		child_list.reserve(sizeof...(Ts)); (child_list.emplace_back(std::move(child_args)), ...);
+	ListLayout(float gap, auto... child) : child_list(), gap(gap) {
+		child_list.reserve(sizeof...(child)); (child_list.emplace_back(std::move(child)), ...);
 		uint index = 0;	for (auto& info : child_list) { RegisterChild(info.child); SetChildIndex(info.child, index++); }
 	}
 

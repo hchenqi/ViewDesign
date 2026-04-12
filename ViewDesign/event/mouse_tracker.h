@@ -20,7 +20,7 @@ enum class MouseTrackEvent {
 };
 
 
-class MouseTracker : Uncopyable {
+class MouseTracker {
 private:
 	uint hit_count = 0;
 	static constexpr uint timer_interval = 500;  // 500ms

@@ -65,10 +65,9 @@ protected:
 template<>
 class ListLayoutAuto<Vertical> : public _ListLayoutAuto_Base {
 public:
-	template<class... Ts>
-	ListLayoutAuto(float gap, Ts... child_args) : _ListLayoutAuto_Base(gap) {
-		if constexpr (sizeof...(Ts) > 0) {
-			child_type list[] = { std::move(child_args)... };
+	ListLayoutAuto(float gap, auto... child) : _ListLayoutAuto_Base(gap) {
+		if constexpr (sizeof...(child) > 0) {
+			child_type list[] = { std::move(child)... };
 			InsertChild(0, std::vector<view_ptr>(std::make_move_iterator(std::begin(list)), std::make_move_iterator(std::end(list))));
 		}
 	}
@@ -106,10 +105,9 @@ protected:
 template<>
 class ListLayoutAuto<Horizontal> : public _ListLayoutAuto_Base {
 public:
-	template<class... Ts>
-	ListLayoutAuto(float gap, Ts... child_args) : _ListLayoutAuto_Base(gap) {
-		if constexpr (sizeof...(Ts) > 0) {
-			child_type list[] = { std::move(child_args)... };
+	ListLayoutAuto(float gap, auto... child) : _ListLayoutAuto_Base(gap) {
+		if constexpr (sizeof...(child) > 0) {
+			child_type list[] = { std::move(child)... };
 			InsertChild(0, std::vector<child_type>(std::make_move_iterator(std::begin(list)), std::make_move_iterator(std::end(list))));
 		}
 	}

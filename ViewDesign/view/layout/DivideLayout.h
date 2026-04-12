@@ -38,9 +38,8 @@ protected:
 template<>
 class DivideLayout<Vertical> : public _DivideLayout_Base {
 public:
-	template<class... Ts>
-	DivideLayout(Ts... child_args) : _DivideLayout_Base() {
-		child_list.reserve(sizeof...(Ts)); (child_list.emplace_back(std::move(child_args)), ...);
+	DivideLayout(auto... child) : _DivideLayout_Base() {
+		child_list.reserve(sizeof...(child)); (child_list.emplace_back(std::move(child)), ...);
 		uint index = 0;	for (auto& child : child_list) { RegisterChild(child); SetChildIndex(child, index++); }
 	}
 
@@ -93,9 +92,8 @@ protected:
 template<>
 class DivideLayout<Horizontal> : public _DivideLayout_Base {
 public:
-	template<class... Ts>
-	DivideLayout(Ts... child_args) : _DivideLayout_Base() {
-		child_list.reserve(sizeof...(Ts)); (child_list.emplace_back(std::move(child_args)), ...);
+	DivideLayout(auto... child) : _DivideLayout_Base() {
+		child_list.reserve(sizeof...(child)); (child_list.emplace_back(std::move(child)), ...);
 		uint index = 0;	for (auto& child : child_list) { RegisterChild(child); SetChildIndex(child, index++); }
 	}
 

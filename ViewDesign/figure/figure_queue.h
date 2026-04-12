@@ -1,23 +1,21 @@
 #pragma once
 
 #include "figure.h"
-#include "../common/uncopyable.h"
 #include "../geometry/transform.h"
 
 #include <vector>
 #include <memory>
-#include <functional>
 
 
 namespace ViewDesign {
 
 
-class FigureQueue : public Uncopyable {
+class FigureQueue {
 	// offset
 private:
 	Vector offset = vector_zero;
 public:
-	void Offset(Vector offset, std::function<void()> func) {
+	void Offset(Vector offset, auto func) {
 		this->offset += offset;
 		func();
 		this->offset -= offset;
@@ -45,9 +43,9 @@ public:
 	void add(Point offset, alloc_ptr<const Figure> figure) {
 		add(offset, std::unique_ptr<const Figure>(figure));
 	}
-	template<class FigureType, class ...Types, class = std::enable_if_t<std::is_base_of_v<Figure, FigureType>>>
-	void add(Point offset, Types&&... args) {
-		add(offset, std::make_unique<FigureType>(std::forward<Types>(args)...));
+	template<class FigureType>
+	void add(Point offset, auto&&... args) {
+		add(offset, std::make_unique<FigureType>(std::forward<decltype(args)>(args)...));
 	}
 
 	// group
@@ -70,7 +68,7 @@ private:
 public:
 	const std::vector<FigureGroup>& GetFigureGroups() const { return groups; }
 public:
-	void Group(Transform group_transform, Rect clip_region, std::function<void()> func) {
+	void Group(Transform group_transform, Rect clip_region, auto func) {
 		if (clip_region.IsEmpty()) { return; }
 		Transform prev_transform = transform; Vector prev_offset = offset;
 		transform = group_transform * offset * transform; offset = vector_zero;
@@ -81,7 +79,7 @@ public:
 	}
 
 public:
-	FigureQueue(std::function<void(FigureQueue&)> func) {
+	FigureQueue(auto func) {
 		Group(Transform::Identity(), region_infinite, [&]() { func(*this); });
 	}
 };

@@ -1,13 +1,12 @@
 #pragma once
 
 #include "key_event.h"
-#include "../common/uncopyable.h"
 
 
 namespace ViewDesign {
 
 
-class KeyTracker : Uncopyable {
+class KeyTracker {
 public:
 	bool ctrl = false;
 	bool shift = false;

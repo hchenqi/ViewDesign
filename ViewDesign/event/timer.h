@@ -8,7 +8,7 @@
 namespace ViewDesign {
 
 
-class Timer : public Uncopyable {
+class Timer : Uncopyable {
 private:
 	using HANDLE = void*;
 	HANDLE timer;

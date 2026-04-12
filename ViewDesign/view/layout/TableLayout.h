@@ -42,24 +42,21 @@ public:
 		GridStyle style;
 		std::vector<child_type> child_list;
 
-		template<class... Ts>
-		Row(GridStyle style, Ts... child_args) : style(style), child_list() {
-			child_list.reserve(sizeof...(Ts)); (child_list.emplace_back(std::move(child_args)), ...);
+		Row(GridStyle style, auto... child) : style(style), child_list() {
+			child_list.reserve(sizeof...(child)); (child_list.emplace_back(std::move(child)), ...);
 		}
 	};
 
 public:
-	template<class... Ts>
-		requires (std::is_convertible_v<Ts, Row> && ...)
-	TableLayout(std::vector<GridStyle> column_style, Ts... row_args) {
-		table.reserve(sizeof...(Ts));
-		row_list.reserve(sizeof...(Ts));
+	TableLayout(std::vector<GridStyle> column_style, auto... row) {
+		table.reserve(sizeof...(row));
+		row_list.reserve(sizeof...(row));
 		column_list.assign(column_style.begin(), column_style.end());
 		([&](Row row) {
 			row.child_list.resize(column_list.size());
 			table.emplace_back(std::vector<ChildInfo>(std::make_move_iterator(row.child_list.begin()), std::make_move_iterator(row.child_list.end())));
 			row_list.emplace_back(row.style);
-		}(std::move(row_args)), ...);
+		}(std::move(row)), ...);
 		UpdateGridlineSize();
 		for (uint row_index = 0; row_index < table.size(); row_index++) {
 			for (uint column_index = 0; column_index < table[row_index].size(); column_index++) {

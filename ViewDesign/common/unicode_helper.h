@@ -31,7 +31,7 @@ constexpr size_t GetUTF16CharLength(wchar ch) {
 }
 
 
-class WordBreakIterator : public Uncopyable {
+class WordBreakIterator : Uncopyable {
 private:
 	alloc_ptr<void> iter;
 	ref_ptr<const wchar> str; size_t length;
