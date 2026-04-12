@@ -176,7 +176,7 @@ protected:
 						length_first = child_size.height;
 						if constexpr (IsFixed<HeightTraitSecond>) {
 							UpdateChildSizeRef(child_second, Size(size.width, length_second = size.height - length_first));
-							Redraw(GetRegionSecond());
+							Redraw(region_infinite);
 						} else {
 							size.height = length_first + length_second;
 							SizeUpdated(size);
@@ -201,7 +201,7 @@ protected:
 						length_second = child_size.height;
 						if constexpr (IsFixed<HeightTraitFirst>) {
 							UpdateChildSizeRef(child_first, Size(size.width, length_first = size.height - length_second));
-							Redraw(GetRegionFirst());
+							Redraw(region_infinite);
 						} else {
 							size.height = length_first + length_second;
 							SizeUpdated(size);
@@ -297,7 +297,7 @@ protected:
 						length_first = child_size.width;
 						if constexpr (IsFixed<WidthTraitSecond>) {
 							UpdateChildSizeRef(child_second, Size(length_second = size.width - length_first, size.height));
-							Redraw(GetRegionSecond());
+							Redraw(region_infinite);
 						} else {
 							size.width = length_first + length_second;
 							SizeUpdated(size);
@@ -322,7 +322,7 @@ protected:
 						length_second = child_size.width;
 						if constexpr (IsFixed<WidthTraitFirst>) {
 							UpdateChildSizeRef(child_first, Size(length_first = size.width - length_second, size.height));
-							Redraw(GetRegionFirst());
+							Redraw(region_infinite);
 						} else {
 							size.width = length_first + length_second;
 							SizeUpdated(size);
