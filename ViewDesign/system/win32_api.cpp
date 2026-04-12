@@ -232,20 +232,25 @@ void SetWndRegion(HANDLE hwnd, Rect region) {
 void SetWndStyleTool(HANDLE hwnd, bool style_tool) {
 	LONG style = GetWindowLong((HWND)hwnd, GWL_EXSTYLE);
 	if (style_tool) {
-		if (!(style & WS_EX_TOOLWINDOW)) {
-			style |= WS_EX_TOOLWINDOW;
-			SetWindowLong((HWND)hwnd, GWL_EXSTYLE, style);
-		}
+		style |= WS_EX_TOOLWINDOW;
 	} else {
-		if ((style & WS_EX_TOOLWINDOW)) {
-			style &= ~WS_EX_TOOLWINDOW;
-			SetWindowLong((HWND)hwnd, GWL_EXSTYLE, style);
-		}
+		style &= ~WS_EX_TOOLWINDOW;
 	}
+	SetWindowLong((HWND)hwnd, GWL_EXSTYLE, style);
+}
+
+void SetWndNoActivate(HANDLE hwnd, bool no_activate) {
+	LONG style = GetWindowLong((HWND)hwnd, GWL_EXSTYLE);
+	if (no_activate) {
+		style |= WS_EX_NOACTIVATE;
+	} else {
+		style &= ~WS_EX_NOACTIVATE;
+	}
+	SetWindowLong((HWND)hwnd, GWL_EXSTYLE, style);
 }
 
 void SetWndTopMost(HANDLE hwnd, bool top_most) {
-	SetWindowPos((HWND)hwnd, top_most ? HWND_TOPMOST : HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+	SetWindowPos((HWND)hwnd, top_most ? HWND_TOPMOST : HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
 }
 
 void SetWndOpacity(HANDLE hwnd, uchar opacity) {
@@ -260,19 +265,14 @@ void SetWndOpacity(HANDLE hwnd, uchar opacity) {
 void SetWndMousePenetrate(HANDLE hwnd, bool mouse_penetrate) {
 	LONG style = GetWindowLong((HWND)hwnd, GWL_EXSTYLE);
 	if (mouse_penetrate) {
-		if (!(style & WS_EX_TRANSPARENT)) {
-			style |= WS_EX_TRANSPARENT;
-			SetWindowLong((HWND)hwnd, GWL_EXSTYLE, style);
-		}
+		style |= WS_EX_TRANSPARENT;
 	} else {
-		if ((style & WS_EX_TRANSPARENT)) {
-			style &= ~WS_EX_TRANSPARENT;
-			SetWindowLong((HWND)hwnd, GWL_EXSTYLE, style);
-		}
+		style &= ~WS_EX_TRANSPARENT;
 	}
+	SetWindowLong((HWND)hwnd, GWL_EXSTYLE, style);
 }
 
-void ShowWnd(HANDLE hwnd) { ShowWindow((HWND)hwnd, SW_SHOWDEFAULT); }
+void ShowWnd(HANDLE hwnd) { ShowWindow((HWND)hwnd, SW_SHOWNOACTIVATE); }
 void HideWnd(HANDLE hwnd) { ShowWindow((HWND)hwnd, SW_HIDE); }
 void SetForegroundWnd(HANDLE hwnd) { SetForegroundWindow((HWND)hwnd); }
 void MinimizeWnd(HANDLE hwnd) { ShowWindow((HWND)hwnd, SW_MINIMIZE); }

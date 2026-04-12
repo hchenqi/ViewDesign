@@ -6,6 +6,7 @@
 #include "../frame/PaddingFrame.h"
 #include "../control/TextBox.h"
 #include "../wrapper/Background.h"
+#include "../../geometry/clamp.h"
 #include "../../event/timer.h"
 #include "../../system/win32_api.h"
 
@@ -30,6 +31,7 @@ private:
 		)
 	) {
 		Win32::SetWndStyleTool(GetHWND());
+		Win32::SetWndNoActivate(GetHWND());
 		Win32::SetWndTopMost(GetHWND());
 		Win32::SetWndMousePenetrate(GetHWND());
 	}
@@ -48,7 +50,7 @@ private:
 	Rect region;
 private:
 	virtual std::pair<Size, Size> CalculateMinMaxSize(Size size_ref) override { return { region.size, region.size }; }
-	virtual Rect OnDesktopFrameSizeRefUpdate(Size size_ref) override { return region; }
+	virtual Rect OnDesktopFrameSizeRefUpdate(Size size_ref) override { return clamp(region, Rect(point_zero, size_ref)); }
 	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override { region.size = child_size; }
 
 private:

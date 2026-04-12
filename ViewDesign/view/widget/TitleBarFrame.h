@@ -143,6 +143,14 @@ protected:
 			}
 		protected:
 			virtual void OnClick() override { Context::Get<TitleBarFrame>().MaximizeOrRestore(); }
+		protected:
+			virtual void OnFocusEvent(FocusEvent event) override {
+				Button::OnFocusEvent(event);
+				switch (event) {
+				case FocusEvent::MouseEnter: TooltipShow(Context::Get<TitleBarFrame>().IsMaximized() ? L"restore" : L"maximize"); break;
+				case FocusEvent::MouseLeave: TooltipHide(); break;
+				}
+			}
 		};
 
 		class CloseButton : public ButtonBase {
@@ -175,7 +183,7 @@ protected:
 					new ListLayout<Horizontal>(
 						0.0f,
 						new MinimizeButton(style._background_color, style._foreground_color, L"minimize"),
-						new MaximizeButton(style._background_color, style._foreground_color, L"maximize"),
+						new MaximizeButton(style._background_color, style._foreground_color, L""),
 						new CloseButton(style._background_color, style._foreground_color, L"close")
 					)
 				)

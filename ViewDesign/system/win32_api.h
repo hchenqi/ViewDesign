@@ -26,6 +26,7 @@ Point GetCursorPosWithWndDpi(HANDLE hwnd);
 void SetWndTitle(HANDLE hwnd, std::wstring title);
 void SetWndRegion(HANDLE hwnd, Rect region);
 void SetWndStyleTool(HANDLE hwnd, bool style_tool = true);
+void SetWndNoActivate(HANDLE hwnd, bool no_activate = true);
 void SetWndTopMost(HANDLE hwnd, bool top_most = true);
 void SetWndOpacity(HANDLE hwnd, uchar opacity);
 void SetWndMousePenetrate(HANDLE hwnd, bool mouse_penetrate = true);
