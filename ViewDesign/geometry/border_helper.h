@@ -19,10 +19,9 @@ enum class BorderPosition : uint {
 	RightBottom = 17	// HTBOTTOMRIGHT
 };
 
-inline BorderPosition HitTestBorderPosition(Size window_size, float border_width, Point point) {
+inline BorderPosition HitTestBorderPosition(Size size, float border_width, Point point) {
 	float x1 = border_width, y1 = border_width;
-	float x2 = window_size.width - border_width, y2 = window_size.height - border_width;
-	float width = window_size.width, height = window_size.height;
+	float x2 = size.width - border_width, y2 = size.height - border_width;
 	float x = point.x, y = point.y;
 	if (x < x1) {
 		if (y < y1) {

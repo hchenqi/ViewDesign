@@ -81,7 +81,7 @@ private:
 
 	// event
 private:
-	void ReleaseWindow(ViewBase& view);
+	void ReleaseView(ViewBase& view);
 
 	// global
 private:

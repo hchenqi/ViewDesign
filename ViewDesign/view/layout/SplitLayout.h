@@ -105,9 +105,9 @@ protected:
 template<class WidthTraitFirst, class HeightTraitFirst, class WidthTraitSecond, class HeightTraitSecond>
 class SplitLayoutVertical : public _SplitLayout_Base_Vertical {
 public:
-	static_assert(IsFixed<WidthTraitFirst> || IsFixed<WidthTraitSecond>, "At least one child window's width type should be Fixed.");
-	static_assert(!IsFixed<HeightTraitFirst> || !IsFixed<HeightTraitSecond>, "At least one child window's height type should not be Fixed.");
-	static_assert((IsFixed<WidthTraitFirst> || !IsFixed<HeightTraitFirst>) && (IsFixed<WidthTraitSecond> || !IsFixed<HeightTraitSecond>), "Child window's width type must be Fixed if its height type is Fixed.");
+	static_assert(IsFixed<WidthTraitFirst> || IsFixed<WidthTraitSecond>, "At least one child view's width should be Fixed.");
+	static_assert(!IsFixed<HeightTraitFirst> || !IsFixed<HeightTraitSecond>, "At least one child view's height should not be Fixed.");
+	static_assert((IsFixed<WidthTraitFirst> || !IsFixed<HeightTraitFirst>) && (IsFixed<WidthTraitSecond> || !IsFixed<HeightTraitSecond>), "Child view's width must be Fixed if its height is Fixed.");
 public:
 	using width_trait = std::conditional_t<IsFixed<WidthTraitFirst> && IsFixed<WidthTraitSecond>, Fixed, std::conditional_t<IsRelative<WidthTraitFirst> || IsRelative<WidthTraitSecond>, Relative, Auto>>;
 	using height_trait = std::conditional_t<IsFixed<HeightTraitFirst> || IsFixed<HeightTraitSecond>, Fixed, std::conditional_t<IsRelative<HeightTraitFirst> || IsRelative<HeightTraitSecond>, Relative, Auto>>;
@@ -226,9 +226,9 @@ protected:
 template<class WidthTraitFirst, class HeightTraitFirst, class WidthTraitSecond, class HeightTraitSecond>
 class SplitLayoutHorizontal : public _SplitLayout_Base_Horizontal {
 public:
-	static_assert(!IsFixed<WidthTraitFirst> || !IsFixed<WidthTraitSecond>, "At least one child window's width type should not be Fixed.");
-	static_assert(IsFixed<HeightTraitFirst> || IsFixed<HeightTraitSecond>, "At least one child window's height type should be Fixed.");
-	static_assert((!IsFixed<WidthTraitFirst> || IsFixed<HeightTraitFirst>) && (!IsFixed<WidthTraitSecond> || IsFixed<HeightTraitSecond>), "Child window's height type must be Fixed if its width type is Fixed.");
+	static_assert(!IsFixed<WidthTraitFirst> || !IsFixed<WidthTraitSecond>, "At least one child view's width should not be Fixed.");
+	static_assert(IsFixed<HeightTraitFirst> || IsFixed<HeightTraitSecond>, "At least one child view's height should be Fixed.");
+	static_assert((!IsFixed<WidthTraitFirst> || IsFixed<HeightTraitFirst>) && (!IsFixed<WidthTraitSecond> || IsFixed<HeightTraitSecond>), "Child view's height must be Fixed if its width is Fixed.");
 public:
 	using width_trait = std::conditional_t<IsFixed<WidthTraitFirst> || IsFixed<WidthTraitSecond>, Fixed, std::conditional_t<IsRelative<WidthTraitFirst> || IsRelative<WidthTraitSecond>, Relative, Auto>>;
 	using height_trait = std::conditional_t<IsFixed<HeightTraitFirst> && IsFixed<HeightTraitSecond>, Fixed, std::conditional_t<IsRelative<HeightTraitFirst> || IsRelative<HeightTraitSecond>, Relative, Auto>>;

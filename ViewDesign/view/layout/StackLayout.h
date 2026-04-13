@@ -45,7 +45,7 @@ protected:
 template<class WidthTraitFirst, class HeightTraitFirst, class WidthTraitSecond, class HeightTraitSecond>
 class StackLayout : public _StackLayout_Base {
 public:
-	static_assert((IsFixed<WidthTraitFirst>&& IsFixed<HeightTraitFirst>) || (IsFixed<WidthTraitSecond> && IsFixed<HeightTraitSecond>), "At least one child window's width type and height type should be Fixed.");
+	static_assert((IsFixed<WidthTraitFirst> && IsFixed<HeightTraitFirst>) || (IsFixed<WidthTraitSecond> && IsFixed<HeightTraitSecond>), "At least one child view's width and height should be Fixed.");
 public:
 	using width_trait = std::conditional_t<IsFixed<WidthTraitFirst>, WidthTraitSecond, WidthTraitFirst>;
 	using height_trait = std::conditional_t<IsFixed<HeightTraitFirst>, HeightTraitSecond, HeightTraitFirst>;

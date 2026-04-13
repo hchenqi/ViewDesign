@@ -22,9 +22,9 @@ private:
 };
 
 
-class EmptyWindow : public CustomizedCursor<SolidColorBackground<Placeholder<Fixed, Fixed>, Color::Gray>, Cursor::Hand> {
+class EmptyView : public CustomizedCursor<SolidColorBackground<Placeholder<Fixed, Fixed>, Color::Gray>, Cursor::Hand> {
 public:
-	EmptyWindow() {}
+	EmptyView() {}
 private:
 	virtual void OnMouseEvent(MouseEvent event) override {
 		switch (event.type) {
@@ -45,13 +45,13 @@ private:
 
 
 int main() {
-	global.Add(new MainFrame(L"DesktopFrameTest", new EmptyWindow()));
+	global.Add(new MainFrame(L"DesktopFrameTest", new EmptyView()));
 	global.EventLoop();
 
-	global.Add(new MainFrame(L"DesktopFrameTest", new ViewFrame(new EmptyWindow())));
+	global.Add(new MainFrame(L"DesktopFrameTest", new ViewFrame(new EmptyView())));
 	global.EventLoop();
 
-	std::unique_ptr<EmptyWindow> window(new EmptyWindow());
-	global.Add(new MainFrame(L"DesktopFrameTest", new ViewFrameRef(*window)));
+	std::unique_ptr<EmptyView> view(new EmptyView());
+	global.Add(new MainFrame(L"DesktopFrameTest", new ViewFrameRef(*view)));
 	global.EventLoop();
 }

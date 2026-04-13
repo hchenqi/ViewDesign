@@ -19,9 +19,9 @@ struct MainFrameStyle : TitleBarFrame::Style {
 };
 
 
-class MainWindow : public OverlapLayout {
+class MainView : public OverlapLayout {
 public:
-	MainWindow() {}
+	MainView() {}
 
 private:
 	virtual void OnMouseEvent(MouseEvent event) override {
@@ -105,7 +105,7 @@ int main() {
 	global.Add(
 		new TitleBarFrame(
 			MainFrameStyle(),
-			new MainWindow
+			new MainView
 		)
 	);
 	global.EventLoop();

@@ -40,7 +40,7 @@ std::unique_ptr<DesktopFrame> Desktop::RemoveChild(DesktopFrame& frame) {
 DesktopFrame& Desktop::GetDesktopFrame(ViewBase& view) {
 	ref_ptr<ViewBase> child = &view;
 	for (ref_ptr<ViewBase> parent = child->parent; parent != &desktop; child = parent, parent = child->parent) {
-		if (parent == nullptr) { throw std::invalid_argument("window not registered"); }
+		if (parent == nullptr) { throw std::invalid_argument("view not registered"); }
 	}
 	return static_cast<DesktopFrame&>(*child);
 }
@@ -48,7 +48,7 @@ DesktopFrame& Desktop::GetDesktopFrame(ViewBase& view) {
 DesktopFrame& Desktop::GetDesktopFramePoint(ViewBase& view, Point& point) {
 	ref_ptr<ViewBase> child = &view;
 	for (ref_ptr<ViewBase> parent = child->parent; parent != &desktop; child = parent, parent = child->parent) {
-		if (parent == nullptr) { throw std::invalid_argument("window not registered"); }
+		if (parent == nullptr) { throw std::invalid_argument("view not registered"); }
 		point *= parent->GetChildTransform(*child);
 	}
 	return static_cast<DesktopFrame&>(*child);
@@ -205,7 +205,7 @@ void Desktop::ImeSetPosition(ViewBase& view, Point point) {
 	ViewDesign::ImeSetPosition(frame.hwnd, point);
 }
 
-void Desktop::ReleaseWindow(ViewBase& view) {
+void Desktop::ReleaseView(ViewBase& view) {
 	if (&view == &desktop) { return; }
 	if (view_track_map.contains(&view)) {
 		view_track_stack.clear();

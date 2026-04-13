@@ -9,13 +9,13 @@ ViewBase::~ViewBase() {
 	if (HasParent()) {
 		GetParent().UnregisterChild(*this);
 	}
-	desktop.ReleaseWindow(*this);
+	desktop.ReleaseView(*this);
 }
 
 ViewBase& ViewBase::GetDirectChild(ViewBase& descendent) const {
 	ref_ptr<ViewBase> child = &descendent;
 	while (child->parent != this) {
-		if (child->parent == nullptr) { throw std::invalid_argument("invalid descendent window"); }
+		if (child->parent == nullptr) { throw std::invalid_argument("invalid descendent view"); }
 		child = child->parent;
 	}
 	return *child;
@@ -24,7 +24,7 @@ ViewBase& ViewBase::GetDirectChild(ViewBase& descendent) const {
 Transform ViewBase::GetDescendentTransform(ViewBase& descendent) const {
 	Transform transform = Transform::Identity();
 	for (ref_ptr<ViewBase> child = &descendent, parent = descendent.parent; child != this; child = parent, parent = child->parent) {
-		if (parent == nullptr) { throw std::invalid_argument("invalid descendent window"); }
+		if (parent == nullptr) { throw std::invalid_argument("invalid descendent view"); }
 		transform = transform * parent->GetChildTransform(*child);
 	}
 	return transform;
@@ -32,7 +32,7 @@ Transform ViewBase::GetDescendentTransform(ViewBase& descendent) const {
 
 Point ViewBase::ConvertDescendentPoint(ViewBase& descendent, Point point) const {
 	for (ref_ptr<ViewBase> child = &descendent, parent = descendent.parent; child != this; child = parent, parent = child->parent) {
-		if (parent == nullptr) { throw std::invalid_argument("invalid descendent window"); }
+		if (parent == nullptr) { throw std::invalid_argument("invalid descendent view"); }
 		point *= parent->GetChildTransform(*child);
 	}
 	return point;
