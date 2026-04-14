@@ -26,8 +26,8 @@ protected:
 protected:
 	Size size_ref;
 	Size size;
-	float length_first = 0.0f;
-	float length_second = 0.0f;
+	Size size_first;
+	Size size_second;
 };
 
 
@@ -37,8 +37,8 @@ protected:
 
 	// layout
 protected:
-	Rect GetRegionFirst() const { return Rect(point_zero, Size(size.width, length_first)); }
-	Rect GetRegionSecond() const { return Rect(Point(0.0f, length_first), Size(size.width, length_second)); }
+	Rect GetRegionFirst() const { return Rect(point_zero, Size(size.width, size_first.height)); }
+	Rect GetRegionSecond() const { return Rect(Point(0.0f, size_first.height), Size(size.width, size_second.height)); }
 	Rect GetChildRegion(ViewBase& child) const { return IsFirst(child) ? GetRegionFirst() : GetRegionSecond(); }
 protected:
 	virtual Transform GetChildTransform(ViewBase& child) const override {
@@ -59,9 +59,9 @@ protected:
 	// event
 protected:
 	virtual ref_ptr<ViewBase> HitTest(MouseEvent& event) override {
-		if (event.point.y < length_first) { return child_first; }
-		event.point.y -= length_first;
-		if (event.point.y < length_second) { return child_second; }
+		if (event.point.y < size_first.height) { return child_first; }
+		event.point.y -= size_first.height;
+		if (event.point.y < size_second.height) { return child_second; }
 		return nullptr;
 	}
 };
@@ -72,8 +72,8 @@ protected:
 
 	// layout
 protected:
-	Rect GetRegionFirst() const { return Rect(point_zero, Size(length_first, size.height)); }
-	Rect GetRegionSecond() const { return Rect(Point(length_first, 0.0f), Size(length_second, size.height)); }
+	Rect GetRegionFirst() const { return Rect(point_zero, Size(size_first.width, size.height)); }
+	Rect GetRegionSecond() const { return Rect(Point(size_first.width, 0.0f), Size(size_second.width, size.height)); }
 	Rect GetChildRegion(ViewBase& child) const { return IsFirst(child) ? GetRegionFirst() : GetRegionSecond(); }
 protected:
 	virtual Transform GetChildTransform(ViewBase& child) const override {
@@ -94,9 +94,9 @@ protected:
 	// event
 protected:
 	virtual ref_ptr<ViewBase> HitTest(MouseEvent& event) override {
-		if (event.point.x < length_first) { return child_first; }
-		event.point.x -= length_first;
-		if (event.point.x < length_second) { return child_second; }
+		if (event.point.x < size_first.width) { return child_first; }
+		event.point.x -= size_first.width;
+		if (event.point.x < size_second.width) { return child_second; }
 		return nullptr;
 	}
 };
@@ -105,9 +105,8 @@ protected:
 template<class WidthTraitFirst, class HeightTraitFirst, class WidthTraitSecond, class HeightTraitSecond>
 class SplitLayoutVertical : public _SplitLayout_Base_Vertical {
 public:
-	static_assert(IsFixed<WidthTraitFirst> || IsFixed<WidthTraitSecond>, "At least one child view's width should be Fixed.");
 	static_assert(!IsFixed<HeightTraitFirst> || !IsFixed<HeightTraitSecond>, "At least one child view's height should not be Fixed.");
-	static_assert((IsFixed<WidthTraitFirst> || !IsFixed<HeightTraitFirst>) && (IsFixed<WidthTraitSecond> || !IsFixed<HeightTraitSecond>), "Child view's width must be Fixed if its height is Fixed.");
+	static_assert((!IsFixed<HeightTraitFirst> || IsFixed<WidthTraitFirst> || !IsFixed<WidthTraitSecond>) && (!IsFixed<HeightTraitSecond> || IsFixed<WidthTraitSecond> || !IsFixed<WidthTraitFirst>), "If one child view's height is Fixed and width is not Fixed, the other child view's width must not be Fixed");
 public:
 	using width_trait = std::conditional_t<IsFixed<WidthTraitFirst> && IsFixed<WidthTraitSecond>, Fixed, std::conditional_t<IsRelative<WidthTraitFirst> || IsRelative<WidthTraitSecond>, Relative, Auto>>;
 	using height_trait = std::conditional_t<IsFixed<HeightTraitFirst> || IsFixed<HeightTraitSecond>, Fixed, std::conditional_t<IsRelative<HeightTraitFirst> || IsRelative<HeightTraitSecond>, Relative, Auto>>;
@@ -123,100 +122,234 @@ protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override {
 		this->size_ref = size_ref;
 
-		if constexpr (!IsFixed<WidthTraitFirst> || (IsFixed<width_trait> && !IsFixed<HeightTraitFirst>)) {
-			Size child_size = UpdateChildSizeRef(child_first, size_ref);
-			if constexpr (!IsFixed<WidthTraitFirst>) {
-				size.width = child_size.width;
-			}
-			if constexpr (!IsFixed<HeightTraitFirst>) {
-				length_first = child_size.height;
-			}
-		}
-		if constexpr (!IsFixed<WidthTraitSecond> || (IsFixed<width_trait> && !IsFixed<HeightTraitSecond>)) {
-			Size child_size = UpdateChildSizeRef(child_second, size_ref);
-			if constexpr (!IsFixed<WidthTraitSecond>) {
-				size.width = child_size.width;
-			}
-			if constexpr (!IsFixed<HeightTraitSecond>) {
-				length_second = child_size.height;
-			}
-		}
 		if constexpr (IsFixed<width_trait>) {
 			size.width = size_ref.width;
 		}
-
 		if constexpr (IsFixed<height_trait>) {
 			size.height = size_ref.height;
 		}
-		if constexpr (IsFixed<WidthTraitFirst> && (!IsFixed<width_trait> || IsFixed<HeightTraitFirst>)) {
-			if constexpr (IsFixed<HeightTraitFirst>) {
-				UpdateChildSizeRef(child_first, Size(size.width, length_first = size.height - length_second));
-			} else {
-				length_first = UpdateChildSizeRef(child_first, Size(size.width, size_ref.height)).height;
-			}
+
+		if constexpr (!IsFixed<HeightTraitFirst> && (!IsFixed<WidthTraitFirst> || IsFixed<WidthTraitSecond>)) {
+			size_first = UpdateChildSizeRef(child_first, size_ref);
 		}
-		if constexpr (IsFixed<WidthTraitSecond> && (!IsFixed<width_trait> || IsFixed<HeightTraitSecond>)) {
-			if constexpr (IsFixed<HeightTraitSecond>) {
-				UpdateChildSizeRef(child_second, Size(size.width, length_second = size.height - length_first));
-			} else {
-				length_second = UpdateChildSizeRef(child_second, Size(size.width, size_ref.height)).height;
-			}
+		if constexpr (!IsFixed<HeightTraitSecond> && (!IsFixed<WidthTraitSecond> || IsFixed<WidthTraitFirst>)) {
+			size_second = UpdateChildSizeRef(child_second, size_ref);
+		}
+
+		if constexpr (!IsFixed<WidthTraitFirst> && IsFixed<WidthTraitSecond>) {
+			size.width = size_first.width;
+		}
+		if constexpr (IsFixed<WidthTraitFirst> && !IsFixed<WidthTraitSecond>) {
+			size.width = size_second.width;
+		}
+
+		if constexpr (IsFixed<HeightTraitFirst> || (IsFixed<WidthTraitFirst> && !IsFixed<WidthTraitSecond>)) {
+			size_first = UpdateChildSizeRef(child_first, Size(IsFixed<WidthTraitFirst> ? size.width : size_ref.width, IsFixed<HeightTraitFirst> ? size.height - size_second.height : size_ref.height));
+		}
+		if constexpr (IsFixed<HeightTraitSecond> || (IsFixed<WidthTraitSecond> && !IsFixed<WidthTraitFirst>)) {
+			size_second = UpdateChildSizeRef(child_second, Size(IsFixed<WidthTraitSecond> ? size.width : size_ref.width, IsFixed<HeightTraitSecond> ? size.height - size_first.height : size_ref.height));
+		}
+
+		if constexpr (!IsFixed<WidthTraitFirst> && !IsFixed<WidthTraitSecond>) {
+			size.width = std::max(size_first.width, size_second.width);
 		}
 		if constexpr (!IsFixed<height_trait>) {
-			size.height = length_first + length_second;
+			size.height = size_first.height + size_second.height;
 		}
 
 		return size;
 	}
 	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override {
 		if (IsFirst(child)) {
-			if constexpr (!IsFixed<HeightTraitFirst>) {
-				if (IsFixed<WidthTraitFirst> || size.width == child_size.width) {
-					if (length_first != child_size.height) {
-						length_first = child_size.height;
-						if constexpr (IsFixed<HeightTraitSecond>) {
-							UpdateChildSizeRef(child_second, Size(size.width, length_second = size.height - length_first));
-							Redraw(region_infinite);
-						} else {
-							size.height = length_first + length_second;
-							SizeUpdated(size);
+			if constexpr (!IsFixed<HeightTraitFirst> && (!IsFixed<WidthTraitFirst> || IsFixed<WidthTraitSecond>)) {
+				if (size_first.height == child_size.height) {
+					if constexpr (!IsFixed<WidthTraitFirst>) {
+						if (size_first.width != child_size.width) {
+							size_first.width = child_size.width;
+							if constexpr (IsFixed<WidthTraitSecond>) {
+								size.width = size_first.width;
+								size_second = UpdateChildSizeRef(child_second, Size(size.width, IsFixed<HeightTraitSecond> ? size.height - size_first.height : size_ref.height));
+								if constexpr (!IsFixed<HeightTraitSecond>) {
+									size.height = size_first.height + size_second.height;
+								}
+								SizeUpdated(size);
+							} else {
+								float width = std::max(size_first.width, size_second.width);
+								if (size.width != width) {
+									size.width = width;
+									SizeUpdated(size);
+								} else {
+									Redraw(GetRegionFirst());
+								}
+							}
 						}
 					}
 				} else {
-					size.width = child_size.width;
-					length_first = child_size.height;
+					size_first.height = child_size.height;
 					if constexpr (IsFixed<HeightTraitSecond>) {
-						UpdateChildSizeRef(child_second, Size(size.width, length_second = size.height - length_first));
+						if constexpr (IsFixed<WidthTraitFirst>) {
+							size_second = UpdateChildSizeRef(child_second, Size(size.width, size.height - size_first.height));
+							Redraw(region_infinite);
+						} else {
+							if constexpr (IsFixed<WidthTraitSecond>) {
+								if (size_first.width != child_size.width) {
+									size_first.width = child_size.width;
+									size.width = size_first.width;
+									size_second = UpdateChildSizeRef(child_second, Size(size.width, size.height - size_first.height));
+									SizeUpdated(size);
+								} else {
+									size_second = UpdateChildSizeRef(child_second, Size(size.width, size.height - size_first.height));
+									Redraw(region_infinite);
+								}
+							} else {
+								size_first.width = child_size.width;
+								size_second = UpdateChildSizeRef(child_second, Size(size_ref.width, size.height - size_first.height));
+								float width = std::max(size_first.width, size_second.width);
+								if (size.width != width) {
+									size.width = width;
+									SizeUpdated(size);
+								} else {
+									Redraw(region_infinite);
+								}
+							}
+						}
 					} else {
-						length_second = UpdateChildSizeRef(child_second, Size(size.width, size_ref.height)).height;
-						size.height = length_first + length_second;
+						if constexpr (!IsFixed<WidthTraitFirst>) {
+							if constexpr (IsFixed<WidthTraitSecond>) {
+								if (size_first.width != child_size.width) {
+									size_first.width = child_size.width;
+									size.width = size_first.width;
+									size_second = UpdateChildSizeRef(child_second, Size(size.width, size_ref.height));
+								}
+							} else {
+								if (size_first.width != child_size.width) {
+									size_first.width = child_size.width;
+									float width = std::max(size_first.width, size_second.width);
+									if (size.width != width) {
+										size.width = width;
+									}
+								}
+							}
+						}
+						size.height = size_first.height + size_second.height;
+						SizeUpdated(size);
 					}
-					SizeUpdated(size);
+				}
+			} else {
+				if constexpr (!IsFixed<WidthTraitFirst>) {
+					if (size_first.width != child_size.width) {
+						size_first.width = child_size.width;
+						float width = std::max(size_first.width, size_second.width);
+						if (size.width != width) {
+							size.width = width;
+							SizeUpdated(size);
+						} else {
+							Redraw(GetRegionFirst());
+						}
+					}
+				}
+				if constexpr (!IsFixed<HeightTraitFirst>) {
+					if (size_first.height != child_size.height) {
+						size_first.height = child_size.height;
+						size.height = size_first.height + size_second.height;
+						SizeUpdated(size);
+					}
 				}
 			}
 		} else {
-			if constexpr (!IsFixed<HeightTraitSecond>) {
-				if (IsFixed<WidthTraitSecond> || size.width == child_size.width) {
-					if (length_second != child_size.height) {
-						length_second = child_size.height;
-						if constexpr (IsFixed<HeightTraitFirst>) {
-							UpdateChildSizeRef(child_first, Size(size.width, length_first = size.height - length_second));
-							Redraw(region_infinite);
-						} else {
-							size.height = length_first + length_second;
-							SizeUpdated(size);
+			if constexpr (!IsFixed<HeightTraitSecond> && (!IsFixed<WidthTraitSecond> || IsFixed<WidthTraitFirst>)) {
+				if (size_second.height == child_size.height) {
+					if constexpr (!IsFixed<WidthTraitSecond>) {
+						if (size_second.width != child_size.width) {
+							size_second.width = child_size.width;
+							if constexpr (IsFixed<WidthTraitFirst>) {
+								size.width = size_second.width;
+								size_first = UpdateChildSizeRef(child_first, Size(size.width, IsFixed<HeightTraitFirst> ? size.height - size_second.height : size_ref.height));
+								if constexpr (!IsFixed<HeightTraitFirst>) {
+									size.height = size_first.height + size_second.height;
+								}
+								SizeUpdated(size);
+							} else {
+								float width = std::max(size_first.width, size_second.width);
+								if (size.width != width) {
+									size.width = width;
+									SizeUpdated(size);
+								} else {
+									Redraw(GetRegionSecond());
+								}
+							}
 						}
 					}
 				} else {
-					size.width = child_size.width;
-					length_second = child_size.height;
+					size_second.height = child_size.height;
 					if constexpr (IsFixed<HeightTraitFirst>) {
-						UpdateChildSizeRef(child_first, Size(size.width, length_first = size.height - length_second));
+						if constexpr (IsFixed<WidthTraitSecond>) {
+							size_first = UpdateChildSizeRef(child_first, Size(size.width, size.height - size_second.height));
+							Redraw(region_infinite);
+						} else {
+							if constexpr (IsFixed<WidthTraitFirst>) {
+								if (size_second.width != child_size.width) {
+									size_second.width = child_size.width;
+									size.width = size_second.width;
+									size_first = UpdateChildSizeRef(child_first, Size(size.width, size.height - size_second.height));
+									SizeUpdated(size);
+								} else {
+									size_first = UpdateChildSizeRef(child_first, Size(size.width, size.height - size_second.height));
+									Redraw(region_infinite);
+								}
+							} else {
+								size_second.width = child_size.width;
+								size_first = UpdateChildSizeRef(child_first, Size(size_ref.width, size.height - size_second.height));
+								float width = std::max(size_first.width, size_second.width);
+								if (size.width != width) {
+									size.width = width;
+									SizeUpdated(size);
+								} else {
+									Redraw(region_infinite);
+								}
+							}
+						}
 					} else {
-						length_second = UpdateChildSizeRef(child_first, Size(size.width, size_ref.height)).height;
-						size.height = length_first + length_second;
+						if constexpr (!IsFixed<WidthTraitSecond>) {
+							if constexpr (IsFixed<WidthTraitFirst>) {
+								if (size_second.width != child_size.width) {
+									size_second.width = child_size.width;
+									size.width = size_second.width;
+									size_first = UpdateChildSizeRef(child_first, Size(size.width, size_ref.height));
+								}
+							} else {
+								if (size_second.width != child_size.width) {
+									size_second.width = child_size.width;
+									float width = std::max(size_first.width, size_second.width);
+									if (size.width != width) {
+										size.width = width;
+									}
+								}
+							}
+						}
+						size.height = size_first.height + size_second.height;
+						SizeUpdated(size);
 					}
-					SizeUpdated(size);
+				}
+			} else {
+				if constexpr (!IsFixed<WidthTraitSecond>) {
+					if (size_second.width != child_size.width) {
+						size_second.width = child_size.width;
+						float width = std::max(size_first.width, size_second.width);
+						if (size.width != width) {
+							size.width = width;
+							SizeUpdated(size);
+						} else {
+							Redraw(GetRegionSecond());
+						}
+					}
+				}
+				if constexpr (!IsFixed<HeightTraitSecond>) {
+					if (size_second.height != child_size.height) {
+						size_second.height = child_size.height;
+						size.height = size_first.height + size_second.height;
+						SizeUpdated(size);
+					}
 				}
 			}
 		}
@@ -227,8 +360,7 @@ template<class WidthTraitFirst, class HeightTraitFirst, class WidthTraitSecond, 
 class SplitLayoutHorizontal : public _SplitLayout_Base_Horizontal {
 public:
 	static_assert(!IsFixed<WidthTraitFirst> || !IsFixed<WidthTraitSecond>, "At least one child view's width should not be Fixed.");
-	static_assert(IsFixed<HeightTraitFirst> || IsFixed<HeightTraitSecond>, "At least one child view's height should be Fixed.");
-	static_assert((!IsFixed<WidthTraitFirst> || IsFixed<HeightTraitFirst>) && (!IsFixed<WidthTraitSecond> || IsFixed<HeightTraitSecond>), "Child view's height must be Fixed if its width is Fixed.");
+	static_assert((!IsFixed<WidthTraitFirst> || IsFixed<HeightTraitFirst> || !IsFixed<HeightTraitSecond>) && (!IsFixed<WidthTraitSecond> || IsFixed<HeightTraitSecond> || !IsFixed<HeightTraitFirst>), "If one child view's width is Fixed and height is not Fixed, the other child view's height must not be Fixed");
 public:
 	using width_trait = std::conditional_t<IsFixed<WidthTraitFirst> || IsFixed<WidthTraitSecond>, Fixed, std::conditional_t<IsRelative<WidthTraitFirst> || IsRelative<WidthTraitSecond>, Relative, Auto>>;
 	using height_trait = std::conditional_t<IsFixed<HeightTraitFirst> && IsFixed<HeightTraitSecond>, Fixed, std::conditional_t<IsRelative<HeightTraitFirst> || IsRelative<HeightTraitSecond>, Relative, Auto>>;
@@ -244,100 +376,234 @@ protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override {
 		this->size_ref = size_ref;
 
-		if constexpr (!IsFixed<HeightTraitFirst> || (IsFixed<height_trait> && !IsFixed<WidthTraitFirst>)) {
-			Size child_size = UpdateChildSizeRef(child_first, size_ref);
-			if constexpr (!IsFixed<HeightTraitFirst>) {
-				size.height = child_size.height;
-			}
-			if constexpr (!IsFixed<WidthTraitFirst>) {
-				length_first = child_size.width;
-			}
-		}
-		if constexpr (!IsFixed<HeightTraitSecond> || (IsFixed<height_trait> && !IsFixed<WidthTraitSecond>)) {
-			Size child_size = UpdateChildSizeRef(child_second, size_ref);
-			if constexpr (!IsFixed<HeightTraitSecond>) {
-				size.height = child_size.height;
-			}
-			if constexpr (!IsFixed<WidthTraitSecond>) {
-				length_second = child_size.width;
-			}
-		}
 		if constexpr (IsFixed<height_trait>) {
 			size.height = size_ref.height;
 		}
-
 		if constexpr (IsFixed<width_trait>) {
 			size.width = size_ref.width;
 		}
-		if constexpr (IsFixed<HeightTraitFirst> && (!IsFixed<height_trait> || IsFixed<WidthTraitFirst>)) {
-			if constexpr (IsFixed<WidthTraitFirst>) {
-				UpdateChildSizeRef(child_first, Size(length_first = size.width - length_second, size.height));
-			} else {
-				length_first = UpdateChildSizeRef(child_first, Size(size_ref.width, size.height)).width;
-			}
+
+		if constexpr (!IsFixed<WidthTraitFirst> && (!IsFixed<HeightTraitFirst> || IsFixed<HeightTraitSecond>)) {
+			size_first = UpdateChildSizeRef(child_first, size_ref);
 		}
-		if constexpr (IsFixed<HeightTraitSecond> && (!IsFixed<height_trait> || IsFixed<WidthTraitSecond>)) {
-			if constexpr (IsFixed<WidthTraitSecond>) {
-				UpdateChildSizeRef(child_second, Size(length_second = size.width - length_first, size.height));
-			} else {
-				length_second = UpdateChildSizeRef(child_second, Size(size_ref.width, size.height)).width;
-			}
+		if constexpr (!IsFixed<WidthTraitSecond> && (!IsFixed<HeightTraitSecond> || IsFixed<HeightTraitFirst>)) {
+			size_second = UpdateChildSizeRef(child_second, size_ref);
 		}
-		if constexpr (!IsFixed<height_trait>) {
-			size.width = length_first + length_second;
+
+		if constexpr (!IsFixed<HeightTraitFirst> && IsFixed<HeightTraitSecond>) {
+			size.height = size_first.height;
+		}
+		if constexpr (IsFixed<HeightTraitFirst> && !IsFixed<HeightTraitSecond>) {
+			size.height = size_second.height;
+		}
+
+		if constexpr (IsFixed<WidthTraitFirst> || (IsFixed<HeightTraitFirst> && !IsFixed<HeightTraitSecond>)) {
+			size_first = UpdateChildSizeRef(child_first, Size(IsFixed<WidthTraitFirst> ? size.width - size_second.width : size_ref.width, IsFixed<HeightTraitFirst> ? size.height : size_ref.height));
+		}
+		if constexpr (IsFixed<WidthTraitSecond> || (IsFixed<HeightTraitSecond> && !IsFixed<HeightTraitFirst>)) {
+			size_second = UpdateChildSizeRef(child_second, Size(IsFixed<WidthTraitSecond> ? size.width - size_first.width : size_ref.width, IsFixed<HeightTraitSecond> ? size.height : size_ref.height));
+		}
+
+		if constexpr (!IsFixed<HeightTraitFirst> && !IsFixed<HeightTraitSecond>) {
+			size.height = std::max(size_first.height, size_second.height);
+		}
+		if constexpr (!IsFixed<width_trait>) {
+			size.width = size_first.width + size_second.width;
 		}
 
 		return size;
 	}
 	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override {
 		if (IsFirst(child)) {
-			if constexpr (!IsFixed<WidthTraitFirst>) {
-				if (IsFixed<HeightTraitFirst> || size.height == child_size.height) {
-					if (length_first != child_size.width) {
-						length_first = child_size.width;
-						if constexpr (IsFixed<WidthTraitSecond>) {
-							UpdateChildSizeRef(child_second, Size(length_second = size.width - length_first, size.height));
-							Redraw(region_infinite);
-						} else {
-							size.width = length_first + length_second;
-							SizeUpdated(size);
+			if constexpr (!IsFixed<WidthTraitFirst> && (!IsFixed<HeightTraitFirst> || IsFixed<HeightTraitSecond>)) {
+				if (size_first.width == child_size.width) {
+					if constexpr (!IsFixed<HeightTraitFirst>) {
+						if (size_first.height != child_size.height) {
+							size_first.height = child_size.height;
+							if constexpr (IsFixed<HeightTraitSecond>) {
+								size.height = size_first.height;
+								size_second = UpdateChildSizeRef(child_second, Size(IsFixed<WidthTraitSecond> ? size.width - size_first.width : size_ref.width, size.height));
+								if constexpr (!IsFixed<WidthTraitSecond>) {
+									size.width = size_first.width + size_second.width;
+								}
+								SizeUpdated(size);
+							} else {
+								float height = std::max(size_first.height, size_second.height);
+								if (size.height != height) {
+									size.height = height;
+									SizeUpdated(size);
+								} else {
+									Redraw(GetRegionFirst());
+								}
+							}
 						}
 					}
 				} else {
-					size.height = child_size.height;
-					length_first = child_size.width;
+					size_first.width = child_size.width;
 					if constexpr (IsFixed<WidthTraitSecond>) {
-						UpdateChildSizeRef(child_second, Size(length_second = size.width - length_first, size.height));
+						if constexpr (IsFixed<HeightTraitFirst>) {
+							size_second = UpdateChildSizeRef(child_second, Size(size.width - size_first.width, size.height));
+							Redraw(region_infinite);
+						} else {
+							if constexpr (IsFixed<HeightTraitSecond>) {
+								if (size_first.height != child_size.height) {
+									size_first.height = child_size.height;
+									size.height = size_first.height;
+									size_second = UpdateChildSizeRef(child_second, Size(size.width - size_first.width, size.height));
+									SizeUpdated(size);
+								} else {
+									size_second = UpdateChildSizeRef(child_second, Size(size.width - size_first.width, size.height));
+									Redraw(region_infinite);
+								}
+							} else {
+								size_first.height = child_size.height;
+								size_second = UpdateChildSizeRef(child_second, Size(size.width - size_first.width, size_ref.height));
+								float height = std::max(size_first.height, size_second.height);
+								if (size.height != height) {
+									size.height = height;
+									SizeUpdated(size);
+								} else {
+									Redraw(region_infinite);
+								}
+							}
+						}
 					} else {
-						length_second = UpdateChildSizeRef(child_second, Size(size_ref.width, size.height)).width;
-						size.width = length_first + length_second;
+						if constexpr (!IsFixed<HeightTraitFirst>) {
+							if constexpr (IsFixed<HeightTraitSecond>) {
+								if (size_first.height != child_size.height) {
+									size_first.height = child_size.height;
+									size.height = size_first.height;
+									size_second = UpdateChildSizeRef(child_second, Size(size_ref.width, size.height));
+								}
+							} else {
+								if (size_first.height != child_size.height) {
+									size_first.height = child_size.height;
+									float height = std::max(size_first.height, size_second.height);
+									if (size.height != height) {
+										size.height = height;
+									}
+								}
+							}
+						}
+						size.width = size_first.width + size_second.width;
+						SizeUpdated(size);
 					}
-					SizeUpdated(size);
+				}
+			} else {
+				if constexpr (!IsFixed<HeightTraitFirst>) {
+					if (size_first.height != child_size.height) {
+						size_first.height = child_size.height;
+						float height = std::max(size_first.height, size_second.height);
+						if (size.height != height) {
+							size.height = height;
+							SizeUpdated(size);
+						} else {
+							Redraw(GetRegionFirst());
+						}
+					}
+				}
+				if constexpr (!IsFixed<WidthTraitFirst>) {
+					if (size_first.width != child_size.width) {
+						size_first.width = child_size.width;
+						size.width = size_first.width + size_second.width;
+						SizeUpdated(size);
+					}
 				}
 			}
 		} else {
-			if constexpr (!IsFixed<WidthTraitSecond>) {
-				if (IsFixed<HeightTraitSecond> || size.height == child_size.height) {
-					if (length_second != child_size.width) {
-						length_second = child_size.width;
-						if constexpr (IsFixed<WidthTraitFirst>) {
-							UpdateChildSizeRef(child_first, Size(length_first = size.width - length_second, size.height));
-							Redraw(region_infinite);
-						} else {
-							size.width = length_first + length_second;
-							SizeUpdated(size);
+			if constexpr (!IsFixed<WidthTraitSecond> && (!IsFixed<HeightTraitSecond> || IsFixed<HeightTraitFirst>)) {
+				if (size_second.width == child_size.width) {
+					if constexpr (!IsFixed<HeightTraitSecond>) {
+						if (size_second.height != child_size.height) {
+							size_second.height = child_size.height;
+							if constexpr (IsFixed<HeightTraitFirst>) {
+								size.height = size_second.height;
+								size_first = UpdateChildSizeRef(child_first, Size(IsFixed<WidthTraitFirst> ? size.width - size_second.width : size_ref.width, size.height));
+								if constexpr (!IsFixed<WidthTraitFirst>) {
+									size.width = size_first.width + size_second.width;
+								}
+								SizeUpdated(size);
+							} else {
+								float height = std::max(size_first.height, size_second.height);
+								if (size.height != height) {
+									size.height = height;
+									SizeUpdated(size);
+								} else {
+									Redraw(GetRegionSecond());
+								}
+							}
 						}
 					}
 				} else {
-					size.height = child_size.height;
-					length_second = child_size.width;
+					size_second.width = child_size.width;
 					if constexpr (IsFixed<WidthTraitFirst>) {
-						UpdateChildSizeRef(child_first, Size(length_first = size.width - length_second, size.height));
+						if constexpr (IsFixed<HeightTraitSecond>) {
+							size_first = UpdateChildSizeRef(child_first, Size(size.width - size_second.width, size.height));
+							Redraw(region_infinite);
+						} else {
+							if constexpr (IsFixed<HeightTraitFirst>) {
+								if (size_second.height != child_size.height) {
+									size_second.height = child_size.height;
+									size.height = size_second.height;
+									size_first = UpdateChildSizeRef(child_first, Size(size.width - size_second.width, size.height));
+									SizeUpdated(size);
+								} else {
+									size_first = UpdateChildSizeRef(child_first, Size(size.width - size_second.width, size.height));
+									Redraw(region_infinite);
+								}
+							} else {
+								size_second.height = child_size.height;
+								size_first = UpdateChildSizeRef(child_first, Size(size.width - size_second.width, size_ref.height));
+								float height = std::max(size_first.height, size_second.height);
+								if (size.height != height) {
+									size.height = height;
+									SizeUpdated(size);
+								} else {
+									Redraw(region_infinite);
+								}
+							}
+						}
 					} else {
-						length_second = UpdateChildSizeRef(child_first, Size(size_ref.width, size.height)).width;
-						size.width = length_first + length_second;
+						if constexpr (!IsFixed<HeightTraitSecond>) {
+							if constexpr (IsFixed<HeightTraitFirst>) {
+								if (size_second.height != child_size.height) {
+									size_second.height = child_size.height;
+									size.height = size_second.height;
+									size_first = UpdateChildSizeRef(child_first, Size(size_ref.width, size.height));
+								}
+							} else {
+								if (size_second.height != child_size.height) {
+									size_second.height = child_size.height;
+									float height = std::max(size_first.height, size_second.height);
+									if (size.height != height) {
+										size.height = height;
+									}
+								}
+							}
+						}
+						size.width = size_first.width + size_second.width;
+						SizeUpdated(size);
 					}
-					SizeUpdated(size);
+				}
+			} else {
+				if constexpr (!IsFixed<HeightTraitSecond>) {
+					if (size_second.height != child_size.height) {
+						size_second.height = child_size.height;
+						float height = std::max(size_first.height, size_second.height);
+						if (size.height != height) {
+							size.height = height;
+							SizeUpdated(size);
+						} else {
+							Redraw(GetRegionSecond());
+						}
+					}
+				}
+				if constexpr (!IsFixed<WidthTraitSecond>) {
+					if (size_second.width != child_size.width) {
+						size_second.width = child_size.width;
+						size.width = size_first.width + size_second.width;
+						SizeUpdated(size);
+					}
 				}
 			}
 		}
