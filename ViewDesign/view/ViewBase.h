@@ -19,6 +19,7 @@ protected:
 	ViewBase() {}
 public:
 	virtual ~ViewBase();
+
 protected:
 	ViewBase& AsViewBase() { return *this; }
 
@@ -35,30 +36,18 @@ protected:
 
 	// child
 protected:
-	void VerifyChild(ViewBase& child) const {
-		if (child.parent != this) { throw std::invalid_argument("invalid child view"); }
-	}
-	void RegisterChild(ViewBase& child) {
-		if (child.HasParent()) { throw std::invalid_argument("view already has a parent"); } child.parent = this;
-	}
-	void UnregisterChild(ViewBase& child) {
-		VerifyChild(child); child.parent = nullptr;
-	}
+	void VerifyChild(ViewBase& child) const { if (child.parent != this) { throw std::invalid_argument("invalid child view"); } }
+	void RegisterChild(ViewBase& child) { if (child.HasParent()) { throw std::invalid_argument("view already has a parent"); } child.parent = this; }
+	void UnregisterChild(ViewBase& child) { VerifyChild(child); child.parent = nullptr; }
 protected:
 	ViewBase& GetDirectChild(ViewBase& descendent) const;
 
-	// parent data
+	// data
 private:
-	uint64 parent_data = 0;
+	uint64 data = 0;
 protected:
-	template<class T, class = std::enable_if_t<sizeof(T) <= sizeof(uint64)>>
-	void SetChildData(ViewBase& child, T data) {
-		VerifyChild(child); memcpy(&child.parent_data, &data, sizeof(T));
-	}
-	template<class T, class = std::enable_if_t<sizeof(T) <= sizeof(uint64)>>
-	T GetChildData(ViewBase& child) const {
-		VerifyChild(child); T data; memcpy(&data, &child.parent_data, sizeof(T)); return data;
-	}
+	template<class T> void SetChildData(ViewBase& child, T data) const requires(sizeof(T) <= sizeof(uint64)) { VerifyChild(child); memcpy(&child.data, &data, sizeof(T)); }
+	template<class T> T GetChildData(ViewBase& child) const requires(sizeof(T) <= sizeof(uint64)) { VerifyChild(child); T data; memcpy(&data, &child.data, sizeof(T)); return data; }
 
 	// layout
 protected:

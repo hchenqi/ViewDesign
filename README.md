@@ -8,11 +8,13 @@ The library and test executables can be built with CMake with Visual Studio and 
 
 ## Concepts
 
-### View
+### View / Desktop
 
-A view is a component that can have a parent view and multiple child views. All views form a view tree. `Desktop` manages all root views.
+A view is a component derived from `ViewBase` defining its own logic of calculating layout, drawing content and handling events.
 
-Each view is derived from `ViewBase` defining its own logic of calculating layout, drawing content and handling events.
+Each view can have a parent view and multiple child views. All views form a view tree.
+
+`Desktop` is the virtual root node of the view tree that manages all view windows of the program on the desktop, each window wrapped with a `DesktopFrame` which presents the window and receives system events.
 
 `view_ref` holds a reference to a view, and `view_ptr` holds an allocated unique pointer to a view.
 
