@@ -8,16 +8,16 @@
 namespace ViewDesign {
 
 class ViewBase;
-class DesktopFrame;
+class Window;
 
 
 struct Global {
-	static DesktopFrame& Add(std::unique_ptr<DesktopFrame> frame);
-	static DesktopFrame& Add(alloc_ptr<DesktopFrame> frame);
-	static std::unique_ptr<DesktopFrame> Remove(DesktopFrame& frame);
+	static Window& AddWindow(std::unique_ptr<Window> window);
+	static Window& AddWindow(alloc_ptr<Window> window);
+	static std::unique_ptr<Window> RemoveWindow(Window& window);
 
-	static DesktopFrame& GetDesktopFrame(ViewBase& view);
-	static DesktopFrame& GetDesktopFramePoint(ViewBase& view, Point& point);
+	static Window& GetWindow(ViewBase& view);
+	static Window& GetWindowPoint(ViewBase& view, Point& point);
 
 	static void EventLoop();
 	static void Terminate();

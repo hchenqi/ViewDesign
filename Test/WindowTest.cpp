@@ -1,5 +1,5 @@
 #include "ViewDesign/view/Global.h"
-#include "ViewDesign/view/DesktopFrame.h"
+#include "ViewDesign/view/Window.h"
 #include "ViewDesign/view/control/Placeholder.h"
 #include "ViewDesign/view/wrapper/Background.h"
 #include "ViewDesign/view/wrapper/Cursor.h"
@@ -9,13 +9,13 @@
 using namespace ViewDesign;
 
 
-class MainFrame : public DesktopFrame {
+class MainWindow : public Window {
 public:
-	using DesktopFrame::DesktopFrame;
+	using Window::Window;
 private:
 	Rect region = Rect(100, 100, 800, 500);
 private:
-	virtual Rect OnDesktopFrameSizeRefUpdate(Size size_ref) override {
+	virtual Rect OnWindowSizeRefUpdate(Size size_ref) override {
 		region.size = UpdateChildSizeRef(child, region.size);
 		return region;
 	}
@@ -45,13 +45,13 @@ private:
 
 
 int main() {
-	global.Add(new MainFrame(L"DesktopFrameTest", new EmptyView()));
+	global.AddWindow(new MainWindow(L"WindowTest", new EmptyView()));
 	global.EventLoop();
 
-	global.Add(new MainFrame(L"DesktopFrameTest", new ViewFrame(new EmptyView())));
+	global.AddWindow(new MainWindow(L"WindowTest", new ViewFrame(new EmptyView())));
 	global.EventLoop();
 
 	std::unique_ptr<EmptyView> view(new EmptyView());
-	global.Add(new MainFrame(L"DesktopFrameTest", new ViewFrameRef(*view)));
+	global.AddWindow(new MainWindow(L"WindowTest", new ViewFrameRef(*view)));
 	global.EventLoop();
 }

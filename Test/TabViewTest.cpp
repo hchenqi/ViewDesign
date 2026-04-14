@@ -1,14 +1,14 @@
 #include "ViewDesign/view/Global.h"
 #include "ViewDesign/view/control/EditBox.h"
-#include "ViewDesign/view/widget/TitleBarFrame.h"
+#include "ViewDesign/view/widget/TitleBarWindow.h"
 #include "ViewDesign/view/widget/TabView.h"
 
 
 using namespace ViewDesign;
 
 
-struct MainFrameStyle : public TitleBarFrame::Style {
-	MainFrameStyle() {
+struct MainWindowStyle : public TitleBarWindow::Style {
+	MainWindowStyle() {
 		width.min(200px).normal(800px).max(100pct);
 		height.min(200px).normal(500px).max(100pct);
 		position.setHorizontalCenter().setVerticalCenter();
@@ -84,7 +84,7 @@ private:
 
 
 int main() {
-	global.Add(new TitleBarFrame(MainFrameStyle(), new MyTabView()));
+	global.AddWindow(new TitleBarWindow(MainWindowStyle(), new MyTabView()));
 	global.EventLoop();
 	return 0;
 }

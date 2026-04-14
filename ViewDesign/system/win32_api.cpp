@@ -1,7 +1,7 @@
 #include "win32_api.h"
 #include "win32_ime.h"
 #include "../view/Desktop.h"
-#include "../view/DesktopFrame.h"
+#include "../view/Window.h"
 
 #include <Windows.h>
 #include <windowsx.h>
@@ -9,16 +9,16 @@
 
 namespace ViewDesign {
 
-struct DesktopFrameApi : DesktopFrame {
-	DesktopFrame::GetRegion;
-	DesktopFrame::SetScale;
-	DesktopFrame::SetSize;
-	DesktopFrame::SetPoint;
-	DesktopFrame::GetMinMaxRegion;
-	DesktopFrame::State;
-	DesktopFrame::SetState;
-	DesktopFrame::Destroy;
-	DesktopFrame::OnDraw;
+struct WindowApi : Window {
+	Window::GetRegion;
+	Window::SetScale;
+	Window::SetSize;
+	Window::SetPoint;
+	Window::GetMinMaxRegion;
+	Window::State;
+	Window::SetState;
+	Window::Destroy;
+	Window::OnDraw;
 };
 
 struct DesktopApi : Desktop {
@@ -43,8 +43,8 @@ inline RECT AsWin32Rect(Rect rect) { return { (int)floorf(rect.left()), (int)flo
 inline Rect AsRect(RECT rect) { return Rect((float)rect.left, (float)rect.top, (float)(rect.right - rect.left), (float)(rect.bottom - rect.top)); }
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
-	ref_ptr<DesktopFrameApi> frame = reinterpret_cast<ref_ptr<DesktopFrameApi>>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
-	if (frame == nullptr) { goto FrameIrrelevantMessages; }
+	ref_ptr<WindowApi> window = reinterpret_cast<ref_ptr<WindowApi>>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
+	if (window == nullptr) { goto FrameIrrelevantMessages; }
 
 	// mouse message
 	if (IsMouseMsg(msg)) {
@@ -70,11 +70,11 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 		case WM_RBUTTONUP: mouse_event.type = MouseEvent::RightUp; break;
 		case WM_MBUTTONDOWN: mouse_event.type = MouseEvent::MiddleDown; break;
 		case WM_MBUTTONUP: mouse_event.type = MouseEvent::MiddleUp; break;
-		case WM_MOUSEWHEEL: mouse_event.type = MouseEvent::WheelVertical; mouse_event.point -= frame->GetRegion().point - point_zero; break;
-		case WM_MOUSEHWHEEL: mouse_event.type = MouseEvent::WheelHorizontal; mouse_event.point -= frame->GetRegion().point - point_zero; break;
+		case WM_MOUSEWHEEL: mouse_event.type = MouseEvent::WheelVertical; mouse_event.point -= window->GetRegion().point - point_zero; break;
+		case WM_MOUSEHWHEEL: mouse_event.type = MouseEvent::WheelHorizontal; mouse_event.point -= window->GetRegion().point - point_zero; break;
 		default: return DefWindowProc(hwnd, msg, wparam, lparam);
 		}
-		desktop.DispatchMouseEvent(*frame, mouse_event);
+		desktop.DispatchMouseEvent(*window, mouse_event);
 		return 0;
 	}
 
@@ -101,7 +101,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 			// region message
 		case WM_GETMINMAXINFO: {
 			MINMAXINFO* min_max_info = reinterpret_cast<MINMAXINFO*>(lparam);
-			auto [size_min, region_max] = frame->GetMinMaxRegion(Win32::GetDesktopSize());
+			auto [size_min, region_max] = window->GetMinMaxRegion(Win32::GetDesktopSize());
 			min_max_info->ptMaxPosition = { (int)floorf(region_max.point.x), (int)floorf(region_max.point.y) };
 			min_max_info->ptMaxSize = { (int)ceilf(region_max.size.width), (int)ceilf(region_max.size.height) };
 			min_max_info->ptMinTrackSize = { (int)floorf(size_min.width), (int)floorf(size_min.height) };
@@ -109,22 +109,22 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 		}break;
 		case WM_WINDOWPOSCHANGING: break;
 		case WM_WINDOWPOSCHANGED: return DefWindowProc(hwnd, msg, wparam, lparam);
-		case WM_MOVE: frame->SetPoint(Point((short)LOWORD(lparam), (short)HIWORD(lparam))); break;
-		case WM_SIZE: frame->SetState(static_cast<DesktopFrameApi::State>(wparam <= 2 ? wparam : 2));
-			if (wparam != SIZE_MINIMIZED) { frame->SetSize(Size(LOWORD(lparam), HIWORD(lparam))); } break;
+		case WM_MOVE: window->SetPoint(Point((short)LOWORD(lparam), (short)HIWORD(lparam))); break;
+		case WM_SIZE: window->SetState(static_cast<WindowApi::State>(wparam <= 2 ? wparam : 2));
+			if (wparam != SIZE_MINIMIZED) { window->SetSize(Size(LOWORD(lparam), HIWORD(lparam))); } break;
 
 			// notifications
 		case WM_PAINT: {
 			PAINTSTRUCT ps;
 			HDC hdc = BeginPaint(hwnd, &ps);
-			frame->OnDraw();
+			window->OnDraw();
 			EndPaint(hwnd, &ps);
 		}break;
 		case WM_ERASEBKGND: return true;
 		case WM_MOUSELEAVE: is_mouse_tracked = false; desktop.LoseTrack(); break;
 		case WM_CAPTURECHANGED: desktop.LoseCapture(); break;
 
-		case WM_DPICHANGED: frame->SetScale(LOWORD(wparam) / dpi_default); break;
+		case WM_DPICHANGED: window->SetScale(LOWORD(wparam) / dpi_default); break;
 
 			// convert scroll message to mouse wheel message
 		case WM_HSCROLL:
@@ -152,7 +152,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 FrameIrrelevantMessages:
 	switch (msg) {
 	case WM_CREATE: break;
-	case WM_DESTROY: if (frame != nullptr) { frame->Destroy(); }  break;
+	case WM_DESTROY: if (window != nullptr) { window->Destroy(); }  break;
 
 	case WM_KILLFOCUS: desktop.LoseFocus(); break;
 

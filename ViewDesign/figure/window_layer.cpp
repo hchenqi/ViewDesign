@@ -1,4 +1,4 @@
-#include "desktop_layer.h"
+#include "window_layer.h"
 
 #include "../system/d3d_api.h"
 #include "../system/dxgi_api.h"
@@ -10,7 +10,7 @@
 namespace ViewDesign {
 
 
-void DesktopLayer::Create(HANDLE hwnd, Size size) {
+void WindowLayer::Create(HANDLE hwnd, Size size) {
 	Destroy();
 
 	// Create swapchain.
@@ -47,13 +47,13 @@ void DesktopLayer::Create(HANDLE hwnd, Size size) {
 	GetDCompDevice().Commit();
 }
 
-void DesktopLayer::Destroy() {
+void WindowLayer::Destroy() {
 	SafeRelease(&comp_target);
 	DestroyBitmap();
 	SafeRelease(&swap_chain);
 }
 
-void DesktopLayer::CreateBitmap() {
+void WindowLayer::CreateBitmap() {
 	ComPtr<IDXGISurface> dxgi_surface;
 	hr << swap_chain->GetBuffer(0, IID_PPV_ARGS(&dxgi_surface));
 
@@ -66,17 +66,17 @@ void DesktopLayer::CreateBitmap() {
 	this->bitmap.Set(static_cast<BitmapResource*>(bitmap.Detach()));
 }
 
-void DesktopLayer::DestroyBitmap() {
+void WindowLayer::DestroyBitmap() {
 	bitmap.Destroy();
 }
 
-void DesktopLayer::Resize(Size size) {
+void WindowLayer::Resize(Size size) {
 	DestroyBitmap();
 	hr << swap_chain->ResizeBuffers(0, (uint)ceilf(size.width), (uint)ceilf(size.height), DXGI_FORMAT_UNKNOWN, 0);
 	CreateBitmap();
 }
 
-void DesktopLayer::Present(Rect rect) {
+void WindowLayer::Present(Rect rect) {
 	RECT dirty_rect = { (int)rect.left(), (int)rect.top(), (int)rect.right(), (int)rect.bottom() };
 	DXGI_PRESENT_PARAMETERS present_parameters = { 1, &dirty_rect };
 	hr << swap_chain->Present1(0, 0, &present_parameters);

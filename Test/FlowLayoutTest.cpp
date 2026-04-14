@@ -9,14 +9,14 @@
 #include "ViewDesign/view/control/EditBox.h"
 #include "ViewDesign/view/wrapper/Background.h"
 #include "ViewDesign/view/wrapper/HitTestHelper.h"
-#include "ViewDesign/view/widget/TitleBarFrame.h"
+#include "ViewDesign/view/widget/TitleBarWindow.h"
 
 
 using namespace ViewDesign;
 
 
-struct MainFrameStyle : TitleBarFrame::Style {
-	MainFrameStyle() {
+struct MainWindowStyle : TitleBarWindow::Style {
+	MainWindowStyle() {
 		width.normal(560px);
 		height.normal(180px);
 		title.text.assign(L"FlowLayoutTest");
@@ -66,9 +66,9 @@ private:
 
 
 int main() {
-	global.Add(
-		new TitleBarFrame(
-			MainFrameStyle(),
+	global.AddWindow(
+		new TitleBarWindow(
+			MainWindowStyle(),
 			new ScrollFrame<Vertical>(
 				new PaddingFrame(
 					Padding(10),

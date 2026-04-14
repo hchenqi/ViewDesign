@@ -8,13 +8,13 @@ The library and test executables can be built with CMake with Visual Studio and 
 
 ## Concepts
 
-### View / Desktop
+### View / Desktop / Window
 
 A view is a component derived from `ViewBase` defining its own logic of calculating layout, drawing content and handling events.
 
 Each view can have a parent view and multiple child views. All views form a view tree.
 
-`Desktop` is the virtual root node of the view tree that manages all view windows of the program on the desktop, each window wrapped with a `DesktopFrame` which presents the window and receives system events.
+`Desktop` is the virtual root of the view tree that manages all windows of the program on the system desktop. Each `Window` as a direct child view of `Desktop` presents one window and receives system events for this window.
 
 `view_ref` holds a reference to a view, and `view_ptr` holds an allocated unique pointer to a view.
 
@@ -24,9 +24,9 @@ Control, frame and layout are different types of views.
 
 - A control has no child view and does basic functions or displays raw content, like `Button`, `TextBox`, `ImageBox`, etc.
 
-- A frame has one child view to decorate, like `BorderFrame`, `BackgroundFrame`, etc.
+- A frame has one child view to decorate, like `BorderFrame` and `BackgroundFrame`.
 
-- A layout may have multiple child views that are visually arranged in a certain way, like `ListLayout`, `SplitLayout`, `FlowLayout`, `OverlapLayout` etc.
+- A layout may have multiple child views that are visually arranged in a certain way, like `ListLayout`, `SplitLayout`, `FlowLayout`, `OverlapLayout`, etc.
 
 ### Fixed / Auto / Relative
 
@@ -58,9 +58,23 @@ Reflow is the process of propagating size change and calculating the layout of a
 
 In general, the parent view provides a size reference `size_ref` to a child view, the child view calculates its size based on the `size_ref` or on its own, and returns its actual size to the parent view, which then calculates its layout and its own size.
 
-If a view later changes its size by itself, it notifies its parent view, and the parent view calculates its layout again and might also change its own size. Reflow stops at the first parent view whose layout is updated but doesn't change its own size. This final parent view then initiates redraw over its updated region.
+If a view later changes its size by itself, it notifies its parent view, and the parent view calculates its layout again and might also change its own size. Reflow stops at the first parent view who updated its layout but doesn't change its own size. This final parent view then initiates redraw over its updated region.
 
 A view whose content is updated without size change can also initiate redraw. A view who changes its size doesn't initiate redraw because the final parent view will.
 
-A view initiating redraw notifies its parent view about the region on it that is updated, and the parent view translates and clips the region as its own region and notifies its own parent view until `DesktopFrame` which then draws all child views in the updated region.
+A view initiating redraw notifies its parent view about its updated region, and the parent view translates and clips the region as its own region and notifies its own parent view until the `Window` which then draws all child views in the updated region and presents the window.
+
+### Figure / Canvas / Layer
+
+A `Figure` can draw itself on a render target. Different figure types like `Rectangle`, `Circle`, `TextBlock` and `Image` all inherit the `Figure` base class.
+
+Each view can draw its content as figures on a `Canvas` provided to it. It can pass the `Canvas` to its child views to draw on.
+
+A `Canvas` is a virtual render target for views, which actually collects the figures drawn by the views as drawing commands for rendering on the actual render target `Bitmap` of a `Layer`.
+
+A `LayerFrame` maintains a `Layer` like a cache where its child views are directly drawn on. The layer itself as a figure can be drawn on another layer.
+
+Each `Window` maintains a `WindowLayer` for finally rendering the content in the window.
+
+### MouseEvent / KeyEvent / FocusEvent
 

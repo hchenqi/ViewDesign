@@ -1,5 +1,5 @@
 #include "ViewDesign/view/Global.h"
-#include "ViewDesign/view/DesktopFrame.h"
+#include "ViewDesign/view/Window.h"
 #include "ViewDesign/view/frame/PaddingFrame.h"
 #include "ViewDesign/view/frame/ClipFrame.h"
 #include "ViewDesign/view/frame/ScaleFrame.h"
@@ -11,16 +11,16 @@
 using namespace ViewDesign;
 
 
-class MainFrame : public DesktopFrame {
+class MainWindow : public Window {
 public:
-	using DesktopFrame::DesktopFrame;
+	using Window::Window;
 private:
 	Size size = Size(800, 500);
 private:
 	virtual std::pair<Size, Size> CalculateMinMaxSize(Size size_ref) {
 		return { Size(100, 100), size_ref };
 	}
-	virtual Rect OnDesktopFrameSizeRefUpdate(Size size_ref) override {
+	virtual Rect OnWindowSizeRefUpdate(Size size_ref) override {
 		Rect region;
 		region.size = UpdateChildSizeRef(child, size);
 		region.point.x = (size_ref.width - region.size.width) / 2;
@@ -66,8 +66,8 @@ public:
 
 
 int main() {
-	global.Add(
-		new MainFrame(
+	global.AddWindow(
+		new MainWindow(
 			L"ScrollFrameTest",
 			new ScrollFrame<Vertical>(
 				new ScaleLayer(

@@ -3,7 +3,7 @@
 #include "ViewDesign/view/layout/OverlapLayout.h"
 #include "ViewDesign/view/wrapper/Background.h"
 #include "ViewDesign/view/wrapper/HitTestHelper.h"
-#include "ViewDesign/view/widget/TitleBarFrame.h"
+#include "ViewDesign/view/widget/TitleBarWindow.h"
 #include "ViewDesign/event/mouse_tracker.h"
 #include "ViewDesign/event/key_tracker.h"
 
@@ -11,8 +11,8 @@
 using namespace ViewDesign;
 
 
-struct MainFrameStyle : TitleBarFrame::Style {
-	MainFrameStyle() {
+struct MainWindowStyle : TitleBarWindow::Style {
+	MainWindowStyle() {
 		title.text.assign(L"OverlapLayoutTest");
 		background_color = color_transparent;
 	}
@@ -102,9 +102,9 @@ private:
 
 
 int main() {
-	global.Add(
-		new TitleBarFrame(
-			MainFrameStyle(),
+	global.AddWindow(
+		new TitleBarWindow(
+			MainWindowStyle(),
 			new MainView
 		)
 	);

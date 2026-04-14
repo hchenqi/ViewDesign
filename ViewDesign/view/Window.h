@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ViewFrame.h"
-#include "../figure/desktop_layer.h"
+#include "../figure/window_layer.h"
 #include "../geometry/scale.h"
 #include "../geometry/region.h"
 
@@ -9,14 +9,14 @@
 namespace ViewDesign {
 
 
-class DesktopFrame : public ViewFrame {
+class Window : public ViewFrame {
 private:
 	friend class Desktop;
-	friend struct DesktopFrameApi;
+	friend struct WindowApi;
 
 public:
-	DesktopFrame(std::wstring title, view_ptr<> child);
-	~DesktopFrame();
+	Window(std::wstring title, view_ptr<> child);
+	~Window();
 
 	// style
 public:
@@ -34,12 +34,12 @@ private:
 	std::pair<Size, Rect> GetMinMaxRegion(Size size_ref);
 	void InitializeRegion(Size size_ref);
 protected:
-	void DesktopFrameRegionUpdated(Rect region);
+	void WindowRegionUpdated(Rect region);
 private:
 	virtual Transform GetChildTransform(ViewBase& child) const override final { return scale; }
 protected:
 	virtual std::pair<Size, Size> CalculateMinMaxSize(Size size_ref) { return { size_empty, size_ref }; }
-	virtual Rect OnDesktopFrameSizeRefUpdate(Size size_ref) { UpdateChildSizeRef(child, size_ref); return Rect(point_zero, size_ref); }
+	virtual Rect OnWindowSizeRefUpdate(Size size_ref) { UpdateChildSizeRef(child, size_ref); return Rect(point_zero, size_ref); }
 	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override {}
 private:
 	void SizeUpdated() {}  // never used
@@ -71,7 +71,7 @@ public:
 	using HANDLE = void*;
 private:
 	HANDLE hwnd = nullptr;
-	DesktopLayer layer;
+	WindowLayer layer;
 	Region invalid_region;
 public:
 	HANDLE GetHWND() const { return hwnd; }

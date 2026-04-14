@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../DesktopFrame.h"
+#include "../Window.h"
 #include "../frame/PaddingFrame.h"
 #include "../frame/BorderFrame.h"
 #include "../frame/CenterFrame.h"
@@ -27,10 +27,10 @@
 namespace ViewDesign {
 
 
-class TitleBarFrame : public DesktopFrame, ContextProvider {
+class TitleBarWindow : public Window, ContextProvider {
 public:
 	using child_type = view_ptr<Fixed, Fixed>;
-	using child_type_menu = view_ptr<Auto, Fixed>;
+	using menu_type = view_ptr<Auto, Fixed>;
 
 public:
 	struct TitleBarStyle : TextBlockStyle {
@@ -67,7 +67,7 @@ public:
 			border.width(2px).radius(2px).color(Color::CadetBlue);
 			background_color = Color::White;
 			title.bar.background_color(Color::CadetBlue);
-			title.text.assign(L"TitleBarFrame");
+			title.text.assign(L"TitleBarWindow");
 			title.font.color(Color::White);
 			title.paragraph.line_spacing(100pct);
 		}
@@ -125,7 +125,7 @@ protected:
 				canvas.draw(Point(20.0f, 15.0f), new Rectangle(Size(10.0f, 1.0f), 1.0f, foreground));
 			}
 		protected:
-			virtual void OnClick() override { Context::Get<TitleBarFrame>().Minimize(); }
+			virtual void OnClick() override { Context::Get<TitleBarWindow>().Minimize(); }
 		};
 
 		class MaximizeButton : public ButtonBase {
@@ -134,7 +134,7 @@ protected:
 		protected:
 			virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
 				ButtonBase::OnDraw(canvas, draw_region);
-				if (Context::Get<TitleBarFrame>().IsMaximized()) {
+				if (Context::Get<TitleBarWindow>().IsMaximized()) {
 					canvas.draw(Point(22.0f, 10.0f), new Rectangle(Size(8.0f, 8.0f), 1.0f, foreground));
 					canvas.draw(Point(20.0f, 12.0f), new Rectangle(Size(8.0f, 8.0f), background, 1.0f, foreground));
 				} else {
@@ -142,12 +142,12 @@ protected:
 				}
 			}
 		protected:
-			virtual void OnClick() override { Context::Get<TitleBarFrame>().MaximizeOrRestore(); }
+			virtual void OnClick() override { Context::Get<TitleBarWindow>().MaximizeOrRestore(); }
 		protected:
 			virtual void OnFocusEvent(FocusEvent event) override {
 				Button::OnFocusEvent(event);
 				switch (event) {
-				case FocusEvent::MouseEnter: TooltipShow(Context::Get<TitleBarFrame>().IsMaximized() ? L"restore" : L"maximize"); break;
+				case FocusEvent::MouseEnter: TooltipShow(Context::Get<TitleBarWindow>().IsMaximized() ? L"restore" : L"maximize"); break;
 				case FocusEvent::MouseLeave: TooltipHide(); break;
 				}
 			}
@@ -163,11 +163,11 @@ protected:
 				canvas.draw(Point(20.0f, 20.0f), new Line(Vector(10.0f, -10.0f), 1.0f, foreground));
 			}
 		protected:
-			virtual void OnClick() override { Context::Get<TitleBarFrame>().Destroy(); }
+			virtual void OnClick() override { Context::Get<TitleBarWindow>().Destroy(); }
 		};
 
 	public:
-		TitleBar(const TitleBarStyle::BarStyle& style, child_type_menu menu, alloc_ptr<Title> title) : Base(
+		TitleBar(const TitleBarStyle::BarStyle& style, menu_type menu, alloc_ptr<Title> title) : Base(
 			style._height,
 			new StackLayoutMultiple(
 				new HitThrough<CenterFrame<Fixed, Fixed>>(
@@ -198,13 +198,13 @@ protected:
 		virtual void OnMouseEvent(MouseEvent event) override {
 			switch (mouse_tracker.Track(event)) {
 			case MouseTrackEvent::LeftDown: AeroSnapDraggingEffect(*this); break;
-			case MouseTrackEvent::LeftDoubleClick: Context::Get<TitleBarFrame>().MaximizeOrRestore(); break;
+			case MouseTrackEvent::LeftDoubleClick: Context::Get<TitleBarWindow>().MaximizeOrRestore(); break;
 			}
 		}
 	};
 
 public:
-	TitleBarFrame(Style style, child_type child, child_type_menu menu = new Placeholder<Auto, Fixed>(0.0f)) : DesktopFrame(
+	TitleBarWindow(Style style, child_type child, menu_type menu = new Placeholder<Auto, Fixed>(0.0f)) : Window(
 		style.title.text,
 		outer_frame = new ViewFrameMutable(
 			new PaddingFrame(
@@ -236,14 +236,14 @@ protected:
 	ref_ptr<ResizeBorder> border;
 	ref_ptr<TitleBar::Title> title;
 public:
-	void SetTitle(std::wstring str) { title->Assign(str); DesktopFrame::SetTitle(str); }
+	void SetTitle(std::wstring str) { title->Assign(str); Window::SetTitle(str); }
 
 	// layout
 protected:
 	virtual std::pair<Size, Size> CalculateMinMaxSize(Size size_ref) override {
 		return LengthStyleHelper::CalculateMinMaxSize(style.width, style.height, size_ref);
 	}
-	virtual Rect OnDesktopFrameSizeRefUpdate(Size size_ref) override {
+	virtual Rect OnWindowSizeRefUpdate(Size size_ref) override {
 		Rect region = LengthStyleHelper::CalculateRegion(style.width, style.height, style.position, size_ref);
 		UpdateChildSizeRef(child, region.size);
 		return region;

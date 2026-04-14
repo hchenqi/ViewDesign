@@ -1,5 +1,5 @@
 #include "Desktop.h"
-#include "DesktopFrame.h"
+#include "Window.h"
 #include "../system/win32_api.h"
 #include "../system/win32_ime.h"
 #include "../system/cursor.h"
@@ -20,48 +20,48 @@ Desktop& Desktop::Get() {
 	return desktop;
 }
 
-DesktopFrame& Desktop::AddChild(std::unique_ptr<DesktopFrame> frame) {
-	RegisterChild(*frame);
-	frame->InitializeRegion(Win32::GetDesktopSize());
-	frame->Show();
-	return *frame_list.emplace_back(std::move(frame));
+Window& Desktop::AddWindow(std::unique_ptr<Window> window) {
+	RegisterChild(*window);
+	window->InitializeRegion(Win32::GetDesktopSize());
+	window->Show();
+	return *window_list.emplace_back(std::move(window));
 }
 
-std::unique_ptr<DesktopFrame> Desktop::RemoveChild(DesktopFrame& frame) {
-	auto it = std::find_if(frame_list.begin(), frame_list.end(), [&](const std::unique_ptr<DesktopFrame>& ptr) { return ptr.get() == &frame; });
-	if (it == frame_list.end()) { throw std::invalid_argument("invalid desktop frame"); }
-	frame.Hide();
-	UnregisterChild(frame);
-	std::unique_ptr<DesktopFrame> ptr = std::move(*it);	frame_list.erase(it);
-	if (frame_list.empty()) { Terminate(); }
+std::unique_ptr<Window> Desktop::RemoveWindow(Window& window) {
+	auto it = std::find_if(window_list.begin(), window_list.end(), [&](const std::unique_ptr<Window>& ptr) { return ptr.get() == &window; });
+	if (it == window_list.end()) { throw std::invalid_argument("invalid desktop window"); }
+	window.Hide();
+	UnregisterChild(window);
+	std::unique_ptr<Window> ptr = std::move(*it);	window_list.erase(it);
+	if (window_list.empty()) { Terminate(); }
 	return ptr;
 }
 
-DesktopFrame& Desktop::GetDesktopFrame(ViewBase& view) {
+Window& Desktop::GetWindow(ViewBase& view) {
 	ref_ptr<ViewBase> child = &view;
 	for (ref_ptr<ViewBase> parent = child->parent; parent != &desktop; child = parent, parent = child->parent) {
 		if (parent == nullptr) { throw std::invalid_argument("view not registered"); }
 	}
-	return static_cast<DesktopFrame&>(*child);
+	return static_cast<Window&>(*child);
 }
 
-DesktopFrame& Desktop::GetDesktopFramePoint(ViewBase& view, Point& point) {
+Window& Desktop::GetWindowPoint(ViewBase& view, Point& point) {
 	ref_ptr<ViewBase> child = &view;
 	for (ref_ptr<ViewBase> parent = child->parent; parent != &desktop; child = parent, parent = child->parent) {
 		if (parent == nullptr) { throw std::invalid_argument("view not registered"); }
 		point *= parent->GetChildTransform(*child);
 	}
-	return static_cast<DesktopFrame&>(*child);
+	return static_cast<Window&>(*child);
 }
 
 void Desktop::RecreateFrameLayer() {
-	for (auto& frame : frame_list) {
-		frame->RecreateLayer();
+	for (auto& window : window_list) {
+		window->RecreateLayer();
 	}
 }
 
 void Desktop::OnChildRedraw(ViewBase& child, Rect child_redraw_region) {
-	static_cast<DesktopFrame&>(child).Redraw(child_redraw_region);
+	static_cast<Window&>(child).Redraw(child_redraw_region);
 }
 
 void Desktop::SetTrack(ViewBase& view) {
@@ -104,10 +104,10 @@ void Desktop::LoseTrack() {
 
 void Desktop::SetCapture(ViewBase& view) {
 	if (view_capture == &view) { return; }
-	DesktopFrame& frame = GetDesktopFrame(view);
-	if (frame_capture != &frame) { Win32::SetCapture(frame.hwnd); }
+	Window& window = GetWindow(view);
+	if (window_capture != &window) { Win32::SetCapture(window.hwnd); }
 	if (view_capture != &view) { LoseCapture(); }
-	frame_capture = &frame; view_capture = &view;
+	window_capture = &window; view_capture = &view;
 }
 
 void Desktop::ReleaseCapture(ViewBase& view) {
@@ -117,15 +117,15 @@ void Desktop::ReleaseCapture(ViewBase& view) {
 }
 
 void Desktop::LoseCapture() {
-	frame_capture = nullptr; view_capture = nullptr;
+	window_capture = nullptr; view_capture = nullptr;
 }
 
-void Desktop::DispatchMouseEvent(DesktopFrame& frame, MouseEvent event) {
+void Desktop::DispatchMouseEvent(Window& window, MouseEvent event) {
 	if (view_capture != nullptr) {
-		event.point *= frame.GetDescendentTransform(*view_capture).Invert();
+		event.point *= window.GetDescendentTransform(*view_capture).Invert();
 		view_capture->OnMouseEvent(event);
 	} else {
-		for (ref_ptr<ViewBase> curr = &frame;;) {
+		for (ref_ptr<ViewBase> curr = &window;;) {
 			ref_ptr<ViewBase> next = curr->HitTest(event);
 			if (next == nullptr) {
 				return;
@@ -152,8 +152,8 @@ void Desktop::SetFocus(ViewBase& view) {
 		}
 		if (next == &desktop) {
 			LoseFocus();
-			frame_focus = static_cast<ref_ptr<DesktopFrame>>(curr);
-			Win32::SetFocus(frame_focus->hwnd);
+			window_focus = static_cast<ref_ptr<Window>>(curr);
+			Win32::SetFocus(window_focus->hwnd);
 			break;
 		}
 		if (view_focus_map.contains(curr)) {
@@ -171,8 +171,8 @@ void Desktop::SetFocus(ViewBase& view) {
 		view_focus_stack.push_back(trace.back());
 		view_focus_map.emplace(trace.back(), view_focus_stack.size());
 	}
-	if (frame_focus) {
-		ime_enabled_view.contains(&view) ? ViewDesign::ImeEnable(frame_focus->hwnd) : ViewDesign::ImeDisable(frame_focus->hwnd);
+	if (window_focus) {
+		ime_enabled_view.contains(&view) ? ViewDesign::ImeEnable(window_focus->hwnd) : ViewDesign::ImeDisable(window_focus->hwnd);
 	}
 	view.OnFocusEvent(FocusEvent::Focus);
 }
@@ -191,7 +191,7 @@ void Desktop::LoseFocus() {
 	}
 	view_focus_stack.clear();
 	view_focus_map.clear();
-	frame_focus = nullptr;
+	window_focus = nullptr;
 }
 
 void Desktop::DispatchKeyEvent(KeyEvent event) {
@@ -201,8 +201,8 @@ void Desktop::DispatchKeyEvent(KeyEvent event) {
 }
 
 void Desktop::ImeSetPosition(ViewBase& view, Point point) {
-	DesktopFrame& frame = GetDesktopFramePoint(view, point);
-	ViewDesign::ImeSetPosition(frame.hwnd, point);
+	Window& window = GetWindowPoint(view, point);
+	ViewDesign::ImeSetPosition(window.hwnd, point);
 }
 
 void Desktop::ReleaseView(ViewBase& view) {
@@ -218,7 +218,7 @@ void Desktop::ReleaseView(ViewBase& view) {
 
 void Desktop::EventLoop() { Win32::MessageLoop(); }
 
-void Desktop::Terminate() { frame_list.clear(); Win32::Terminate(); }
+void Desktop::Terminate() { window_list.clear(); Win32::Terminate(); }
 
 
 } // namespace ViewDesign

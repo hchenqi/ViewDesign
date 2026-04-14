@@ -2,18 +2,18 @@
 
 #include "Global.h"
 #include "Desktop.h"
-#include "DesktopFrame.h"
+#include "Window.h"
 
 
 namespace ViewDesign {
 
 
-DesktopFrame& Global::Add(std::unique_ptr<DesktopFrame> frame) { return desktop.AddChild(std::move(frame)); }
-DesktopFrame& Global::Add(alloc_ptr<DesktopFrame> frame) { return Add(std::unique_ptr<DesktopFrame>(frame)); }
-std::unique_ptr<DesktopFrame> Global::Remove(DesktopFrame& frame) { return desktop.RemoveChild(frame); }
+Window& Global::AddWindow(std::unique_ptr<Window> window) { return desktop.AddWindow(std::move(window)); }
+Window& Global::AddWindow(alloc_ptr<Window> window) { return AddWindow(std::unique_ptr<Window>(window)); }
+std::unique_ptr<Window> Global::RemoveWindow(Window& window) { return desktop.RemoveWindow(window); }
 
-DesktopFrame& Global::GetDesktopFrame(ViewBase& view) { return desktop.GetDesktopFrame(view); }
-DesktopFrame& Global::GetDesktopFramePoint(ViewBase& view, Point& point) { return desktop.GetDesktopFramePoint(view, point); }
+Window& Global::GetWindow(ViewBase& view) { return desktop.GetWindow(view); }
+Window& Global::GetWindowPoint(ViewBase& view, Point& point) { return desktop.GetWindowPoint(view, point); }
 
 void Global::EventLoop() { desktop.EventLoop(); }
 void Global::Terminate() { desktop.Terminate(); }

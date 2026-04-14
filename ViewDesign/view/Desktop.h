@@ -10,12 +10,12 @@
 
 namespace ViewDesign {
 
-class DesktopFrame;
+class Window;
 
 
 class Desktop : public ViewBase {
 private:
-	friend class DesktopFrame;
+	friend class Window;
 	friend class ViewBase;
 	friend struct Ime;
 	friend struct DesktopApi;
@@ -28,15 +28,15 @@ private:
 public:
 	static Desktop& Get();
 
-	// frame
+	// window
 private:
-	std::vector<std::unique_ptr<DesktopFrame>> frame_list;
+	std::vector<std::unique_ptr<Window>> window_list;
 private:
-	DesktopFrame& AddChild(std::unique_ptr<DesktopFrame> frame);
-	std::unique_ptr<DesktopFrame> RemoveChild(DesktopFrame& frame);
+	Window& AddWindow(std::unique_ptr<Window> window);
+	std::unique_ptr<Window> RemoveWindow(Window& window);
 private:
-	DesktopFrame& GetDesktopFrame(ViewBase& view);
-	DesktopFrame& GetDesktopFramePoint(ViewBase& view, Point& point);
+	Window& GetWindow(ViewBase& view);
+	Window& GetWindowPoint(ViewBase& view, Point& point);
 
 	// paint
 private:
@@ -48,7 +48,7 @@ private:
 private:
 	std::vector<ref_ptr<ViewBase>> view_track_stack;
 	std::unordered_map<ref_ptr<ViewBase>, size_t> view_track_map;
-	ref_ptr<DesktopFrame> frame_capture = nullptr;
+	ref_ptr<Window> window_capture = nullptr;
 	ref_ptr<ViewBase> view_capture = nullptr;
 private:
 	void SetTrack(ViewBase& view);
@@ -57,13 +57,13 @@ private:
 	void ReleaseCapture(ViewBase& view);
 	void LoseCapture();
 private:
-	void DispatchMouseEvent(DesktopFrame& frame, MouseEvent event);
+	void DispatchMouseEvent(Window& window, MouseEvent event);
 
 	// key event
 private:
 	std::vector<ref_ptr<ViewBase>> view_focus_stack;
 	std::unordered_map<ref_ptr<ViewBase>, size_t> view_focus_map;
-	ref_ptr<DesktopFrame> frame_focus = nullptr;
+	ref_ptr<Window> window_focus = nullptr;
 private:
 	void SetFocus(ViewBase& view);
 	void ReleaseFocus(ViewBase& view);

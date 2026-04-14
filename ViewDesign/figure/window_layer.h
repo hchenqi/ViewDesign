@@ -9,14 +9,14 @@ struct SwapChain;
 struct CompositionTarget;
 
 
-class DesktopLayer : private Layer {
+class WindowLayer : private Layer {
 public:
 	using HANDLE = void*;
 	alloc_ptr<SwapChain> swap_chain;
 	alloc_ptr<CompositionTarget> comp_target;
 public:
-	DesktopLayer() : swap_chain(nullptr), comp_target(nullptr) {}
-	~DesktopLayer() { Destroy(); }
+	WindowLayer() : swap_chain(nullptr), comp_target(nullptr) {}
+	~WindowLayer() { Destroy(); }
 private:
 	void CreateBitmap();
 	void DestroyBitmap();

@@ -5,14 +5,14 @@
 #include "ViewDesign/view/frame/BorderFrame.h"
 #include "ViewDesign/view/layout/SplitLayout.h"
 #include "ViewDesign/view/control/EditBox.h"
-#include "ViewDesign/view/widget/TitleBarFrame.h"
+#include "ViewDesign/view/widget/TitleBarWindow.h"
 
 
 using namespace ViewDesign;
 
 
-struct MainFrameStyle : TitleBarFrame::Style {
-	MainFrameStyle() {
+struct MainWindowStyle : TitleBarWindow::Style {
+	MainWindowStyle() {
 		width.normal(800px);
 		height.normal(500px);
 		title.text.assign(L"SplitLayoutTest");
@@ -46,9 +46,9 @@ view_ptr<Auto, Auto> Wrap<Auto, Auto>(alloc_ptr<TextBox> text_box) {
 
 template<template<class WidthTraitFirst, class HeightTraitFirst, class WidthTraitSecond, class HeightTraitSecond> class SplitLayout, class WidthTraitFirst, class HeightTraitFirst, class WidthTraitSecond, class HeightTraitSecond>
 void Test() {
-	global.Add(
-		new TitleBarFrame(
-			MainFrameStyle(),
+	global.AddWindow(
+		new TitleBarWindow(
+			MainWindowStyle(),
 			new CenterFrame<Fixed, Fixed>(
 				new BorderFrame(
 					Border(2px, Color::Yellow),

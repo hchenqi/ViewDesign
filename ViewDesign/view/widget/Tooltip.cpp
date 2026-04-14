@@ -1,6 +1,6 @@
 #include "Tooltip.h"
 #include "../Global.h"
-#include "../DesktopFrame.h"
+#include "../Window.h"
 #include "../frame/MaxFrame.h"
 #include "../frame/BorderFrame.h"
 #include "../frame/PaddingFrame.h"
@@ -15,9 +15,9 @@ namespace ViewDesign {
 
 namespace {
 
-class Tooltip : public DesktopFrame {
+class Tooltip : public Window {
 private:
-	Tooltip() : DesktopFrame(
+	Tooltip() : Window(
 		L"",
 		new MaxFrame(
 			Size(200px, 200px),
@@ -50,7 +50,7 @@ private:
 	Rect region;
 private:
 	virtual std::pair<Size, Size> CalculateMinMaxSize(Size size_ref) override { return { region.size, region.size }; }
-	virtual Rect OnDesktopFrameSizeRefUpdate(Size size_ref) override { return clamp(region, Rect(point_zero, size_ref)); }
+	virtual Rect OnWindowSizeRefUpdate(Size size_ref) override { return clamp(region, Rect(point_zero, size_ref)); }
 	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override { region.size = child_size; }
 
 private:
@@ -65,8 +65,8 @@ public:
 		return tooltip;
 	}
 private:
-	void ShowSelf() { global.Add(std::move(self)); }
-	void HideSelf() { self.reset(static_cast<alloc_ptr<Tooltip>>(global.Remove(*this).release())); }
+	void ShowSelf() { global.AddWindow(std::move(self)); }
+	void HideSelf() { self.reset(static_cast<alloc_ptr<Tooltip>>(global.RemoveWindow(*this).release())); }
 	void SetOpacity(uchar opacity) { Win32::SetWndOpacity(GetHWND(), opacity); }
 
 private:
