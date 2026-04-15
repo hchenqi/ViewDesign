@@ -1,4 +1,3 @@
-#include "Window.h"
 #include "Desktop.h"
 #include "../figure/window_layer.h"
 #include "../geometry/helper.h"

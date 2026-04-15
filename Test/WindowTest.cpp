@@ -1,5 +1,4 @@
-#include "ViewDesign/view/Global.h"
-#include "ViewDesign/view/Window.h"
+#include "ViewDesign/view/Desktop.h"
 #include "ViewDesign/view/control/Placeholder.h"
 #include "ViewDesign/view/wrapper/Background.h"
 #include "ViewDesign/view/wrapper/Cursor.h"
@@ -38,20 +37,20 @@ private:
 	}
 	virtual void OnKeyEvent(KeyEvent event) override {
 		if (event.key == Key::Escape) {
-			global.Terminate();
+			desktop.Terminate();
 		}
 	}
 };
 
 
 int main() {
-	global.AddWindow(new MainWindow(L"WindowTest", new EmptyView()));
-	global.EventLoop();
+	desktop.AddWindow(new MainWindow(L"WindowTest", new EmptyView()));
+	desktop.EventLoop();
 
-	global.AddWindow(new MainWindow(L"WindowTest", new ViewFrame(new EmptyView())));
-	global.EventLoop();
+	desktop.AddWindow(new MainWindow(L"WindowTest", new ViewFrame(new EmptyView())));
+	desktop.EventLoop();
 
 	std::unique_ptr<EmptyView> view(new EmptyView());
-	global.AddWindow(new MainWindow(L"WindowTest", new ViewFrameRef(*view)));
-	global.EventLoop();
+	desktop.AddWindow(new MainWindow(L"WindowTest", new ViewFrameRef(*view)));
+	desktop.EventLoop();
 }

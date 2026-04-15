@@ -1,6 +1,5 @@
 #include "win32_aero_snap.h"
-#include "../view/global.h"
-#include "../view/Window.h"
+#include "../view/Desktop.h"
 
 #include <Windows.h>
 
@@ -13,12 +12,12 @@ struct WindowApi : Window {
 
 
 void AeroSnapDraggingEffect(ViewBase& view) {
-	HANDLE hwnd = static_cast<WindowApi&>(global.GetWindow(view)).hwnd;
+	HANDLE hwnd = static_cast<WindowApi&>(desktop.GetWindow(view)).hwnd;
 	SendMessageW((HWND)hwnd, WM_NCLBUTTONDOWN, HTCAPTION, 0);
 }
 
 void AeroSnapBorderResizingEffect(ViewBase& view, BorderPosition border_position) {
-	HANDLE hwnd = static_cast<WindowApi&>(global.GetWindow(view)).hwnd;
+	HANDLE hwnd = static_cast<WindowApi&>(desktop.GetWindow(view)).hwnd;
 	SendMessageW((HWND)hwnd, WM_NCLBUTTONDOWN, (WPARAM)border_position, 0);
 }
 

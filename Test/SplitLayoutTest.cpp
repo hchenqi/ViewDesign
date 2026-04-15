@@ -1,4 +1,4 @@
-#include "ViewDesign/view/Global.h"
+#include "ViewDesign/view/Desktop.h"
 #include "ViewDesign/view/frame/ClipFrame.h"
 #include "ViewDesign/view/frame/MaxFrame.h"
 #include "ViewDesign/view/frame/CenterFrame.h"
@@ -46,7 +46,7 @@ view_ptr<Auto, Auto> Wrap<Auto, Auto>(alloc_ptr<TextBox> text_box) {
 
 template<template<class WidthTraitFirst, class HeightTraitFirst, class WidthTraitSecond, class HeightTraitSecond> class SplitLayout, class WidthTraitFirst, class HeightTraitFirst, class WidthTraitSecond, class HeightTraitSecond>
 void Test() {
-	global.AddWindow(
+	desktop.AddWindow(
 		new TitleBarWindow(
 			MainWindowStyle(),
 			new CenterFrame<Fixed, Fixed>(
@@ -66,7 +66,7 @@ void Test() {
 			)
 		)
 	);
-	global.EventLoop();
+	desktop.EventLoop();
 }
 
 

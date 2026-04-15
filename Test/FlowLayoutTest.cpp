@@ -1,4 +1,4 @@
-#include "ViewDesign/view/Global.h"
+#include "ViewDesign/view/Desktop.h"
 #include "ViewDesign/view/frame/ClipFrame.h"
 #include "ViewDesign/view/frame/BorderFrame.h"
 #include "ViewDesign/view/frame/PaddingFrame.h"
@@ -66,7 +66,7 @@ private:
 
 
 int main() {
-	global.AddWindow(
+	desktop.AddWindow(
 		new TitleBarWindow(
 			MainWindowStyle(),
 			new ScrollFrame<Vertical>(
@@ -77,5 +77,5 @@ int main() {
 			)
 		)
 	);
-	global.EventLoop();
+	desktop.EventLoop();
 }

@@ -1,5 +1,4 @@
 #include "Desktop.h"
-#include "Window.h"
 #include "../system/win32_api.h"
 #include "../system/win32_ime.h"
 #include "../system/cursor.h"

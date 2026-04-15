@@ -5,12 +5,18 @@
 
 namespace ViewDesign {
 
+struct DesktopApi : Desktop {
+	Desktop::ImeEnable;
+	Desktop::ImeDisable;
+	Desktop::ImeSetPosition;
+};
 
-void Ime::Enable(ViewBase& view) { desktop.ImeEnable(view); }
 
-void Ime::Disable(ViewBase& view) { desktop.ImeDisable(view); }
+void Ime::Enable(ViewBase& view) { static_cast<DesktopApi&>(desktop).ImeEnable(view); }
 
-void Ime::SetPosition(ViewBase& view, Point point) { desktop.ImeSetPosition(view, point); }
+void Ime::Disable(ViewBase& view) { static_cast<DesktopApi&>(desktop).ImeDisable(view); }
+
+void Ime::SetPosition(ViewBase& view, Point point) { static_cast<DesktopApi&>(desktop).ImeSetPosition(view, point); }
 
 std::wstring Ime::GetString() { return ImeGetString(); }
 

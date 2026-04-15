@@ -1,6 +1,5 @@
 #include "Tooltip.h"
-#include "../Global.h"
-#include "../Window.h"
+#include "../Desktop.h"
 #include "../frame/MaxFrame.h"
 #include "../frame/BorderFrame.h"
 #include "../frame/PaddingFrame.h"
@@ -65,8 +64,8 @@ public:
 		return tooltip;
 	}
 private:
-	void ShowSelf() { global.AddWindow(std::move(self)); }
-	void HideSelf() { self.reset(static_cast<alloc_ptr<Tooltip>>(global.RemoveWindow(*this).release())); }
+	void ShowSelf() { desktop.AddWindow(std::move(self)); }
+	void HideSelf() { self.reset(static_cast<alloc_ptr<Tooltip>>(desktop.RemoveWindow(*this).release())); }
 	void SetOpacity(uchar opacity) { Win32::SetWndOpacity(GetHWND(), opacity); }
 
 private:

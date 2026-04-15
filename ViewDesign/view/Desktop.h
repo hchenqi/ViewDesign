@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ViewBase.h"
+#include "Window.h"
 
 #include <memory>
 #include <vector>
@@ -15,11 +15,9 @@ class Window;
 
 class Desktop : public ViewBase {
 private:
-	friend class Window;
 	friend class ViewBase;
-	friend struct Ime;
+	friend class Window;
 	friend struct DesktopApi;
-	friend struct Global;
 
 private:
 	Desktop();
@@ -31,10 +29,11 @@ public:
 	// window
 private:
 	std::vector<std::unique_ptr<Window>> window_list;
-private:
+public:
 	Window& AddWindow(std::unique_ptr<Window> window);
+	Window& AddWindow(alloc_ptr<Window> window) { return AddWindow(std::unique_ptr<Window>(window)); }
 	std::unique_ptr<Window> RemoveWindow(Window& window);
-private:
+public:
 	Window& GetWindow(ViewBase& view);
 	Window& GetWindowPoint(ViewBase& view, Point& point);
 
@@ -83,8 +82,8 @@ private:
 private:
 	void ReleaseView(ViewBase& view);
 
-	// global
-private:
+	// system
+public:
 	void EventLoop();
 	void Terminate();
 };

@@ -1,4 +1,4 @@
-#include "ViewDesign/view/Global.h"
+#include "ViewDesign/view/Desktop.h"
 #include "ViewDesign/view/control/EditBox.h"
 #include "ViewDesign/view/widget/TitleBarWindow.h"
 #include "ViewDesign/view/widget/TabView.h"
@@ -84,7 +84,7 @@ private:
 
 
 int main() {
-	global.AddWindow(new TitleBarWindow(MainWindowStyle(), new MyTabView()));
-	global.EventLoop();
+	desktop.AddWindow(new TitleBarWindow(MainWindowStyle(), new MyTabView()));
+	desktop.EventLoop();
 	return 0;
 }

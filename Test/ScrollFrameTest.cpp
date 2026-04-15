@@ -1,5 +1,4 @@
-#include "ViewDesign/view/Global.h"
-#include "ViewDesign/view/Window.h"
+#include "ViewDesign/view/Desktop.h"
 #include "ViewDesign/view/frame/PaddingFrame.h"
 #include "ViewDesign/view/frame/ClipFrame.h"
 #include "ViewDesign/view/frame/ScaleFrame.h"
@@ -66,7 +65,7 @@ public:
 
 
 int main() {
-	global.AddWindow(
+	desktop.AddWindow(
 		new MainWindow(
 			L"ScrollFrameTest",
 			new ScrollFrame<Vertical>(
@@ -76,5 +75,5 @@ int main() {
 			)
 		)
 	);
-	global.EventLoop();
+	desktop.EventLoop();
 }

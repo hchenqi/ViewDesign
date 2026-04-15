@@ -1,4 +1,4 @@
-#include "ViewDesign/view/Global.h"
+#include "ViewDesign/view/Desktop.h"
 #include "ViewDesign/view/frame/BorderFrame.h"
 #include "ViewDesign/view/layout/OverlapLayout.h"
 #include "ViewDesign/view/wrapper/Background.h"
@@ -102,11 +102,11 @@ private:
 
 
 int main() {
-	global.AddWindow(
+	desktop.AddWindow(
 		new TitleBarWindow(
 			MainWindowStyle(),
 			new MainView
 		)
 	);
-	global.EventLoop();
+	desktop.EventLoop();
 }

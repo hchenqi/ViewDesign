@@ -6,6 +6,45 @@ A C++ GUI library
 
 The library and test executables can be built with CMake with Visual Studio and Ninja on Windows.
 
+## Example
+
+From Test/TextBoxTest.cpp:
+
+```cpp
+#include "ViewDesign/view/Desktop.h"
+#include "ViewDesign/view/frame/CenterFrame.h"
+#include "ViewDesign/view/control/TextBox.h"
+#include "ViewDesign/view/widget/TitleBarWindow.h"
+
+using namespace ViewDesign;
+
+struct MainWindowStyle : TitleBarWindow::Style {
+	MainWindowStyle() {
+		width.normal(800px);
+		height.normal(500px);
+		title.text.assign(L"Example");
+	}
+};
+
+struct TextBoxStyle : TextBox::Style {
+	TextBoxStyle() {
+		font.size(75).color(Color::Black);
+	}
+};
+
+int main() {
+	desktop.AddWindow(
+		new TitleBarWindow(
+			MainWindowStyle(),
+			new CenterFrame<Fixed, Fixed>(
+				new TextBox(TextBoxStyle(), L"Hello World!")
+			)
+		)
+	);
+	desktop.EventLoop();
+}
+```
+
 ## Concepts
 
 ### View / Desktop / Window

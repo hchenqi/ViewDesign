@@ -1,7 +1,6 @@
 #include "win32_api.h"
 #include "win32_ime.h"
 #include "../view/Desktop.h"
-#include "../view/Window.h"
 
 #include <Windows.h>
 #include <windowsx.h>
@@ -31,9 +30,6 @@ struct DesktopApi : Desktop {
 
 namespace {
 
-bool is_mouse_tracked = false;
-DesktopApi& desktop = static_cast<DesktopApi&>(Desktop::Get());
-
 constexpr float dpi_default = 96.0f;
 
 inline bool IsMouseMsg(UINT msg) { return WM_MOUSEFIRST <= msg && msg <= WM_MOUSELAST; }
@@ -43,6 +39,8 @@ inline RECT AsWin32Rect(Rect rect) { return { (int)floorf(rect.left()), (int)flo
 inline Rect AsRect(RECT rect) { return Rect((float)rect.left, (float)rect.top, (float)(rect.right - rect.left), (float)(rect.bottom - rect.top)); }
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
+	static bool is_mouse_tracked = false;
+
 	ref_ptr<WindowApi> window = reinterpret_cast<ref_ptr<WindowApi>>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
 	if (window == nullptr) { goto FrameIrrelevantMessages; }
 
@@ -74,7 +72,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 		case WM_MOUSEHWHEEL: mouse_event.type = MouseEvent::WheelHorizontal; mouse_event.point -= window->GetRegion().point - point_zero; break;
 		default: return DefWindowProc(hwnd, msg, wparam, lparam);
 		}
-		desktop.DispatchMouseEvent(*window, mouse_event);
+		static_cast<DesktopApi&>(desktop).DispatchMouseEvent(*window, mouse_event);
 		return 0;
 	}
 
@@ -92,7 +90,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 		case WM_IME_ENDCOMPOSITION: key_event.type = KeyEvent::ImeEnd; break;
 		default: return DefWindowProc(hwnd, msg, wparam, lparam);
 		}
-		desktop.DispatchKeyEvent(key_event);
+		static_cast<DesktopApi&>(desktop).DispatchKeyEvent(key_event);
 		return 0;
 	}
 
@@ -121,8 +119,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 			EndPaint(hwnd, &ps);
 		}break;
 		case WM_ERASEBKGND: return true;
-		case WM_MOUSELEAVE: is_mouse_tracked = false; desktop.LoseTrack(); break;
-		case WM_CAPTURECHANGED: desktop.LoseCapture(); break;
+		case WM_MOUSELEAVE: is_mouse_tracked = false; static_cast<DesktopApi&>(desktop).LoseTrack(); break;
+		case WM_CAPTURECHANGED: static_cast<DesktopApi&>(desktop).LoseCapture(); break;
 
 		case WM_DPICHANGED: window->SetScale(LOWORD(wparam) / dpi_default); break;
 
@@ -154,7 +152,7 @@ FrameIrrelevantMessages:
 	case WM_CREATE: break;
 	case WM_DESTROY: if (window != nullptr) { window->Destroy(); }  break;
 
-	case WM_KILLFOCUS: desktop.LoseFocus(); break;
+	case WM_KILLFOCUS: static_cast<DesktopApi&>(desktop).LoseFocus(); break;
 
 	case WM_NCCALCSIZE: break;
 	case WM_NCHITTEST: return HTCLIENT;

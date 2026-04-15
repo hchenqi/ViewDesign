@@ -1,5 +1,4 @@
-#include "ViewDesign/view/Global.h"
-#include "ViewDesign/view/Window.h"
+#include "ViewDesign/view/Desktop.h"
 #include "ViewDesign/view/frame/ScrollFrame.h"
 #include "ViewDesign/view/frame/ClipFrame.h"
 #include "ViewDesign/view/frame/InnerBorderFrame.h"
@@ -68,7 +67,7 @@ struct EditBoxStyle2 : EditBox::Style {
 
 
 int main() {
-	global.AddWindow(
+	desktop.AddWindow(
 		new MainWindow(
 			L"ListLayoutTest",
 			new ScrollFrame(
@@ -93,5 +92,5 @@ int main() {
 			)
 		)
 	);
-	global.EventLoop();
+	desktop.EventLoop();
 }
