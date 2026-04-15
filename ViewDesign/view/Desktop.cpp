@@ -127,6 +127,7 @@ void Desktop::DispatchMouseEvent(Window& window, MouseEvent event) {
 		for (ref_ptr<ViewBase> curr = &window;;) {
 			ref_ptr<ViewBase> next = curr->HitTest(event);
 			if (next == nullptr) {
+				SetTrack(*curr);
 				return;
 			} else if (next == curr) {
 				SetTrack(*curr);

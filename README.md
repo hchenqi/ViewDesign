@@ -117,3 +117,15 @@ Each `Window` maintains a `WindowLayer` for finally rendering the content in the
 
 ### MouseEvent / KeyEvent / FocusEvent
 
+A `Window` receives mouse events from the system and dispatches the events as instances of `MouseEvent` which includes the event type, the mouse position and key statuses. The view that consumes the mouse event is selected by hit test.
+
+During hit test, each view checks the mouse event and returns a child view that should further process the event, or itself if it will consume the event, or a `nullptr` when a view is not found. The mouse position in the event is translated to a point on the child view.
+
+If a view to consume the mouse event is finally found, this view is tracked by `Desktop` in a stack, and all parent views of the view and the view itself will be sent a `MouseEnter` event as `FocusEvent`. This view in addition will be sent a `MouseOver` event as `FocusEvent` and then the mouse event. If a view to consume the mouse event is not found, then the last view that processed the mouse event is still tracked even though it won't be sent the mouse event.
+
+If another view is to be tracked or to consume the next mouse event, the view tracked before will be sent a `MouseOut` event, and the parent views that not the parent views of the new view will be sent a `MouseLeave` event.
+
+If a view acquires mouse capture, all subsequent mouse events will be directly translated and sent to this view.
+
+A view can acquire focus to receive key events as instances of `KeyEvent`. This view is also tracked by `Desktop` in another stack, and all its parent views and itself will receive `FocusIn` event as `FocusEvent`, and the view itself will additionally receive `Focus` event. The view which acquired focus before will receive `Blur` event and its parent views that are not the parent views of the newly tracked view will receive `FocusOut` event.
+
