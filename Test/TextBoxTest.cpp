@@ -9,8 +9,6 @@ using namespace ViewDesign;
 
 struct MainWindowStyle : TitleBarWindow::Style {
 	MainWindowStyle() {
-		width.normal(800px);
-		height.normal(500px);
 		title.text.assign(L"TextBoxTest");
 	}
 };
