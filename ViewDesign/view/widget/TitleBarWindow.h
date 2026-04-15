@@ -103,6 +103,9 @@ protected:
 			ButtonBase(Color background, Color foreground, const std::wstring& tooltip_text) : Button<Auto, Fixed>(50.0f), Context(AsViewBase()), foreground(foreground), tooltip_text(tooltip_text) {
 				this->background = this->background_normal = background;
 			}
+			~ButtonBase() {
+				DestroyTooltip(*this);
+			}
 		protected:
 			Color foreground;
 			std::wstring tooltip_text;
@@ -110,8 +113,8 @@ protected:
 			virtual void OnFocusEvent(FocusEvent event) override {
 				Button::OnFocusEvent(event);
 				switch (event) {
-				case FocusEvent::MouseEnter: TooltipShow(tooltip_text); break;
-				case FocusEvent::MouseLeave: TooltipHide(); break;
+				case FocusEvent::MouseEnter: ShowTooltip(*this, tooltip_text); break;
+				case FocusEvent::MouseLeave: HideTooltip(*this); break;
 				}
 			}
 		};
@@ -147,8 +150,8 @@ protected:
 			virtual void OnFocusEvent(FocusEvent event) override {
 				Button::OnFocusEvent(event);
 				switch (event) {
-				case FocusEvent::MouseEnter: TooltipShow(Context::Get<TitleBarWindow>().IsMaximized() ? L"restore" : L"maximize"); break;
-				case FocusEvent::MouseLeave: TooltipHide(); break;
+				case FocusEvent::MouseEnter: ShowTooltip(*this, Context::Get<TitleBarWindow>().IsMaximized() ? L"restore" : L"maximize"); break;
+				case FocusEvent::MouseLeave: HideTooltip(*this); break;
 				}
 			}
 		};

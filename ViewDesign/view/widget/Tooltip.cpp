@@ -25,7 +25,7 @@ private:
 				Border(1.5px, 0x767676),
 				new PaddingFrame(
 					Padding(5px, 2px),
-					text_box = new SolidColorBackground<TextBox, 0xF1F2F7>(TextBoxStyle(), L"")
+					text_box = new SolidColorBackground<TextBox, 0xF1F2F7>(TextStyle(), L"")
 				)
 			)
 		)
@@ -37,8 +37,8 @@ private:
 	}
 
 private:
-	struct TextBoxStyle : TextBox::Style {
-		TextBoxStyle() {
+	struct TextStyle : TextBox::Style {
+		TextStyle() {
 			font.size(13).color(0x737374);
 		}
 	};
@@ -113,6 +113,7 @@ private:
 				animation_step--;
 				SetOpacity(0xFF * animation_step / animation_step_max);
 			} else {
+				this->view = nullptr;
 				timer.Stop();
 				state = State::Hidden;
 				HideSelf();
@@ -120,8 +121,12 @@ private:
 			break;
 		}
 	}
+
+private:
+	ref_ptr<ViewBase> view;
 public:
-	void Show(const std::wstring& text) {
+	void Show(ViewBase& view, const std::wstring& text) {
+		this->view = &view;
 		text_box->Assign(text);
 		switch (state) {
 		case State::Hidden:
@@ -139,7 +144,11 @@ public:
 			break;
 		}
 	}
-	void Hide() {
+	void Hide(ViewBase& view) {
+		if (this->view != &view) {
+			return;
+		}
+		this->view = nullptr;
 		switch (state) {
 		case State::Hidden:
 			break;
@@ -157,17 +166,42 @@ public:
 			break;
 		}
 	}
+	void Destroy(ViewBase& view) {
+		if (this->view != &view) {
+			return;
+		}
+		this->view = nullptr;
+		switch (state) {
+		case State::Hidden:
+			break;
+		case State::Waiting:
+			timer.Stop();
+			state = State::Hidden;
+			break;
+		case State::Showing:
+		case State::Shown:
+		case State::Hiding:
+			timer.Stop();
+			state = State::Hidden;
+			HideSelf();
+			break;
+		}
+	}
 };
 
 } // namespace
 
 
-void TooltipShow(const std::wstring& text) {
-	Tooltip::Get().Show(text);
+void ShowTooltip(ViewBase& view, const std::wstring& text) {
+	Tooltip::Get().Show(view, text);
 }
 
-void TooltipHide() {
-	Tooltip::Get().Hide();
+void HideTooltip(ViewBase& view) {
+	Tooltip::Get().Hide(view);
+}
+
+void DestroyTooltip(ViewBase& view) {
+	Tooltip::Get().Destroy(view);
 }
 
 

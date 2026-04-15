@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../common/core.h"
+#include "../ViewBase.h"
 
 #include <string>
 
@@ -8,9 +8,11 @@
 namespace ViewDesign {
 
 
-void TooltipShow(const std::wstring& text);
+void ShowTooltip(ViewBase& view, const std::wstring& text);
 
-void TooltipHide();
+void HideTooltip(ViewBase& view);
+
+void DestroyTooltip(ViewBase& view);
 
 
 } // namespace ViewDesign
