@@ -16,15 +16,17 @@ struct TextLayout;
 class TextBlock : Uncopyable {
 private:
 	friend struct TextBlockFigure;
+
 public:
-	TextBlock(const TextBlockStyle& style, const std::wstring& text) : layout(nullptr) { SetText(style, text); }
+	TextBlock() {}
 	~TextBlock();
+
 protected:
-	alloc_ptr<TextLayout> layout;
+	alloc_ptr<TextLayout> layout = nullptr;
 public:
 	void SetText(const TextBlockStyle& style, const std::wstring& text);
-	void UpdateSizeRef(Size size_ref);
-	Size GetSize() const;
+	Rect UpdateLayout(Size size_ref);
+
 public:
 	struct HitTestInfo {
 		TextRange range;

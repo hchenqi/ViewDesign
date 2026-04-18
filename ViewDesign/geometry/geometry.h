@@ -28,6 +28,7 @@ constexpr Rect region_empty = Rect(point_zero, size_empty);
 constexpr Rect region_infinite = Rect(point_min, size_max);
 
 
+constexpr Point operator-(Point point) { return Point(-point.x, -point.y); }
 constexpr Vector operator-(Point end, Point begin) { return Vector(end.x - begin.x, end.y - begin.y); }
 
 constexpr Point operator+(Point point, Vector vector) { return Point(point.x + vector.x, point.y + vector.y); }

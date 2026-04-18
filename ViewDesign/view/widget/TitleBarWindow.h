@@ -179,10 +179,10 @@ protected:
 						std::move(title)
 					)
 				),
-				new HitThroughMargin<ClipFrame<Fixed, Fixed, TopLeft>>(
+				new HitThroughMargin<ClipFrame<Fixed, Fixed, Left>>(
 					std::move(menu)
 				),
-				new HitThroughMargin<ClipFrame<Fixed, Fixed, TopRight>>(
+				new HitThroughMargin<ClipFrame<Fixed, Fixed, Right>>(
 					new ListLayoutHorizontal(
 						0.0f,
 						new MinimizeButton(style._background_color, style._foreground_color, L"minimize"),

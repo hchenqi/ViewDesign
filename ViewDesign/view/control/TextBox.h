@@ -7,12 +7,12 @@
 namespace ViewDesign {
 
 
-class TextBox : public ViewType<Relative, Auto> {
+class TextBox : public ViewType<Relative, Relative> {
 public:
 	using Style = TextBlockStyle;
 
 public:
-	TextBox(Style style, std::wstring text) : style(style), text(text), text_block(style, text) {}
+	TextBox(Style style, std::wstring text) : style(style), text(text) { text_block.SetText(style, text); }
 	~TextBox() {}
 
 	// text
@@ -25,10 +25,13 @@ public:
 protected:
 	virtual void OnTextUpdate() {
 		text_block.SetText(style, text);
-		if (Size new_size = UpdateLayout(); size == new_size) {
-			Redraw(region_infinite);
+		Rect region = text_block.UpdateLayout(size_ref);
+		if (this->region.size != region.size) {
+			this->region = region;
+			SizeUpdated(this->region.size);
 		} else {
-			SizeUpdated(size = new_size);
+			this->region = region;
+			Redraw(region_infinite);
 		}
 	}
 public:
@@ -42,23 +45,21 @@ public:
 
 	// layout
 protected:
-	float width_ref = 0.0f;
-	Size size;
-protected:
-	Size UpdateLayout() {
-		text_block.UpdateSizeRef(Size(width_ref, length_max));
-		return text_block.GetSize();
-	}
+	Size size_ref;
+	Rect region;
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override {
-		width_ref = size_ref.width;
-		return size = UpdateLayout();
+		if (this->size_ref != size_ref) {
+			this->size_ref = size_ref;
+			region = text_block.UpdateLayout(size_ref);
+		}
+		return region.size;
 	}
 
 	// paint
 protected:
 	virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
-		canvas.draw(point_zero, new TextBlockFigure(text_block, style.font._color));
+		canvas.draw(-region.point, new TextBlockFigure(text_block, style.font._color));
 	}
 };
 

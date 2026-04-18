@@ -75,14 +75,10 @@ void TextBlock::SetText(const TextBlockStyle& style, const std::wstring& text) {
 	layout->SetIncrementalTabStop(tab_size.ConvertToPixel(style.font._size).value());
 }
 
-void TextBlock::UpdateSizeRef(Size size_ref) {
-	layout->SetMaxWidth(size_ref.width);
-	layout->SetMaxHeight(size_ref.height);
-}
-
-Size TextBlock::GetSize() const {
+Rect TextBlock::UpdateLayout(Size size_ref) {
+	layout->SetMaxWidth(size_ref.width); layout->SetMaxHeight(size_ref.height);
 	DWRITE_TEXT_METRICS metrics; layout->GetMetrics(&metrics);
-	return Size(metrics.widthIncludingTrailingWhitespace, metrics.height);
+	return Rect(metrics.left, metrics.top, metrics.widthIncludingTrailingWhitespace, metrics.height);
 }
 
 

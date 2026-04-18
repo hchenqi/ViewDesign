@@ -23,58 +23,54 @@ protected:
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override { return size; }
 	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override {
-		child_size = Size(std::max(size_min.width, child_size.width), std::max(size_min.height, child_size.height));
-		if (size != child_size) { size = child_size; SizeUpdated(size); }
+		size = Size(std::max(size_min.width, child_size.width), std::max(size_min.height, child_size.height));
+		SizeUpdated(size);
 	}
 };
 
 
-template<>
-class MinFrame<Fixed, Auto> : public ViewFrame, public SizeTrait<Fixed, Auto> {
+template<class WidthTrait> requires (!IsAuto<WidthTrait>)
+class MinFrame<WidthTrait, Auto> : public ViewFrame, public SizeTrait<WidthTrait, Auto> {
 public:
-	MinFrame(float height_min, view_ptr<Fixed, Relative> child) : ViewFrame(std::move(child)), height_min(height_min) {}
+	MinFrame(float height_min, view_ptr<WidthTrait, Relative> child) : ViewFrame(std::move(child)), height_min(height_min) {}
 protected:
 	Size size;
 	float height_min;
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override {
-		if (size.width != size_ref.width) {
-			size.width = size_ref.width;
-			size.height = std::max(height_min, UpdateChildSizeRef(child, Size(size_ref.width, height_min)).height);
-		}
+		size = UpdateChildSizeRef(child, Size(size_ref.width, height_min));
+		size.height = std::max(height_min, size.height);
 		return size;
 	}
 	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override {
-		float height = std::max(height_min, child_size.height);
-		if (size.height != height) { size.height = height; SizeUpdated(size); }
+		size = Size(child_size.width, std::max(height_min, child_size.height));
+		SizeUpdated(size);
 	}
 };
 
 
-template<>
-class MinFrame<Auto, Fixed> : public ViewFrame, public SizeTrait<Auto, Fixed> {
+template<class HeightTrait> requires (!IsAuto<HeightTrait>)
+class MinFrame<Auto, HeightTrait> : public ViewFrame, public SizeTrait<Auto, HeightTrait> {
 public:
-	MinFrame(float width_min, view_ptr<Relative, Fixed> child) : ViewFrame(std::move(child)), width_min(width_min) {}
+	MinFrame(float width_min, view_ptr<Relative, HeightTrait> child) : ViewFrame(std::move(child)), width_min(width_min) {}
 protected:
 	Size size;
 	float width_min;
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override {
-		if (size.height != size_ref.height) {
-			size.height = size_ref.height;
-			size.width = std::max(width_min, UpdateChildSizeRef(child, Size(width_min, size_ref.height)).width);
-		}
+		size = UpdateChildSizeRef(child, Size(width_min, size_ref.height));
+		size.width = std::max(width_min, size.width);
 		return size;
 	}
 	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override {
-		float width = std::max(width_min, child_size.width);
-		if (size.width != width) { size.width = width; SizeUpdated(size); }
+		size = Size(std::max(width_min, child_size.width), child_size.height);
+		SizeUpdated(size);
 	}
 };
 
 
-template<class Size, class T>
-MinFrame(Size, T) -> MinFrame<std::conditional_t<IsFixed<extract_width_trait<T>>, Fixed, Auto>, std::conditional_t<IsFixed<extract_height_trait<T>>, Fixed, Auto>>;
+template<class T>
+MinFrame(Size, T) -> MinFrame<Auto, Auto>;
 
 
 } // namespace ViewDesign

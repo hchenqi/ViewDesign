@@ -17,6 +17,7 @@ struct MainWindowStyle : TitleBarWindow::Style {
 struct TextBoxStyle : TextBox::Style {
 	TextBoxStyle() {
 		font.size(75).color(Color::Black);
+		// paragraph.flow_direction(FlowDirection::RightToLeft).read_direction(ReadDirection::TopToBottom);
 	}
 };
 
@@ -26,7 +27,7 @@ int main() {
 		new TitleBarWindow(
 			MainWindowStyle(),
 			new CenterFrame<Fixed, Fixed>(
-				new TextBox(TextBoxStyle(), L"Hello World!")
+				new TextBox(TextBoxStyle(), L"Hello World!\n你好，世界！")
 			)
 		)
 	);
