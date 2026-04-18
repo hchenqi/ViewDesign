@@ -31,9 +31,9 @@ protected:
 };
 
 
-class _SplitLayout_Base_Vertical : public _SplitLayout_Base {
+class _SplitLayoutVertical_Base : public _SplitLayout_Base {
 protected:
-	_SplitLayout_Base_Vertical(child_type child_first, child_type child_second) : _SplitLayout_Base(std::move(child_first), std::move(child_second)) {}
+	_SplitLayoutVertical_Base(child_type child_first, child_type child_second) : _SplitLayout_Base(std::move(child_first), std::move(child_second)) {}
 
 	// layout
 protected:
@@ -66,9 +66,9 @@ protected:
 	}
 };
 
-class _SplitLayout_Base_Horizontal : public _SplitLayout_Base {
+class _SplitLayoutHorizontal_Base : public _SplitLayout_Base {
 protected:
-	_SplitLayout_Base_Horizontal(child_type child_first, child_type child_second) : _SplitLayout_Base(std::move(child_first), std::move(child_second)) {}
+	_SplitLayoutHorizontal_Base(child_type child_first, child_type child_second) : _SplitLayout_Base(std::move(child_first), std::move(child_second)) {}
 
 	// layout
 protected:
@@ -103,7 +103,7 @@ protected:
 
 
 template<class WidthTraitFirst, class HeightTraitFirst, class WidthTraitSecond, class HeightTraitSecond>
-class SplitLayoutVertical : public _SplitLayout_Base_Vertical {
+class SplitLayoutVertical : public _SplitLayoutVertical_Base {
 public:
 	static_assert(!IsFixed<HeightTraitFirst> || !IsFixed<HeightTraitSecond>, "At least one child view's height should not be Fixed.");
 	static_assert((!IsFixed<HeightTraitFirst> || IsFixed<WidthTraitFirst> || !IsFixed<WidthTraitSecond>) && (!IsFixed<HeightTraitSecond> || IsFixed<WidthTraitSecond> || !IsFixed<WidthTraitFirst>), "If one child view's height is Fixed and width is not Fixed, the other child view's width must not be Fixed");
@@ -115,7 +115,7 @@ public:
 	using child_type_second = view_ptr<WidthTraitSecond, HeightTraitSecond>;
 
 public:
-	SplitLayoutVertical(child_type_first child_first, child_type_second child_second) : _SplitLayout_Base_Vertical(std::move(child_first), std::move(child_second)) {}
+	SplitLayoutVertical(child_type_first child_first, child_type_second child_second) : _SplitLayoutVertical_Base(std::move(child_first), std::move(child_second)) {}
 
 	// layout
 protected:
@@ -280,7 +280,7 @@ protected:
 };
 
 template<class WidthTraitFirst, class HeightTraitFirst, class WidthTraitSecond, class HeightTraitSecond>
-class SplitLayoutHorizontal : public _SplitLayout_Base_Horizontal {
+class SplitLayoutHorizontal : public _SplitLayoutHorizontal_Base {
 public:
 	static_assert(!IsFixed<WidthTraitFirst> || !IsFixed<WidthTraitSecond>, "At least one child view's width should not be Fixed.");
 	static_assert((!IsFixed<WidthTraitFirst> || IsFixed<HeightTraitFirst> || !IsFixed<HeightTraitSecond>) && (!IsFixed<WidthTraitSecond> || IsFixed<HeightTraitSecond> || !IsFixed<HeightTraitFirst>), "If one child view's width is Fixed and height is not Fixed, the other child view's height must not be Fixed");
@@ -292,7 +292,7 @@ public:
 	using child_type_second = view_ptr<WidthTraitSecond, HeightTraitSecond>;
 
 public:
-	SplitLayoutHorizontal(child_type_first child_first, child_type_second child_second) : _SplitLayout_Base_Horizontal(std::move(child_first), std::move(child_second)) {}
+	SplitLayoutHorizontal(child_type_first child_first, child_type_second child_second) : _SplitLayoutHorizontal_Base(std::move(child_first), std::move(child_second)) {}
 
 	// layout
 protected:

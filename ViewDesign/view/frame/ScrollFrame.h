@@ -76,15 +76,14 @@ protected:
 template<>
 class ScrollFrame<Bidirectional> : public _ScrollFrame_Base {
 public:
-	ScrollFrame(view_ptr<Auto, Auto> child) : _ScrollFrame_Base(std::move(child)) {
-		child_size = UpdateChildSizeRef(this->child, size_empty);
-	}
+	ScrollFrame(view_ptr<> child) : _ScrollFrame_Base(std::move(child)) {}
 
 	// layout
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override {
 		if (size != size_ref) {
 			size = size_ref;
+			child_size = UpdateChildSizeRef(this->child, size);
 			frame_offset = ClampFrameOffset(frame_offset);
 		}
 		return size;
@@ -107,7 +106,7 @@ protected:
 	virtual void OnMouseEvent(MouseEvent event) override {
 		switch (event.type) {
 		case MouseEvent::WheelVertical: Scroll(Vector(0, -(float)event.wheel_delta)); break;
-		case MouseEvent::WheelHorizontal: Scroll(Vector(-(float)event.wheel_delta, 0)); break;
+		case MouseEvent::WheelHorizontal: Scroll(Vector((float)event.wheel_delta, 0)); break;
 		}
 	}
 };
@@ -116,7 +115,7 @@ protected:
 template<>
 class ScrollFrame<Vertical> : public _ScrollFrame_Base {
 public:
-	ScrollFrame(view_ptr<Fixed, Auto> child) : _ScrollFrame_Base(std::move(child)) {}
+	ScrollFrame(view_ptr<Fixed, Relative> child) : _ScrollFrame_Base(std::move(child)) {}
 
 	// layout
 public:
@@ -171,7 +170,7 @@ protected:
 template<>
 class ScrollFrame<Horizontal> : public _ScrollFrame_Base {
 public:
-	ScrollFrame(view_ptr<Auto, Fixed> child) : _ScrollFrame_Base(std::move(child)) {}
+	ScrollFrame(view_ptr<Relative, Fixed> child) : _ScrollFrame_Base(std::move(child)) {}
 
 	// layout
 public:
@@ -218,7 +217,7 @@ protected:
 	}
 protected:
 	virtual void OnMouseEvent(MouseEvent event) override {
-		Scroll(-(float)event.wheel_delta);
+		Scroll((float)event.wheel_delta);
 	}
 };
 
@@ -226,18 +225,18 @@ protected:
 template<class WidthTrait, class HeightTrait>
 struct deduce_scroll_frame_direction;
 
-template<>
-struct deduce_scroll_frame_direction<Auto, Auto> {
+template<class WidthTrait, class HeightTrait> requires (!IsFixed<WidthTrait> && !IsFixed<HeightTrait>)
+struct deduce_scroll_frame_direction<WidthTrait, HeightTrait> {
 	using type = Bidirectional;
 };
 
-template<>
-struct deduce_scroll_frame_direction<Fixed, Auto> {
+template<class HeightTrait> requires (!IsFixed<HeightTrait>)
+struct deduce_scroll_frame_direction<Fixed, HeightTrait> {
 	using type = Vertical;
 };
 
-template<>
-struct deduce_scroll_frame_direction<Auto, Fixed> {
+template<class WidthTrait> requires (!IsFixed<WidthTrait>)
+struct deduce_scroll_frame_direction<WidthTrait, Fixed> {
 	using type = Horizontal;
 };
 

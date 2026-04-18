@@ -112,10 +112,10 @@ protected:
 };
 
 
-template<>
-class ClipFrame<Fixed, Auto, Left> : public _ClipFrame_Base, public SizeTrait<Fixed, Auto> {
+template<class HeightTrait>
+class ClipFrame<Fixed, HeightTrait, Left> : public _ClipFrame_Base, public SizeTrait<Fixed, HeightTrait> {
 public:
-	ClipFrame(view_ptr<Relative, Auto> child) : _ClipFrame_Base(std::move(child)) { child_region.point = point_zero; }
+	ClipFrame(view_ptr<Relative, HeightTrait> child) : _ClipFrame_Base(std::move(child)) { child_region.point = point_zero; }
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override {
 		child_region.size = UpdateChildSizeRef(child, size = size_ref);
@@ -133,10 +133,10 @@ protected:
 	}
 };
 
-template<>
-class ClipFrame<Fixed, Auto, Right> : public _ClipFrame_Base, public SizeTrait<Fixed, Auto> {
+template<class HeightTrait>
+class ClipFrame<Fixed, HeightTrait, Right> : public _ClipFrame_Base, public SizeTrait<Fixed, HeightTrait> {
 public:
-	ClipFrame(view_ptr<Relative, Auto> child) : _ClipFrame_Base(std::move(child)) { child_region.point.y = 0; }
+	ClipFrame(view_ptr<Relative, HeightTrait> child) : _ClipFrame_Base(std::move(child)) { child_region.point.y = 0; }
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override {
 		child_region.size = UpdateChildSizeRef(child, size = size_ref);
@@ -157,10 +157,10 @@ protected:
 };
 
 
-template<>
-class ClipFrame<Auto, Fixed, Top> : public _ClipFrame_Base, public SizeTrait<Auto, Fixed> {
+template<class WidthTrait>
+class ClipFrame<WidthTrait, Fixed, Top> : public _ClipFrame_Base, public SizeTrait<WidthTrait, Fixed> {
 public:
-	ClipFrame(view_ptr<Auto, Relative> child) : _ClipFrame_Base(std::move(child)) {}
+	ClipFrame(view_ptr<WidthTrait, Relative> child) : _ClipFrame_Base(std::move(child)) {}
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override {
 		child_region.size = UpdateChildSizeRef(child, size = size_ref);
@@ -178,10 +178,10 @@ protected:
 	}
 };
 
-template<>
-class ClipFrame<Auto, Fixed, Bottom> : public _ClipFrame_Base, public SizeTrait<Auto, Fixed> {
+template<class WidthTrait>
+class ClipFrame<WidthTrait, Fixed, Bottom> : public _ClipFrame_Base, public SizeTrait<WidthTrait, Fixed> {
 public:
-	ClipFrame(view_ptr<Auto, Relative> child) : _ClipFrame_Base(std::move(child)) { child_region.point.x = 0; }
+	ClipFrame(view_ptr<WidthTrait, Relative> child) : _ClipFrame_Base(std::move(child)) { child_region.point.x = 0; }
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override {
 		child_region.size = UpdateChildSizeRef(child, size = size_ref);

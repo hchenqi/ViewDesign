@@ -1,11 +1,11 @@
 #include "ViewDesign/view/Desktop.h"
-#include "ViewDesign/view/frame/ClipFrame.h"
-#include "ViewDesign/view/frame/MaxFrame.h"
 #include "ViewDesign/view/frame/CenterFrame.h"
 #include "ViewDesign/view/frame/BorderFrame.h"
 #include "ViewDesign/view/layout/SplitLayout.h"
 #include "ViewDesign/view/control/EditBox.h"
 #include "ViewDesign/view/widget/TitleBarWindow.h"
+
+#include "TextBoxHelper.h"
 
 
 using namespace ViewDesign;
@@ -16,30 +16,6 @@ struct MainWindowStyle : TitleBarWindow::Style {
 		title.text.assign(L"SplitLayoutTest");
 	}
 };
-
-
-template<class WidthTrait, class HeightTrait>
-view_ptr<WidthTrait, HeightTrait> Wrap(alloc_ptr<TextBox> text_box);
-
-template<>
-view_ptr<Fixed, Fixed> Wrap<Fixed, Fixed>(alloc_ptr<TextBox> text_box) {
-	return new ClipFrame<Fixed, Fixed, TopLeft>(text_box);
-}
-
-template<>
-view_ptr<Fixed, Auto> Wrap<Fixed, Auto>(alloc_ptr<TextBox> text_box) {
-	return new ClipFrame<Fixed, Auto, Left>(text_box);
-}
-
-template<>
-view_ptr<Auto, Fixed> Wrap<Auto, Fixed>(alloc_ptr<TextBox> text_box) {
-	return new ClipFrame<Auto, Fixed, Top>(new MaxFrame<Auto, Auto>(size_max, text_box));
-}
-
-template<>
-view_ptr<Auto, Auto> Wrap<Auto, Auto>(alloc_ptr<TextBox> text_box) {
-	return new MaxFrame<Auto, Auto>(size_max, text_box);
-}
 
 
 template<template<class WidthTraitFirst, class HeightTraitFirst, class WidthTraitSecond, class HeightTraitSecond> class SplitLayout, class WidthTraitFirst, class HeightTraitFirst, class WidthTraitSecond, class HeightTraitSecond>
@@ -53,11 +29,11 @@ void Test() {
 					new SplitLayout(
 						new BorderFrame(
 							Border(2px, Color::Green),
-							Wrap<WidthTraitFirst, HeightTraitFirst>(new EditBox(EditBox::Style(), L"Edit here ..."))
+							WrapTextBox<WidthTraitFirst, HeightTraitFirst>(new EditBox(EditBox::Style(), L"Edit here ..."))
 						),
 						new BorderFrame(
 							Border(2px, Color::Red),
-							Wrap<WidthTraitSecond, HeightTraitSecond>(new EditBox(EditBox::Style(), L"Edit here, too ..."))
+							WrapTextBox<WidthTraitSecond, HeightTraitSecond>(new EditBox(EditBox::Style(), L"Edit here, too ..."))
 						)
 					)
 				)

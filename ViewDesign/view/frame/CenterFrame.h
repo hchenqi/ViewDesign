@@ -38,17 +38,17 @@ protected:
 template<>
 class CenterFrame<Fixed, Fixed> : public _CenterFrame_Base, public SizeTrait<Fixed, Fixed> {
 public:
-	CenterFrame(view_ptr<Relative, Relative> child) : _CenterFrame_Base(std::move(child)) {}
+	CenterFrame(view_ptr<> child) : _CenterFrame_Base(std::move(child)) {}
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override { child_size = UpdateChildSizeRef(child, size = size_ref); return size; }
 	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override { this->child_size = child_size; Redraw(region_infinite); }
 };
 
 
-template<>
-class CenterFrame<Fixed, Auto> : public _CenterFrame_Base, public SizeTrait<Fixed, Auto> {
+template<class HeightTrait> requires (!IsFixed<HeightTrait>)
+class CenterFrame<Fixed, HeightTrait> : public _CenterFrame_Base, public SizeTrait<Fixed, HeightTrait> {
 public:
-	CenterFrame(view_ptr<Relative, Auto> child) : _CenterFrame_Base(std::move(child)) {}
+	CenterFrame(view_ptr<Relative, HeightTrait> child) : _CenterFrame_Base(std::move(child)) {}
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override {
 		child_size = UpdateChildSizeRef(this->child, size_ref);
@@ -65,10 +65,10 @@ protected:
 };
 
 
-template<>
-class CenterFrame<Auto, Fixed> : public _CenterFrame_Base, public SizeTrait<Auto, Fixed> {
+template<class WidthTrait> requires (!IsFixed<WidthTrait>)
+class CenterFrame<WidthTrait, Fixed> : public _CenterFrame_Base, public SizeTrait<WidthTrait, Fixed> {
 public:
-	CenterFrame(view_ptr<Auto, Relative> child) : _CenterFrame_Base(std::move(child)) {}
+	CenterFrame(view_ptr<WidthTrait, Relative> child) : _CenterFrame_Base(std::move(child)) {}
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override {
 		child_size = UpdateChildSizeRef(this->child, size_ref);

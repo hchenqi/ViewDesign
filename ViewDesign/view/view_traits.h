@@ -12,9 +12,9 @@ struct Relative {};
 struct Fixed : Relative {};
 struct Auto : Relative {};
 
-template<class T> constexpr bool IsRelative = std::is_same_v<T, Relative>;
-template<class T> constexpr bool IsFixed = std::is_same_v<T, Fixed>;
-template<class T> constexpr bool IsAuto = std::is_same_v<T, Auto>;
+template<class T> concept IsFixed = std::same_as<T, Fixed>;
+template<class T> concept IsAuto = std::same_as<T, Auto>;
+template<class T> concept IsRelative = std::same_as<T, Relative>;
 
 template<class WidthTrait, class HeightTrait>
 struct SizeTrait {
@@ -47,8 +47,11 @@ class view_ref : public view_ref<> {
 public:
 	template<class View> requires (std::is_base_of_v<WidthTrait, typename View::width_trait> && std::is_base_of_v<HeightTrait, typename View::height_trait>)
 	view_ref(View& ref) : view_ref<>(ref) {}
+	template<class WidthTraitRef, class HeightTraitRef> requires (std::is_base_of_v<WidthTrait, WidthTraitRef> && std::is_base_of_v<HeightTrait, HeightTraitRef>)
+	view_ref(view_ref<WidthTraitRef, HeightTraitRef> ref) : view_ref<>(ref) {}
 public:
-	view_ref&& operator=(view_ref<>&& ref) { view_ref<>::operator=(ref); return *this; }
+	explicit view_ref(view_ref<> ref) : view_ref<>(ref) {}
+	view_ref& operator=(view_ref<> ref) { view_ref<>::operator=(ref); return *this; }
 };
 
 
@@ -60,9 +63,9 @@ class view_ptr<Relative, Relative> : public std::unique_ptr<ViewBase> {
 public:
 	view_ptr() {}
 	template<class View>
-	view_ptr(std::unique_ptr<View> ptr) : std::unique_ptr<ViewBase>(ptr.release()) {}
+	view_ptr(std::unique_ptr<View> ptr) : std::unique_ptr<ViewBase>(std::move(ptr)) {}
 	template<class View>
-	view_ptr(alloc_ptr<View> ptr) : view_ptr(std::unique_ptr<View>(ptr)) {}
+	view_ptr(alloc_ptr<View> ptr) : std::unique_ptr<ViewBase>(ptr) {}
 public:
 	operator ViewBase& () const { return **this; }
 	operator ref_ptr<ViewBase>() const { return get(); }
@@ -71,13 +74,17 @@ public:
 template<class WidthTrait, class HeightTrait>
 class view_ptr : public view_ptr<> {
 public:
-	view_ptr() {}
+	view_ptr() : view_ptr<>() {}
 	template<class View> requires (std::is_base_of_v<WidthTrait, typename View::width_trait> && std::is_base_of_v<HeightTrait, typename View::height_trait>)
 	view_ptr(std::unique_ptr<View> ptr) : view_ptr<>(std::move(ptr)) {}
 	template<class View> requires (std::is_base_of_v<WidthTrait, typename View::width_trait> && std::is_base_of_v<HeightTrait, typename View::height_trait>)
-	view_ptr(alloc_ptr<View> ptr) : view_ptr(std::unique_ptr<View>(ptr)) {}
+	view_ptr(alloc_ptr<View> ptr) : view_ptr<>(ptr) {}
+	template<class WidthTraitPtr, class HeightTraitPtr> requires (std::is_base_of_v<WidthTrait, WidthTraitPtr> && std::is_base_of_v<HeightTrait, HeightTraitPtr>)
+	view_ptr(view_ptr<WidthTraitPtr, HeightTraitPtr> ptr) : view_ptr<>(std::move(ptr)) {}
 public:
-	view_ptr&& operator=(view_ptr<>&& ptr) { view_ptr<>::operator=(std::move(ptr)); return std::move(*this); }
+	explicit view_ptr(view_ptr<> ptr) : view_ptr<>(std::move(ptr)) {}
+	view_ptr& operator=(view_ptr<> ptr) & { view_ptr<>::operator=(std::move(ptr)); return *this; }
+	view_ptr&& operator=(view_ptr<> ptr) && { view_ptr<>::operator=(std::move(ptr)); return std::move(*this); }
 };
 
 
