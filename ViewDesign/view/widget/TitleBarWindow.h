@@ -183,7 +183,7 @@ protected:
 					std::move(menu)
 				),
 				new HitThroughMargin<ClipFrame<Fixed, Fixed, TopRight>>(
-					new ListLayout<Horizontal>(
+					new ListLayoutHorizontal(
 						0.0f,
 						new MinimizeButton(style._background_color, style._foreground_color, L"minimize"),
 						new MaximizeButton(style._background_color, style._foreground_color, L""),

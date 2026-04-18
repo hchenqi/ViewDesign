@@ -85,15 +85,15 @@ protected:
 	static constexpr ushort caret_blink_expire_time = 20000;  // 20s
 	enum class CaretState : ushort { Hide, Show, BlinkShow, BlinkHide };
 protected:
-	Timer caret_timer = Timer(std::bind(&EditBox::BlinkCaret, this));
+	Timer caret_timer = Timer(std::bind(&EditBox::CaretBlink, this));
 	CaretState caret_state = CaretState::Hide;
 	ushort caret_blink_time = 0;
 protected:
 	bool IsCaretVisible() const { return caret_state == CaretState::Show || caret_state == CaretState::BlinkShow; }
 protected:
 	void HideCaret();
-	void StartBlinkingCaret();
-	void BlinkCaret();
+	void CaretStartBlinking();
+	void CaretBlink();
 
 	// selection
 protected:

@@ -18,7 +18,7 @@ public:
 
 protected:
 	_DivideLayout_Base(std::vector<child_type> child_list) : child_list(std::move(child_list)) {
-		uint index = 0;
+		size_t index = 0;
 		for (auto& child : this->child_list) {
 			RegisterChild(child);
 			SetChildIndex(child, index++);

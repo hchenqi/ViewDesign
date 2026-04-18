@@ -109,7 +109,7 @@ void EditBox::HideCaret() {
 	}
 }
 
-void EditBox::StartBlinkingCaret() {
+void EditBox::CaretStartBlinking() {
 	if (caret_state != CaretState::Hide) {
 		if (!caret_timer.IsSet()) {
 			caret_timer.Set(caret_blink_period);
@@ -118,7 +118,7 @@ void EditBox::StartBlinkingCaret() {
 	}
 }
 
-void EditBox::BlinkCaret() {
+void EditBox::CaretBlink() {
 	caret_blink_time += caret_blink_period;
 	if (caret_blink_time >= caret_blink_expire_time) {
 		caret_state = CaretState::Show;
@@ -278,7 +278,7 @@ void EditBox::OnMouseEvent(MouseEvent event) {
 	case MouseTrackEvent::LeftTripleClick: SelectParagraph(); break;
 	case MouseTrackEvent::LeftDrag: DoSelect(event.point); break;
 	}
-	StartBlinkingCaret();
+	CaretStartBlinking();
 }
 
 void EditBox::OnKeyEvent(KeyEvent event) {
@@ -313,7 +313,7 @@ void EditBox::OnKeyEvent(KeyEvent event) {
 	case KeyEvent::ImeString: OnImeString(); break;
 	case KeyEvent::ImeEnd: OnImeEnd(); break;
 	}
-	StartBlinkingCaret();
+	CaretStartBlinking();
 }
 
 void EditBox::OnFocusEvent(FocusEvent event) {

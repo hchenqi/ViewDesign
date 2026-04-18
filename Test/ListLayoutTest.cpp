@@ -1,91 +1,133 @@
 #include "ViewDesign/view/Desktop.h"
 #include "ViewDesign/view/frame/ScrollFrame.h"
 #include "ViewDesign/view/frame/ClipFrame.h"
+#include "ViewDesign/view/frame/ScaleFrame.h"
 #include "ViewDesign/view/frame/InnerBorderFrame.h"
 #include "ViewDesign/view/layout/ListLayout.h"
+#include "ViewDesign/view/layout/SplitLayout.h"
+#include "ViewDesign/view/layout/StackLayout.h"
 #include "ViewDesign/view/control/EditBox.h"
 #include "ViewDesign/view/wrapper/HitTestHelper.h"
+#include "ViewDesign/view/widget/TitleBarWindow.h"
+
+#include "TextBoxHelper.h"
 
 
 using namespace ViewDesign;
 
 
-class MainWindow : public Window {
-public:
-	using Window::Window;
-private:
-	Size size = Size(800, 500);
-private:
-	virtual std::pair<Size, Size> CalculateMinMaxSize(Size size_ref) {
-		return { Size(100, 100), size_ref };
-	}
-	virtual Rect OnWindowSizeRefUpdate(Size size_ref) override {
-		Rect region;
-		region.size = UpdateChildSizeRef(child, size);
-		region.point.x = (size_ref.width - region.size.width) / 2;
-		region.point.y = (size_ref.height - region.size.height) / 2;
-		return region;
+struct MainWindowStyle : TitleBarWindow::Style {
+	MainWindowStyle() {
+		title.text.assign(L"ListLayoutTest");
 	}
 };
 
 
-template<class InnerBorderFrame>
-class HighlightFocus : public InnerBorderFrame {
-public:
-	HighlightFocus(InnerBorderFrame::child_type child) : InnerBorderFrame(Border(1.0f, Color::Black), std::move(child)) {}
+template<class WidthTrait, class HeightTrait>
+class ScaleView : public ScaleFrame<WidthTrait, HeightTrait> {
 private:
-	virtual void OnFocusEvent(FocusEvent event) override {
-		switch (event) {
-		case FocusEvent::FocusIn: InnerBorderFrame::SetBorder(Border(2.0f, Color::Red)); break;
-		case FocusEvent::FocusOut: InnerBorderFrame::SetBorder(Border(1.0f, Color::Black)); break;
+	using Base = ScaleFrame<WidthTrait, HeightTrait>;
+public:
+	ScaleView(Base::child_type child) : Base(Scale(1.0), std::move(child)) {}
+private:
+	virtual ref_ptr<ViewBase> HitTest(MouseEvent& event) override {
+		if (event.ctrl && event.type == MouseEvent::WheelVertical) {
+			return this;
 		}
+		return Base::HitTest(event);
+	}
+private:
+	virtual void OnMouseEvent(MouseEvent event) override {
+		Base::SetScale(Base::scale * Scale(powf(1.1f, event.wheel_delta / 120.0f)));
 	}
 };
 
 template<class T>
-HighlightFocus(T) -> HighlightFocus<InnerBorderFrame<extract_width_trait<T>, extract_height_trait<T>>>;
+ScaleView(T) -> ScaleView<extract_width_trait<T>, extract_height_trait<T>>;
 
 
-struct TextBoxStyle : TextBox::Style {
-	TextBoxStyle() {
-		paragraph.line_spacing(200pct);
-		font.family(L"DengXian").size(20).color(Color::Moccasin);
+template<template<class Trait> class ListLayout, class Trait>
+class ListView : public HitSelfFallback<ListLayout<Trait>> {
+private:
+	using Base = HitSelfFallback<ListLayout<Trait>>;
+
+public:
+	using Base::Base;
+
+private:
+	template<class WidthTrait, class HeightTrait>
+	class ItemFrame : public InnerBorderFrame<WidthTrait, HeightTrait> {
+	private:
+		using Base = InnerBorderFrame<WidthTrait, HeightTrait>;
+	public:
+		ItemFrame(Base::child_type child) : Base(border_normal, std::move(child)) {}
+	private:
+		constexpr static Border border_normal = Border(2px, 5px, Color::CadetBlue);
+		constexpr static Border border_focused = Border(2px, 5px, Color::Orange);
+	private:
+		virtual void OnFocusEvent(FocusEvent event) override {
+			switch (event) {
+			case FocusEvent::FocusIn: Base::SetBorder(border_focused); break;
+			case FocusEvent::FocusOut: Base::SetBorder(border_normal); break;
+			}
+		}
+	};
+
+	template<class T>
+	ItemFrame(T) -> ItemFrame<extract_width_trait<T>, extract_height_trait<T>>;
+
+	class EditView : public EditBox {
+	private:
+		struct Style : public EditBox::Style {
+			Style() {
+				font.size(20);
+			}
+		};
+	public:
+		EditView() : EditBox(Style(), L"Type something here...") {}
+	public:
+		void Edit() {
+			SetCaret(-1);
+			SetFocus();
+			CaretStartBlinking();
+		}
+	};
+
+private:
+	void AppendItem() {
+		ref_ptr<EditView> edit_view;
+		Base::AppendChild(
+			new ItemFrame(
+				new PaddingFrame(
+					Padding(10px),
+					WrapTextBox<typename Base::width_trait, typename Base::height_trait>(edit_view = new EditView())
+				)
+			)
+		);
+		edit_view->Edit();
+	}
+
+private:
+	virtual void OnMouseEvent(MouseEvent event) override {
+		if (event.type == MouseEvent::LeftDown) {
+			AppendItem();
+		}
 	}
 };
 
-struct EditBoxStyle1 : EditBox::Style {
-	EditBoxStyle1() {
-		font.family(L"Calibri").size(60).color(Color::SeaGreen);
-	}
-};
 
-struct EditBoxStyle2 : EditBox::Style {
-	EditBoxStyle2() {
-		font.family(L"Segoe UI").size(30).style(FontStyle::Italic).color(Color::Fuchsia);
-	}
-};
-
-
-int main() {
+template<template<class Trait> class ListLayout, class Trait>
+void Test() {
 	desktop.AddWindow(
-		new MainWindow(
-			L"ListLayoutTest",
+		new TitleBarWindow(
+			MainWindowStyle(),
 			new ScrollFrame(
-				new ListLayout<Vertical>(
-					20,
-					new HighlightFocus(
-						new ClipFrame<Fixed, Auto, Left>(
-							new TextBox(TextBoxStyle(), L"ListLayoutTest")
-						)
-					),
-					new HighlightFocus(
-						new ClipFrame<Fixed, Auto, Left>(
-							new EditBox(EditBoxStyle1(), L"EditBox")
-						)
-					),
-					new HighlightFocus(
-						new HitThroughMargin<ClipFrame<Fixed, Auto, Right>>(
-							new EditBox(EditBoxStyle2(), L"EditBox2")
+				new ScaleView(
+					new InnerBorderFrame(
+						Border(1px, 0px, Color::Black),
+						new PaddingFrame(
+							Padding(5px),
+							new ListView<ListLayout, Trait>(5px)
 						)
 					)
 				)
@@ -93,4 +135,15 @@ int main() {
 		)
 	);
 	desktop.EventLoop();
+}
+
+
+int main() {
+	Test<ListLayoutVertical, Fixed>();
+	Test<ListLayoutVertical, Auto>();
+	Test<ListLayoutVertical, Relative>();
+
+	Test<ListLayoutHorizontal, Fixed>();
+	Test<ListLayoutHorizontal, Auto>();
+	Test<ListLayoutHorizontal, Relative>();
 }
