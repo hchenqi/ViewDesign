@@ -63,7 +63,7 @@ Control, frame and layout are different types of views.
 
 - A frame has one child view to decorate, like `BorderFrame` and `BackgroundFrame`.
 
-- A layout may have multiple child views that are visually arranged in a certain way, like `ListLayout`, `SplitLayout`, `FlowLayout`, `OverlapLayout`, etc.
+- A layout may have multiple child views that are visually arranged in a certain way, like `ListLayout`, `SplitLayout`, `OverlapLayout`, etc.
 
 ### Fixed / Auto / Relative
 

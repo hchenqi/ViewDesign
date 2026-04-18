@@ -27,7 +27,7 @@ private:
 };
 
 
-class EmptyView : public CustomizedCursor<SolidColorBackground<Placeholder<Fixed, Fixed>, Color(Color::Yellow, 0x7F)>, Cursor::Hand> {
+class EmptyView : public CustomizedCursor<SolidColorBackground<Placeholder<Fixed, Fixed>, Color(Color::Yellow, 0x80)>, Cursor::Hand> {
 private:
 	virtual void OnMouseEvent(MouseEvent event) override {
 		switch (event.type) {

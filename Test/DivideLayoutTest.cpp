@@ -26,7 +26,7 @@ private:
 private:
 	virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
 		if (show_background || show_background_focus) {
-			canvas.draw(draw_region.point, new Rectangle(draw_region.size, Color(Color::Orange, 0x3f)));
+			canvas.draw(draw_region.point, new Rectangle(draw_region.size, Color(Color::Orange, 0x40)));
 		}
 		View::OnDraw(canvas, draw_region);
 	}

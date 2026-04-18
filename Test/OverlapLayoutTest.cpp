@@ -20,30 +20,25 @@ struct MainWindowStyle : TitleBarWindow::Style {
 
 
 class MainView : public OverlapLayout {
-public:
-	MainView() {}
-
 private:
-	virtual void OnMouseEvent(MouseEvent event) override {
-		switch (event.type) {
-		case MouseEvent::LeftDown: AddChild(new Frame(event.point)); break;
-		}
-	}
+	class Window : public HitSelf<OverlapLayout::Window> {
+	private:
+		class View : public SolidColorBackground<Placeholder<Fixed, Fixed>> {
+		public:
+			View() { background = background_color; }
+		private:
+			constexpr static Color background_color = Color(Color::Orange, 0x40);
+			constexpr static Color background_color_focus = Color(Color::Orange, 0x80);
+		public:
+			void Focus() { background = background_color_focus; Redraw(region_infinite); }
+			void Blur() { background = background_color; Redraw(region_infinite); }
+		};
 
-private:
-	class View : public SolidColorBackground<Placeholder<Fixed, Fixed>> {
 	public:
-		View(Color background_color) { background = background_color; }
-	public:
-		void SetColor(Color color) { background = color; Redraw(region_infinite); }
-	};
-
-	class Frame : public HitSelf<OverlapFrame> {
-	public:
-		Frame(Point point) : Base(
+		Window(Point point) : Base(
 			new BorderFrame(
-				Border(5px, Color::Wheat),
-				view = new View(Color(Color::Indigo, 64))
+				Border(3px, 0px, Color::Yellow),
+				view = new View()
 			)
 		), region(point, Size(300, 300)) {
 			UpdateChildSizeRef(child, region.size);
@@ -57,7 +52,7 @@ private:
 	private:
 		Rect region;
 	private:
-		virtual Rect OnOverlapFrameSizeRefUpdate(Size size_ref) override { return region; }
+		virtual Rect OnWindowSizeRefUpdate(Size size_ref) override { return region; }
 
 		// event
 	private:
@@ -66,20 +61,16 @@ private:
 	private:
 		virtual void OnMouseEvent(MouseEvent event) override {
 			switch (event.type) {
-			case MouseEvent::LeftDown: SetCapture(); break;
+			case MouseEvent::LeftDown: SetFocus(); SetCapture(); break;
 			case MouseEvent::LeftUp: ReleaseCapture(); break;
 			}
 			switch (mouse_tracker.Track(event)) {
-			case MouseTrackEvent::LeftClick:
-				SetFocus();
-				view->SetColor(Color(Color::Indigo, 128));
-				break;
 			case MouseTrackEvent::LeftDrag:
 				region.point += event.point - mouse_tracker.mouse_down_position;
-				OverlapFrameRegionUpdated(region);
+				RegionUpdated(region);
 				break;
 			case MouseTrackEvent::LeftDoubleClick:
-				GetParent().RemoveChild(*this);
+				GetParent().RemoveWindow(*this);
 				break;
 			}
 		}
@@ -93,11 +84,22 @@ private:
 			}
 		}
 		virtual void OnFocusEvent(FocusEvent event) override {
-			if (event == FocusEvent::Blur) {
-				view->SetColor(Color(Color::Indigo, 64));
+			switch (event) {
+			case FocusEvent::Focus: view->Focus(); break;
+			case FocusEvent::Blur: view->Blur(); break;
 			}
 		}
 	};
+
+public:
+	MainView() {}
+
+private:
+	virtual void OnMouseEvent(MouseEvent event) override {
+		switch (event.type) {
+		case MouseEvent::LeftDown: AddWindow(new Window(event.point)); break;
+		}
+	}
 };
 
 
