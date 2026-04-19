@@ -2,9 +2,30 @@
 
 A C++ GUI library
 
-## Building Steps
+## Introduction
 
-The library and test executables can be built with CMake with Visual Studio and Ninja on Windows.
+`ViewDesign` is a GUI framework completely written in C++, currently working on Windows platform. It provides a basic component library including `TextBox`, `ListLayout`, `ScrollFrame`, etc for intuitive and explicit UI building with high-performance rendering and is highly flexible and easily extensible.
+
+### Highlights
+
+- completely written in modern C++ without any markup language
+- minimal, flexible and powerful
+- clear and simple reflow and redraw logic
+- static check for layout compatibility by `SizeTrait`
+- conceptual separation of control, frame and layout
+
+### Limitations
+
+- lacks comprehensive documentation
+- currently Windows-only
+- incomplete component library
+- lack of extensive correctness and performance testing
+- lack of a high-level and user-friendly designer for UI building
+- lack of accessibility support
+
+## Build Instruction
+
+The library and test executables can be built by CMake with MSVC build tools and Ninja on Windows.
 
 ## Example
 
@@ -77,11 +98,13 @@ The size traits `Fixed`, `Auto` and `Relative` marks how the width or the height
 
 - `Relative` means a dimension of a view is calculated by the view based on some information provided by its parent view.
 
+`Fixed` and `Auto` are naturally also `Relative`, but not vice versa.
+
 A view and a `view_ref` or a `view_ptr` can be marked by a certain size trait. And a parent view may only accept child views with certain size traits. This is checked at compile-time.
 
 Some frames act as a conversion layer for converting size traits of child views:
 
-- `ClipFrame`, `CenterFrame` and `ScrollFrame` convert a dimension from `Auto` to `Fixed`, clipping the overflowing part of the child view. `ClipFrame` puts the child view at a corner. `CenterFrame` puts the child view at the center. `ScrollFrame` makes it possible to scroll to the overflowing part of the child view.
+- `ClipFrame`, `CenterFrame` and `ScrollFrame` convert a dimension from `Auto` or `Relative` to `Fixed`, clipping the overflowing part of the child view. `ClipFrame` puts the child view at a corner. `CenterFrame` puts the child view at the center. `ScrollFrame` makes it possible to scroll to the overflowing part of the child view.
 
 - `FixedFrame` converts a dimension from `Fixed` to `Auto`. It sets a fixed value to the dimension for the child view.
 
@@ -126,4 +149,3 @@ If another view is to be tracked or to consume the next mouse event, the view tr
 If a view acquires mouse capture, all subsequent mouse events will be directly translated and sent to this view.
 
 A view can acquire focus to receive key events as instances of `KeyEvent`. This view is also tracked by `Desktop` in another stack, and all its parent views and itself will receive `FocusIn` event as `FocusEvent`, and the view itself will additionally receive `Focus` event. The view which acquired focus before will receive `Blur` event and its parent views that are not the parent views of the newly tracked view will receive `FocusOut` event.
-
