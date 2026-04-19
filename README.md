@@ -4,32 +4,63 @@ A C++ GUI library
 
 ## Introduction
 
-`ViewDesign` is a GUI framework completely written in C++, currently working on Windows platform. It provides a basic component library including `TextBox`, `ListLayout`, `ScrollFrame`, etc for intuitive and explicit UI building with high-performance rendering and is highly flexible and easily extensible.
+`ViewDesign` is a GUI framework in C++, currently still under development. It is object-oriented, highly modular and flexible, fit for both small and large-scale projects. It features static layout compatibility check through C++ templating which is particularly helpful for designing complex UI components with minimal run-time overhead. It also provides a basic but easily extensible component library for intuitive and explicit UI building.
 
-### Highlights
+### Highlight
 
-- completely written in modern C++ without any markup language
-- minimal, flexible and powerful
-- clear and simple reflow and redraw logic
-- static check for layout compatibility by `SizeTrait`
-- conceptual separation of control, frame and layout
+- written in modern C++, object-oriented and without any markup language
+- highly modular, flexible and extensible
+- simple and clear logic for reflow and redraw
+- static check of layout compatibility between components by size traits
+- conceptual separation of components as control, frame and layout
 
-### Limitations
+### Limitation
 
 - lacks comprehensive documentation
-- currently Windows-only
-- incomplete component library
-- lack of extensive correctness and performance testing
+- currently Windows-only, needs cross-platform support
+- component library to be extended
+- requires extensive correctness and performance testing
 - lack of a high-level and user-friendly designer for UI building
-- lack of accessibility support
+- no support for accessibility and internationalization yet
+- no particular support for exception handling and multi-threading
+
+### Comparison
+
+#### Web Development with HTML/CSS/JavaScript
+
+In web development, elements, styles and event handling are described separately by HTML, CSS and Javascript which can get distracting, complicate the development and damage the performance. In `ViewDesign` they are all implemented in pure C++. One can separate the style definitions and main logic in different files at will without losing the integrity.
+
+In web development, each element consists of padding, border and margin along with its content according to the CSS box model which makes it easy to design and change the style of an element. But this also makes an element unnecessarily large to store all the style information. In ViewDesign, each view as a component is minimal and lightweight. For example, a `TextBox` in ViewDesign just displays text within a given size reference without any border, padding, background color or layout styles. It can however be combined with other components like `BorderFrame`, `PaddingFrame`, `MaxFrame`, `CenterFrame` to implement such additional attributes, and it is still possible to extend a component to accommodate more features. Thus the core library remains minimal and modular.
+
+In web development, the layout styles of parent and child elements can be conflicting. For example, a parent element might have style `width: fix-content` while its child element has style `width: 100%`, which doesn't make sense. In ViewDesign, this scenario can be blocked at compile-time when parent view expects the width trait of child view to be `Auto` but child view's width is `Fixed`. This usually forces developers to think about the sizing behaviour of a component and the compatibility between components.
+
+#### Win32 Desktop Development
+
+Traditional Win32 APIs treat each component as a window with different pre-defined styles through low-level system APIs which is not object-oriented and makes it difficult to build complex and custom UI components. `ViewDesign` internally relies on Win32 and DirectX APIs, nevertheless, for creating root-level windows and receiving system messages on Windows platform, but all components in a window are managed and drawn by the library itself.
+
+#### Qt
+
+Qt provides multiple frameworks and rich tool sets for cross-platform GUI and software development in general under a large community. `ViewDesign` is a single static, mostly header-based C++ library which is light-weight without the need of a particular development environment but remains highly flexible and extensible.
+
+Qt uses a size policy to describe the how a widget is to be resized, but this is rather a suggestion that is performed by certain layout boxes at run-time, then a specification with compatibility check. In `ViewDesign` one can use size traits to check and catch ill-formed layouts already at compile-time.
+
+Qt uses signals and slots mechanism historically for communication between objects that extends the C++ language. `ViewDesign` sticks to native C++ and provides multiple mechanisms for messaging like `Context` and `State` for developers to optionally choose or develop their own.
+
+#### Dear ImGui
+
+Dear ImGui allows for quick GUI development with simple commands of displaying components at each frame. But it is less modular or object-oriented, making it hard to build complex and layout-sensitive UI components.
+
+### Summary
+
+`ViewDesign` is an experimental and promising C++ GUI library that is not yet mature for production use, and some further effort is needed for cross-platform support. The compile-time layout compatibility check might be initially overwhelming and makes it harder for fast iterations. But it provides a new and clean approach for designing GUI applications and is good for learning and testing small prototypes or ideas.
 
 ## Build Instruction
 
-The library and test executables can be built by CMake with MSVC build tools and Ninja on Windows.
+The static library `ViewDesign` and test executables can be built by CMake with MSVC build tools and Ninja on Windows without extra dependencies.
 
 ## Example
 
-From Test/TextBoxTest.cpp:
+A basic example of code is shown below which displays "Hello World!" at the center of the main window: (from Test/TextBoxTest.cpp)
 
 ```cpp
 #include "ViewDesign/view/Desktop.h"
@@ -64,7 +95,54 @@ int main() {
 }
 ```
 
+We first include the header files for `Desktop` and the components we need. Then we extend and define the styles for `TitleBarWindow` and `TextBox`. Finally we create the component instances, combine the components, add the main window and enter the event loop. `CenterFrame<Fixed, Fixed>` makes the `TextBox` compatible to `TitleBarWindow` and at the same time places it at the center of the main window.
+
+The main window has a fixed initial size and a resizable border to change its size, thus expecting both the child view's width and height to be fixed. But a `TextBox` always determines its size based on its content, so the layout of the `TextBox` is not compatible to the main window. This enforces one to specify where to put the `TextBox` in the main window since the `TextBox` doesn't have a fixed size.
+
+We say that the main window accepts a child view with size trait `<Fixed, Fixed>`, meaning that both width and height of the child view should be fixed by the main window. A `TextBox` has size trait `<Relative, Relative>`, meaning both width and height of a `TextBox` is dependent on but not strictly assigned by its parent view. A `CenterFrame<Fixed, Fixed>` itself has size trait `<Fixed, Fixed>` whose width and height are assigned by its parent view, but accepts a child view with size trait `<Relative, Relative>` by always putting the child view at its center clipping the overflowing part of the child view.
+
+Without `CenterFrame<Fixed, Fixed>`, the code below will not compile with error messages like `conversion from TextBox* to view_ptr<Fixed, Fixed> is not possible`.
+
+```cpp
+new TitleBarWindow(
+	MainWindowStyle(),
+	new TextBox(TextBoxStyle(), L"Hello World!")
+)
+```
+
+One can replace `CenterFrame<Fixed, Fixed>` with `ClipFrame<Fixed, Fixed, TopLeft>` to make the text appear at the top-left corner of the window. If the text is too long, the overflowing part will also be clipped away.
+
+```cpp
+// need to include "ViewDesign/view/frame/ClipFrame.h"
+
+new TitleBarWindow(
+	MainWindowStyle(),
+	new ClipFrame<Fixed, Fixed, TopLeft>(
+		new TextBox(TextBoxStyle(), L"Hello World!")
+	)
+)
+```
+
+One can also use `std::make_unique<>` instead of `new` to create component instances. But using `new` is syntactically simpler and not unsafe because each argument will be immediately converted to a `view_ptr` parameter as `unique_ptr` in the constructor functions of the components.
+
+```cpp
+desktop.AddWindow(
+	std::make_unique<TitleBarWindow>(
+		MainWindowStyle(),
+		std::make_unique<CenterFrame<Fixed, Fixed>>(
+			std::make_unique<TextBox>(TextBoxStyle(), L"Hello World!")
+		)
+	)
+);
+```
+
+`TitleBarWindow` as an example itself is a complex pre-defined view component combined by other components.
+
+Other examples can be found in `Test` sub-folder. 
+
 ## Concepts
+
+This section explains the basic concepts related with the view tree, layout, drawing and event handling.
 
 ### View / Desktop / Window
 
@@ -78,7 +156,7 @@ Each view can have a parent view and multiple child views. All views form a view
 
 ### Control / Frame / Layout
 
-Control, frame and layout are different types of views.
+Control, frame and layout are different types of view components.
 
 - A control has no child view and does basic functions or displays raw content, like `Button`, `TextBox`, `ImageBox`, etc.
 
@@ -90,7 +168,7 @@ Control, frame and layout are different types of views.
 
 Each view occupies a rectangular region on its parent view. Usually the position of a view on its parent view is decided by the parent view completely, but the size of a view can be decided by both the view and its parent view.
 
-The size traits `Fixed`, `Auto` and `Relative` marks how the width or the height of a view should be decided.
+The size traits `Fixed`, `Auto` and `Relative` marks how the width or the height of a view should be decided. This is not enforced as a general API but largely adopted by common view components.
 
 - `Fixed` means a dimension of a view is assigned by its parent view.
 
@@ -110,13 +188,11 @@ Some frames act as a conversion layer for converting size traits of child views:
 
 - `MaxFrame` and `MinFrame` convert a dimension from `Relative` to `Auto`, normalizing its child view with a max or min size.
 
-Some particular layouts have their own mechanism of calculating child region bypassing the size traits, like `OverlapLayout`.
-
 ### Reflow / Redraw
 
 Reflow is the process of propagating size change and calculating the layout of a view, determining the sizes and positions of its child views. Redraw is the process of propagating an updated region of a view and drawing its content including child views on the updated region.
 
-In general, the parent view provides a size reference `size_ref` to a child view, the child view calculates its size based on the `size_ref` or on its own, and returns its actual size to the parent view, which then calculates its layout and its own size.
+As a general process regardless of size traits, the parent view provides a size reference `size_ref` to a child view, the child view calculates its size based on the `size_ref` or on its own, and returns its actual size to the parent view, which then calculates its layout and its own size. Some particular views like `OverlapLayout` also define their own mechanism of calculating layout.
 
 If a view later changes its size by itself, it notifies its parent view, and the parent view calculates its layout again and might also change its own size. Reflow stops at the first parent view who updated its layout but doesn't change its own size. This final parent view then initiates redraw over its updated region.
 
@@ -149,3 +225,13 @@ If another view is to be tracked or to consume the next mouse event, the view tr
 If a view acquires mouse capture, all subsequent mouse events will be directly translated and sent to this view.
 
 A view can acquire focus to receive key events as instances of `KeyEvent`. This view is also tracked by `Desktop` in another stack, and all its parent views and itself will receive `FocusIn` event as `FocusEvent`, and the view itself will additionally receive `Focus` event. The view which acquired focus before will receive `Blur` event and its parent views that are not the parent views of the newly tracked view will receive `FocusOut` event.
+
+## History
+
+This project spans several years of development under a former name `WndDesign`. The design principle and the coding style has shifted largely after multiple revisions until reaching its current pattern at the year of 2021 and was since then under maintenance and further underwent several major refactorings in the course of refinement.
+
+The initial version sticks to Win32 API and without much object-oriented and modular design, even without proper version controlling with git. I was at an early stage of learning C++/STL and Win32 APIs and tried to implement basic data structures on my own and manually draw everything on bitmaps by manipulating the pixels. I had to stop at font and text rendering because of its huge complexity, and turned to use Direct2D and DirectWrite libraries.
+
+The next two versions over-complicated the framework by having both a dynamic library and a static library, and enforcing every window to have a style for layout calculation and a non-client region in case of drawing scrollbars. It also tries to optimize drawing of large windows by introducing layers and tiling mechanism for every window. The reflow logic was also complicated by having a queue storing the windows whose size has changed and actually updating the size the windows by the order of the depth of the window on the tree.
+
+A common layout calculation logic for different types of components was the core concern during the development. With the concept of size reference, the current version abstracted the 2 minimal APIs `OnSizeRefUpdate` and `OnChildSizeUpdate` for layout calculation and other minimal APIs for drawing and message handling, and became minimal, modular and modern.
