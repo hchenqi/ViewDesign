@@ -11,7 +11,7 @@ namespace ViewDesign {
 
 class OverlapLayout : public ViewType<Fixed, Fixed> {
 public:
-	class Window : protected ViewFrame {
+	class Window : public ViewFrame {
 	private:
 		friend class OverlapLayout;
 	public:

@@ -24,7 +24,7 @@ private:
 public:
 	Context(ViewBase& user) : user(user), provider(nullptr) {}
 public:
-	template<class View> requires std::is_base_of_v<ViewBase, View>
+	template<class View> requires std::derived_from<View, ViewBase>
 	View& Get() {
 		if (!provider || !dynamic_cast<ref_ptr<View>>(provider)) {
 			ref_ptr<ViewBase> next = &user;

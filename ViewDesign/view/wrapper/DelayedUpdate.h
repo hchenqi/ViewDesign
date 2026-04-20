@@ -11,7 +11,7 @@ namespace ViewDesign {
 template<class View>
 class DelayedReflow;
 
-template<class Frame> requires std::is_base_of_v<ViewFrame, Frame>
+template<class Frame> requires std::derived_from<Frame, ViewFrame>
 class DelayedReflow<Frame> : public Frame {
 protected:
 	using Base = DelayedReflow;
@@ -37,7 +37,7 @@ protected:
 template<class Frame>
 class DelayedRedraw;
 
-template<class Frame> requires std::is_base_of_v<ViewFrame, Frame>
+template<class Frame> requires std::derived_from<Frame, ViewFrame>
 class DelayedRedraw<Frame> : public Frame {
 protected:
 	using Base = DelayedRedraw;
