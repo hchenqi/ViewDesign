@@ -72,7 +72,7 @@ protected:
 		return size;
 	}
 
-	// paint
+	// drawing
 protected:
 	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override {
 		Rect child_region = GetChildRegion(child);
@@ -127,7 +127,7 @@ protected:
 		return size;
 	}
 
-	// paint
+	// drawing
 protected:
 	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override {
 		Rect child_region = GetChildRegion(child);

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "value_tag.h"
-#include "../figure/color.h"
+#include "../drawing/color.h"
 
 #include <string>
 #include <vector>

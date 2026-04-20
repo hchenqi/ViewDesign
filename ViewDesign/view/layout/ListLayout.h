@@ -111,7 +111,7 @@ protected:
 		return GetChildRegion(child).point - point_zero;
 	}
 
-	// paint
+	// drawing
 protected:
 	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override {
 		Rect child_region = GetChildRegion(child);
@@ -163,7 +163,7 @@ protected:
 		UpdateOffsetHeight(it, it);
 	}
 
-	// paint
+	// drawing
 protected:
 	void RedrawChild(std::vector<ChildInfo>::const_iterator it) {
 		Redraw(Rect(Point(0, it->region.top()), Size(length_max, it->region.height())));
@@ -447,7 +447,7 @@ protected:
 		UpdateOffsetWidth(it, it);
 	}
 
-	// paint
+	// drawing
 protected:
 	void RedrawChild(std::vector<ChildInfo>::const_iterator it) {
 		Redraw(Rect(Point(it->region.left(), 0), Size(it->region.width(), length_max)));

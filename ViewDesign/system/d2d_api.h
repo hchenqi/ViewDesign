@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../figure/color.h"
+#include "../drawing/color.h"
 
 
 struct ID2D1Factory8;

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../ViewBase.h"
-#include "../../figure/shape.h"
+#include "../../drawing/shape.h"
 
 
 namespace ViewDesign {
@@ -19,7 +19,7 @@ public:
 protected:
 	Color background = color;
 
-	// paint
+	// drawing
 protected:
 	virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
 		canvas.draw(draw_region.point, new Rectangle(draw_region.size, background));

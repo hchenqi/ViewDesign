@@ -24,7 +24,7 @@ protected:
 protected:
 	virtual Transform GetChildTransform(ViewBase& child) const override { return Transform::Identity(); }
 
-	// paint
+	// drawing
 protected:
 	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override { Redraw(child_redraw_region); }
 	virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
@@ -120,7 +120,7 @@ protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override { for (auto& child : child_list) { UpdateChildSizeRef(child, size_ref); } return size_ref; }
 	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override {}
 
-	// paint
+	// drawing
 protected:
 	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override { Redraw(child_redraw_region); }
 	virtual void OnDraw(Canvas& canvas, Rect draw_region) override { for (auto& child : child_list) { DrawChild(child, point_zero, canvas, draw_region); } }

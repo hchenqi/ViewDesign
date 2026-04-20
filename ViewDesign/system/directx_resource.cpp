@@ -4,7 +4,7 @@
 #include "d2d_api.h"
 #include "dwrite_api.h"
 #include "wic_api.h"
-#include "../figure/bitmap.h"
+#include "../drawing/bitmap.h"
 
 #include "directx_helper.h"
 #include "directx_resource.h"

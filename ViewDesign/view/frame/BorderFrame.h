@@ -3,7 +3,7 @@
 #include "../ViewFrame.h"
 #include "../../style/border_style.h"
 #include "../../geometry/helper.h"
-#include "../../figure/shape.h"
+#include "../../drawing/shape.h"
 
 
 namespace ViewDesign {
@@ -36,7 +36,7 @@ protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override { return size = Extend(child_size = UpdateChildSizeRef(child, Extend(size_ref, -border._width)), border._width); }
 	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override { SizeUpdated(size = Extend(this->child_size = child_size, border._width)); }
 
-	// paint
+	// drawing
 protected:
 	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override {
 		Redraw(child_redraw_region + GetChildOffset());

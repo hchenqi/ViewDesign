@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../ViewFrame.h"
-#include "../../figure/layer.h"
+#include "../../drawing/layer.h"
 #include "../../geometry/region.h"
 
 
@@ -26,7 +26,7 @@ protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override;
 	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override;
 
-	// paint
+	// drawing
 protected:
 	Scale scale;
 	Layer layer;

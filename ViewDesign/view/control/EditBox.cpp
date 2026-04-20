@@ -1,5 +1,5 @@
 #include "EditBox.h"
-#include "../../figure/shape.h"
+#include "../../drawing/shape.h"
 #include "../../system/clipboard.h"
 
 

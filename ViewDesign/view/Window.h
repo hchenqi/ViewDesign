@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ViewFrame.h"
-#include "../figure/window_layer.h"
+#include "../drawing/window_layer.h"
 #include "../geometry/scale.h"
 #include "../geometry/region.h"
 
@@ -66,7 +66,7 @@ protected:
 protected:
 	void Destroy();
 
-	// paint
+	// drawing
 public:
 	using HANDLE = void*;
 private:

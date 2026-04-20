@@ -18,7 +18,7 @@ protected:
 	Color background_hover = Color::Gray;
 	Color background_press = Color::DimGray;
 
-	// paint
+	// drawing
 private:
 	void SetBackgroundColor(Color color) { if (this->background != color) { this->background = color; this->Redraw(region_infinite); } }
 

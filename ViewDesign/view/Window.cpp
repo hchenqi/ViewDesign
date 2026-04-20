@@ -1,5 +1,5 @@
 #include "Desktop.h"
-#include "../figure/window_layer.h"
+#include "../drawing/window_layer.h"
 #include "../geometry/helper.h"
 #include "../system/win32_api.h"
 #include "../system/d2d_api.h"

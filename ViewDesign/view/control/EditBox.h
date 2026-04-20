@@ -59,7 +59,7 @@ protected:
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override;
 
-	// paint
+	// drawing
 protected:
 	virtual void OnDraw(Canvas& canvas, Rect draw_region) override;
 

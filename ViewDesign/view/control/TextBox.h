@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../view_traits.h"
-#include "../../figure/text_block.h"
+#include "../../drawing/text_block.h"
 
 
 namespace ViewDesign {
@@ -56,7 +56,7 @@ protected:
 		return region.size;
 	}
 
-	// paint
+	// drawing
 protected:
 	virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
 		canvas.draw(-region.point, new TextBlockFigure(text_block, style.font._color));

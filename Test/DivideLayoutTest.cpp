@@ -3,7 +3,7 @@
 #include "ViewDesign/view/layout/DivideLayout.h"
 #include "ViewDesign/view/control/Placeholder.h"
 #include "ViewDesign/view/widget/TitleBarWindow.h"
-#include "ViewDesign/figure/shape.h"
+#include "ViewDesign/drawing/shape.h"
 
 
 using namespace ViewDesign;

@@ -37,7 +37,7 @@ public:
 	Window& GetWindow(ViewBase& view);
 	Window& GetWindowPoint(ViewBase& view, Point& point);
 
-	// paint
+	// drawing
 private:
 	void RecreateFrameLayer();
 private:

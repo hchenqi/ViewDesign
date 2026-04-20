@@ -3,7 +3,7 @@
 #include "../common/uncopyable.h"
 #include "../style/cursor_style.h"
 #include "../geometry/geometry.h"
-#include "../figure/canvas.h"
+#include "../drawing/canvas.h"
 #include "../event/event.h"
 
 
@@ -62,7 +62,7 @@ protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) { return size_ref; }
 	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) {}
 
-	// paint
+	// drawing
 protected:
 	void Redraw(Rect redraw_region) { if (HasParent() && !redraw_region.IsEmpty()) { GetParent().OnChildRedraw(*this, redraw_region); } }
 	void DrawChild(ViewBase& child, Point child_offset, Canvas& canvas, Rect draw_region);

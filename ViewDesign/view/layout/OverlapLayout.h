@@ -125,7 +125,7 @@ protected:
 		Redraw(redraw_region);
 	}
 
-	// paint
+	// drawing
 private:
 	ViewBase::OnChildRedraw;
 protected:

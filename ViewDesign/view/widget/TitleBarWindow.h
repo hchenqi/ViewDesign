@@ -20,7 +20,7 @@
 #include "../widget/Tooltip.h"
 #include "../../style/length_style_helper.h"
 #include "../../event/mouse_tracker.h"
-#include "../../message/context.h"
+#include "../../messaging/context.h"
 #include "../../system/cursor.h"
 #include "../../system/win32_aero_snap.h"
 

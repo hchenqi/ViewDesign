@@ -58,7 +58,7 @@ public:
 		Scroll(rect.point - clamp(rect, Rect(frame_offset, size)).point);
 	}
 
-	// paint
+	// drawing
 protected:
 	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override {
 		Redraw(child_redraw_region + GetChildOffset());

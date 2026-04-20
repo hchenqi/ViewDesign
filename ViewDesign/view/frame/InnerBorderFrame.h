@@ -2,7 +2,7 @@
 
 #include "../ViewFrame.h"
 #include "../../style/border_style.h"
-#include "../../figure/shape.h"
+#include "../../drawing/shape.h"
 
 
 namespace ViewDesign {
@@ -29,7 +29,7 @@ protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override { return size = UpdateChildSizeRef(child, size_ref); }
 	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override { SizeUpdated(size = child_size); }
 
-	// paint
+	// drawing
 protected:
 	virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
 		DrawChild(child, point_zero, canvas, draw_region);

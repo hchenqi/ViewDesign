@@ -36,7 +36,7 @@ protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override { return UpdateChildSizeRef(child, (this->size_ref = size_ref) * scale.Invert()) * scale; }
 	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override { SizeUpdated(child_size * scale); }
 
-	// paint
+	// drawing
 protected:
 	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override {
 		Redraw(child_redraw_region * scale);

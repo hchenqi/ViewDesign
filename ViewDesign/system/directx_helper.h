@@ -2,7 +2,7 @@
 
 #include "../geometry/geometry.h"
 #include "../geometry/transform.h"
-#include "../figure/color.h"
+#include "../drawing/color.h"
 
 #include <d2d1_3.h>
 #include <dxgi1_4.h>

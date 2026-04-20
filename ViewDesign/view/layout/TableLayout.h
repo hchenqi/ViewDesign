@@ -2,7 +2,7 @@
 
 #include "../view_traits.h"
 #include "../../style/value_tag.h"
-#include "../../figure/shape.h"
+#include "../../drawing/shape.h"
 
 #include <vector>
 #include <algorithm>
@@ -171,7 +171,7 @@ protected:
 	}
 	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override {}
 
-	// paint
+	// drawing
 protected:
 	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override {
 		Rect child_region = GetChildRegion(child);

@@ -24,7 +24,7 @@ protected:
 protected:
 	virtual Transform GetChildTransform(ViewBase& child) const override { return GetChildOffset(); }
 
-	// paint
+	// drawing
 protected:
 	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override { Redraw(child_redraw_region + GetChildOffset()); }
 	virtual void OnDraw(Canvas& canvas, Rect draw_region) override { return DrawChild(child, point_zero + GetChildOffset(), canvas, draw_region); }
