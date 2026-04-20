@@ -1,4 +1,5 @@
 #include "ViewDesign/view/Desktop.h"
+#include "ViewDesign/view/frame/MutableFrame.h"
 #include "ViewDesign/view/control/Placeholder.h"
 #include "ViewDesign/view/wrapper/Background.h"
 #include "ViewDesign/view/wrapper/Cursor.h"
@@ -56,14 +57,11 @@ int main() {
 	desktop.AddWindow(new MainWindow(L"WindowTest", new ViewFrame(new EmptyView())));
 	desktop.EventLoop();
 
-	desktop.AddWindow(new MainWindow(L"WindowTest", new ViewFrameMutable(new EmptyView())));
+	desktop.AddWindow(new MainWindow(L"WindowTest", new MutableFrame(new EmptyView())));
 	desktop.EventLoop();
 
 	std::unique_ptr<EmptyView> view(new EmptyView());
 
 	desktop.AddWindow(new MainWindow(L"WindowTest", new ViewFrameRef(*view)));
-	desktop.EventLoop();
-
-	desktop.AddWindow(new MainWindow(L"WindowTest", new ViewFrameRefMutable(*view)));
 	desktop.EventLoop();
 }

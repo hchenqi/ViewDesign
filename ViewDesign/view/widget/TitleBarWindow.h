@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Window.h"
+#include "../frame/MutableFrame.h"
 #include "../frame/PaddingFrame.h"
 #include "../frame/BorderFrame.h"
 #include "../frame/CenterFrame.h"
@@ -209,12 +210,12 @@ protected:
 public:
 	TitleBarWindow(Style style, child_type child, menu_type menu = new Placeholder<Auto, Fixed>(0.0f)) : Window(
 		style.title.text,
-		outer_frame = new ViewFrameMutable(
+		outer_frame = new MutableFrame(
 			new PaddingFrame(
 				style.padding,
 				border = new ResizeBorder(
 					style.border,
-					view_ptr<Fixed, Fixed>() = inner_frame = new ViewFrameMutable(
+					inner_frame = new MutableFrame(
 						new SplitLayoutVertical(
 							new TitleBar(
 								style.title.bar,
@@ -254,8 +255,8 @@ protected:
 
 	// state
 protected:
-	ref_ptr<ViewFrameMutable> outer_frame;
-	ref_ptr<ViewFrameMutable> inner_frame;
+	ref_ptr<MutableFrame<Fixed, Fixed>> outer_frame;
+	ref_ptr<MutableFrame<Fixed, Fixed>> inner_frame;
 	view_ptr<Fixed, Fixed> inner_frame_placeholder = new Placeholder<Fixed, Fixed>;
 	view_ptr<Fixed, Fixed> outer_frame_placeholder = view_ptr<Fixed, Fixed>();
 protected:
@@ -264,8 +265,8 @@ protected:
 protected:
 	virtual void OnStateChange(State state) {
 		switch (state) {
-		case State::Normal: if (outer_frame_placeholder) { ViewFrameMutable::Rotate(*inner_frame, *outer_frame, outer_frame_placeholder, inner_frame_placeholder); } break;
-		case State::Maximized: if (inner_frame_placeholder) { ViewFrameMutable::Rotate(*inner_frame, inner_frame_placeholder, outer_frame_placeholder, *outer_frame); } break;
+		case State::Normal: if (outer_frame_placeholder) { inner_frame->RotateWith(*outer_frame, outer_frame_placeholder, inner_frame_placeholder); } break;
+		case State::Maximized: if (inner_frame_placeholder) { inner_frame->RotateWith(inner_frame_placeholder, outer_frame_placeholder, *outer_frame); } break;
 		}
 	}
 };
