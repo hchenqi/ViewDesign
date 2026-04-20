@@ -171,7 +171,7 @@ protected:
 		};
 
 	public:
-		TitleBar(const TitleBarStyle::BarStyle& style, menu_type menu, alloc_ptr<Title> title) : Base(
+		TitleBar(const TitleBarStyle::BarStyle& style, menu_type menu, owner_ptr<Title> title) : Base(
 			style._height,
 			new StackLayoutMultiple(
 				new HitThrough<CenterFrame<Fixed, Fixed>>(

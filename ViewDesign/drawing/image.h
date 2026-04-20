@@ -15,7 +15,7 @@ struct ImageSource;
 class Image : Uncopyable {
 private:
 	friend struct ImageFigure;
-	alloc_ptr<ImageSource> source;
+	owner_ptr<ImageSource> source;
 	Size size;
 	mutable Bitmap bitmap;
 public:

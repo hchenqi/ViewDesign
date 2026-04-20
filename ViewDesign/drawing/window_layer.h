@@ -12,8 +12,8 @@ struct CompositionTarget;
 class WindowLayer : private Layer {
 public:
 	using HANDLE = void*;
-	alloc_ptr<SwapChain> swap_chain;
-	alloc_ptr<CompositionTarget> comp_target;
+	owner_ptr<SwapChain> swap_chain;
+	owner_ptr<CompositionTarget> comp_target;
 public:
 	WindowLayer() : swap_chain(nullptr), comp_target(nullptr) {}
 	~WindowLayer() { Destroy(); }

@@ -31,7 +31,7 @@ private:
 	std::vector<std::unique_ptr<Window>> window_list;
 public:
 	Window& AddWindow(std::unique_ptr<Window> window);
-	Window& AddWindow(alloc_ptr<Window> window) { return AddWindow(std::unique_ptr<Window>(window)); }
+	Window& AddWindow(owner_ptr<Window> window) { return AddWindow(std::unique_ptr<Window>(window)); }
 	std::unique_ptr<Window> RemoveWindow(Window& window);
 public:
 	Window& GetWindow(ViewBase& view);

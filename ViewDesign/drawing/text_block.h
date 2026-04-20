@@ -22,7 +22,7 @@ public:
 	~TextBlock();
 
 protected:
-	alloc_ptr<TextLayout> layout = nullptr;
+	owner_ptr<TextLayout> layout = nullptr;
 public:
 	void SetText(const TextBlockStyle& style, const std::wstring& text);
 	Rect UpdateLayout(Size size_ref);

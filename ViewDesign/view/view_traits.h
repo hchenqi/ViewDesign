@@ -42,7 +42,7 @@ struct extract_size_trait<T> {
 };
 
 template<class View>
-struct extract_size_trait<alloc_ptr<View>> : extract_size_trait<View> {};
+struct extract_size_trait<owner_ptr<View>> : extract_size_trait<View> {};
 
 template<class View>
 struct extract_size_trait<std::unique_ptr<View>> : extract_size_trait<View> {};
@@ -95,7 +95,7 @@ public:
 	template<class View>
 	view_ptr(std::unique_ptr<View> ptr) : std::unique_ptr<ViewBase>(std::move(ptr)) {}
 	template<class View>
-	view_ptr(alloc_ptr<View> ptr) : std::unique_ptr<ViewBase>(ptr) {}
+	view_ptr(owner_ptr<View> ptr) : std::unique_ptr<ViewBase>(ptr) {}
 public:
 	operator ViewBase& () const { return *get(); }
 	operator ref_ptr<ViewBase>() const { return get(); }
@@ -110,9 +110,9 @@ public:
 	template<class View> requires !size_trait_compatible<View, WidthTrait, HeightTrait>
 	view_ptr(std::unique_ptr<View> ptr) { static_assert(size_trait_compatible<View, WidthTrait, HeightTrait>, "size traits incompatible"); }
 	template<class View> requires size_trait_compatible<View, WidthTrait, HeightTrait>
-	view_ptr(alloc_ptr<View> ptr) : view_ptr<>(ptr) {}
+	view_ptr(owner_ptr<View> ptr) : view_ptr<>(ptr) {}
 	template<class View> requires !size_trait_compatible<View, WidthTrait, HeightTrait>
-	view_ptr(alloc_ptr<View> ptr) { static_assert(size_trait_compatible<View, WidthTrait, HeightTrait>, "size traits incompatible"); }
+	view_ptr(owner_ptr<View> ptr) { static_assert(size_trait_compatible<View, WidthTrait, HeightTrait>, "size traits incompatible"); }
 	template<class WidthTraitPtr, class HeightTraitPtr> requires size_trait_compatible<view_ptr<WidthTraitPtr, HeightTraitPtr>, WidthTrait, HeightTrait>
 	view_ptr(view_ptr<WidthTraitPtr, HeightTraitPtr> ptr) : view_ptr<>(std::move(ptr)) {}
 	template<class WidthTraitPtr, class HeightTraitPtr> requires !size_trait_compatible<view_ptr<WidthTraitPtr, HeightTraitPtr>, WidthTrait, HeightTrait>

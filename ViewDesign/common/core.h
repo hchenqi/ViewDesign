@@ -7,7 +7,7 @@ namespace ViewDesign {
 
 
 template<class T> using ref_ptr = T*;
-template<class T> using alloc_ptr = T*;
+template<class T> using owner_ptr = T*;
 
 using uchar = unsigned char;
 using ushort = unsigned short;

@@ -65,7 +65,7 @@ public:
 	}
 private:
 	void ShowSelf() { desktop.AddWindow(std::move(self)); }
-	void HideSelf() { self.reset(static_cast<alloc_ptr<Tooltip>>(desktop.RemoveWindow(*this).release())); }
+	void HideSelf() { self.reset(static_cast<owner_ptr<Tooltip>>(desktop.RemoveWindow(*this).release())); }
 	void SetOpacity(uchar opacity) { Win32::SetWndOpacity(GetHWND(), opacity); }
 
 private:

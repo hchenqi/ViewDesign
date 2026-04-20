@@ -58,7 +58,7 @@ public:
 		UpdateWindowSizeRef(*window, size);
 		Redraw(window_list.emplace_back(std::move(window))->region);
 	}
-	void AddWindow(alloc_ptr<Window> window) { AddWindow(window_ptr(window)); }
+	void AddWindow(owner_ptr<Window> window) { AddWindow(window_ptr(window)); }
 	window_ptr RemoveWindow(Window& window) {
 		auto it = std::find_if(window_list.begin(), window_list.end(), [&](const window_ptr& ptr) { return ptr.get() == &window; });
 		if (it == window_list.end()) { throw std::invalid_argument("invalid window"); }

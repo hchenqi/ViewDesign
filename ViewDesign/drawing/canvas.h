@@ -40,7 +40,7 @@ public:
 	void draw(Point offset, std::unique_ptr<const Figure> figure) {
 		figures.emplace_back(FigureItem{ offset + this->offset, std::move(figure) });
 	}
-	void draw(Point offset, alloc_ptr<const Figure> figure) {
+	void draw(Point offset, owner_ptr<const Figure> figure) {
 		draw(offset, std::unique_ptr<const Figure>(figure));
 	}
 	template<class FigureType>
