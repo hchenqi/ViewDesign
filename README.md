@@ -30,19 +30,23 @@ A C++ GUI library
 
 In web development, elements, styles and event handling are described separately by HTML, CSS and Javascript which can get distracting, complicate the development and damage the performance. In `ViewDesign` they are all implemented in pure C++. One can separate the style definitions and main logic in different files at will without losing the integrity.
 
-In web development, each element consists of padding, border and margin along with its content according to the CSS box model which makes it easy to design and change the style of an element. But this also makes an element unnecessarily large to store all the style information. In ViewDesign, each view as a component is minimal and lightweight. For example, a `TextBox` in ViewDesign just displays text within a given size reference without any border, padding, background color or layout styles. It can however be combined with other components like `BorderFrame`, `PaddingFrame`, `MaxFrame`, `CenterFrame` to implement such additional attributes, and it is still possible to extend a component to accommodate more features. Thus the core library remains minimal and modular.
+In web development, each element consists of padding, border and margin along with its content according to the CSS box model which makes it easy to design and change the style of an element. But this also makes an element unnecessarily large to store all the style information. In `ViewDesign`, each view as a component is aimed to be minimal and lightweight. For example, a `TextBox` just displays text within a given size reference without any border, padding, background color or layout styles. It can however be combined with other components like `BorderFrame`, `PaddingFrame`, `MaxFrame`, `CenterFrame` to implement such additional attributes.
 
-In web development, the layout styles of parent and child elements can be conflicting. For example, a parent element might have style `width: fix-content` while its child element has style `width: 100%`, which doesn't make sense. In ViewDesign, this scenario can be blocked at compile-time when parent view expects the width trait of child view to be `Auto` but child view's width is `Fixed`. This usually forces developers to think about the sizing behaviour of a component and the compatibility between components.
+In web development, the layout styles of parent and child elements can be conflicting. For example, a parent element might have style `width: fix-content` while its child element has style `width: 100%`, which doesn't make sense. In `ViewDesign`, this scenario can be blocked at compile-time when parent view expects the width trait of child view to be `Auto` but child view's width is `Fixed`. This usually forces developers to think about the sizing behaviour of a component and the compatibility between components. Nevertheless, there remains the possibility to build a general-purpose and run-time calculated `div`-like rich component on top of the core library while the core library remains minimal and modular.
 
 #### Win32 Desktop Development
 
 Traditional Win32 APIs treat each component as a window with different pre-defined styles through low-level system APIs which is not object-oriented and makes it difficult to build complex and custom UI components. `ViewDesign` internally relies on Win32 and DirectX APIs, nevertheless, for creating root-level windows and receiving system messages on Windows platform, but all components in a window are managed and drawn by the library itself.
 
+#### Flutter
+
+Flutter defines its own programming language and compiler just for multi-platform GUI development. `ViewDesign` is written in C++ and is open to various existing tool sets and custom design patterns.
+
 #### Qt
 
-Qt provides multiple frameworks and rich tool sets for cross-platform GUI and software development in general under a large community. `ViewDesign` is a single static, mostly header-based C++ library which is light-weight without the need of a particular development environment but remains highly flexible and extensible.
+Qt provides multiple frameworks and rich tool sets for cross-platform GUI and software development in general under a large community. `ViewDesign` is a single static, mostly header-based C++ library which is extremely lightweight without the need of a particular development environment but remains highly flexible and extensible.
 
-Qt uses a size policy to describe the how a widget is to be resized, but this is rather a suggestion that is performed by certain layout boxes at run-time, then a specification with compatibility check. In `ViewDesign` one can use size traits to check and catch ill-formed layouts already at compile-time.
+Qt uses size policy to describe the how a widget is to be resized, but this is rather a suggestion that is performed by certain layout boxes at run-time, then a specification with compatibility check. In `ViewDesign`, size traits can not only be used to check and catch ill-formed layouts at compile-time, but also automatically select different implementations of frames and layouts like `BorderFrame`, `ScrollFrame`, `SplitLayout` or `ListLayout` with help of C++ template deduction guide, making it seamless and effortless to build up view components.
 
 Qt uses signals and slots mechanism historically for communication between objects that extends the C++ language. `ViewDesign` sticks to native C++ and provides multiple mechanisms for messaging like `Context` and `State` for developers to optionally choose or develop their own.
 
@@ -52,7 +56,7 @@ Dear ImGui allows for quick GUI development with simple commands of displaying c
 
 ### Summary
 
-`ViewDesign` is an experimental and promising C++ GUI library that is not yet mature for production use, and some further effort is needed for cross-platform support. The compile-time layout compatibility check might be initially overwhelming and makes it harder for fast iterations. But it provides a new and clean approach for designing GUI applications and is good for learning and testing small prototypes or ideas.
+`ViewDesign` is an experimental and promising C++ GUI library that is not yet mature for production use, and some further effort is needed for cross-platform support. The compile-time layout compatibility check could be initially overwhelming and make it difficult for fast iterations. But due to its exceeding modularity and abstraction, it is easily maintainable, modifiable, adaptive and extensible. It provides a new and clean approach for designing GUI applications, and is good for learning and for verifying prototypes and ideas.
 
 ## Build Instruction
 
@@ -60,7 +64,7 @@ The static library `ViewDesign` and test executables can be built by CMake with 
 
 ## Example
 
-A basic example of code is shown below which displays "Hello World!" at the center of the main window: (from Test/TextBoxTest.cpp)
+A basic example program below displays "Hello World!" at the center of the main window: (from [Test/TextBoxTest.cpp](Test/TextBoxTest.cpp))
 
 ```cpp
 #include "ViewDesign/view/Desktop.h"
@@ -97,48 +101,46 @@ int main() {
 
 We first include the header files for `Desktop` and the components we need. Then we extend and define the styles for `TitleBarWindow` and `TextBox`. Finally we create the component instances, combine the components, add the main window and enter the event loop. `CenterFrame<Fixed, Fixed>` makes the `TextBox` compatible to `TitleBarWindow` and at the same time places it at the center of the main window.
 
-The main window has a fixed initial size and a resizable border to change its size, thus expecting both the child view's width and height to be fixed. But a `TextBox` always determines its size based on its content, so the layout of the `TextBox` is not compatible to the main window. This enforces one to specify where to put the `TextBox` in the main window since the `TextBox` doesn't have a fixed size.
+The main window has a fixed initial size and a resizable border to change its size, thus expecting both the child view's width and height to be fixed. But a `TextBox` always determines its size based on its content, making its layout incompatible to the main window. This enforces one to specify where to put the `TextBox` in the main window since the `TextBox` doesn't have a fixed size.
 
-We say that the main window accepts a child view with size trait `<Fixed, Fixed>`, meaning that both width and height of the child view should be fixed by the main window. A `TextBox` has size trait `<Relative, Relative>`, meaning both width and height of a `TextBox` is dependent on but not strictly assigned by its parent view. A `CenterFrame<Fixed, Fixed>` itself has size trait `<Fixed, Fixed>` whose width and height are assigned by its parent view, but accepts a child view with size trait `<Relative, Relative>` by always putting the child view at its center clipping the overflowing part of the child view.
-
-Without `CenterFrame<Fixed, Fixed>`, the code below will not compile with error messages like `conversion from TextBox* to view_ptr<Fixed, Fixed> is not possible`.
+We say that the main window accepts a child view with size trait `<Fixed, Fixed>`, meaning that both width and height of the child view should be fixed by the main window. A `TextBox` has size trait `<Relative, Relative>`, meaning both width and height of a `TextBox` is dependent on but not strictly assigned by its parent view. A `CenterFrame<Fixed, Fixed>` itself has size trait `<Fixed, Fixed>` whose width and height are assigned by its parent view, but accepts a child view with size trait `<Relative, Relative>` by always putting the child view at its center clipping the overflowing part of the child view. Without the `CenterFrame<Fixed, Fixed>`, the code below doesn't compile with a clear message `size traits incompatible` followed by detailed error information that helps developers to diagnose the incompatibility and clarify the intention.
 
 ```cpp
-new TitleBarWindow(
-	MainWindowStyle(),
-	new TextBox(TextBoxStyle(), L"Hello World!")
-)
+	new TitleBarWindow(
+		MainWindowStyle(),
+		new TextBox(TextBoxStyle(), L"Hello World!")
+	)
 ```
 
 One can replace `CenterFrame<Fixed, Fixed>` with `ClipFrame<Fixed, Fixed, TopLeft>` to make the text appear at the top-left corner of the window. If the text is too long, the overflowing part will also be clipped away.
 
 ```cpp
-// need to include "ViewDesign/view/frame/ClipFrame.h"
+	// need to include "ViewDesign/view/frame/ClipFrame.h"
 
-new TitleBarWindow(
-	MainWindowStyle(),
-	new ClipFrame<Fixed, Fixed, TopLeft>(
-		new TextBox(TextBoxStyle(), L"Hello World!")
+	new TitleBarWindow(
+		MainWindowStyle(),
+		new ClipFrame<Fixed, Fixed, TopLeft>(
+			new TextBox(TextBoxStyle(), L"Hello World!")
+		)
 	)
-)
 ```
 
 One can also use `std::make_unique<>` instead of `new` to create component instances. But using `new` is syntactically simpler and not unsafe because each argument will be immediately converted to a `view_ptr` parameter as `unique_ptr` in the constructor functions of the components.
 
 ```cpp
-desktop.AddWindow(
-	std::make_unique<TitleBarWindow>(
-		MainWindowStyle(),
-		std::make_unique<CenterFrame<Fixed, Fixed>>(
-			std::make_unique<TextBox>(TextBoxStyle(), L"Hello World!")
+	desktop.AddWindow(
+		std::make_unique<TitleBarWindow>(
+			MainWindowStyle(),
+			std::make_unique<CenterFrame<Fixed, Fixed>>(
+				std::make_unique<TextBox>(TextBoxStyle(), L"Hello World!")
+			)
 		)
-	)
-);
+	);
 ```
 
-`TitleBarWindow` as an example itself is a complex pre-defined view component combined by other components.
+[`TitleBarWindow`](ViewDesign/view/widget/TitleBarWindow.h) is a more complex example itself as a pre-defined view component combined and extended from other components.
 
-Other examples can be found in `Test` sub-folder. 
+More examples can also be found in sub-folder [Test](Test).
 
 ## Concepts
 
