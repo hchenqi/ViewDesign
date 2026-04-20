@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Placeholder.h"
-#include "../wrapper/Background.h"
+#include "ViewDesign/view/control/Placeholder.h"
+#include "ViewDesign/view/wrapper/Background.h"
 
 
 namespace ViewDesign {

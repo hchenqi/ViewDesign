@@ -1,7 +1,7 @@
 #pragma once
 
-#include "timer.h"
-#include "../common/coroutine.h"
+#include "ViewDesign/event/timer.h"
+#include "ViewDesign/common/coroutine.h"
 
 #include <memory>
 

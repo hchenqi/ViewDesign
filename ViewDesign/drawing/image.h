@@ -1,8 +1,7 @@
 #pragma once
 
-#include "figure.h"
-#include "color.h"
-#include "bitmap.h"
+#include "ViewDesign/drawing/bitmap.h"
+#include "ViewDesign/drawing/figure.h"
 
 #include <string>
 

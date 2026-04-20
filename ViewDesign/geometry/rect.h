@@ -1,8 +1,8 @@
 #pragma once
 
-#include "point.h"
-#include "size.h"
-#include "interval.h"
+#include "ViewDesign/geometry/point.h"
+#include "ViewDesign/geometry/size.h"
+#include "ViewDesign/geometry/interval.h"
 
 
 namespace ViewDesign {

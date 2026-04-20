@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../view_traits.h"
-#include "../../style/value_tag.h"
-#include "../../drawing/shape.h"
+#include "ViewDesign/view/view_traits.h"
+#include "ViewDesign/style/value_tag.h"
+#include "ViewDesign/drawing/shape.h"
 
 #include <vector>
 #include <algorithm>

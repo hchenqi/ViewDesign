@@ -1,12 +1,12 @@
 #pragma once
 
-#include "TextBox.h"
-#include "../../common/unicode_helper.h"
-#include "../../event/timer.h"
-#include "../../event/ime.h"
-#include "../../event/mouse_tracker.h"
-#include "../../event/key_tracker.h"
-#include "../wrapper/Cursor.h"
+#include "ViewDesign/view/control/TextBox.h"
+#include "ViewDesign/event/timer.h"
+#include "ViewDesign/event/ime.h"
+#include "ViewDesign/event/mouse_tracker.h"
+#include "ViewDesign/event/key_tracker.h"
+#include "ViewDesign/common/unicode_helper.h"
+#include "ViewDesign/view/wrapper/Cursor.h"
 
 
 namespace ViewDesign {

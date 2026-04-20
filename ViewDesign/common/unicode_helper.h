@@ -1,7 +1,8 @@
 #pragma once
 
-#include "uncopyable.h"
-#include "../geometry/text_range.h"
+#include "ViewDesign/common/type.h"
+#include "ViewDesign/common/uncopyable.h"
+#include "ViewDesign/common/text_range.h"
 
 #include <string>
 
@@ -9,7 +10,7 @@
 namespace ViewDesign {
 
 
-enum class UTF16CharType : uchar {
+enum class UTF16CharType {
 	Single,
 	SurrogateLow,
 	SurrogateHigh,

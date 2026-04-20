@@ -1,7 +1,7 @@
 #pragma once
 
-#include "geometry.h"
-#include "margin.h"
+#include "ViewDesign/geometry/geometry.h"
+#include "ViewDesign/geometry/margin.h"
 
 
 namespace ViewDesign {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../common/core.h"
+#include <algorithm>
 
 
 namespace ViewDesign {

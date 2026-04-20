@@ -1,6 +1,8 @@
 #pragma once
 
-#include "geometry.h"
+#include "ViewDesign/geometry/geometry.h"
+
+#include <stdexcept>
 
 
 namespace ViewDesign {

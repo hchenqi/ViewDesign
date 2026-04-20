@@ -1,5 +1,5 @@
-#include "ViewBase.h"
-#include "Desktop.h"
+#include "ViewDesign/view/ViewBase.h"
+#include "ViewDesign/view/Desktop.h"
 
 
 namespace ViewDesign {

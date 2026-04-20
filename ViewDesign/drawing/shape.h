@@ -1,7 +1,7 @@
 #pragma once
 
-#include "figure.h"
-#include "color.h"
+#include "ViewDesign/drawing/figure.h"
+#include "ViewDesign/drawing/color.h"
 
 
 namespace ViewDesign {

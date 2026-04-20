@@ -1,12 +1,10 @@
 #pragma once
 
-#include "../common/core.h"
-
 
 namespace ViewDesign {
 
 
-enum class FocusEvent : uchar {
+enum class FocusEvent {
 	MouseEnter,
 	MouseLeave,
 	MouseOver,

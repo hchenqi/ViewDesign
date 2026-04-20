@@ -1,10 +1,11 @@
 #pragma once
 
-#include "../common/uncopyable.h"
-#include "../style/cursor_style.h"
-#include "../geometry/geometry.h"
-#include "../drawing/canvas.h"
-#include "../event/event.h"
+#include "ViewDesign/common/uncopyable.h"
+#include "ViewDesign/style/cursor_style.h"
+#include "ViewDesign/drawing/canvas.h"
+#include "ViewDesign/event/event.h"
+
+#include <stdexcept>
 
 
 namespace ViewDesign {

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../ViewBase.h"
-#include "../../drawing/shape.h"
+#include "ViewDesign/view/ViewBase.h"
+#include "ViewDesign/drawing/shape.h"
 
 
 namespace ViewDesign {

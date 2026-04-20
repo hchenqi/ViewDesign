@@ -1,7 +1,7 @@
 #pragma once
 
-#include "value_tag.h"
-#include "../drawing/color.h"
+#include "ViewDesign/style/value_tag.h"
+#include "ViewDesign/drawing/color.h"
 
 
 namespace ViewDesign {

@@ -1,6 +1,8 @@
 #pragma once
 
-#include "../common/core.h"
+#include "ViewDesign/common/type.h"
+
+#include <stdexcept>
 
 
 namespace ViewDesign {

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "geometry.h"
-#include "../common/uncopyable.h"
+#include "ViewDesign/common/uncopyable.h"
+#include "ViewDesign/geometry/geometry.h"
 
 #include <vector>
 

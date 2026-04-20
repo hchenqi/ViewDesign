@@ -1,5 +1,7 @@
-#include "../ViewFrame.h"
-#include "../../common/tuple_helper.h"
+#pragma once
+
+#include "ViewDesign/view/ViewFrame.h"
+#include "ViewDesign/common/tuple_helper.h"
 
 
 namespace ViewDesign {

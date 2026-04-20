@@ -1,10 +1,10 @@
 #pragma once
 
-#include "point.h"
-#include "vector.h"
-#include "size.h"
-#include "rect.h"
-#include "scale.h"
+#include "ViewDesign/geometry/point.h"
+#include "ViewDesign/geometry/vector.h"
+#include "ViewDesign/geometry/size.h"
+#include "ViewDesign/geometry/rect.h"
+#include "ViewDesign/geometry/scale.h"
 
 
 namespace ViewDesign {

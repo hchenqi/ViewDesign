@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../view_traits.h"
-#include "../../common/reversion_wrapper.h"
+#include "ViewDesign/view/view_traits.h"
+#include "ViewDesign/common/reversion_wrapper.h"
 
 
 namespace ViewDesign {

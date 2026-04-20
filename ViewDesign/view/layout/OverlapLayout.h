@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../ViewFrame.h"
-#include "../../common/reversion_wrapper.h"
+#include "ViewDesign/view/ViewFrame.h"
+#include "ViewDesign/common/reversion_wrapper.h"
 
 #include <list>
 

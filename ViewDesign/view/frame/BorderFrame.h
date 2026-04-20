@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../ViewFrame.h"
-#include "../../style/border_style.h"
-#include "../../geometry/helper.h"
-#include "../../drawing/shape.h"
+#include "ViewDesign/view/ViewFrame.h"
+#include "ViewDesign/style/border_style.h"
+#include "ViewDesign/geometry/helper.h"
+#include "ViewDesign/drawing/shape.h"
 
 
 namespace ViewDesign {

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "mouse_event.h"
-#include "timer.h"
-#include "../geometry/helper.h"
+#include "ViewDesign/event/mouse_event.h"
+#include "ViewDesign/event/timer.h"
+#include "ViewDesign/geometry/helper.h"
 
 
 namespace ViewDesign {

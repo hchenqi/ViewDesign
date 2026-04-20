@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../style/cursor_style.h"
+#include "ViewDesign/style/cursor_style.h"
 
 
 namespace ViewDesign {

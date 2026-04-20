@@ -1,6 +1,6 @@
-#include "EditBox.h"
-#include "../../drawing/shape.h"
-#include "../../system/clipboard.h"
+#include "ViewDesign/view/control/EditBox.h"
+#include "ViewDesign/drawing/shape.h"
+#include "ViewDesign/system/clipboard.h"
 
 
 namespace ViewDesign {

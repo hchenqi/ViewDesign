@@ -1,7 +1,7 @@
 #pragma once
 
-#include "figure.h"
-#include "../geometry/transform.h"
+#include "ViewDesign/drawing/figure.h"
+#include "ViewDesign/geometry/transform.h"
 
 #include <vector>
 #include <memory>

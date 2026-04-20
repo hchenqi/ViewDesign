@@ -1,9 +1,9 @@
 #pragma once
 
-#include "figure.h"
-#include "../common/uncopyable.h"
-#include "../style/text_block_style.h"
-#include "../geometry/text_range.h"
+#include "ViewDesign/common/uncopyable.h"
+#include "ViewDesign/common/text_range.h"
+#include "ViewDesign/drawing/figure.h"
+#include "ViewDesign/style/text_block_style.h"
 
 #include <vector>
 

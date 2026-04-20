@@ -1,6 +1,7 @@
 #pragma once
 
-#include "../common/uncopyable.h"
+#include "ViewDesign/common/type.h"
+#include "ViewDesign/common/uncopyable.h"
 
 #include <functional>
 

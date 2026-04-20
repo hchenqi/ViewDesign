@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../geometry/point.h"
+#include "ViewDesign/geometry/point.h"
 
 #include <string>
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../geometry/geometry.h"
+#include "ViewDesign/geometry/geometry.h"
 
 
 namespace ViewDesign {
@@ -64,24 +64,8 @@ constexpr ValueTag operator""pct(unsigned long long number) {
 #pragma warning (pop)
 
 
-constexpr ValuePixel px(int number) {
-	return ValuePixel((float)number);
-}
-
-constexpr ValuePixel px(uint number) {
-	return ValuePixel((float)number);
-}
-
 constexpr ValuePixel px(float number) {
 	return ValuePixel(number);
-}
-
-constexpr ValueTag pct(int number) {
-	return ValueTag(ValueTag::Type::Percent, (float)number);
-}
-
-constexpr ValueTag pct(uint number) {
-	return ValueTag(ValueTag::Type::Percent, (float)number);
 }
 
 constexpr ValueTag pct(float number) {

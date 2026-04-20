@@ -1,7 +1,7 @@
 #pragma once
 
-#include "length_style.h"
-#include "../geometry/clamp.h"
+#include "ViewDesign/style/length_style.h"
+#include "ViewDesign/geometry/clamp.h"
 
 
 namespace ViewDesign {

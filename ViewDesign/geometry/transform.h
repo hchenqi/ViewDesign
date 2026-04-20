@@ -1,8 +1,6 @@
 #pragma once
 
-#include "vector.h"
-#include "point.h"
-#include "scale.h"
+#include "ViewDesign/geometry/geometry.h"
 
 
 namespace ViewDesign {
