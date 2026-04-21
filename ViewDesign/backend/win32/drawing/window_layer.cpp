@@ -35,15 +35,15 @@ void WindowLayer::Create(HANDLE hwnd, Size size) {
 
 	// Create DComp resource.
 	ComPtr<IDCompositionVisual> comp_visual;
-	hr << GetDCompDevice().CreateVisual(&comp_visual);
+	hr << GetDCompositionDevice().CreateVisual(&comp_visual);
 	comp_visual->SetContent(this->swap_chain);
 
 	ComPtr<IDCompositionTarget> comp_target;
-	hr << GetDCompDevice().CreateTargetForHwnd((HWND)hwnd, false, &comp_target);
+	hr << GetDCompositionDevice().CreateTargetForHwnd((HWND)hwnd, false, &comp_target);
 	comp_target->SetRoot(comp_visual.Get());
 	this->comp_target = static_cast<CompositionTarget*>(comp_target.Detach());
 
-	GetDCompDevice().Commit();
+	GetDCompositionDevice().Commit();
 }
 
 void WindowLayer::Destroy() {

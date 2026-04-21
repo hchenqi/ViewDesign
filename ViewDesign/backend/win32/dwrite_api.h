@@ -1,13 +1,12 @@
 #pragma once
 
 
-struct IDWriteFactory7;
-
-
 namespace ViewDesign {
 
+struct DWriteFactory;
 
-IDWriteFactory7& GetDWriteFactory();
+
+DWriteFactory& GetDWriteFactory();
 
 
 } // namespace ViewDesign

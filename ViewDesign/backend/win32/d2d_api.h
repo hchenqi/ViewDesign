@@ -3,17 +3,16 @@
 #include "ViewDesign/drawing/color.h"
 
 
-struct ID2D1Factory8;
-struct ID2D1DeviceContext7;
-struct ID2D1SolidColorBrush;
-
-
 namespace ViewDesign {
 
+struct D2DFactory;
+struct D2DDeviceContext;
+struct D2DSolidColorBrush;
 
-ID2D1Factory8& GetD2DFactory();
-ID2D1DeviceContext7& GetD2DDeviceContext();
-ID2D1SolidColorBrush& GetD2DSolidColorBrush(Color color);
+
+D2DFactory& GetD2DFactory();
+D2DDeviceContext& GetD2DDeviceContext();
+D2DSolidColorBrush& GetD2DSolidColorBrush(Color color);
 
 void BeginDraw();
 void EndDraw();

@@ -1,42 +1,47 @@
+#include "ViewDesign/backend/win32/directx_resource.h"
+#include "ViewDesign/backend/win32/directx_helper.h"
 #include "ViewDesign/backend/win32/d3d_api.h"
 #include "ViewDesign/backend/win32/dxgi_api.h"
 #include "ViewDesign/backend/win32/dcomp_api.h"
 #include "ViewDesign/backend/win32/d2d_api.h"
 #include "ViewDesign/backend/win32/dwrite_api.h"
 #include "ViewDesign/backend/win32/wic_api.h"
-#include "ViewDesign/backend/win32/directx_resource.h"
-#include "ViewDesign/backend/win32/directx_helper.h"
 #include "ViewDesign/drawing/bitmap.h"
 
 #include <unordered_set>
 
 
-namespace ViewDesign {
+namespace {
+
+using ViewDesign::ComPtr;
+using ViewDesign::ref_ptr;
+using ViewDesign::Bitmap;
+using ViewDesign::hr;
 
 
 struct DirectXResource {
 public:
 	// D3D
-	ComPtr<ID3D11Device> d3d_device;
+	ComPtr<D3DDevice> d3d_device;
 
 	// DXGI
-	ComPtr<IDXGIDevice1> dxgi_device;
-	ComPtr<IDXGIAdapter> dxgi_adapter;
-	ComPtr<IDXGIFactory2> dxgi_factory;
+	ComPtr<DXGIDevice> dxgi_device;
+	ComPtr<DXGIAdapter> dxgi_adapter;
+	ComPtr<DXGIFactory> dxgi_factory;
 
 	// DComp
-	ComPtr<IDCompositionDevice> dcomp_device;
+	ComPtr<DCompositionDevice> dcomp_device;
 
 	// D2D
-	ComPtr<ID2D1Factory8> d2d_factory;
-	ComPtr<ID2D1DeviceContext7> d2d_device_context;
-	ComPtr<ID2D1SolidColorBrush> d2d_solid_color_brush;
+	ComPtr<D2DFactory> d2d_factory;
+	ComPtr<D2DDeviceContext> d2d_device_context;
+	ComPtr<D2DSolidColorBrush> d2d_solid_color_brush;
 
 	// DWrite
-	ComPtr<IDWriteFactory7> dwrite_factory;
+	ComPtr<DWriteFactory> dwrite_factory;
 
 	// WIC
-	ComPtr<IWICImagingFactory2> wic_factory;
+	ComPtr<WICFactory> wic_factory;
 
 	// Bitmap (D2D bitmap)
 	std::unordered_set<ref_ptr<Bitmap>> bitmap_set;
@@ -44,12 +49,11 @@ public:
 public:
 	DirectXResource();
 	~DirectXResource();
-
+public:
 	void CreateDeviceIndependentResource();
 	void DiscardDeviceIndependentResource();
 	void CreateDeviceDependentResource();
 	void DiscardDeviceDependentResource();
-
 public:
 	void RecreateDeviceDependentResource() {
 		DiscardDeviceDependentResource();
@@ -74,10 +78,10 @@ DirectXResource::~DirectXResource() {
 
 void DirectXResource::CreateDeviceIndependentResource() {
 	// Create D2D factory.
-	hr << D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, __uuidof(ID2D1Factory8), &d2d_factory);
+	hr << D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, __uuidof(D2DFactory), &d2d_factory);
 
 	// Create DWrite factory.
-	hr << DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory7), &dwrite_factory);
+	hr << DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(DWriteFactory), &dwrite_factory);
 
 	// Create WIC factory.
 	hr << CoCreateInstance(CLSID_WICImagingFactory2, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&wic_factory));
@@ -119,7 +123,7 @@ void DirectXResource::CreateDeviceDependentResource() {
 	hr << DCompositionCreateDevice(dxgi_device.Get(), IID_PPV_ARGS(&dcomp_device));
 
 	// Create D2D device context.
-	ComPtr<ID2D1Device7> d2d_device;
+	ComPtr<D2DDevice> d2d_device;
 	hr << d2d_factory->CreateDevice(dxgi_device.Get(), &d2d_device);
 	hr << d2d_device->CreateDeviceContext(D2D1_DEVICE_CONTEXT_OPTIONS_NONE, &d2d_device_context);
 
@@ -139,7 +143,7 @@ void DirectXResource::DiscardDeviceDependentResource() {
 	dxgi_adapter.Reset();
 	dxgi_device.Reset();
 #ifdef _DEBUG
-	ComPtr<ID3D11Debug> d3d_debug;
+	ComPtr<D3DDebug> d3d_debug;
 	hr << d3d_device.As(&d3d_debug);
 	d3d_debug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
 	d3d_debug.Reset();
@@ -148,33 +152,40 @@ void DirectXResource::DiscardDeviceDependentResource() {
 }
 
 
+} // namespace
+
+namespace ViewDesign {
+
+
 void RegisterBitmap(Bitmap& bitmap) { directx_resource.bitmap_set.insert(&bitmap); }
 void UnregisterBitmap(Bitmap& bitmap) { directx_resource.bitmap_set.erase(&bitmap); }
 
 void DirectXRecreateResource() { directx_resource.RecreateDeviceDependentResource(); }
 
-ID3D11Device& GetD3DDevice() { return *directx_resource.d3d_device.Get(); }
 
-IDXGIDevice1& GetDXGIDevice() { return *directx_resource.dxgi_device.Get(); }
-IDXGIAdapter& GetDXGIAdapter() { return *directx_resource.dxgi_adapter.Get(); }
-IDXGIFactory2& GetDXGIFactory() { return *directx_resource.dxgi_factory.Get(); }
+D3DDevice& GetD3DDevice() { return static_cast<D3DDevice&>(*directx_resource.d3d_device.Get()); }
 
-IDCompositionDevice& GetDCompDevice() { return *directx_resource.dcomp_device.Get(); }
+DXGIDevice& GetDXGIDevice() { return static_cast<DXGIDevice&>(*directx_resource.dxgi_device.Get()); }
+DXGIAdapter& GetDXGIAdapter() { return static_cast<DXGIAdapter&>(*directx_resource.dxgi_adapter.Get()); }
+DXGIFactory& GetDXGIFactory() { return static_cast<DXGIFactory&>(*directx_resource.dxgi_factory.Get()); }
 
-ID2D1Factory8& GetD2DFactory() { return *directx_resource.d2d_factory.Get(); }
-ID2D1DeviceContext7& GetD2DDeviceContext() { return *directx_resource.d2d_device_context.Get(); }
-ID2D1SolidColorBrush& GetD2DSolidColorBrush() { return *directx_resource.d2d_solid_color_brush.Get(); }
+DCompositionDevice& GetDCompositionDevice() { return static_cast<DCompositionDevice&>(*directx_resource.dcomp_device.Get()); }
 
-IDWriteFactory7& GetDWriteFactory() { return *directx_resource.dwrite_factory.Get(); }
+D2DFactory& GetD2DFactory() { return static_cast<D2DFactory&>(*directx_resource.d2d_factory.Get()); }
+D2DDeviceContext& GetD2DDeviceContext() { return static_cast<D2DDeviceContext&>(*directx_resource.d2d_device_context.Get()); }
+D2DSolidColorBrush& GetD2DSolidColorBrush() { return static_cast<D2DSolidColorBrush&>(*directx_resource.d2d_solid_color_brush.Get()); }
 
-IWICImagingFactory2& GetWICFactory() { return *directx_resource.wic_factory.Get(); }
+DWriteFactory& GetDWriteFactory() { return static_cast<DWriteFactory&>(*directx_resource.dwrite_factory.Get()); }
+
+WICFactory& GetWICFactory() { return static_cast<WICFactory&>(*directx_resource.wic_factory.Get()); }
 
 
-ID2D1SolidColorBrush& GetD2DSolidColorBrush(Color color) {
-	ID2D1SolidColorBrush& brush = GetD2DSolidColorBrush();
+D2DSolidColorBrush& GetD2DSolidColorBrush(Color color) {
+	D2DSolidColorBrush& brush = GetD2DSolidColorBrush();
 	brush.SetColor(AsD2DColor(color));
 	return brush;
 }
+
 
 void BeginDraw() {
 	GetD2DDeviceContext().BeginDraw();

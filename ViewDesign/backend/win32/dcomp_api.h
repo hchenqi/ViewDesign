@@ -1,13 +1,12 @@
 #pragma once
 
 
-struct IDCompositionDevice;
-
-
 namespace ViewDesign {
 
+struct DCompositionDevice;
 
-IDCompositionDevice& GetDCompDevice();
+
+DCompositionDevice& GetDCompositionDevice();
 
 
 } // namespace ViewDesign

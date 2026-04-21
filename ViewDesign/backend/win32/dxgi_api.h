@@ -1,17 +1,16 @@
 #pragma once
 
 
-struct IDXGIDevice1;
-struct IDXGIAdapter;
-struct IDXGIFactory2;
-
-
 namespace ViewDesign {
 
+struct DXGIDevice;
+struct DXGIAdapter;
+struct DXGIFactory;
 
-IDXGIDevice1& GetDXGIDevice();
-IDXGIAdapter& GetDXGIAdapter();
-IDXGIFactory2& GetDXGIFactory();
+
+DXGIDevice& GetDXGIDevice();
+DXGIAdapter& GetDXGIAdapter();
+DXGIFactory& GetDXGIFactory();
 
 
 } // namespace ViewDesign

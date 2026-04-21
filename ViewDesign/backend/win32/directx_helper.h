@@ -16,6 +16,25 @@
 #include <stdexcept>
 
 
+using D3DDevice = ID3D11Device;
+using D3DDebug = ID3D11Debug;
+using DXGIDevice = IDXGIDevice1;
+using DXGIAdapter = IDXGIAdapter;
+using DXGIFactory = IDXGIFactory2;
+using DXGISwapChain = IDXGISwapChain1;
+using DCompositionDevice = IDCompositionDevice;
+using DCompositionTarget = IDCompositionTarget;
+using D2DFactory = ID2D1Factory8;
+using D2DDevice = ID2D1Device7;
+using D2DDeviceContext = ID2D1DeviceContext7;
+using D2DSolidColorBrush = ID2D1SolidColorBrush;
+using D2DBitmap = ID2D1Bitmap1;
+using DWriteFactory = IDWriteFactory7;
+using DWriteTextLayout = IDWriteTextLayout4;
+using WICFactory = IWICImagingFactory2;
+using WICFormatConverter = IWICFormatConverter;
+
+
 namespace ViewDesign {
 
 
@@ -23,18 +42,10 @@ using Microsoft::WRL::ComPtr;
 
 
 struct HResultWrapper {
-	HRESULT hr = 0;
-
-	HResultWrapper() = default;
-	HResultWrapper(HRESULT hr) : hr(hr) {}
-
 	HResultWrapper& operator<<(HRESULT hr) {
-		this->hr = hr;
 		if (!SUCCEEDED(hr)) { throw std::runtime_error("hresult failure"); }
 		return *this;
 	}
-
-	operator HRESULT() const { return hr; }
 };
 
 inline static HResultWrapper hr;
@@ -49,13 +60,23 @@ inline void SafeRelease(Interface** ppInterfaceToRelease) {
 }
 
 
-// resource aliases
-struct RenderTarget : ID2D1DeviceContext7 {};
-struct BitmapResource : ID2D1Bitmap1 {};
-struct SwapChain : IDXGISwapChain1 {};
-struct CompositionTarget : IDCompositionTarget {};
-struct ImageSource : IWICFormatConverter {};
-struct TextLayout : IDWriteTextLayout4 {};
+struct D3DDevice : ::D3DDevice {};
+struct DXGIDevice : ::DXGIDevice {};
+struct DXGIAdapter : ::DXGIAdapter {};
+struct DXGIFactory : ::DXGIFactory {};
+struct DCompositionDevice : ::DCompositionDevice {};
+struct D2DFactory : ::D2DFactory {};
+struct D2DDeviceContext : ::D2DDeviceContext {};
+struct D2DSolidColorBrush : ::D2DSolidColorBrush {};
+struct DWriteFactory : ::DWriteFactory {};
+struct WICFactory : ::WICFactory {};
+
+struct SwapChain : DXGISwapChain {};
+struct CompositionTarget : DCompositionTarget {};
+struct RenderTarget : D2DDeviceContext {};
+struct BitmapResource : D2DBitmap {};
+struct TextLayout : DWriteTextLayout {};
+struct ImageSource : WICFormatConverter {};
 
 
 inline D2D1_POINT_2F AsD2DPoint(Point point) { return { point.x, point.y }; }

@@ -1,13 +1,12 @@
 #pragma once
 
 
-struct IWICImagingFactory2;
-
-
 namespace ViewDesign {
 
+struct WICFactory;
 
-IWICImagingFactory2& GetWICFactory();
+
+WICFactory& GetWICFactory();
 
 
 } // namespace ViewDesign

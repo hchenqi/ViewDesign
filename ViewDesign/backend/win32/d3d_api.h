@@ -1,13 +1,12 @@
 #pragma once
 
 
-struct ID3D11Device;
-
-
 namespace ViewDesign {
 
+struct D3DDevice;
 
-ID3D11Device& GetD3DDevice();
+
+D3DDevice& GetD3DDevice();
 
 
 } // namespace ViewDesign
