@@ -1,8 +1,6 @@
-file(GLOB_RECURSE LIB_SOURCES
-    *.h
-    *.cpp
-)
+file(GLOB_RECURSE LIB_SOURCES *.h *.cpp)
+list(FILTER LIB_SOURCES EXCLUDE REGEX "/backend/")
 
-add_library(ViewDesign STATIC ${LIB_SOURCES})
-get_filename_component(PARENT_DIR ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
-target_include_directories(ViewDesign PUBLIC ${PARENT_DIR})
+target_sources(ViewDesign PRIVATE ${LIB_SOURCES})
+
+add_subdirectory(backend)

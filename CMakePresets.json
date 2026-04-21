@@ -2,16 +2,21 @@
   "version": 3,
   "configurePresets": [
     {
-      "name": "windows-base",
+      "name": "base",
       "hidden": true,
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build/${presetName}",
       "installDir": "${sourceDir}/build/install/${presetName}",
       "cacheVariables": {
-        "CMAKE_CXX_COMPILER": "cl.exe",
-        "CMAKE_CXX_STANDARD": "20",
-        "CMAKE_CXX_FLAGS": "/EHsc /DUNICODE /D_UNICODE /utf-8"
-      },
+        "CMAKE_CXX_STANDARD": "20"
+      }
+    },
+    {
+      "name": "windows",
+      "inherits": [
+        "base"
+      ],
+      "hidden": true,
       "condition": {
         "type": "equals",
         "lhs": "${hostSystemName}",
@@ -19,43 +24,82 @@
       }
     },
     {
-      "name": "x64-debug",
-      "displayName": "x64 Debug",
-      "inherits": "windows-base",
+      "name": "linux",
+      "inherits": [
+        "base"
+      ],
+      "hidden": true,
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
+      "name": "macos",
+      "inherits": [
+        "base"
+      ],
+      "hidden": true,
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "macOS"
+      }
+    },
+    {
+      "name": "windows-x64",
+      "inherits": [
+        "windows"
+      ],
+      "hidden": true,
       "architecture": {
         "value": "x64",
         "strategy": "external"
-      },
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
       }
     },
     {
-      "name": "x64-release",
-      "displayName": "x64 Release",
-      "inherits": "x64-debug",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release"
-      }
-    },
-    {
-      "name": "x86-debug",
-      "displayName": "x86 Debug",
-      "inherits": "windows-base",
+      "name": "windows-x86",
+      "inherits": [
+        "windows"
+      ],
+      "hidden": true,
       "architecture": {
         "value": "x86",
         "strategy": "external"
+      }
+    },
+    {
+      "name": "msvc",
+      "hidden": true,
+      "toolset": {
+        "value": "host=x64",
+        "strategy": "external"
       },
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "cl",
+        "CMAKE_CXX_FLAGS": "/EHsc /DUNICODE /D_UNICODE /utf-8"
+      }
+    },
+    {
+      "name": "debug",
+      "hidden": true,
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug"
       }
     },
     {
-      "name": "x86-release",
-      "displayName": "x86 Release",
-      "inherits": "x86-debug",
+      "name": "release",
+      "hidden": true,
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "win32",
+      "hidden": true,
+      "cacheVariables": {
+        "BACKEND": "win32"
       }
     }
   ]

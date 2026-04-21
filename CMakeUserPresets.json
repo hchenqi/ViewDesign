@@ -1,0 +1,45 @@
+{
+  "version": 3,
+  "configurePresets": [
+    {
+      "name": "windows-x64-msvc-debug-win32",
+      "displayName": "Windows x64 MSVC Debug (Backend: win32)",
+      "inherits": [
+        "windows-x64",
+        "msvc",
+        "debug",
+        "win32"
+      ]
+    },
+    {
+      "name": "windows-x64-msvc-release-win32",
+      "displayName": "Windows x64 MSVC Release (Backend: win32)",
+      "inherits": [
+        "windows-x64",
+        "msvc",
+        "release",
+        "win32"
+      ]
+    },
+    {
+      "name": "windows-x86-msvc-debug-win32",
+      "displayName": "Windows x86 MSVC Debug (Backend: win32)",
+      "inherits": [
+        "windows-x86",
+        "msvc",
+        "debug",
+        "win32"
+      ]
+    },
+    {
+      "name": "windows-x86-msvc-release-win32",
+      "displayName": "Windows x86 MSVC Release (Backend: win32)",
+      "inherits": [
+        "windows-x86",
+        "msvc",
+        "release",
+        "win32"
+      ]
+    }
+  ]
+}
