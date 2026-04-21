@@ -69,8 +69,8 @@ inline Size GetImageSize(ImageSource& source) {
 	return Size((float)width, (float)height);
 }
 
-inline ComPtr<ID2D1Bitmap1> CreateD2DBitmapFromWicBitmap(IWICFormatConverter& converter) {
-	ComPtr<ID2D1Bitmap1> bitmap;
+inline ComPtr<D2DBitmap> CreateD2DBitmapFromWicBitmap(IWICFormatConverter& converter) {
+	ComPtr<D2DBitmap> bitmap;
 	D2D1_BITMAP_PROPERTIES1 bitmap_properties = D2D1::BitmapProperties1(
 		D2D1_BITMAP_OPTIONS_NONE,
 		D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED)

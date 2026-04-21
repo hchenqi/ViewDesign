@@ -18,20 +18,20 @@
 
 using D3DDevice = ID3D11Device;
 using D3DDebug = ID3D11Debug;
-using DXGIDevice = IDXGIDevice1;
+using DXGIDevice = IDXGIDevice;
 using DXGIAdapter = IDXGIAdapter;
 using DXGIFactory = IDXGIFactory2;
 using DXGISwapChain = IDXGISwapChain1;
 using DCompositionDevice = IDCompositionDevice;
 using DCompositionTarget = IDCompositionTarget;
-using D2DFactory = ID2D1Factory8;
-using D2DDevice = ID2D1Device7;
-using D2DDeviceContext = ID2D1DeviceContext7;
+using D2DFactory = ID2D1Factory1;
+using D2DDevice = ID2D1Device;
+using D2DDeviceContext = ID2D1DeviceContext;
 using D2DSolidColorBrush = ID2D1SolidColorBrush;
 using D2DBitmap = ID2D1Bitmap1;
-using DWriteFactory = IDWriteFactory7;
-using DWriteTextLayout = IDWriteTextLayout4;
-using WICFactory = IWICImagingFactory2;
+using DWriteFactory = IDWriteFactory2;
+using DWriteTextLayout = IDWriteTextLayout2;
+using WICFactory = IWICImagingFactory;
 using WICFormatConverter = IWICFormatConverter;
 
 

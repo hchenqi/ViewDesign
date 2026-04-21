@@ -29,13 +29,13 @@ void TextBlock::SetText(const TextBlockStyle& style, const std::wstring& text) {
 
 	// font layout
 	ComPtr<IDWriteTextLayout> layout_0;
-	ComPtr<IDWriteTextLayout4> layout_4;
+	ComPtr<DWriteTextLayout> layout_;
 	hr << GetDWriteFactory().CreateTextLayout(
 		text.c_str(), (uint)text.length(),
 		format.Get(), 0, 0, &layout_0
 	);
-	hr << layout_0.As(&layout_4);
-	layout = static_cast<TextLayout*>(layout_4.Detach());
+	hr << layout_0.As(&layout_);
+	layout = static_cast<TextLayout*>(layout_.Detach());
 
 	// font fallback
 	ComPtr<IDWriteFontFallbackBuilder> font_fallback_builder;
@@ -76,7 +76,7 @@ void TextBlock::SetText(const TextBlockStyle& style, const std::wstring& text) {
 
 Rect TextBlock::UpdateLayout(Size size_ref) {
 	layout->SetMaxWidth(size_ref.width); layout->SetMaxHeight(size_ref.height);
-	DWRITE_TEXT_METRICS metrics; layout->GetMetrics(&metrics);
+	DWRITE_TEXT_METRICS1 metrics; layout->GetMetrics(&metrics);
 	return Rect(metrics.left, metrics.top, metrics.widthIncludingTrailingWhitespace, metrics.height);
 }
 
@@ -102,7 +102,7 @@ TextBlock::HitTestInfo TextBlock::HitTestPosition(size_t text_position) const {
 }
 
 std::vector<TextBlock::HitTestInfo> TextBlock::HitTestRange(TextRange range) const {
-	UINT32 line_cnt; layout->GetLineMetrics((DWRITE_LINE_METRICS1*)nullptr, 0, &line_cnt);
+	UINT32 line_cnt; layout->GetLineMetrics((DWRITE_LINE_METRICS*)nullptr, 0, &line_cnt);
 	UINT32 actual_size = line_cnt;
 	std::vector<DWRITE_HIT_TEST_METRICS> metrics;
 	do {
