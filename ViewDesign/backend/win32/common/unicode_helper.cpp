@@ -5,8 +5,6 @@
 
 #include <icu.h>
 
-#pragma comment(lib, "icu.lib")
-
 
 namespace ViewDesign {
 
