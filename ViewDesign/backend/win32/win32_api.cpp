@@ -9,23 +9,23 @@
 namespace ViewDesign {
 
 struct WindowApi : Window {
-	Window::GetRegion;
-	Window::SetScale;
-	Window::SetSize;
-	Window::SetPoint;
-	Window::GetMinMaxRegion;
-	Window::State;
-	Window::SetState;
-	Window::Destroy;
-	Window::OnDraw;
+	using Window::GetRegion;
+	using Window::SetScale;
+	using Window::SetSize;
+	using Window::SetPoint;
+	using Window::GetMinMaxRegion;
+	using Window::State;
+	using Window::SetState;
+	using Window::Destroy;
+	using Window::OnDraw;
 };
 
 struct DesktopApi : Desktop {
-	Desktop::LoseTrack;
-	Desktop::LoseCapture;
-	Desktop::LoseFocus;
-	Desktop::DispatchMouseEvent;
-	Desktop::DispatchKeyEvent;
+	using Desktop::LoseTrack;
+	using Desktop::LoseCapture;
+	using Desktop::LoseFocus;
+	using Desktop::DispatchMouseEvent;
+	using Desktop::DispatchKeyEvent;
 };
 
 namespace {

@@ -76,11 +76,11 @@ class view_ref : public view_ref<> {
 public:
 	template<class View> requires size_trait_compatible<View, WidthTrait, HeightTrait>
 	view_ref(View& ref) : view_ref<>(ref) {}
-	template<class View> requires !size_trait_compatible<View, WidthTrait, HeightTrait>
+	template<class View> requires (!size_trait_compatible<View, WidthTrait, HeightTrait>)
 	view_ref(View& ref) { static_assert(size_trait_compatible<View, WidthTrait, HeightTrait>, "size traits incompatible"); }
 	template<class WidthTraitRef, class HeightTraitRef> requires size_trait_compatible<view_ref<WidthTraitRef, HeightTraitRef>, WidthTrait, HeightTrait>
 	view_ref(view_ref<WidthTraitRef, HeightTraitRef> ref) : view_ref<>(ref) {}
-	template<class WidthTraitRef, class HeightTraitRef> requires !size_trait_compatible<view_ref<WidthTraitRef, HeightTraitRef>, WidthTrait, HeightTrait>
+	template<class WidthTraitRef, class HeightTraitRef> requires (!size_trait_compatible<view_ref<WidthTraitRef, HeightTraitRef>, WidthTrait, HeightTrait>)
 	view_ref(view_ref<WidthTraitRef, HeightTraitRef> ref) { static_assert(size_trait_compatible<view_ref<WidthTraitRef, HeightTraitRef>, WidthTrait, HeightTrait>, "size traits incompatible"); }
 };
 
@@ -107,15 +107,15 @@ public:
 	view_ptr() : view_ptr<>() {}
 	template<class View> requires size_trait_compatible<View, WidthTrait, HeightTrait>
 	view_ptr(std::unique_ptr<View> ptr) : view_ptr<>(std::move(ptr)) {}
-	template<class View> requires !size_trait_compatible<View, WidthTrait, HeightTrait>
+	template<class View> requires (!size_trait_compatible<View, WidthTrait, HeightTrait>)
 	view_ptr(std::unique_ptr<View> ptr) { static_assert(size_trait_compatible<View, WidthTrait, HeightTrait>, "size traits incompatible"); }
 	template<class View> requires size_trait_compatible<View, WidthTrait, HeightTrait>
 	view_ptr(owner_ptr<View> ptr) : view_ptr<>(ptr) {}
-	template<class View> requires !size_trait_compatible<View, WidthTrait, HeightTrait>
+	template<class View> requires (!size_trait_compatible<View, WidthTrait, HeightTrait>)
 	view_ptr(owner_ptr<View> ptr) { static_assert(size_trait_compatible<View, WidthTrait, HeightTrait>, "size traits incompatible"); }
 	template<class WidthTraitPtr, class HeightTraitPtr> requires size_trait_compatible<view_ptr<WidthTraitPtr, HeightTraitPtr>, WidthTrait, HeightTrait>
 	view_ptr(view_ptr<WidthTraitPtr, HeightTraitPtr> ptr) : view_ptr<>(std::move(ptr)) {}
-	template<class WidthTraitPtr, class HeightTraitPtr> requires !size_trait_compatible<view_ptr<WidthTraitPtr, HeightTraitPtr>, WidthTrait, HeightTrait>
+	template<class WidthTraitPtr, class HeightTraitPtr> requires (!size_trait_compatible<view_ptr<WidthTraitPtr, HeightTraitPtr>, WidthTrait, HeightTrait>)
 	view_ptr(view_ptr<WidthTraitPtr, HeightTraitPtr> ptr) { static_assert(size_trait_compatible<view_ptr<WidthTraitPtr, HeightTraitPtr>, WidthTrait, HeightTrait>, "size traits incompatible"); }
 };
 

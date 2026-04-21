@@ -235,13 +235,13 @@ public:
 		UpdateWidthHeight(CalculateMaxWidth(), UpdateOffset(it));
 	}
 	child_type ExtractChild(size_t index) {
-		auto [child, it] = _ListLayout_Base::ExtractChild(index);
+		auto [child, it] = _ListLayout_Base::EraseChild(index);
 		UpdateWidthHeight(CalculateMaxWidthRemove(child.region.size.width), UpdateOffset(it));
 		UnregisterChild(child.view);
 		return std::move(child.view);
 	}
 	std::vector<child_type> ExtractChild(size_t index, size_t count) {
-		auto [list, it] = _ListLayout_Base::ExtractChild(index, count);
+		auto [list, it] = _ListLayout_Base::EraseChild(index, count);
 		UpdateWidthHeight(CalculateMaxWidth(), UpdateOffset(it));
 		std::vector<child_type> result; result.reserve(list.size());
 		for (auto& child : list) {
@@ -519,13 +519,13 @@ public:
 		UpdateHeightWidth(CalculateMaxHeight(), UpdateOffset(it));
 	}
 	child_type ExtractChild(size_t index) {
-		auto [child, it] = _ListLayout_Base::ExtractChild(index);
+		auto [child, it] = _ListLayout_Base::EraseChild(index);
 		UpdateHeightWidth(CalculateMaxHeightRemove(child.region.size.height), UpdateOffset(it));
 		UnregisterChild(child.view);
 		return std::move(child.view);
 	}
 	std::vector<child_type> ExtractChild(size_t index, size_t count) {
-		auto [list, it] = _ListLayout_Base::ExtractChild(index, count);
+		auto [list, it] = _ListLayout_Base::EraseChild(index, count);
 		UpdateHeightWidth(CalculateMaxHeight(), UpdateOffset(it));
 		std::vector<child_type> result; result.reserve(list.size());
 		for (auto& child : list) {

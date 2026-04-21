@@ -14,13 +14,12 @@ public:
 	uchar alpha;
 
 public:
+	enum Set : uint;
+
+public:
 	constexpr Color() : blue(), green(), red(), alpha() {}
 	constexpr Color(uint rgb, uchar alpha = 0xFF) : blue(rgb & 0xFF), green((rgb >> 8) & 0xFF), red((rgb >> 16) & 0xFF), alpha(alpha) {}
-#pragma warning (push)
-#pragma warning (disable : 26812)  // Prefer 'enum class' over 'enum' (Enum.3)
-	enum Set : uint;
 	constexpr Color(Set rgb, uchar alpha = 0xFF) : Color((uint)rgb, alpha) {}
-#pragma warning (pop)
 
 	constexpr uint AsUnsigned() const { return blue | (green << 8) | (red << 16) | (alpha << 24); }
 

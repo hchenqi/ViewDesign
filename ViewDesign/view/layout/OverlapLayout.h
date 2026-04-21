@@ -27,8 +27,8 @@ public:
 		void SendBackward() { GetParent().SendBackward(*this); }
 		void SendToBack() { GetParent().SendToBack(*this); }
 	private:
-		ViewFrame::SizeUpdated;
-		ViewFrame::OnSizeRefUpdate;
+		using ViewFrame::SizeUpdated;
+		using ViewFrame::OnSizeRefUpdate;
 	protected:
 		void RegionUpdated(Rect region) { if (HasParent()) { GetParent().OnWindowRegionUpdate(*this, region); } }
 	protected:
@@ -103,8 +103,8 @@ public:
 protected:
 	Size size = size_empty;
 private:
-	ViewBase::UpdateChildSizeRef;
-	ViewBase::OnChildSizeUpdate;
+	using ViewBase::UpdateChildSizeRef;
+	using ViewBase::OnChildSizeUpdate;
 protected:
 	void UpdateWindowSizeRef(Window& window, Size size_ref) { VerifyChild(window); window.region = window.OnWindowSizeRefUpdate(size_ref); }
 protected:
@@ -127,7 +127,7 @@ protected:
 
 	// drawing
 private:
-	ViewBase::OnChildRedraw;
+	using ViewBase::OnChildRedraw;
 protected:
 	virtual void OnWindowRedraw(Window& window, Rect redraw_region) {
 		Redraw(redraw_region + (window.region.point - point_zero));

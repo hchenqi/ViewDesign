@@ -15,7 +15,7 @@ struct TimerSyncMap : public std::unordered_map<HANDLE, Timer&> {
 }timer_sync_map;
 
 
-void TimerCallbackSync(HWND Arg1, UINT Arg2, UINT_PTR Arg3, DWORD Arg4) {
+void CALLBACK TimerCallbackSync(HWND Arg1, UINT Arg2, UINT_PTR Arg3, DWORD Arg4) {
 	if (auto it = timer_sync_map.find(reinterpret_cast<HANDLE>(Arg3)); it != timer_sync_map.end()) {
 		it->second.callback();
 	}

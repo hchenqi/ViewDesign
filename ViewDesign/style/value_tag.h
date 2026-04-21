@@ -44,8 +44,6 @@ public:
 };
 
 
-#pragma warning (push)
-#pragma warning (disable : 4455)  // literal suffix identifiers that do not start with an underscore are reserved.
 constexpr ValuePixel operator""px(long double number) {
 	return ValuePixel((float)number);
 }
@@ -61,7 +59,6 @@ constexpr ValueTag operator""pct(long double number) {
 constexpr ValueTag operator""pct(unsigned long long number) {
 	return ValueTag(ValueTag::Type::Percent, (float)number);
 }
-#pragma warning (pop)
 
 
 constexpr ValuePixel px(float number) {

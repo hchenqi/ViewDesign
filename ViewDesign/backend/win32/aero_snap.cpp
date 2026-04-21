@@ -7,7 +7,7 @@
 namespace ViewDesign {
 
 struct WindowApi : Window {
-	Window::hwnd;
+	using Window::hwnd;
 };
 
 

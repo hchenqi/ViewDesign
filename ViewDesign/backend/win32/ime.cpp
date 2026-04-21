@@ -13,8 +13,6 @@ size_t cursor_position;
 } // namespace
 
 
-#pragma warning (push)
-#pragma warning (disable : 6387)  // '_Param_(2)' could be '0': this does not adhere to the specification for the function 'ImmAssociateContextEx'
 void ImeEnable(HANDLE hwnd) {
 	ImmAssociateContextEx((HWND)hwnd, nullptr, IACE_DEFAULT);
 }
@@ -22,7 +20,6 @@ void ImeEnable(HANDLE hwnd) {
 void ImeDisable(HANDLE hwnd) {
 	ImmAssociateContextEx((HWND)hwnd, nullptr, 0);
 }
-#pragma warning (pop)
 
 void ImeSetPosition(HANDLE hwnd, Point point) {
 	HIMC imc = ImmGetContext((HWND)hwnd);

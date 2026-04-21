@@ -6,9 +6,9 @@
 namespace ViewDesign {
 
 struct DesktopApi : Desktop {
-	Desktop::ImeEnable;
-	Desktop::ImeDisable;
-	Desktop::ImeSetPosition;
+	using Desktop::ImeEnable;
+	using Desktop::ImeDisable;
+	using Desktop::ImeSetPosition;
 };
 
 

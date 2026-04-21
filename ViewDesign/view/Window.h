@@ -80,7 +80,7 @@ private:
 	void RecreateLayer();
 protected:
 	void Redraw(Rect redraw_region);
-	ViewFrame::OnDraw;
+	using ViewFrame::OnDraw;
 private:
 	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override final { Redraw(child_redraw_region); }
 	void OnDraw();

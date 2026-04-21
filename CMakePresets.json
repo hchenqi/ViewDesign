@@ -78,7 +78,7 @@
       },
       "cacheVariables": {
         "CMAKE_CXX_COMPILER": "cl",
-        "CMAKE_CXX_FLAGS": "/EHsc /DUNICODE /D_UNICODE /utf-8"
+        "CMAKE_CXX_FLAGS": "/EHsc /DUNICODE /D_UNICODE /utf-8 /wd4455"
       }
     },
     {

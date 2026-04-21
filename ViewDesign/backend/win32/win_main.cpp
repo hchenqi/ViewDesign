@@ -3,11 +3,11 @@
 #include <Windows.h>
 
 
-extern void main();
+extern int main();
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd) {
 	SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
-	main();
+	int ret = main();
 	ViewDesign::desktop.Terminate();
-	return 0;
+	return ret;
 }

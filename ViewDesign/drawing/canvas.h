@@ -51,17 +51,9 @@ public:
 	// group
 private:
 	struct FigureGroup {
-		union {
-			struct {  // as group begin
-				uint figure_index;
-				Transform transform;
-				Rect clip_region;
-			};
-			struct {  // as group end
-				uint figure_index;
-				Transform prev_transform;
-			};
-		};
+		uint figure_index;
+		Transform transform;
+		Rect clip_region;
 		bool IsBegin() const { return !clip_region.IsEmpty(); }
 	};
 	std::vector<FigureGroup> groups;
