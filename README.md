@@ -30,9 +30,9 @@ A C++ GUI library
 
 In web development, elements, styles and event handling are described separately by HTML, CSS and Javascript which can get distracting, complicate the development and damage the performance. In `ViewDesign` they are all implemented in pure C++. One can separate the style definitions and main logic in different files at will without losing the integrity.
 
-In web development, each element consists of padding, border and margin along with its content according to the CSS box model which makes it easy to design and change the style of an element. But this also makes an element unnecessarily large to store all the style information. In `ViewDesign`, each view as a component is aimed to be minimal and lightweight. For example, a `TextBox` just displays text within a given size reference without any border, padding, background color or layout styles. It can however be combined with other components like `BorderFrame`, `PaddingFrame`, `MaxFrame`, `CenterFrame` to implement such additional attributes.
+In web development, each element consists of padding, border and margin along with its content according to the CSS box model, which makes it easy to design and change the style of an element but also makes an element unnecessarily large to store all the style information. In `ViewDesign`, each view as a component is aimed to be minimal and lightweight. For example, a `TextBox` just displays text within a given size reference without any border, padding, background color or layout styles. It can however be combined with other components like `BorderFrame`, `PaddingFrame`, `MaxFrame`, `CenterFrame` to implement such additional attributes.
 
-In web development, the layout styles of parent and child elements can be conflicting. For example, a parent element might have style `width: fix-content` while its child element has style `width: 100%`, which doesn't make sense. In `ViewDesign`, this scenario can be blocked at compile-time when parent view expects the width trait of child view to be `Auto` but child view's width is `Fixed`. This usually forces developers to think about the sizing behaviour of a component and the compatibility between components. Nevertheless, there remains the possibility to build a general-purpose and run-time calculated `div`-like rich component on top of the core library while the core library remains minimal and modular.
+In web development, the layout styles of parent and child elements can be conflicting. For example, a parent element might have style `width: fix-content` while its child element has style `width: 100%`, which doesn't make sense. In `ViewDesign`, this scenario can be blocked at compile-time when parent view expects the width trait of child view to be `Auto` but child view's width is `Fixed`. This usually forces developers to think about the sizing behaviour of a component and the compatibility between components. Nevertheless, there remains the possibility of building a general-purpose, style-guided and run-time calculated rich component like a HTML-element on top of the core library, while the core library remains minimal and modular.
 
 #### Win32 Desktop Development
 
@@ -46,7 +46,7 @@ Flutter defines its own programming language and compiler just for multi-platfor
 
 Qt provides multiple frameworks and rich tool sets for cross-platform GUI and software development in general under a large community. `ViewDesign` is a single static, mostly header-based C++ library which is extremely lightweight without the need of a particular development environment but remains highly flexible and extensible.
 
-Qt uses size policy to describe the how a widget is to be resized, but this is rather a suggestion that is performed by certain layout boxes at run-time, then a specification with compatibility check. In `ViewDesign`, size traits can not only be used to check and catch ill-formed layouts at compile-time, but also automatically select different implementations of frames and layouts like `BorderFrame`, `ScrollFrame`, `SplitLayout` or `ListLayout` with help of C++ template deduction guide, making it seamless and effortless to build up view components.
+Qt uses size policy to similarly describe how a widget is to be resized, but this is rather a suggestion that is performed by certain layout boxes at run-time, then a specification with compatibility check. In `ViewDesign`, size traits can not only be used to check and catch ill-combined layouts at compile-time, but also automatically select the compatible one from different implementations of common frames and layouts like `BorderFrame`, `ScrollFrame`, `SplitLayout` or `ListLayout` with help of C++ template deduction guide, making it seamless to build up view components with little effort.
 
 Qt uses signals and slots mechanism historically for communication between objects that extends the C++ language. `ViewDesign` sticks to native C++ and provides multiple mechanisms for messaging like `Context` and `State` for developers to optionally choose or develop their own.
 
@@ -56,7 +56,7 @@ Dear ImGui allows for quick GUI development with simple commands of displaying c
 
 ### Summary
 
-`ViewDesign` is an experimental and promising C++ GUI library that is not yet mature for production use, and some further effort is needed for cross-platform support. The compile-time layout compatibility check could be initially overwhelming and make it difficult for fast iterations. But due to its exceeding modularity and abstraction, it is easily maintainable, modifiable, adaptive and extensible. It provides a new and clean approach for designing GUI applications, and is good for learning and for verifying prototypes and ideas.
+`ViewDesign` is an experimental and promising C++ GUI library that is not yet mature for production use, and some further effort is needed for cross-platform support. The compile-time layout compatibility check could be initially overwhelming and make it slightly more difficult for fast iterations. But due to its exceeding modularity and abstraction, `ViewDesign` is easily maintainable, modifiable, adaptive and extensible. It provides a new and clean approach for designing GUI applications, and is well-suited for learning purposes and for verifying prototypes and ideas.
 
 ## Build Instruction
 
@@ -250,6 +250,160 @@ If another view is to be tracked or to consume the next mouse event, the view tr
 If a view acquires mouse capture, all subsequent mouse events will be directly translated and sent to this view.
 
 A view can acquire focus to receive key events as instances of `KeyEvent`. This view is also tracked by `Desktop` in another stack, and all its parent views and itself will receive `FocusIn` event as `FocusEvent`, and the view itself will additionally receive `Focus` event. The view which acquired focus before will receive `Blur` event and its parent views that are not the parent views of the newly tracked view will receive `FocusOut` event.
+
+## Implementation
+
+This section gives an overview of the implementation of `ViewDesign` in accordance with the source code structure.
+
+### Common
+
+The `common` sub-folder keeps the core type definitions and utility functions.
+
+#### ref_ptr / owner_ptr
+
+This project tries to avoid using C++ raw pointers and prefers `std::unique_ptr` in most scenarios. But raw pointers are still useful sometimes for nullable references or holding special resources, and for accepting constructed view objects by the simpler `operator new`. Therefore, the two aliases for `T*`, `ref_ptr<T>` and `owner_ptr<T>` are defined in this project as a coding convention to mark and distinguish the usage of a raw pointer. As aliases, there is no safety check for these pointers and it is advised to use them only in a controlled manner.
+
+### Geometry
+
+#### Point
+
+#### Size
+
+#### Rect
+
+#### Vector
+
+#### Scale
+
+#### Transform
+
+### Drawing
+
+#### Layer
+
+#### Canvas
+
+#### Figure
+
+##### Shape
+
+##### TextBlock
+
+##### Image
+
+##### Layer
+
+### Event
+
+#### KeyEvent
+
+#### MouseEvent
+
+#### FocusEvent
+
+### System
+
+#### Cursor
+
+#### Clipboard
+
+### Style
+
+### View
+
+#### ViewBase
+
+##### Style
+
+##### Parent / Child
+
+##### Layout
+
+##### Drawing
+
+##### Event
+
+#### ViewFrame
+
+#### SizeTrait
+
+#### view_ref / view_ptr
+
+#### Window / Desktop
+
+### Backend
+
+#### Geometry
+
+#### Rendering
+
+#### Event
+
+#### Window
+
+### Messaging
+
+#### Context
+
+#### State
+
+### View Components
+
+#### Control
+
+##### Placeholder
+
+##### TextBox
+
+##### EditBox
+
+#### Frame
+
+##### MutableFrame
+
+##### ClipFrame / CenterFrame
+
+##### ScrollFrame
+
+##### FixedFrame
+
+##### MaxFrame / MinFrame
+
+##### BorderFrame / PaddingFrame
+
+##### BackgroundFrame / InnerBorderFrame
+
+##### ScaleFrame
+
+##### LayerFrame
+
+#### Layout
+
+##### SplitLayout
+
+##### StackLayout
+
+##### ListLayout
+
+##### DivideLayout
+
+##### OverlapLayout
+
+#### Wrapper
+
+##### Cursor
+
+##### Background
+
+##### HitTestHelper
+
+##### DelayedUpdate
+
+#### Widget
+
+##### Tooltip
+
+##### TitleBarWindow
 
 ## History
 
