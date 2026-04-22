@@ -59,7 +59,7 @@ private:
 		}
 	}
 private:
-	virtual void OnMouseEvent(MouseEvent event) {
+	virtual void OnMouseEvent(MouseEvent event) override {
 		if (event.type == MouseEvent::LeftDown) {
 			SetFocus();
 		}

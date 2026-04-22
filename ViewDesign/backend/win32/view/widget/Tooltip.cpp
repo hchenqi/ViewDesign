@@ -19,11 +19,11 @@ private:
 	Tooltip() : Window(
 		L"",
 		new MaxFrame(
-			Size(200px, 200px),
+			Size(200.0f, 200.0f),
 			new BorderFrame(
-				Border(1.5px, 0x767676),
+				Border(1.5f, 0x767676),
 				new PaddingFrame(
-					Padding(5px, 2px),
+					Padding(5.0f, 2.0f),
 					text_box = new SolidColorBackground<TextBox, 0xF1F2F7>(TextStyle(), L"")
 				)
 			)

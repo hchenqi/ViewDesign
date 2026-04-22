@@ -16,10 +16,10 @@ class MainWindow : public Window {
 public:
 	using Window::Window;
 private:
-	Size size = Size(800, 500);
+	Size size = Size(800.0f, 500.0f);
 private:
-	virtual std::pair<Size, Size> CalculateMinMaxSize(Size size_ref) {
-		return { Size(100, 100), size_ref };
+	virtual std::pair<Size, Size> CalculateMinMaxSize(Size size_ref) override {
+		return { Size(100.0f, 100.0f), size_ref };
 	}
 	virtual Rect OnWindowSizeRefUpdate(Size size_ref) override {
 		Rect region;

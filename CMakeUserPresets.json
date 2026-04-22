@@ -50,6 +50,16 @@
         "debug",
         "win32"
       ]
+    },
+    {
+      "name": "windows-x64-mingw-clang-debug-win32",
+      "displayName": "Windows x64 MinGW (Clang/LLVM) Debug (Backend: win32)",
+      "inherits": [
+        "windows-x64",
+        "mingw-clang",
+        "debug",
+        "win32"
+      ]
     }
   ]
 }

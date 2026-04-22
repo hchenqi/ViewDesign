@@ -70,7 +70,7 @@ The configuring and building procedure follows CMake. A `CMakePresets.json` is p
 
 ### Windows
 
-One of the compilers need to be installed for building C++ applications on Windows.
+The following compilers can be used for building `ViewDesign` on Windows.
 
 #### MSVC
 
@@ -84,6 +84,14 @@ One of the compilers need to be installed for building C++ applications on Windo
 	- `pacman -S mingw-w64-ucrt-x86_64-icu`
 	- `pacman -S mingw-w64-ucrt-x86_64-gdb` (optional for debugging)
 - Add `C:\msys64\ucrt64\bin` (or your installation directory) to path
+
+#### Mingw-w64 (Clang/LLVM)
+
+- Install msys2
+- Install packages by msys2:
+	- `pacman -S mingw-w64-clang-x86_64-clang`
+	- `pacman -S mingw-w64-clang-x86_64-icu`
+- Add `C:\msys64\clang64\bin` (or your installation directory) to path
 
 ## Example
 

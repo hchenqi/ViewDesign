@@ -78,15 +78,22 @@
       },
       "cacheVariables": {
         "CMAKE_CXX_COMPILER": "cl",
-        "CMAKE_CXX_FLAGS": "/EHsc /DUNICODE /D_UNICODE /utf-8 /wd4455"
+        "CMAKE_CXX_FLAGS": "/EHsc /DUNICODE /D_UNICODE /utf-8"
       }
     },
     {
       "name": "mingw-gcc",
       "hidden": true,
       "cacheVariables": {
-        "CMAKE_CXX_COMPILER": "g++",
-        "CMAKE_CXX_FLAGS": "-Wno-literal-suffix"
+        "CMAKE_CXX_COMPILER": "g++"
+      }
+    },
+    {
+      "name": "mingw-clang",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "clang++",
+        "CMAKE_CXX_FLAGS": "-Wno-switch"
       }
     },
     {

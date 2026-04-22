@@ -54,7 +54,7 @@ protected:
 			if (view == this) {
 				return this;
 			} else {
-				if (view = ViewBase::HitTestChild(*view, event)) {
+				if (view = ViewBase::HitTestChild(*view, event); view != nullptr) {
 					return view;
 				}
 			}

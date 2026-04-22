@@ -94,9 +94,9 @@ struct TextBlockStyle {
 		FlowDirection _flow_direction = FlowDirection::TopToBottom;
 		ReadDirection _read_direction = ReadDirection::LeftToRight;
 		WordWrap _word_wrap = WordWrap::Wrap;
-		ValueTag _line_spacing = 100pct;
-		ValueTag _baseline_spacing = 100pct;
-		ValueTag _tab_size = 200pct;
+		ValueTag _line_spacing = pct(100);
+		ValueTag _baseline_spacing = pct(100);
+		ValueTag _tab_size = pct(200);
 	public:
 		constexpr ParagraphFormat& text_align(TextAlign text_align) { _text_align = text_align; return *this; }
 		constexpr ParagraphFormat& paragraph_align(ParagraphAlign paragraph_align) { _paragraph_align = paragraph_align; return *this; }
@@ -115,7 +115,7 @@ struct TextBlockStyle {
 		FontWeight _weight = FontWeight::Normal;
 		FontStyle _style = FontStyle::Normal;
 		FontStretch _stretch = FontStretch::Normal;
-		float _size = 16px;
+		float _size = 16.0f;
 		Color _color = Color::Black;
 	public:
 		FontFormat& family(auto... list) requires (sizeof...(list) >= 1) { _family_list = { std::move(list)... }; return *this; }

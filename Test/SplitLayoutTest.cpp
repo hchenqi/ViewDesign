@@ -25,14 +25,14 @@ void Test() {
 			MainWindowStyle(),
 			new CenterFrame<Fixed, Fixed>(
 				new BorderFrame(
-					Border(2px, Color::Yellow),
+					Border(2.0f, Color::Yellow),
 					new SplitLayout(
 						new BorderFrame(
-							Border(2px, Color::Green),
+							Border(2.0f, Color::Green),
 							WrapTextBox<WidthTraitFirst, HeightTraitFirst>(new EditBox(EditBox::Style(), L"Edit here ..."))
 						),
 						new BorderFrame(
-							Border(2px, Color::Red),
+							Border(2.0f, Color::Red),
 							WrapTextBox<WidthTraitSecond, HeightTraitSecond>(new EditBox(EditBox::Style(), L"Edit here, too ..."))
 						)
 					)

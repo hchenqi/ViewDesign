@@ -12,8 +12,6 @@ struct ValuePixel {
 	explicit constexpr ValuePixel(float value) : value(value) {}
 
 	constexpr ValuePixel operator-() const { return ValuePixel(-value); }
-
-	constexpr operator float() const { return value; }
 };
 
 
@@ -27,7 +25,7 @@ private:
 
 public:
 	explicit constexpr ValueTag(Type type, float value) : _type(type), _value(value) {}
-	constexpr ValueTag(ValuePixel value) : ValueTag(Type::Pixel, value) {}
+	constexpr ValueTag(ValuePixel pixel) : ValueTag(Type::Pixel, pixel.value) {}
 
 	constexpr bool IsPixel() const { return _type == Type::Pixel; }
 	constexpr bool IsPercent() const { return _type == Type::Percent; }
@@ -44,30 +42,15 @@ public:
 };
 
 
-constexpr ValuePixel operator""px(long double number) {
-	return ValuePixel((float)number);
-}
+constexpr ValuePixel px(float number) { return ValuePixel(number); }
+constexpr ValueTag pct(float number) { return ValueTag(ValueTag::Type::Percent, number); }
 
-constexpr ValuePixel operator""px(unsigned long long number) {
-	return ValuePixel((float)number);
-}
-
-constexpr ValueTag operator""pct(long double number) {
-	return ValueTag(ValueTag::Type::Percent, (float)number);
-}
-
-constexpr ValueTag operator""pct(unsigned long long number) {
-	return ValueTag(ValueTag::Type::Percent, (float)number);
-}
-
-
-constexpr ValuePixel px(float number) {
-	return ValuePixel(number);
-}
-
-constexpr ValueTag pct(float number) {
-	return ValueTag(ValueTag::Type::Percent, number);
-}
+/*
+constexpr ValuePixel operator""px(long double number) { return px((float)number); }
+constexpr ValuePixel operator""px(unsigned long long number) { return px((float)number); }
+constexpr ValueTag operator""pct(long double number) { return pct((float)number); }
+constexpr ValueTag operator""pct(unsigned long long number) { return pct((float)number); }
+*/
 
 
 constexpr ValueTag length_min_tag = ValueTag(ValueTag::Type::Pixel, length_min);

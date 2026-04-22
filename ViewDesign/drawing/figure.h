@@ -9,6 +9,7 @@ struct RenderTarget;
 
 
 struct Figure {
+	virtual ~Figure() = default;
 	virtual void DrawOn(RenderTarget& target, Point point) const = 0;
 };
 

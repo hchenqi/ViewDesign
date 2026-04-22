@@ -40,8 +40,8 @@ public:
 	struct TitleBarStyle : TextBlockStyle {
 		struct BarStyle {
 		public:
-			float _height = 30px;
-			float _max_title_length = 300px;
+			float _height = 30.0f;
+			float _max_title_length = 300.0f;
 			Color _background_color = Color::DarkGray;
 			Color _foreground_color = Color::White;
 		public:
@@ -64,16 +64,16 @@ public:
 		TitleBarStyle title;
 
 		Style() {
-			width.normal(800px).min(200px).max(100pct);
-			height.normal(500px).min(200px).max(100pct);
+			width.normal(px(800)).min(px(200)).max(pct(100));
+			height.normal(px(500)).min(px(200)).max(pct(100));
 			position.setHorizontalCenter().setVerticalCenter();
-			padding = Padding(2px);
-			border.width(2px).radius(2px).color(Color::CadetBlue);
+			padding = Padding(2.0f);
+			border.width(2.0f).radius(2.0f).color(Color::CadetBlue);
 			background_color = Color::White;
 			title.bar.background_color(Color::CadetBlue);
 			title.text.assign(L"TitleBarWindow");
 			title.font.color(Color::White);
-			title.paragraph.line_spacing(100pct);
+			title.paragraph.line_spacing(pct(100));
 		}
 	};
 
@@ -266,7 +266,7 @@ protected:
 	bool IsMaximized() { return GetState() == State::Maximized; }
 	void MaximizeOrRestore() { if (GetState() == State::Normal) { Maximize(); } else if (GetState() == State::Maximized) { Restore(); } }
 protected:
-	virtual void OnStateChange(State state) {
+	virtual void OnStateChange(State state) override {
 		switch (state) {
 		case State::Normal: if (outer_frame_placeholder) { inner_frame->RotateWith(*outer_frame, outer_frame_placeholder, inner_frame_placeholder); } break;
 		case State::Maximized: if (inner_frame_placeholder) { inner_frame->RotateWith(inner_frame_placeholder, outer_frame_placeholder, *outer_frame); } break;

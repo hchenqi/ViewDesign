@@ -62,8 +62,8 @@ private:
 	public:
 		ItemFrame(Base::child_type child) : Base(border_normal, std::move(child)) {}
 	private:
-		constexpr static Border border_normal = Border(2px, 5px, Color::CadetBlue);
-		constexpr static Border border_focused = Border(2px, 5px, Color::Orange);
+		constexpr static Border border_normal = Border(2.0f, 5.0f, Color::CadetBlue);
+		constexpr static Border border_focused = Border(2.0f, 5.0f, Color::Orange);
 	private:
 		virtual void OnFocusEvent(FocusEvent event) override {
 			switch (event) {
@@ -99,7 +99,7 @@ private:
 		Base::AppendChild(
 			new ItemFrame(
 				new PaddingFrame(
-					Padding(10px),
+					Padding(10.0f),
 					WrapTextBox<typename Base::width_trait, typename Base::height_trait>(edit_view = new EditView())
 				)
 			)
@@ -124,10 +124,10 @@ void Test() {
 			new ScrollFrame(
 				new ScaleView(
 					new InnerBorderFrame(
-						Border(1px, 0px, Color::Black),
+						Border(1.0f, 0.0f, Color::Black),
 						new PaddingFrame(
-							Padding(5px),
-							new ListView<ListLayout, Trait>(5px)
+							Padding(5.0f),
+							new ListView<ListLayout, Trait>(5)
 						)
 					)
 				)

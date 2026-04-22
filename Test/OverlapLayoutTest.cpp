@@ -37,10 +37,10 @@ private:
 	public:
 		Window(Point point) : Base(
 			new BorderFrame(
-				Border(3px, 0px, Color::Yellow),
+				Border(3.0f, 0.0f, Color::Yellow),
 				view = new View()
 			)
-		), region(point, Size(300, 300)) {
+		), region(point, Size(300.0f, 300.0f)) {
 			UpdateChildSizeRef(child, region.size);
 		}
 
