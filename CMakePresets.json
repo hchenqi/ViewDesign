@@ -10,7 +10,7 @@
       }
     },
     {
-      "name": "windows",
+      "name": "host-windows",
       "inherits": "base",
       "hidden": true,
       "condition": {
@@ -20,7 +20,7 @@
       }
     },
     {
-      "name": "linux",
+      "name": "host-linux",
       "inherits": "base",
       "hidden": true,
       "condition": {
@@ -30,31 +30,13 @@
       }
     },
     {
-      "name": "macos",
+      "name": "host-macos",
       "inherits": "base",
       "hidden": true,
       "condition": {
         "type": "equals",
         "lhs": "${hostSystemName}",
         "rhs": "macOS"
-      }
-    },
-    {
-      "name": "windows-x64",
-      "inherits": "windows",
-      "hidden": true,
-      "architecture": {
-        "value": "x64",
-        "strategy": "external"
-      }
-    },
-    {
-      "name": "windows-x86",
-      "inherits": "windows",
-      "hidden": true,
-      "architecture": {
-        "value": "x86",
-        "strategy": "external"
       }
     },
     {
@@ -80,14 +62,39 @@
       }
     },
     {
-      "name": "mingw-gcc",
+      "name": "msvc-x64",
+      "inherits": "msvc",
       "hidden": true,
-      "cacheVariables": {
-        "CMAKE_CXX_COMPILER": "g++"
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
       }
     },
     {
-      "name": "mingw-clang",
+      "name": "msvc-x86",
+      "inherits": "msvc",
+      "hidden": true,
+      "architecture": {
+        "value": "x86",
+        "strategy": "external"
+      }
+    },
+    {
+      "name": "mingw-gcc-x64",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "x86_64-w64-mingw32-g++"
+      }
+    },
+    {
+      "name": "mingw-gcc-x86",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "i686-w64-mingw32-g++"
+      }
+    },
+    {
+      "name": "mingw-clang-x64",
       "hidden": true,
       "cacheVariables": {
         "CMAKE_CXX_COMPILER": "clang++",

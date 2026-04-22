@@ -60,7 +60,7 @@ Dear ImGui allows for quick GUI development with simple commands of displaying c
 
 ## Build Instruction
 
-The static library `ViewDesign` along with test executables can be built with CMake by various compilers on Windows.
+The static library `ViewDesign` along with test executables can be built with CMake by various compilers targeting Windows.
 
 Required build tools:
 - CMake: https://cmake.org/download/
@@ -70,30 +70,54 @@ The configuring and building procedure follows CMake convention. Various base pr
 
 One can include `ViewDesign` in their own cmake project using `add_subdirectory` and `target_link_libraries`.
 
-### Windows
+### Compiler
 
-The following compilers can be used for building `ViewDesign` on Windows.
+#### Windows Host - Windows Target
 
-#### MSVC
+##### MSVC
 
 - Install MSVC Build Tools (Visual Studio): https://visualstudio.microsoft.com/downloads/
 
-#### Mingw-w64 (GCC)
+##### Mingw-w64
 
 - Install msys2: https://www.msys2.org/
-- Install packages by msys2:
+
+Mingw-w64 can be used with GCC or Clang/LLVM.
+
+###### G++
+
+Different packages need to be installed for x64 target and x86 target.
+
+*Target x64*
+
+- Install packages from msys2:
 	- `pacman -S mingw-w64-ucrt-x86_64-gcc`
 	- `pacman -S mingw-w64-ucrt-x86_64-icu`
 	- `pacman -S mingw-w64-ucrt-x86_64-gdb` (optional for debugging)
-- Add `C:\msys64\ucrt64\bin` (or your installation directory) to path
+- Add `C:\msys64\ucrt64\bin` to path (or your installation directory)
 
-#### Mingw-w64 (Clang/LLVM)
+*Target x86*
 
-- Install msys2
-- Install packages by msys2:
+- Install packages from msys2:
+	- `pacman -S mingw-w64-i686-gcc`
+	- (no ICU available in msys2 for x86 target)
+- Add `C:\msys64\mingw32\bin` to path (or your installation directory)
+- Install ICU from vcpkg:
+	- Install vcpkg: https://learn.microsoft.com/en-us/vcpkg/get_started/get-started
+	- Set `VCPKG_ROOT` environment variable and add `VCPKG_ROOT` to path
+	- Install icu with vcpkg targeting x86 mingw:
+		- `vcpkg install icu:x86-mingw-dynamic` (this command fails unfortunately)
+
+> MSVC Build Tools might contain its own copy of CMake and vcpkg. This can cause resolution errors.
+
+##### Clang/LLVM
+
+With Clang/LLVM only x64 target is supported.
+
+- Install packages from msys2:
 	- `pacman -S mingw-w64-clang-x86_64-clang`
 	- `pacman -S mingw-w64-clang-x86_64-icu`
-- Add `C:\msys64\clang64\bin` (or your installation directory) to path
+- Add `C:\msys64\clang64\bin` to path (or your installation directory)
 
 ## Example
 

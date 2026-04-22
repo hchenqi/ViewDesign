@@ -2,34 +2,43 @@
   "version": 3,
   "configurePresets": [
     {
-      "name": "windows-x64-ninja-msvc-debug-win32",
-      "displayName": "Windows x64 Ninja MSVC Debug (Backend: win32)",
-      "inherits": ["windows-x64", "ninja", "msvc", "debug", "win32"]
+      "name": "windows-ninja-msvc-x64-debug-win32",
+      "displayName": "Windows Ninja MSVC x64 Debug (Backend: win32)",
+      "inherits": ["host-windows", "ninja", "msvc-x64", "debug", "win32"]
     },
     {
-      "name": "windows-x64-ninja-msvc-release-win32",
-      "displayName": "Windows x64 Ninja MSVC Release (Backend: win32)",
-      "inherits": ["windows-x64", "ninja", "msvc", "release", "win32"]
+      "name": "windows-ninja-msvc-x64-release-win32",
+      "displayName": "Windows Ninja MSVC x64 Release (Backend: win32)",
+      "inherits": ["host-windows", "ninja", "msvc-x64", "release", "win32"]
     },
     {
-      "name": "windows-x86-ninja-msvc-debug-win32",
-      "displayName": "Windows x86 Ninja MSVC Debug (Backend: win32)",
-      "inherits": ["windows-x86", "ninja", "msvc", "debug", "win32"]
+      "name": "windows-ninja-msvc-x86-debug-win32",
+      "displayName": "Windows Ninja MSVC x86 Debug (Backend: win32)",
+      "inherits": ["host-windows", "ninja", "msvc-x86", "debug", "win32"]
     },
     {
-      "name": "windows-x64-vs2026-msvc-debug-win32",
-      "displayName": "Windows x64 VS2026 MSVC Debug (Backend: win32)",
-      "inherits": ["windows-x64", "vs2026", "msvc", "debug", "win32"]
+      "name": "windows-vs2026-msvc-x64-debug-win32",
+      "displayName": "Windows VS2026 MSVC x64 Debug (Backend: win32)",
+      "inherits": ["host-windows", "vs2026", "msvc-x64", "debug", "win32"]
     },
     {
-      "name": "windows-x64-ninja-mingw-gcc-debug-win32",
-      "displayName": "Windows x64 Ninja MinGW (GCC) Debug (Backend: win32)",
-      "inherits": ["windows-x64", "ninja", "mingw-gcc", "debug", "win32"]
+      "name": "windows-ninja-mingw-gcc-x64-debug-win32",
+      "displayName": "Windows Ninja MinGW (GCC) x64 Debug (Backend: win32)",
+      "inherits": ["host-windows", "ninja", "mingw-gcc-x64", "debug", "win32"]
     },
     {
-      "name": "windows-x64-ninja-mingw-clang-debug-win32",
-      "displayName": "Windows x64 Ninja MinGW (Clang/LLVM) Debug (Backend: win32)",
-      "inherits": ["windows-x64", "ninja", "mingw-clang", "debug", "win32"]
+      "name": "windows-ninja-mingw-gcc-x86-debug-win32",
+      "displayName": "Windows Ninja MinGW (GCC) x86 Debug (Backend: win32)",
+      "inherits": ["host-windows", "ninja", "mingw-gcc-x86", "debug", "win32"],
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+        "VCPKG_TARGET_TRIPLET": "x86-mingw-dynamic"
+      }
+    },
+    {
+      "name": "windows-ninja-mingw-clang-x64-debug-win32",
+      "displayName": "Windows Ninja MinGW (Clang/LLVM) x64 Debug (Backend: win32)",
+      "inherits": ["host-windows", "ninja", "mingw-clang-x64", "debug", "win32"]
     }
   ]
 }
