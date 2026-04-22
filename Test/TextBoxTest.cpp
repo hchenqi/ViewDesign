@@ -22,7 +22,7 @@ struct TextBoxStyle : TextBox::Style {
 };
 
 
-int main() {
+void App() {
 	desktop.AddWindow(
 		new TitleBarWindow(
 			MainWindowStyle(),

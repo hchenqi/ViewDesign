@@ -44,7 +44,7 @@ void Test() {
 }
 
 
-int main() {
+void App() {
 	// Test<SplitLayoutVertical, Fixed, Fixed, Fixed, Fixed>();
 	// Test<SplitLayoutVertical, Auto, Fixed, Fixed, Fixed>();
 	Test<SplitLayoutVertical, Fixed, Auto, Fixed, Fixed>();

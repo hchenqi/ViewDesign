@@ -138,7 +138,7 @@ void Test() {
 }
 
 
-int main() {
+void App() {
 	Test<ListLayoutVertical, Fixed>();
 	Test<ListLayoutVertical, Auto>();
 	Test<ListLayoutVertical, Relative>();

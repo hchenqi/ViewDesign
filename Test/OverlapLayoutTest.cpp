@@ -103,7 +103,7 @@ private:
 };
 
 
-int main() {
+void App() {
 	desktop.AddWindow(
 		new TitleBarWindow(
 			MainWindowStyle(),

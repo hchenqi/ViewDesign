@@ -53,7 +53,7 @@ private:
 };
 
 
-int main() {
+void App() {
 	desktop.AddWindow(new MainWindow(L"WindowTest", new EmptyView()));
 	desktop.EventLoop();
 
