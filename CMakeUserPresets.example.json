@@ -29,11 +29,7 @@
     {
       "name": "windows-ninja-mingw-gcc-x86-debug-win32",
       "displayName": "Windows Ninja MinGW (GCC) x86 Debug (Backend: win32)",
-      "inherits": ["host-windows", "ninja", "mingw-gcc-x86", "debug", "win32"],
-      "cacheVariables": {
-        "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
-        "VCPKG_TARGET_TRIPLET": "x86-mingw-dynamic"
-      }
+      "inherits": ["host-windows", "ninja", "mingw-gcc-x86", "debug", "win32"]
     },
     {
       "name": "windows-ninja-mingw-clang-x64-debug-win32",

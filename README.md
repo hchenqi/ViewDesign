@@ -92,7 +92,6 @@ Different packages need to be installed for x64 target and x86 target.
 
 - Install packages from msys2:
 	- `pacman -S mingw-w64-ucrt-x86_64-gcc`
-	- `pacman -S mingw-w64-ucrt-x86_64-icu`
 	- `pacman -S mingw-w64-ucrt-x86_64-gdb` (optional for debugging)
 - Add `C:\msys64\ucrt64\bin` to path (or your installation directory)
 
@@ -100,15 +99,9 @@ Different packages need to be installed for x64 target and x86 target.
 
 - Install packages from msys2:
 	- `pacman -S mingw-w64-i686-gcc`
-	- (no ICU available in msys2 for x86 target)
 - Add `C:\msys64\mingw32\bin` to path (or your installation directory)
-- Install ICU from vcpkg:
-	- Install vcpkg: https://learn.microsoft.com/en-us/vcpkg/get_started/get-started
-	- Set `VCPKG_ROOT` environment variable and add `VCPKG_ROOT` to path
-	- Install icu with vcpkg targeting x86 mingw:
-		- `vcpkg install icu:x86-mingw-dynamic` (this command fails unfortunately)
 
-> MSVC Build Tools might contain its own copy of CMake and vcpkg. This can cause resolution errors.
+> It fails to compile due to older Windows SDK version. Add `#define _WIN32_WINNT 0x0A00` before `#include <Windows.h>` in case a win32 function is not found.
 
 ##### Clang/LLVM
 
@@ -116,7 +109,6 @@ With Clang/LLVM only x64 target is supported.
 
 - Install packages from msys2:
 	- `pacman -S mingw-w64-clang-x86_64-clang`
-	- `pacman -S mingw-w64-clang-x86_64-icu`
 - Add `C:\msys64\clang64\bin` to path (or your installation directory)
 
 ## Example

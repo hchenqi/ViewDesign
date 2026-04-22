@@ -4,6 +4,7 @@
 #include "ViewDesign/common/uncopyable.h"
 #include "ViewDesign/common/text_range.h"
 
+#include <stdexcept>
 #include <string>
 
 
@@ -12,22 +13,21 @@ namespace ViewDesign {
 
 enum class UTF16CharType {
 	Single,
-	SurrogateLow,
 	SurrogateHigh,
+	SurrogateLow,
 };
 
 constexpr UTF16CharType GetUTF16CharType(wchar ch) {
-	if (ch >= L'\xD800' && ch <= L'\xDBFF') { return UTF16CharType::SurrogateLow; }
-	if (ch >= L'\xDC00' && ch <= L'\xDFFF') { return UTF16CharType::SurrogateHigh; }
+	if (ch >= L'\xD800' && ch <= L'\xDBFF') { return UTF16CharType::SurrogateHigh; }
+	if (ch >= L'\xDC00' && ch <= L'\xDFFF') { return UTF16CharType::SurrogateLow; }
 	return UTF16CharType::Single;
 }
 
 constexpr size_t GetUTF16CharLength(wchar ch) {
 	switch (GetUTF16CharType(ch)) {
 	case UTF16CharType::Single: return 1;
-	case UTF16CharType::SurrogateLow:
 	case UTF16CharType::SurrogateHigh: return 2;
-	default: return 0;
+	default: throw std::invalid_argument("invalid begin of UTF-16 character");
 	}
 }
 
