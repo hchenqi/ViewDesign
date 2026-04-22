@@ -22,7 +22,10 @@
 #include "ViewDesign/event/mouse_tracker.h"
 #include "ViewDesign/messaging/context.h"
 #include "ViewDesign/system/cursor.h"
-#include "ViewDesign/backend/win32/aero_snap.h"
+
+#if defined(_WIN32)
+#include "ViewDesign/platform/win32/aero_snap.h"
+#endif
 
 
 namespace ViewDesign {
@@ -85,7 +88,7 @@ protected:
 				if (event.type == MouseEvent::Move) {
 					SetCursor(GetBorderPositionCursor(border_position));
 				} else {
-					AeroSnapBorderResizingEffect(*this, border_position);
+					Win32::AeroSnapBorderResizingEffect(*this, border_position);
 				}
 			}
 		}
@@ -201,7 +204,7 @@ protected:
 	protected:
 		virtual void OnMouseEvent(MouseEvent event) override {
 			switch (mouse_tracker.Track(event)) {
-			case MouseTrackEvent::LeftDown: AeroSnapDraggingEffect(*this); break;
+			case MouseTrackEvent::LeftDown: Win32::AeroSnapDraggingEffect(*this); break;
 			case MouseTrackEvent::LeftDoubleClick: Context::Get<TitleBarWindow>().MaximizeOrRestore(); break;
 			}
 		}

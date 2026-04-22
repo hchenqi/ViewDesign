@@ -8,10 +8,9 @@
 
 namespace ViewDesign {
 
-using HANDLE = void*;
-
-
 namespace Win32 {
+
+using HANDLE = void*;
 
 
 Size GetDesktopSize();

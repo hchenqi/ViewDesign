@@ -1,8 +1,10 @@
 #include "ViewDesign/drawing/figure.h"
-#include "ViewDesign/backend/win32/directx_helper.h"
+#include "ViewDesign/platform/win32/directx_helper.h"
 
 
 namespace ViewDesign {
+
+using namespace Win32;
 
 
 const Size GetTargetSize(const RenderTarget& target) {

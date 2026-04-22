@@ -1,9 +1,9 @@
 #include "ViewDesign/view/Desktop.h"
 #include "ViewDesign/drawing/window_layer.h"
 #include "ViewDesign/geometry/helper.h"
-#include "ViewDesign/backend/win32/win32_api.h"
-#include "ViewDesign/backend/win32/d2d_api.h"
-#include "ViewDesign/backend/win32/directx_resource.h"
+#include "ViewDesign/platform/win32/win32_api.h"
+#include "ViewDesign/platform/win32/d2d_api.h"
+#include "ViewDesign/platform/win32/directx_resource.h"
 
 
 namespace ViewDesign {
@@ -82,7 +82,7 @@ void Window::RecreateLayer() {
 
 void Window::OnDraw() {
 	Rect render_rect = invalid_region.GetBoundingRect(); if (render_rect.IsEmpty()) { return; }
-	BeginDraw();
+	Win32::BeginDraw();
 	Canvas canvas([&](Canvas& canvas) {
 		canvas.Group(scale, region_infinite, [&]() {
 			OnDraw(canvas, render_rect * scale.Invert());
@@ -90,9 +90,9 @@ void Window::OnDraw() {
 	});
 	layer.DrawCanvas(canvas, vector_zero, render_rect);
 	try {
-		EndDraw();
+		Win32::EndDraw();
 	} catch (std::runtime_error&) {
-		DirectXRecreateResource();
+		Win32::DirectXRecreateResource();
 		return desktop.RecreateFrameLayer();
 	}
 	invalid_region.Clear();

@@ -1,11 +1,13 @@
 #include "ViewDesign/geometry/transform.h"
 #include "ViewDesign/geometry/helper.h"
-#include "ViewDesign/backend/win32/directx_helper.h"
+#include "ViewDesign/platform/win32/directx_helper.h"
 
 #include <stdexcept>
 
 
 namespace ViewDesign {
+
+using namespace Win32;
 
 
 Transform Transform::Identity() {

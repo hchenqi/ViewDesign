@@ -1,10 +1,12 @@
 #include "ViewDesign/drawing/text_block.h"
-#include "ViewDesign/backend/win32/d2d_api.h"
-#include "ViewDesign/backend/win32/dwrite_api.h"
-#include "ViewDesign/backend/win32/directx_helper.h"
+#include "ViewDesign/platform/win32/d2d_api.h"
+#include "ViewDesign/platform/win32/dwrite_api.h"
+#include "ViewDesign/platform/win32/directx_helper.h"
 
 
 namespace ViewDesign {
+
+using namespace Win32;
 
 
 TextBlock::~TextBlock() {

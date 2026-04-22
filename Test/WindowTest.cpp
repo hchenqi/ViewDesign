@@ -3,7 +3,10 @@
 #include "ViewDesign/view/control/Placeholder.h"
 #include "ViewDesign/view/wrapper/Background.h"
 #include "ViewDesign/view/wrapper/Cursor.h"
-#include "ViewDesign/backend/win32/aero_snap.h"
+
+#if defined(_WIN32)
+#include "ViewDesign/platform/win32/aero_snap.h"
+#endif
 
 
 using namespace ViewDesign;
@@ -34,7 +37,7 @@ private:
 		switch (event.type) {
 		case MouseEvent::LeftDown:
 			SetFocus();
-			AeroSnapDraggingEffect(*this);
+			Win32::AeroSnapDraggingEffect(*this);
 			break;
 		case MouseEvent::WheelVertical:
 			background.alpha = std::max(0x00, std::min(0xFF, background.alpha + event.wheel_delta / 4));

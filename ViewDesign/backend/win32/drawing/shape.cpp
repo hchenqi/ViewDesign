@@ -1,9 +1,11 @@
 #include "ViewDesign/drawing/shape.h"
-#include "ViewDesign/backend/win32/d2d_api.h"
-#include "ViewDesign/backend/win32/directx_helper.h"
+#include "ViewDesign/platform/win32/d2d_api.h"
+#include "ViewDesign/platform/win32/directx_helper.h"
 
 
 namespace ViewDesign {
+
+using namespace Win32;
 
 
 inline D2D1_RECT_F ShrinkD2DRect(D2D1_RECT_F rect, float length) {

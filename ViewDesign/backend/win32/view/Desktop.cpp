@@ -1,8 +1,8 @@
 #include "ViewDesign/view/Desktop.h"
 #include "ViewDesign/system/cursor.h"
 #include "ViewDesign/common/reversion_wrapper.h"
-#include "ViewDesign/backend/win32/win32_api.h"
-#include "ViewDesign/backend/win32/ime.h"
+#include "ViewDesign/platform/win32/win32_api.h"
+#include "ViewDesign/platform/win32/ime.h"
 
 
 namespace ViewDesign {
@@ -172,7 +172,7 @@ void Desktop::SetFocus(ViewBase& view) {
 		view_focus_map.emplace(trace.back(), view_focus_stack.size());
 	}
 	if (window_focus) {
-		ime_enabled_view.contains(&view) ? ViewDesign::ImeEnable(window_focus->hwnd) : ViewDesign::ImeDisable(window_focus->hwnd);
+		ime_enabled_view.contains(&view) ? Win32::ImeEnable(window_focus->hwnd) : Win32::ImeDisable(window_focus->hwnd);
 	}
 	view.OnFocusEvent(FocusEvent::Focus);
 }
@@ -202,7 +202,7 @@ void Desktop::DispatchKeyEvent(KeyEvent event) {
 
 void Desktop::ImeSetPosition(ViewBase& view, Point point) {
 	Window& window = GetWindowPoint(view, point);
-	ViewDesign::ImeSetPosition(window.hwnd, point);
+	Win32::ImeSetPosition(window.hwnd, point);
 }
 
 void Desktop::ReleaseView(ViewBase& view) {

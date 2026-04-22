@@ -1,9 +1,11 @@
-#include "ViewDesign/backend/win32/ime.h"
+#include "ViewDesign/platform/win32/ime.h"
 
 #include <Windows.h>
 
 
 namespace ViewDesign {
+
+namespace Win32 {
 
 namespace {
 
@@ -51,5 +53,7 @@ std::wstring ImeGetString() { return std::move(ime_string); }
 
 size_t ImeGetCursorPosition() { return cursor_position; }
 
+
+} // namespace Win32
 
 } // namespace ViewDesign

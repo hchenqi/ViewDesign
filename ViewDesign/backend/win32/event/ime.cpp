@@ -1,9 +1,11 @@
 #include "ViewDesign/event/ime.h"
 #include "ViewDesign/view/Desktop.h"
-#include "ViewDesign/backend/win32/ime.h"
+#include "ViewDesign/platform/win32/ime.h"
 
 
 namespace ViewDesign {
+
+using namespace Win32;
 
 struct DesktopApi : Desktop {
 	using Desktop::ImeEnable;

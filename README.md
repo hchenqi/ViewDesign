@@ -251,6 +251,12 @@ If a view acquires mouse capture, all subsequent mouse events will be directly t
 
 A view can acquire focus to receive key events as instances of `KeyEvent`. This view is also tracked by `Desktop` in another stack, and all its parent views and itself will receive `FocusIn` event as `FocusEvent`, and the view itself will additionally receive `Focus` event. The view which acquired focus before will receive `Blur` event and its parent views that are not the parent views of the newly tracked view will receive `FocusOut` event.
 
+### Backend / Platform
+
+Backend implements common interfaces, and a user programs is unaware by which backend these interfaces are implemented. For each build there's only one backend to be chosen at configure time.
+
+Platform implements platform-specific interfaces under its own namespace. Multiple platforms that are compatible to the current OS can be available for user programs in one build.
+
 ## Implementation
 
 This section gives an overview of the implementation of `ViewDesign` in accordance with the source code structure.
@@ -346,6 +352,8 @@ This project tries to avoid using C++ raw pointers and prefers `std::unique_ptr`
 #### Context
 
 #### State
+
+### Platform
 
 ### View Components
 

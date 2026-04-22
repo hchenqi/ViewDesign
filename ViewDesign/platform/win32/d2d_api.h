@@ -5,6 +5,8 @@
 
 namespace ViewDesign {
 
+namespace Win32 {
+
 struct D2DFactory;
 struct D2DDeviceContext;
 struct D2DSolidColorBrush;
@@ -17,5 +19,7 @@ D2DSolidColorBrush& GetD2DSolidColorBrush(Color color);
 void BeginDraw();
 void EndDraw();
 
+
+} // namespace Win32
 
 } // namespace ViewDesign

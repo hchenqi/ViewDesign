@@ -16,6 +16,8 @@
 #include <stdexcept>
 
 
+namespace ViewDesign {
+
 using D3DDevice = ID3D11Device;
 using D3DDebug = ID3D11Debug;
 using DXGIDevice = IDXGIDevice;
@@ -34,9 +36,26 @@ using DWriteTextLayout = IDWriteTextLayout2;
 using WICFactory = IWICImagingFactory;
 using WICFormatConverter = IWICFormatConverter;
 
+struct SwapChain : DXGISwapChain {};
+struct CompositionTarget : DCompositionTarget {};
+struct RenderTarget : D2DDeviceContext {};
+struct BitmapResource : D2DBitmap {};
+struct TextLayout : DWriteTextLayout {};
+struct ImageSource : WICFormatConverter {};
 
-namespace ViewDesign {
 
+namespace Win32 {
+
+struct D3DDevice : ViewDesign::D3DDevice {};
+struct DXGIDevice : ViewDesign::DXGIDevice {};
+struct DXGIAdapter : ViewDesign::DXGIAdapter {};
+struct DXGIFactory : ViewDesign::DXGIFactory {};
+struct DCompositionDevice : ViewDesign::DCompositionDevice {};
+struct D2DFactory : ViewDesign::D2DFactory {};
+struct D2DDeviceContext : ViewDesign::D2DDeviceContext {};
+struct D2DSolidColorBrush : ViewDesign::D2DSolidColorBrush {};
+struct DWriteFactory : ViewDesign::DWriteFactory {};
+struct WICFactory : ViewDesign::WICFactory {};
 
 using Microsoft::WRL::ComPtr;
 
@@ -60,25 +79,6 @@ inline void SafeRelease(Interface** ppInterfaceToRelease) {
 }
 
 
-struct D3DDevice : ::D3DDevice {};
-struct DXGIDevice : ::DXGIDevice {};
-struct DXGIAdapter : ::DXGIAdapter {};
-struct DXGIFactory : ::DXGIFactory {};
-struct DCompositionDevice : ::DCompositionDevice {};
-struct D2DFactory : ::D2DFactory {};
-struct D2DDeviceContext : ::D2DDeviceContext {};
-struct D2DSolidColorBrush : ::D2DSolidColorBrush {};
-struct DWriteFactory : ::DWriteFactory {};
-struct WICFactory : ::WICFactory {};
-
-struct SwapChain : DXGISwapChain {};
-struct CompositionTarget : DCompositionTarget {};
-struct RenderTarget : D2DDeviceContext {};
-struct BitmapResource : D2DBitmap {};
-struct TextLayout : DWriteTextLayout {};
-struct ImageSource : WICFormatConverter {};
-
-
 inline D2D1_POINT_2F AsD2DPoint(Point point) { return { point.x, point.y }; }
 inline D2D1_SIZE_F AsD2DSize(Size size) { return { size.width, size.height }; }
 inline D2D1_RECT_F AsD2DRect(Rect rect) { return { rect.left(), rect.top(), rect.right(), rect.bottom() }; }
@@ -92,5 +92,7 @@ inline Transform AsTransform(D2D1::Matrix3x2F matrix) { return reinterpret_cast<
 inline float OpacityAsFloat(uchar opacity) { return opacity / (float)0xFF; }
 inline D2D1_COLOR_F AsD2DColor(Color color) { return D2D1::ColorF(color.AsUnsigned(), OpacityAsFloat(color.alpha)); }
 
+
+} // namespace Win32
 
 } // namespace ViewDesign

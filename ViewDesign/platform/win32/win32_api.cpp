@@ -1,5 +1,5 @@
-#include "ViewDesign/backend/win32/win32_api.h"
-#include "ViewDesign/backend/win32/ime.h"
+#include "ViewDesign/platform/win32/win32_api.h"
+#include "ViewDesign/platform/win32/ime.h"
 #include "ViewDesign/view/Desktop.h"
 
 #include <Windows.h>
@@ -27,6 +27,9 @@ struct DesktopApi : Desktop {
 	using Desktop::DispatchMouseEvent;
 	using Desktop::DispatchKeyEvent;
 };
+
+
+namespace Win32 {
 
 namespace {
 
@@ -183,8 +186,6 @@ inline void RegisterWndClass() {
 }
 
 } // namespace
-
-namespace Win32 {
 
 
 Size GetDesktopSize() { RECT rect; SystemParametersInfoW(SPI_GETWORKAREA, 0, &rect, 0); return AsRect(rect).size; }

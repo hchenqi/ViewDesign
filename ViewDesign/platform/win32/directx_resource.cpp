@@ -1,22 +1,22 @@
-#include "ViewDesign/backend/win32/directx_resource.h"
-#include "ViewDesign/backend/win32/directx_helper.h"
-#include "ViewDesign/backend/win32/d3d_api.h"
-#include "ViewDesign/backend/win32/dxgi_api.h"
-#include "ViewDesign/backend/win32/dcomp_api.h"
-#include "ViewDesign/backend/win32/d2d_api.h"
-#include "ViewDesign/backend/win32/dwrite_api.h"
-#include "ViewDesign/backend/win32/wic_api.h"
+#include "ViewDesign/platform/win32/d3d_api.h"
+#include "ViewDesign/platform/win32/dxgi_api.h"
+#include "ViewDesign/platform/win32/dcomp_api.h"
+#include "ViewDesign/platform/win32/d2d_api.h"
+#include "ViewDesign/platform/win32/dwrite_api.h"
+#include "ViewDesign/platform/win32/wic_api.h"
+#include "ViewDesign/platform/win32/directx_resource.h"
+#include "ViewDesign/platform/win32/directx_helper.h"
 #include "ViewDesign/drawing/bitmap.h"
 
 #include <unordered_set>
 
 
+namespace ViewDesign {
+
 namespace {
 
-using ViewDesign::ComPtr;
-using ViewDesign::ref_ptr;
-using ViewDesign::Bitmap;
-using ViewDesign::hr;
+using Win32::ComPtr;
+using Win32::hr;
 
 
 struct DirectXResource {
@@ -154,7 +154,7 @@ void DirectXResource::DiscardDeviceDependentResource() {
 
 } // namespace
 
-namespace ViewDesign {
+namespace Win32 {
 
 
 void RegisterBitmap(Bitmap& bitmap) { directx_resource.bitmap_set.insert(&bitmap); }
@@ -196,5 +196,7 @@ void EndDraw() {
 	GetD2DDeviceContext().SetTarget(nullptr);
 }
 
+
+} // namespace Win32
 
 } // namespace ViewDesign

@@ -8,7 +8,7 @@
 
 namespace ViewDesign {
 
-using std::wstring;
+namespace Win32 {
 
 using HANDLE = void*;
 
@@ -21,5 +21,7 @@ void ImeUpdateString(HANDLE hwnd, uint type);
 std::wstring ImeGetString();
 size_t ImeGetCursorPosition();
 
+
+} // namespace Win32
 
 } // namespace ViewDesign

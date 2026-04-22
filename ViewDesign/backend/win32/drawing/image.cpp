@@ -1,13 +1,16 @@
 #include "ViewDesign/drawing/image.h"
 #include "ViewDesign/geometry/tiling.h"
-#include "ViewDesign/backend/win32/d2d_api.h"
-#include "ViewDesign/backend/win32/wic_api.h"
-#include "ViewDesign/backend/win32/directx_helper.h"
+#include "ViewDesign/platform/win32/d2d_api.h"
+#include "ViewDesign/platform/win32/wic_api.h"
+#include "ViewDesign/platform/win32/directx_helper.h"
 
 #include <stdexcept>
 
 
 namespace ViewDesign {
+
+using namespace Win32;
+
 
 namespace {
 
