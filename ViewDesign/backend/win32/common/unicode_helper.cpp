@@ -3,7 +3,11 @@
 #include <cassert>
 #include <stdexcept>
 
+#if defined(_MSC_VER)
 #include <icu.h>
+#else
+#include <unicode/ubrk.h>
+#endif
 
 
 namespace ViewDesign {

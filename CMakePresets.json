@@ -82,6 +82,14 @@
       }
     },
     {
+      "name": "mingw-gcc",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "g++",
+        "CMAKE_CXX_FLAGS": "-Wno-literal-suffix"
+      }
+    },
+    {
       "name": "debug",
       "hidden": true,
       "cacheVariables": {

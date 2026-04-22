@@ -6,6 +6,8 @@
 #include "ViewDesign/geometry/rect.h"
 #include "ViewDesign/geometry/scale.h"
 
+#include <cmath>
+
 
 namespace ViewDesign {
 

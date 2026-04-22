@@ -60,7 +60,30 @@ Dear ImGui allows for quick GUI development with simple commands of displaying c
 
 ## Build Instruction
 
-The static library `ViewDesign` and test executables can be built by CMake with MSVC build tools and Ninja on Windows without extra dependencies.
+`ViewDesign` is a C++ static library along with test executables that can be built with CMake and Ninja by various compilers on Windows.
+
+Prerequisites to be installed:
+- CMake: https://cmake.org/download/
+- Ninja: https://ninja-build.org/
+
+The configuring and building procedure follows CMake. A `CMakePresets.json` is provided for selecting build configurations.
+
+### Windows
+
+One of the compilers need to be installed for building C++ applications on Windows.
+
+#### MSVC
+
+- Install MSVC Build Tools (Visual Studio): https://visualstudio.microsoft.com/downloads/
+
+#### Mingw-w64 (GCC)
+
+- Install msys2: https://www.msys2.org/
+- Install packages by msys2:
+	- `pacman -S mingw-w64-ucrt-x86_64-gcc`
+	- `pacman -S mingw-w64-ucrt-x86_64-icu`
+	- `pacman -S mingw-w64-ucrt-x86_64-gdb` (optional for debugging)
+- Add `C:\msys64\ucrt64\bin` (or your installation directory) to path
 
 ## Example
 

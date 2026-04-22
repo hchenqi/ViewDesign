@@ -40,6 +40,16 @@
         "release",
         "win32"
       ]
+    },
+    {
+      "name": "windows-x64-mingw-gcc-debug-win32",
+      "displayName": "Windows x64 MinGW (GCC) Debug (Backend: win32)",
+      "inherits": [
+        "windows-x64",
+        "mingw-gcc",
+        "debug",
+        "win32"
+      ]
     }
   ]
 }
