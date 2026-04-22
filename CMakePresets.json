@@ -4,18 +4,14 @@
     {
       "name": "base",
       "hidden": true,
-      "generator": "Ninja",
       "binaryDir": "${sourceDir}/build/${presetName}",
-      "installDir": "${sourceDir}/build/install/${presetName}",
       "cacheVariables": {
         "CMAKE_CXX_STANDARD": "20"
       }
     },
     {
       "name": "windows",
-      "inherits": [
-        "base"
-      ],
+      "inherits": "base",
       "hidden": true,
       "condition": {
         "type": "equals",
@@ -25,9 +21,7 @@
     },
     {
       "name": "linux",
-      "inherits": [
-        "base"
-      ],
+      "inherits": "base",
       "hidden": true,
       "condition": {
         "type": "equals",
@@ -37,9 +31,7 @@
     },
     {
       "name": "macos",
-      "inherits": [
-        "base"
-      ],
+      "inherits": "base",
       "hidden": true,
       "condition": {
         "type": "equals",
@@ -49,9 +41,7 @@
     },
     {
       "name": "windows-x64",
-      "inherits": [
-        "windows"
-      ],
+      "inherits": "windows",
       "hidden": true,
       "architecture": {
         "value": "x64",
@@ -60,14 +50,22 @@
     },
     {
       "name": "windows-x86",
-      "inherits": [
-        "windows"
-      ],
+      "inherits": "windows",
       "hidden": true,
       "architecture": {
         "value": "x86",
         "strategy": "external"
       }
+    },
+    {
+      "name": "ninja",
+      "hidden": true,
+      "generator": "Ninja"
+    },
+    {
+      "name": "vs2026",
+      "hidden": true,
+      "generator": "Visual Studio 18 2026"
     },
     {
       "name": "msvc",

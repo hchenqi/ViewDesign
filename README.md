@@ -60,13 +60,15 @@ Dear ImGui allows for quick GUI development with simple commands of displaying c
 
 ## Build Instruction
 
-`ViewDesign` is a C++ static library along with test executables that can be built with CMake and Ninja by various compilers on Windows.
+The static library `ViewDesign` along with test executables can be built with CMake by various compilers on Windows.
 
-Prerequisites to be installed:
+Required build tools:
 - CMake: https://cmake.org/download/
-- Ninja: https://ninja-build.org/
+- Ninja: https://ninja-build.org/ (recommended for faster build)
 
-The configuring and building procedure follows CMake. A `CMakePresets.json` is provided for selecting build configurations.
+The configuring and building procedure follows CMake convention. Various base presets are specified in `CMakePresets.json` and can be inherited as in example `CMakeUserPresets.example.json`. One may create a copy and rename it to `CMakeUserPresets.json` for actual use.
+
+One can include `ViewDesign` in their own cmake project using `add_subdirectory` and `target_link_libraries`.
 
 ### Windows
 
