@@ -181,8 +181,6 @@ Different packages need to be installed for x64 target and x86 target.
 	- `pacman -S mingw-w64-i686-gcc`
 - Add `C:\msys64\mingw32\bin` to path (or your installation directory)
 
-> It fails to compile due to older Windows SDK version. Add `#define _WIN32_WINNT 0x0A00` before `#include <Windows.h>` in case a win32 function is not found.
-
 ##### Clang/LLVM
 
 With Clang/LLVM only x64 target is supported.

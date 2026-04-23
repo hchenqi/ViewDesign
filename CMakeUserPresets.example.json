@@ -29,7 +29,10 @@
     {
       "name": "windows-ninja-mingw-gcc-x86-debug-win32",
       "displayName": "Windows Ninja MinGW (GCC) x86 Debug (Backend: win32)",
-      "inherits": ["host-windows", "ninja", "mingw-gcc-x86", "debug", "win32"]
+      "inherits": ["host-windows", "ninja", "mingw-gcc-x86", "debug", "win32"],
+      "cacheVariables": {
+        "CMAKE_CXX_FLAGS_INIT": "-D_WIN32_WINNT=0x0A00"
+      }
     },
     {
       "name": "windows-ninja-mingw-clang-x64-debug-win32",
