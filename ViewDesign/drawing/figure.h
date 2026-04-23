@@ -14,7 +14,4 @@ struct Figure {
 };
 
 
-const Size GetTargetSize(const RenderTarget& target);
-
-
 } // namespace ViewDesign

@@ -37,6 +37,10 @@ public:
 	Window& GetWindow(ViewBase& view);
 	Window& GetWindowPoint(ViewBase& view, Point& point);
 
+	// layout
+public:
+	Size GetSize() const;
+
 	// drawing
 private:
 	void RecreateFrameLayer();
@@ -49,6 +53,9 @@ private:
 	std::unordered_map<ref_ptr<ViewBase>, size_t> view_track_map;
 	ref_ptr<Window> window_capture = nullptr;
 	ref_ptr<ViewBase> view_capture = nullptr;
+private:
+	void SetWindowCapture(Window& window);
+	void ReleaseWindowCapture();
 private:
 	void SetTrack(ViewBase& view);
 	void LoseTrack();
@@ -64,6 +71,8 @@ private:
 	std::unordered_map<ref_ptr<ViewBase>, size_t> view_focus_map;
 	ref_ptr<Window> window_focus = nullptr;
 private:
+	void SetWindowFocus(ref_ptr<Window> window_focus);
+private:
 	void SetFocus(ViewBase& view);
 	void ReleaseFocus(ViewBase& view);
 	void LoseFocus();
@@ -73,6 +82,10 @@ private:
 	// ime event
 private:
 	std::unordered_set<ref_ptr<ViewBase>> ime_enabled_view;
+private:
+	void ImeWindowEnable();
+	void ImeWindowDisable();
+	void ImeWindowSetPosition(Window& window, Point point);
 private:
 	void ImeEnable(ViewBase& view) { ime_enabled_view.emplace(&view); }
 	void ImeDisable(ViewBase& view) { ime_enabled_view.erase(&view); }

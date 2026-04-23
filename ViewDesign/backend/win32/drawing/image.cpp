@@ -1,5 +1,4 @@
 #include "ViewDesign/drawing/image.h"
-#include "ViewDesign/geometry/tiling.h"
 #include "ViewDesign/platform/win32/d2d_api.h"
 #include "ViewDesign/platform/win32/wic_api.h"
 #include "ViewDesign/platform/win32/directx_helper.h"
@@ -107,20 +106,6 @@ void ImageFigure::DrawOn(RenderTarget& target, Point point) const {
 		D2D1_BITMAP_INTERPOLATION_MODE_LINEAR,
 		AsD2DRect(region)
 	);
-}
-
-
-void ImageRepeatFigure::DrawOn(RenderTarget& target, Point point) const {
-	Size image_size = image.GetSize();
-	Rect region_on_target = Rect(point_zero, GetTargetSize(target)).Intersect(Rect(point, region.size));
-	Rect region_on_image = Rect(region.point, region_on_target.size);
-	ImageFigure image_figure(image, region_empty, opacity);
-	for (RectPointIterator it(RegionToOverlappingTileRange(region_on_image, image_size)); it; ++it) {
-		Point tile_offset = ScalePointBySize(*it, image_size);
-		Rect tile_region_on_image = Rect(tile_offset, image_size).Intersect(region_on_image);
-		image_figure.region = tile_region_on_image - (tile_offset - point_zero);
-		image_figure.DrawOn(target, tile_region_on_image.point + (region_on_target.point - region_on_image.point));
-	}
 }
 
 

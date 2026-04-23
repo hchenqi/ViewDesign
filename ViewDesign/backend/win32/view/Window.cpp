@@ -29,19 +29,6 @@ Window::~Window() {
 
 void Window::SetTitle(std::wstring title) { Win32::SetWndTitle(hwnd, title); }
 
-void Window::SetSize(Size size) {
-	if (region.size != size) {
-		region.size = size;
-		UpdateChildSizeRef(child, size * scale.Invert());
-		ResizeLayer();
-	}
-}
-
-std::pair<Size, Rect> Window::GetMinMaxRegion(Size size_ref) {
-	auto [size_min, size_max] = CalculateMinMaxSize(size_ref * scale.Invert());
-	return { size_min * scale, Rect(point_zero, size_max * scale) };
-}
-
 void Window::InitializeRegion(Size size_ref) {
 	region = OnWindowSizeRefUpdate(size_ref * scale.Invert()) * scale;
 	region.size = Size(RoundWin32Length(region.size.width), RoundWin32Length(region.size.height));
@@ -66,19 +53,6 @@ void Window::SetForeground() { Win32::SetForegroundWnd(hwnd); }
 void Window::Minimize() { Win32::MinimizeWnd(hwnd); }
 void Window::Maximize() { Win32::MaximizeWnd(hwnd); }
 void Window::Restore() { Win32::RestoreWnd(hwnd); }
-void Window::Destroy() { desktop.RemoveWindow(*this); }
-
-void Window::ResizeLayer() {
-	layer.Resize(region.size);
-	invalid_region.Clear();
-	Redraw(region_infinite);
-}
-
-void Window::RecreateLayer() {
-	layer.Create(hwnd, region.size);
-	invalid_region.Clear();
-	Redraw(region_infinite);
-}
 
 void Window::OnDraw() {
 	Rect render_rect = invalid_region.GetBoundingRect(); if (render_rect.IsEmpty()) { return; }

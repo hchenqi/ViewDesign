@@ -58,59 +58,6 @@ Dear ImGui allows for quick GUI development with simple commands of displaying c
 
 `ViewDesign` is an experimental and promising C++ GUI library that is not yet mature for production use, and some further effort is needed for cross-platform support. The compile-time layout compatibility check could be initially overwhelming and make it slightly more difficult for fast iterations. But due to its exceeding modularity and abstraction, `ViewDesign` is easily maintainable, modifiable, adaptive and extensible. It provides a new and clean approach for designing GUI applications, and is well-suited for learning purposes and for verifying prototypes and ideas.
 
-## Build Instruction
-
-The static library `ViewDesign` along with test executables can be built with CMake by various compilers targeting Windows.
-
-Required build tools:
-- CMake: https://cmake.org/download/
-- Ninja: https://ninja-build.org/ (recommended for faster build)
-
-The configuring and building procedure follows CMake convention. Various base presets are specified in `CMakePresets.json` and can be inherited as in example `CMakeUserPresets.example.json`. One may create a copy and rename it to `CMakeUserPresets.json` for actual use.
-
-One can include `ViewDesign` in their own cmake project using `add_subdirectory` and `target_link_libraries`.
-
-### Compiler
-
-#### Windows Host - Windows Target
-
-##### MSVC
-
-- Install MSVC Build Tools (Visual Studio): https://visualstudio.microsoft.com/downloads/
-
-##### Mingw-w64
-
-- Install msys2: https://www.msys2.org/
-
-Mingw-w64 can be used with GCC or Clang/LLVM.
-
-###### G++
-
-Different packages need to be installed for x64 target and x86 target.
-
-*Target x64*
-
-- Install packages from msys2:
-	- `pacman -S mingw-w64-ucrt-x86_64-gcc`
-	- `pacman -S mingw-w64-ucrt-x86_64-gdb` (optional for debugging)
-- Add `C:\msys64\ucrt64\bin` to path (or your installation directory)
-
-*Target x86*
-
-- Install packages from msys2:
-	- `pacman -S mingw-w64-i686-gcc`
-- Add `C:\msys64\mingw32\bin` to path (or your installation directory)
-
-> It fails to compile due to older Windows SDK version. Add `#define _WIN32_WINNT 0x0A00` before `#include <Windows.h>` in case a win32 function is not found.
-
-##### Clang/LLVM
-
-With Clang/LLVM only x64 target is supported.
-
-- Install packages from msys2:
-	- `pacman -S mingw-w64-clang-x86_64-clang`
-- Add `C:\msys64\clang64\bin` to path (or your installation directory)
-
 ## Example
 
 A basic example program below displays "Hello World!" at the center of the main window: (from [Test/TextBoxTest.cpp](Test/TextBoxTest.cpp))
@@ -190,6 +137,59 @@ One can also use `std::make_unique<>` instead of `new` to create component insta
 [`TitleBarWindow`](ViewDesign/view/widget/TitleBarWindow.h) is a more complex example itself as a pre-defined view component combined and extended from other components.
 
 More examples can also be found in sub-folder [Test](Test).
+
+## Build Instruction
+
+The static library `ViewDesign` along with test executables can be built with CMake by various compilers targeting Windows.
+
+Tools to install:
+- CMake: https://cmake.org/download/
+- Ninja: https://ninja-build.org/ (recommended for faster build)
+
+The configuring and building procedure follows CMake convention. Various base presets are specified in `CMakePresets.json` and can be inherited as in example `CMakeUserPresets.example.json`. One may create a copy and rename it to `CMakeUserPresets.json` for actual use.
+
+One can include `ViewDesign` in their own cmake project using `add_subdirectory` and `target_link_libraries`.
+
+### Compiler
+
+#### Windows Host - Windows Target
+
+##### MSVC
+
+- Install MSVC Build Tools (Visual Studio): https://visualstudio.microsoft.com/downloads/
+
+##### Mingw-w64
+
+- Install msys2: https://www.msys2.org/
+
+Mingw-w64 can be used with GCC or Clang/LLVM.
+
+###### G++
+
+Different packages need to be installed for x64 target and x86 target.
+
+*Target x64*
+
+- Install packages from msys2:
+	- `pacman -S mingw-w64-ucrt-x86_64-gcc`
+	- `pacman -S mingw-w64-ucrt-x86_64-gdb` (optional for debugging)
+- Add `C:\msys64\ucrt64\bin` to path (or your installation directory)
+
+*Target x86*
+
+- Install packages from msys2:
+	- `pacman -S mingw-w64-i686-gcc`
+- Add `C:\msys64\mingw32\bin` to path (or your installation directory)
+
+> It fails to compile due to older Windows SDK version. Add `#define _WIN32_WINNT 0x0A00` before `#include <Windows.h>` in case a win32 function is not found.
+
+##### Clang/LLVM
+
+With Clang/LLVM only x64 target is supported.
+
+- Install packages from msys2:
+	- `pacman -S mingw-w64-clang-x86_64-clang`
+- Add `C:\msys64\clang64\bin` to path (or your installation directory)
 
 ## Concepts
 
