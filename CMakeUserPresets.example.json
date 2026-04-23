@@ -3,32 +3,32 @@
   "configurePresets": [
     {
       "name": "ninja-windows-msvc-x64-debug-win32",
-      "displayName": "Ninja Windows MSVC x64 Debug (Backend: win32)",
+      "displayName": "Ninja Windows MSVC x64 Debug (Backend: Win32)",
       "inherits": ["ninja", "msvc-x64", "debug", "win32"]
     },
     {
       "name": "ninja-windows-msvc-x64-release-win32",
-      "displayName": "Ninja Windows MSVC x64 Release (Backend: win32)",
+      "displayName": "Ninja Windows MSVC x64 Release (Backend: Win32)",
       "inherits": ["ninja", "msvc-x64", "release", "win32"]
     },
     {
       "name": "ninja-windows-msvc-x86-debug-win32",
-      "displayName": "Ninja Windows MSVC x86 Debug (Backend: win32)",
+      "displayName": "Ninja Windows MSVC x86 Debug (Backend: Win32)",
       "inherits": ["ninja", "msvc-x86", "debug", "win32"]
     },
     {
       "name": "vs2026-windows-msvc-x64-debug-win32",
-      "displayName": "VS2026 Windows MSVC x64 Debug (Backend: win32)",
+      "displayName": "VS2026 Windows MSVC x64 Debug (Backend: Win32)",
       "inherits": ["vs2026", "msvc-x64", "debug", "win32"]
     },
     {
       "name": "ninja-windows-mingw-gcc-x64-debug-win32",
-      "displayName": "Ninja Windows MinGW (GCC) x64 Debug (Backend: win32)",
+      "displayName": "Ninja Windows MinGW (GCC) x64 Debug (Backend: Win32)",
       "inherits": ["ninja", "mingw-gcc-x64", "debug", "win32"]
     },
     {
       "name": "ninja-windows-mingw-gcc-x86-debug-win32",
-      "displayName": "Ninja Windows MinGW (GCC) x86 Debug (Backend: win32)",
+      "displayName": "Ninja Windows MinGW (GCC) x86 Debug (Backend: Win32)",
       "inherits": ["ninja", "mingw-gcc-x86", "debug", "win32"],
       "cacheVariables": {
         "CMAKE_CXX_FLAGS_INIT": "-D_WIN32_WINNT=0x0A00"
@@ -36,21 +36,36 @@
     },
     {
       "name": "ninja-windows-mingw-clang-x64-debug-win32",
-      "displayName": "Ninja Windows MinGW (Clang/LLVM) x64 Debug (Backend: win32)",
+      "displayName": "Ninja Windows MinGW (Clang/LLVM) x64 Debug (Backend: Win32)",
       "inherits": ["ninja", "mingw-clang-x64", "debug", "win32"]
     },
     {
       "name": "make-linux-mingw-gcc-x64-debug-win32",
-      "displayName": "Makefiles Linux MinGW (GCC) x64 Debug (Backend: win32)",
+      "displayName": "Makefiles Linux MinGW (GCC) x64 Debug (Backend: Win32)",
       "inherits": ["make", "linux-mingw-gcc-x64", "debug", "win32"]
     },
     {
       "name": "ninja-linux-mingw-gcc-x64-debug-win32",
-      "displayName": "Ninja Linux MinGW (GCC) x64 Debug (Backend: win32)",
+      "displayName": "Ninja Linux MinGW (GCC) x64 Debug (Backend: Win32)",
       "inherits": ["ninja", "linux-mingw-gcc-x64", "debug", "win32"]
+    },
+    {
+      "name": "ninja-windows-msvc-x64-debug-glfw",
+      "displayName": "Ninja Windows MSVC x64 Debug (Backend: GLFW)",
+      "inherits": ["ninja", "msvc-x64", "debug", "glfw"],
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+      }
+    },
+    {
+      "name": "ninja-windows-msvc-x64-debug-win32-glfw",
+      "displayName": "Ninja Windows MSVC x64 Debug (Backend: Win32) with GLFW",
+      "inherits": ["ninja", "msvc-x64", "debug", "win32"],
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+      }
     }
   ],
-
   "buildPresets": [
     {
       "name": "make-k",

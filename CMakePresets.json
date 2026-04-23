@@ -147,7 +147,14 @@
       "name": "win32",
       "hidden": true,
       "cacheVariables": {
-        "BACKEND": "win32"
+        "BACKEND": "Win32"
+      }
+    },
+    {
+      "name": "glfw",
+      "hidden": true,
+      "cacheVariables": {
+        "BACKEND": "GLFW"
       }
     }
   ]

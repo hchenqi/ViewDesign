@@ -152,6 +152,8 @@ One can include `ViewDesign` in their own cmake project using `add_subdirectory`
 
 ### Compiler
 
+**Windows Target**
+
 #### MSVC
 
 - Install MSVC Build Tools (Visual Studio): https://visualstudio.microsoft.com/downloads/
@@ -193,6 +195,21 @@ Mingw-w64 can also be used for cross-compiling windows applications on Linux hos
 
 (Debian / Ubuntu)
 - `sudo apt install g++-mingw-w64-x86-64`
+
+**Linux Target**
+
+### Backend
+
+#### Win32
+
+Windows SDK is included in the compiler tool chains targeting Windows. No additional library needs to be installed.
+
+#### GLFW
+
+GLFW can be installed from vcpkg on Windows:
+- Install vcpkg: https://learn.microsoft.com/en-us/vcpkg/get_started/get-started
+- Set `VCPKG_ROOT` environment variable and add VCPKG_ROOT to path
+- Install GLFW: `vcpkg install glfw3`
 
 ## Concepts
 

@@ -1,1 +1,5 @@
-add_subdirectory(win32)
+if(BACKEND STREQUAL "Win32")
+    add_subdirectory(win32)
+else()
+    add_subdirectory(glfw)
+endif()
