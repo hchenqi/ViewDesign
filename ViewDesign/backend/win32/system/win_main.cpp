@@ -1,6 +1,6 @@
 #include "ViewDesign/view/Desktop.h"
 
-#include <Windows.h>
+#include <windows.h>
 
 
 void App();

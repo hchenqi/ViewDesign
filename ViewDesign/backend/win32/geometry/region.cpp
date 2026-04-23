@@ -1,7 +1,7 @@
 #include "ViewDesign/geometry/region.h"
 #include "ViewDesign/geometry/helper.h"
 
-#include <Windows.h>
+#include <windows.h>
 #include <windowsx.h>
 
 

@@ -126,7 +126,7 @@ void TextBlockFigure::DrawOn(RenderTarget& target, Point point) const {
 		AsD2DPoint(point),
 		text_block.layout,
 		&GetD2DSolidColorBrush(font_color),
-		D2D1_DRAW_TEXT_OPTIONS_CLIP | D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT
+		static_cast<D2D1_DRAW_TEXT_OPTIONS>(D2D1_DRAW_TEXT_OPTIONS_CLIP | D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT)
 	);
 }
 

@@ -2,7 +2,7 @@
 #include "ViewDesign/platform/win32/ime.h"
 #include "ViewDesign/view/Desktop.h"
 
-#include <Windows.h>
+#include <windows.h>
 #include <windowsx.h>
 
 

@@ -152,30 +152,28 @@ One can include `ViewDesign` in their own cmake project using `add_subdirectory`
 
 ### Compiler
 
-#### Windows Host - Windows Target
-
-##### MSVC
+#### MSVC
 
 - Install MSVC Build Tools (Visual Studio): https://visualstudio.microsoft.com/downloads/
 
-##### Mingw-w64
+#### Mingw-w64
 
 - Install msys2: https://www.msys2.org/
 
 Mingw-w64 can be used with GCC or Clang/LLVM.
 
-###### G++
+##### G++
 
 Different packages need to be installed for x64 target and x86 target.
 
-*Target x64*
+###### Target x64
 
 - Install packages from msys2:
 	- `pacman -S mingw-w64-ucrt-x86_64-gcc`
 	- `pacman -S mingw-w64-ucrt-x86_64-gdb` (optional for debugging)
 - Add `C:\msys64\ucrt64\bin` to path (or your installation directory)
 
-*Target x86*
+###### Target x86
 
 - Install packages from msys2:
 	- `pacman -S mingw-w64-i686-gcc`
@@ -188,6 +186,13 @@ With Clang/LLVM only x64 target is supported.
 - Install packages from msys2:
 	- `pacman -S mingw-w64-clang-x86_64-clang`
 - Add `C:\msys64\clang64\bin` to path (or your installation directory)
+
+#### Mingw-w64 (Linux host)
+
+Mingw-w64 can also be used for cross-compiling windows applications on Linux host.
+
+(Debian / Ubuntu)
+- `sudo apt install g++-mingw-w64-x86-64`
 
 ## Concepts
 

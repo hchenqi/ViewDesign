@@ -1,6 +1,6 @@
 #include "ViewDesign/platform/win32/ime.h"
 
-#include <Windows.h>
+#include <windows.h>
 
 
 namespace ViewDesign {

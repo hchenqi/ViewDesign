@@ -9,6 +9,25 @@
         "CMAKE_CXX_STANDARD": "20"
       }
     },
+
+    // Generator presets
+    {
+      "name": "ninja",
+      "hidden": true,
+      "generator": "Ninja"
+    },
+    {
+      "name": "vs2026",
+      "hidden": true,
+      "generator": "Visual Studio 18 2026"
+    },
+    {
+      "name": "make",
+      "hidden": true,
+      "generator": "Unix Makefiles"
+    },
+
+    // Host system presets
     {
       "name": "host-windows",
       "inherits": "base",
@@ -39,18 +58,11 @@
         "rhs": "macOS"
       }
     },
-    {
-      "name": "ninja",
-      "hidden": true,
-      "generator": "Ninja"
-    },
-    {
-      "name": "vs2026",
-      "hidden": true,
-      "generator": "Visual Studio 18 2026"
-    },
+
+    // Toolset presets
     {
       "name": "msvc",
+      "inherits": "host-windows",
       "hidden": true,
       "toolset": {
         "value": "host=x64",
@@ -81,6 +93,7 @@
     },
     {
       "name": "mingw-gcc-x64",
+      "inherits": "host-windows",
       "hidden": true,
       "cacheVariables": {
         "CMAKE_CXX_COMPILER": "x86_64-w64-mingw32-g++"
@@ -88,6 +101,7 @@
     },
     {
       "name": "mingw-gcc-x86",
+      "inherits": "host-windows",
       "hidden": true,
       "cacheVariables": {
         "CMAKE_CXX_COMPILER": "i686-w64-mingw32-g++"
@@ -95,12 +109,24 @@
     },
     {
       "name": "mingw-clang-x64",
+      "inherits": "host-windows",
       "hidden": true,
       "cacheVariables": {
         "CMAKE_CXX_COMPILER": "clang++",
         "CMAKE_CXX_FLAGS": "-Wno-switch"
       }
     },
+    {
+      "name": "linux-mingw-gcc-x64",
+      "inherits": "host-linux",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_SYSTEM_NAME": "Windows",
+        "CMAKE_CXX_COMPILER": "x86_64-w64-mingw32-g++"
+      }
+    },
+
+    // Build type presets
     {
       "name": "debug",
       "hidden": true,
@@ -115,6 +141,8 @@
         "CMAKE_BUILD_TYPE": "Release"
       }
     },
+
+    // Backend presets
     {
       "name": "win32",
       "hidden": true,

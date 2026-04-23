@@ -1,7 +1,7 @@
 #include "ViewDesign/platform/win32/aero_snap.h"
 #include "ViewDesign/view/Desktop.h"
 
-#include <Windows.h>
+#include <windows.h>
 
 
 namespace ViewDesign {

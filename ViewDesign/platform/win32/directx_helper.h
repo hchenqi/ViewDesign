@@ -4,7 +4,7 @@
 #include "ViewDesign/geometry/transform.h"
 #include "ViewDesign/drawing/color.h"
 
-#include <d2d1_3.h>
+#include <d2d1_1.h>
 #include <dxgi1_4.h>
 #include <d3d11.h>
 #include <dcomp.h>

@@ -1,6 +1,6 @@
 #include "ViewDesign/system/cursor.h"
 
-#include <Windows.h>
+#include <windows.h>
 
 
 namespace ViewDesign {

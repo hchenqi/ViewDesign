@@ -3,7 +3,7 @@
 #include <unordered_map>
 #include <cassert>
 
-#include <Windows.h>
+#include <windows.h>
 
 
 namespace ViewDesign {
@@ -22,7 +22,7 @@ void CALLBACK TimerCallbackSync(HWND Arg1, UINT Arg2, UINT_PTR Arg3, DWORD Arg4)
 }
 
 HANDLE SetTimerSync(uint period, Timer& timer_object) {
-	HANDLE timer = (HANDLE)SetTimer(NULL, NULL, period, TimerCallbackSync);
+	HANDLE timer = (HANDLE)SetTimer(NULL, (UINT_PTR)NULL, period, TimerCallbackSync);
 	timer_sync_map.emplace(timer, timer_object);
 	return timer;
 }
@@ -35,7 +35,7 @@ void ResetTimerSync(HANDLE timer, uint period) {
 void KillTimerSync(HANDLE timer) {
 	auto it = timer_sync_map.find(timer);
 	assert(it != timer_sync_map.end());
-	KillTimer(NULL, reinterpret_cast<UINT_PTR>(timer));
+	KillTimer(NULL, (UINT_PTR)timer);
 	timer_sync_map.erase(it);
 }
 
