@@ -258,13 +258,13 @@ void EditBox::Cut() {
 
 void EditBox::Copy() {
 	if (HasSelection()) {
-		SetClipboardData(text.substr(selection_range.begin(), selection_range.length()));
+		SetClipboardText(text.substr(selection_range.begin(), selection_range.length()));
 	}
 }
 
 void EditBox::Paste() {
 	if (IsEditDisabled()) { return; }
-	std::wstring str; GetClipboardData(str);
+	std::wstring str; GetClipboardText(str);
 	if (!str.empty()) { Insert(str); }
 }
 
