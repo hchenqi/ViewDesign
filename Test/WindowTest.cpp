@@ -54,17 +54,17 @@ private:
 
 
 void App() {
-	desktop.AddWindow(new MainWindow(L"WindowTest", new EmptyView()));
+	desktop.AddWindow(new MainWindow(u"WindowTest", new EmptyView()));
 	desktop.EventLoop();
 
-	desktop.AddWindow(new MainWindow(L"WindowTest", new ViewFrame(new EmptyView())));
+	desktop.AddWindow(new MainWindow(u"WindowTest", new ViewFrame(new EmptyView())));
 	desktop.EventLoop();
 
-	desktop.AddWindow(new MainWindow(L"WindowTest", new MutableFrame(new EmptyView())));
+	desktop.AddWindow(new MainWindow(u"WindowTest", new MutableFrame(new EmptyView())));
 	desktop.EventLoop();
 
 	std::unique_ptr<EmptyView> view(new EmptyView());
 
-	desktop.AddWindow(new MainWindow(L"WindowTest", new ViewFrameRef(*view)));
+	desktop.AddWindow(new MainWindow(u"WindowTest", new ViewFrameRef(*view)));
 	desktop.EventLoop();
 }

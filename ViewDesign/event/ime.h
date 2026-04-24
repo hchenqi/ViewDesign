@@ -1,8 +1,7 @@
 #pragma once
 
 #include "ViewDesign/geometry/point.h"
-
-#include <string>
+#include "ViewDesign/common/unicode.h"
 
 
 namespace ViewDesign {
@@ -15,7 +14,7 @@ struct Ime {
 	static void Disable(ViewBase& view);
 	static void SetPosition(ViewBase& view, Point point);
 
-	static std::wstring GetString();
+	static u16string GetString();
 	static size_t GetCursorPosition();
 };
 

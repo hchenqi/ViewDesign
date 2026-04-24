@@ -5,7 +5,7 @@
 namespace ViewDesign {
 
 
-std::wstring Ime::GetString() { return Win32::ImeGetString(); }
+u16string Ime::GetString() { return Win32::ImeGetString(); }
 
 size_t Ime::GetCursorPosition() { return Win32::ImeGetCursorPosition(); }
 

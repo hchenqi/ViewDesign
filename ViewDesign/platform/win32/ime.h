@@ -1,9 +1,8 @@
 #pragma once
 
 #include "ViewDesign/common/type.h"
+#include "ViewDesign/common/unicode.h"
 #include "ViewDesign/geometry/point.h"
-
-#include <string>
 
 
 namespace ViewDesign {
@@ -18,7 +17,7 @@ void ImeDisable(HANDLE hwnd);
 void ImeSetPosition(HANDLE hwnd, Point point);
 void ImeUpdateString(HANDLE hwnd, uint type);
 
-std::wstring ImeGetString();
+u16string ImeGetString();
 size_t ImeGetCursorPosition();
 
 

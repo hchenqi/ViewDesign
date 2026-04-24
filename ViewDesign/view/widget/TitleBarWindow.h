@@ -51,7 +51,7 @@ public:
 			constexpr BarStyle& foreground_color(Color foreground_color) { _foreground_color = foreground_color; return *this; }
 		}bar;
 
-		std::wstring text;
+		u16string text;
 	};
 
 	struct Style {
@@ -71,7 +71,7 @@ public:
 			border.width(2.0f).radius(2.0f).color(Color::CadetBlue);
 			background_color = Color::White;
 			title.bar.background_color(Color::CadetBlue);
-			title.text.assign(L"TitleBarWindow");
+			title.text.assign(u"TitleBarWindow");
 			title.font.color(Color::White);
 			title.paragraph.line_spacing(pct(100));
 		}
@@ -104,7 +104,7 @@ protected:
 	protected:
 		class ButtonBase : public Button<Auto, Fixed>, protected Context {
 		public:
-			ButtonBase(Color background, Color foreground, const std::wstring& tooltip_text) : Button<Auto, Fixed>(50.0f), Context(AsViewBase()), foreground(foreground), tooltip_text(tooltip_text) {
+			ButtonBase(Color background, Color foreground, const u16string& tooltip_text) : Button<Auto, Fixed>(50.0f), Context(AsViewBase()), foreground(foreground), tooltip_text(tooltip_text) {
 				this->background = this->background_normal = background;
 			}
 			~ButtonBase() {
@@ -112,7 +112,7 @@ protected:
 			}
 		protected:
 			Color foreground;
-			std::wstring tooltip_text;
+			u16string tooltip_text;
 		protected:
 			virtual void OnFocusEvent(FocusEvent event) override {
 				Button::OnFocusEvent(event);
@@ -154,7 +154,7 @@ protected:
 			virtual void OnFocusEvent(FocusEvent event) override {
 				Button::OnFocusEvent(event);
 				switch (event) {
-				case FocusEvent::MouseEnter: ShowTooltip(*this, Context::Get<TitleBarWindow>().IsMaximized() ? L"restore" : L"maximize"); break;
+				case FocusEvent::MouseEnter: ShowTooltip(*this, Context::Get<TitleBarWindow>().IsMaximized() ? u"restore" : u"maximize"); break;
 				case FocusEvent::MouseLeave: HideTooltip(*this); break;
 				}
 			}
@@ -189,9 +189,9 @@ protected:
 				new HitThroughMargin<ClipFrame<Fixed, Fixed, Right>>(
 					new ListLayoutHorizontal(
 						0.0f,
-						new MinimizeButton(style._background_color, style._foreground_color, L"minimize"),
-						new MaximizeButton(style._background_color, style._foreground_color, L""),
-						new CloseButton(style._background_color, style._foreground_color, L"close")
+						new MinimizeButton(style._background_color, style._foreground_color, u"minimize"),
+						new MaximizeButton(style._background_color, style._foreground_color, u""),
+						new CloseButton(style._background_color, style._foreground_color, u"close")
 					)
 				)
 			)
@@ -243,7 +243,7 @@ protected:
 	ref_ptr<ResizeBorder> border;
 	ref_ptr<TitleBar::Title> title;
 public:
-	void SetTitle(std::wstring str) { title->Assign(str); Window::SetTitle(str); }
+	void SetTitle(u16string str) { title->Assign(str); Window::SetTitle(str); }
 
 	// layout
 protected:

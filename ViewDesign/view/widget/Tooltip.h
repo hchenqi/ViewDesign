@@ -2,13 +2,11 @@
 
 #include "ViewDesign/view/ViewBase.h"
 
-#include <string>
-
 
 namespace ViewDesign {
 
 
-void ShowTooltip(ViewBase& view, const std::wstring& text);
+void ShowTooltip(ViewBase& view, const u16string& text);
 
 void HideTooltip(ViewBase& view);
 

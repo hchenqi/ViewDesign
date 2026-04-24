@@ -2,8 +2,7 @@
 
 #include "ViewDesign/drawing/bitmap.h"
 #include "ViewDesign/drawing/figure.h"
-
-#include <string>
+#include "ViewDesign/common/unicode.h"
 
 
 namespace ViewDesign {
@@ -18,7 +17,7 @@ private:
 	Size size;
 	mutable Bitmap bitmap;
 public:
-	Image(std::wstring file_name);
+	Image(u16string file_name);
 	Image(void* address, size_t size);
 	~Image();
 	Size GetSize() const { return size; }

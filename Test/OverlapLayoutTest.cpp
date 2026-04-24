@@ -13,7 +13,7 @@ using namespace ViewDesign;
 
 struct MainWindowStyle : TitleBarWindow::Style {
 	MainWindowStyle() {
-		title.text.assign(L"OverlapLayoutTest");
+		title.text.assign(u"OverlapLayoutTest");
 		background_color = color_transparent;
 	}
 };

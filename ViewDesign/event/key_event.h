@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ViewDesign/common/type.h"
+#include "ViewDesign/common/unicode.h"
 
 #include <stdexcept>
 
@@ -21,7 +22,7 @@ struct KeyEvent {
 		ImeEnd,
 	}type;
 	Key key;
-	wchar ch;
+	u16char ch;
 };
 
 

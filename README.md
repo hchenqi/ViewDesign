@@ -72,7 +72,7 @@ using namespace ViewDesign;
 
 struct MainWindowStyle : TitleBarWindow::Style {
 	MainWindowStyle() {
-		title.text.assign(L"Example");
+		title.text.assign(u"Example");
 	}
 };
 
@@ -87,7 +87,7 @@ void App() {
 		new TitleBarWindow(
 			MainWindowStyle(),
 			new CenterFrame<Fixed, Fixed>(
-				new TextBox(TextBoxStyle(), L"Hello World!")
+				new TextBox(TextBoxStyle(), u"Hello World!")
 			)
 		)
 	);
@@ -104,7 +104,7 @@ We say that the main window accepts a child view with size trait `<Fixed, Fixed>
 ```cpp
 	new TitleBarWindow(
 		MainWindowStyle(),
-		new TextBox(TextBoxStyle(), L"Hello World!")
+		new TextBox(TextBoxStyle(), u"Hello World!")
 	)
 ```
 
@@ -116,7 +116,7 @@ One can replace `CenterFrame<Fixed, Fixed>` with `ClipFrame<Fixed, Fixed, TopLef
 	new TitleBarWindow(
 		MainWindowStyle(),
 		new ClipFrame<Fixed, Fixed, TopLeft>(
-			new TextBox(TextBoxStyle(), L"Hello World!")
+			new TextBox(TextBoxStyle(), u"Hello World!")
 		)
 	)
 ```
@@ -128,11 +128,13 @@ One can also use `std::make_unique<>` instead of `new` to create component insta
 		std::make_unique<TitleBarWindow>(
 			MainWindowStyle(),
 			std::make_unique<CenterFrame<Fixed, Fixed>>(
-				std::make_unique<TextBox>(TextBoxStyle(), L"Hello World!")
+				std::make_unique<TextBox>(TextBoxStyle(), u"Hello World!")
 			)
 		)
 	);
 ```
+
+UTF-16 strings are used across this project. Prefix `u` is used for UTF-16 string literals.
 
 [`TitleBarWindow`](ViewDesign/view/widget/TitleBarWindow.h) is a more complex example itself as a pre-defined view component combined and extended from other components.
 
@@ -314,6 +316,12 @@ The `common` sub-folder keeps the core type definitions and utility functions.
 #### ref_ptr / owner_ptr
 
 This project tries to avoid using C++ raw pointers and prefers `std::unique_ptr` in most scenarios. But raw pointers are still useful sometimes for nullable references or holding special resources, and for accepting constructed view objects by the simpler `operator new`. Therefore, the two aliases for `T*`, `ref_ptr<T>` and `owner_ptr<T>` are defined in this project as a coding convention to mark and distinguish the usage of a raw pointer. As aliases, there is no safety check for these pointers and it is advised to use them only in a controlled manner.
+
+#### u16char
+
+In accordance with ICU (International Components for Unicode), UTF-16 strings are used in this project. `u16char` is an alias of `char16_t` and `u16string` an alias of `std::u16string`.
+
+Converters between `std::u8string` and `std::u16string` are provided. `reinterpret_cast` is used at platform boundaries for casting between `char16_t*` and `wchar_t*` on Windows, and between `char8_t*` and `char*`.
 
 ### Geometry
 

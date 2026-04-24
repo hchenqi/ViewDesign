@@ -24,7 +24,7 @@ public:
 protected:
 	owner_ptr<TextLayout> layout = nullptr;
 public:
-	void SetText(const TextBlockStyle& style, const std::wstring& text);
+	void SetText(const TextBlockStyle& style, const u16string& text);
 	Rect UpdateLayout(Size size_ref);
 
 public:

@@ -1,5 +1,6 @@
 #include "ViewDesign/platform/win32/win32_api.h"
 #include "ViewDesign/platform/win32/ime.h"
+#include "ViewDesign/platform/win32/string.h"
 #include "ViewDesign/view/Desktop.h"
 
 #include <windows.h>
@@ -83,7 +84,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 	if (IsKeyboardMsg(msg)) {
 		KeyEvent key_event;
 		key_event.key = static_cast<Key>(wparam);
-		key_event.ch = static_cast<wchar>(wparam);
+		key_event.ch = static_cast<u16char>(wparam);
 		switch (msg) {
 		case WM_KEYDOWN: key_event.type = KeyEvent::KeyDown; break;
 		case WM_KEYUP: key_event.type = KeyEvent::KeyUp; break;
@@ -167,7 +168,7 @@ FrameIrrelevantMessages:
 	return 0;
 }
 
-static const wchar_t wnd_class_name[] = L"ViewDesignFrame";
+static const u16char wnd_class_name[] = u"ViewDesignFrame";
 HINSTANCE hInstance = NULL;
 
 inline void RegisterWndClass() {
@@ -177,7 +178,7 @@ inline void RegisterWndClass() {
 		wcex.cbSize = sizeof(WNDCLASSEXW);
 		wcex.lpfnWndProc = WndProc;
 		wcex.hInstance = hInstance = GetModuleHandle(NULL);
-		wcex.lpszClassName = wnd_class_name;
+		wcex.lpszClassName = as_wchar_str(wnd_class_name);
 		wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
 		ATOM res = RegisterClassExW(&wcex);
 		if (res == 0) { throw std::runtime_error("register class error"); }
@@ -195,9 +196,9 @@ Point GetCursorPos() {
 	return Point((float)cursor_position.x, (float)cursor_position.y);
 }
 
-HANDLE CreateWnd(Rect region, std::wstring title) {
+HANDLE CreateWnd(Rect region, u16string title) {
 	RegisterWndClass();
-	HWND hwnd = CreateWindowExW(WS_EX_NOREDIRECTIONBITMAP, wnd_class_name, title.c_str(),
+	HWND hwnd = CreateWindowExW(WS_EX_NOREDIRECTIONBITMAP, as_wchar_str(wnd_class_name), as_wchar_str(title.c_str()),
 								WS_POPUP | WS_THICKFRAME | WS_MAXIMIZEBOX | WS_HSCROLL | WS_VSCROLL,
 								(int)floorf(region.point.x), (int)floorf(region.point.y), (int)ceilf(region.size.width), (int)ceilf(region.size.height),
 								NULL, NULL, hInstance, NULL);
@@ -220,8 +221,8 @@ Point GetCursorPosWithWndDpi(HANDLE hwnd) {
 	return Point(point.x / dpi, point.y / dpi);
 }
 
-void SetWndTitle(HANDLE hwnd, std::wstring title) {
-	SetWindowTextW((HWND)hwnd, title.c_str());
+void SetWndTitle(HANDLE hwnd, u16string title) {
+	SetWindowTextW((HWND)hwnd, as_wchar_str(title.c_str()));
 }
 
 void SetWndRegion(HANDLE hwnd, Rect region) {

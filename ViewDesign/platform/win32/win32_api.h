@@ -1,9 +1,8 @@
 #pragma once
 
 #include "ViewDesign/common/type.h"
+#include "ViewDesign/common/unicode.h"
 #include "ViewDesign/geometry/geometry.h"
-
-#include <string>
 
 
 namespace ViewDesign {
@@ -16,14 +15,14 @@ using HANDLE = void*;
 Size GetDesktopSize();
 Point GetCursorPos();
 
-HANDLE CreateWnd(Rect region, std::wstring title);
+HANDLE CreateWnd(Rect region, u16string title);
 void DestroyWnd(HANDLE hwnd);
 void SetWndUserData(HANDLE hwnd, void* data);
 
 float GetWndDpiScale(HANDLE hwnd);
 Point GetCursorPosWithWndDpi(HANDLE hwnd);
 
-void SetWndTitle(HANDLE hwnd, std::wstring title);
+void SetWndTitle(HANDLE hwnd, u16string title);
 void SetWndRegion(HANDLE hwnd, Rect region);
 void SetWndStyleTool(HANDLE hwnd, bool style_tool = true);
 void SetWndNoActivate(HANDLE hwnd, bool no_activate = true);

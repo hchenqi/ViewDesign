@@ -2,6 +2,7 @@
 #include "ViewDesign/platform/win32/d2d_api.h"
 #include "ViewDesign/platform/win32/dwrite_api.h"
 #include "ViewDesign/platform/win32/directx_helper.h"
+#include "ViewDesign/platform/win32/string.h"
 
 
 namespace ViewDesign {
@@ -13,19 +14,19 @@ TextBlock::~TextBlock() {
 	SafeRelease(&layout);
 }
 
-void TextBlock::SetText(const TextBlockStyle& style, const std::wstring& text) {
+void TextBlock::SetText(const TextBlockStyle& style, const u16string& text) {
 	SafeRelease(&layout);
 
 	// font format
 	ComPtr<IDWriteTextFormat> format;
 	hr << GetDWriteFactory().CreateTextFormat(
-		L"",
+		as_wchar_str(u""),
 		nullptr,
 		static_cast<DWRITE_FONT_WEIGHT>(style.font._weight),
 		static_cast<DWRITE_FONT_STYLE>(style.font._style),
 		static_cast<DWRITE_FONT_STRETCH>(style.font._stretch),
 		style.font._size,
-		style.font._locale.c_str(),
+		as_wchar_str(style.font._locale.c_str()),
 		&format
 	);
 
@@ -33,7 +34,7 @@ void TextBlock::SetText(const TextBlockStyle& style, const std::wstring& text) {
 	ComPtr<IDWriteTextLayout> layout_0;
 	ComPtr<DWriteTextLayout> layout_;
 	hr << GetDWriteFactory().CreateTextLayout(
-		text.c_str(), (uint)text.length(),
+		as_wchar_str(text.c_str()), (uint)text.length(),
 		format.Get(), 0, 0, &layout_0
 	);
 	hr << layout_0.As(&layout_);
@@ -44,8 +45,8 @@ void TextBlock::SetText(const TextBlockStyle& style, const std::wstring& text) {
 	GetDWriteFactory().CreateFontFallbackBuilder(&font_fallback_builder);
 
 	DWRITE_UNICODE_RANGE range = { 0, (uint)-1 };
-	std::vector<const wchar*> family_list; family_list.reserve(style.font._family_list.size());
-	for (auto& str : style.font._family_list) { family_list.push_back(str.c_str()); }
+	std::vector<const WCHAR*> family_list; family_list.reserve(style.font._family_list.size());
+	for (auto& str : style.font._family_list) { family_list.push_back(as_wchar_str(str.c_str())); }
 	font_fallback_builder->AddMapping(&range, 1, family_list.data(), (uint)family_list.size());
 
 	ComPtr<IDWriteFontFallback> system_font_fallback;

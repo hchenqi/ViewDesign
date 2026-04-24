@@ -2,8 +2,8 @@
 
 #include "ViewDesign/style/value_tag.h"
 #include "ViewDesign/drawing/color.h"
+#include "ViewDesign/common/unicode.h"
 
-#include <string>
 #include <vector>
 
 
@@ -110,8 +110,8 @@ struct TextBlockStyle {
 
 	struct FontFormat {
 	public:
-		std::vector<std::wstring> _family_list = { L"Segoe UI", L"DengXian" };
-		std::wstring _locale = L"";
+		std::vector<u16string> _family_list = { u"Segoe UI", u"DengXian" };
+		u16string _locale = u"";
 		FontWeight _weight = FontWeight::Normal;
 		FontStyle _style = FontStyle::Normal;
 		FontStretch _stretch = FontStretch::Normal;
@@ -119,7 +119,7 @@ struct TextBlockStyle {
 		Color _color = Color::Black;
 	public:
 		FontFormat& family(auto... list) requires (sizeof...(list) >= 1) { _family_list = { std::move(list)... }; return *this; }
-		FontFormat& locale(std::wstring locale) { _locale = locale; return *this; }
+		FontFormat& locale(u16string locale) { _locale = locale; return *this; }
 		constexpr FontFormat& weight(FontWeight weight) { _weight = weight; return *this; }
 		constexpr FontFormat& style(FontStyle style) { _style = style; return *this; }
 		constexpr FontFormat& stretch(FontStretch stretch) { _stretch = stretch; return *this; }

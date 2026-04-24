@@ -1,5 +1,7 @@
 #include "ViewDesign/common/unicode_helper.h"
 
+#include <cassert>
+#include <stdexcept>
 
 #if __has_include(<icu.h>) || __has_include(<unicode/ubrk.h>)
 
@@ -8,8 +10,6 @@
 #else
 #include <unicode/ubrk.h>
 #endif
-
-#include <cassert>
 
 
 namespace ViewDesign {
@@ -22,7 +22,7 @@ inline UBreakIterator* AsUBreakIterator(void* iter) { return static_cast<UBreakI
 
 } // namespace
 
-static_assert(sizeof(wchar_t) == sizeof(UChar));
+static_assert(sizeof(u16char) == sizeof(UChar));
 
 
 WordBreakIterator::WordBreakIterator() {
@@ -35,7 +35,7 @@ WordBreakIterator::~WordBreakIterator() {
 	ubrk_close(AsUBreakIterator(iter));
 }
 
-void WordBreakIterator::SetText(const std::wstring& str) {
+void WordBreakIterator::SetText(const u16string& str) {
 	ubrk_setText(AsUBreakIterator(iter), (const UChar*)str.c_str(), (uint)str.length(), &status); assert(U_SUCCESS(status));
 	this->str = str.c_str(); this->length = str.length();
 	begin = end = UBRK_DONE;
@@ -79,7 +79,7 @@ WordBreakIterator::WordBreakIterator() : iter(nullptr), str(nullptr), length(0),
 
 WordBreakIterator::~WordBreakIterator() {}
 
-void WordBreakIterator::SetText(const std::wstring& str) {
+void WordBreakIterator::SetText(const u16string& str) {
 	this->str = str.c_str(); this->length = str.length();
 	begin = end = 0;
 }
@@ -88,15 +88,15 @@ TextRange WordBreakIterator::Seek(size_t pos) {
 	if (str == nullptr || pos >= length) {
 		throw std::invalid_argument("invalid text position");
 	}
-	switch (GetUTF16CharType(str[pos])) {
-	case UTF16CharType::SurrogateHigh:
-		if (pos + 1 >= length || GetUTF16CharType(str[pos + 1]) != UTF16CharType::SurrogateLow) {
+	switch (GetU16UnitType(str[pos])) {
+	case U16UnitType::SurrogateHigh:
+		if (pos + 1 >= length || GetU16UnitType(str[pos + 1]) != U16UnitType::SurrogateLow) {
 			throw std::invalid_argument("invalid text position");
 		}
 		begin = pos; end = pos + 2;
 		break;
-	case UTF16CharType::SurrogateLow:
-		if (pos == 0 || GetUTF16CharType(str[pos - 1]) != UTF16CharType::SurrogateHigh) {
+	case U16UnitType::SurrogateLow:
+		if (pos == 0 || GetU16UnitType(str[pos - 1]) != U16UnitType::SurrogateHigh) {
 			throw std::invalid_argument("invalid text position");
 		}
 		begin = pos - 1; end = pos + 1;

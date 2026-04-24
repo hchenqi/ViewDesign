@@ -5,13 +5,25 @@
 
 namespace ViewDesign {
 
+namespace {
 
-EditBox::EditBox(Style style, std::wstring text) : Base(style, text), style(style) {
+constexpr size_t GetCharacterLength(u16char ch) {
+	switch (GetU16UnitType(ch)) {
+	case U16UnitType::Single: return 1;
+	case U16UnitType::SurrogateHigh: return 2;
+	default: throw std::invalid_argument("not begin of a UTF-16 code point");
+	}
+}
+
+} // namespace
+
+
+EditBox::EditBox(Style style, u16string text) : Base(style, text), style(style) {
 	style.edit._disabled ? ime.Disable(*this) : ime.Enable(*this);
 	word_break_iterator.SetText(this->text);
 }
 
-size_t EditBox::GetCharacterLength(size_t position) const { return GetUTF16CharLength(text[position]); }
+size_t EditBox::GetCharacterLength(size_t position) const { return ViewDesign::GetCharacterLength(text[position]); }
 
 TextRange EditBox::GetWordRange(size_t position) const {
 	if (text.length() == 0) { return text_range_empty; }
@@ -23,8 +35,8 @@ TextRange EditBox::GetParagraphRange(size_t position) const {
 	if (text.length() == 0) { return text_range_empty; }
 	size_t length = text.length(); if (position >= length) { position--; }
 	size_t begin = position - 1, end = position;
-	while (begin < length && text[begin] != L'\n') { begin--; }
-	while (end < length && text[end] != L'\n') { end++; }
+	while (begin < length && text[begin] != u'\n') { begin--; }
+	while (end < length && text[end] != u'\n') { end++; }
 	begin++; end++;
 	return TextRange(begin, end - begin);
 }
@@ -174,7 +186,7 @@ void EditBox::DoSelect(const HitTestInfo& info) {
 	UpdateSelection(TextRange(begin, end - begin));
 }
 
-void EditBox::Insert(wchar ch) {
+void EditBox::Insert(u16char ch) {
 	if (IsEditDisabled()) { return; }
 	if (HasSelection()) {
 		TextBox::Replace(selection_range, ch);
@@ -185,7 +197,7 @@ void EditBox::Insert(wchar ch) {
 	}
 }
 
-void EditBox::Insert(const std::wstring& str) {
+void EditBox::Insert(const u16string& str) {
 	if (IsEditDisabled()) { return; }
 	if (HasSelection()) {
 		TextBox::Replace(selection_range, str);
@@ -238,7 +250,7 @@ void EditBox::OnImeBegin() {
 
 void EditBox::OnImeString() {
 	if (IsEditDisabled()) { return; }
-	std::wstring str = ime.GetString();
+	u16string str = ime.GetString();
 	TextBox::Replace(ime_composition_range, str);
 	UpdateImeComposition(TextRange(ime_composition_range.begin(), str.length()));
 	SetCaret(ime_composition_range.begin() + ime.GetCursorPosition());
@@ -264,7 +276,7 @@ void EditBox::Copy() {
 
 void EditBox::Paste() {
 	if (IsEditDisabled()) { return; }
-	std::wstring str; GetClipboardText(str);
+	u16string str; GetClipboardText(str);
 	if (!str.empty()) { Insert(str); }
 }
 
@@ -293,8 +305,8 @@ void EditBox::OnKeyEvent(KeyEvent event) {
 		case Key::Home: MoveCaret(CaretMoveDirection::Home); break;
 		case Key::End: MoveCaret(CaretMoveDirection::End); break;
 
-		case Key::Enter: Insert(L'\n'); break;
-		case Key::Tab: Insert(L'\t'); break;
+		case Key::Enter: Insert(u'\n'); break;
+		case Key::Tab: Insert(u'\t'); break;
 
 		case Key::Backspace: Delete(true); break;
 		case Key::Delete: Delete(false); break;

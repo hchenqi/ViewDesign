@@ -11,7 +11,7 @@ using namespace ViewDesign;
 
 struct MainWindowStyle : TitleBarWindow::Style {
 	MainWindowStyle() {
-		title.text.assign(L"DivideLayoutTest");
+		title.text.assign(u"DivideLayoutTest");
 	}
 };
 

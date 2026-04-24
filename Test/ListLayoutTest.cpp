@@ -18,7 +18,7 @@ using namespace ViewDesign;
 
 struct MainWindowStyle : TitleBarWindow::Style {
 	MainWindowStyle() {
-		title.text.assign(L"ListLayoutTest");
+		title.text.assign(u"ListLayoutTest");
 	}
 };
 
@@ -84,7 +84,7 @@ private:
 			}
 		};
 	public:
-		EditView() : EditBox(Style(), L"Type something here...") {}
+		EditView() : EditBox(Style(), u"Type something here...") {}
 	public:
 		void Edit() {
 			SetCaret(-1);

@@ -1,14 +1,14 @@
 #pragma once
 
-#include <string>
+#include "ViewDesign/common/unicode.h"
 
 
 namespace ViewDesign {
 
 
-void SetClipboardText(std::wstring text);
+void SetClipboardText(u16string text);
 
-void GetClipboardText(std::wstring& text);
+void GetClipboardText(u16string& text);
 
 
 } // namespace ViewDesign

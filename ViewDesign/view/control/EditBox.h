@@ -33,7 +33,7 @@ public:
 	struct Style : TextBox::Style, EditBoxStyle {};
 
 public:
-	EditBox(Style style, std::wstring text = L"");
+	EditBox(Style style, u16string text = u"");
 	~EditBox() {}
 
 	// style
@@ -120,8 +120,8 @@ protected:
 
 	// keyboard input
 protected:
-	void Insert(wchar ch);
-	void Insert(const std::wstring& str);
+	void Insert(u16char ch);
+	void Insert(const u16string& str);
 	void Delete(bool is_backspace);
 
 	// ime input

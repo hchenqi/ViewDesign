@@ -13,7 +13,7 @@ using namespace ViewDesign;
 
 struct MainWindowStyle : TitleBarWindow::Style {
 	MainWindowStyle() {
-		title.text.assign(L"SplitLayoutTest");
+		title.text.assign(u"SplitLayoutTest");
 	}
 };
 
@@ -29,11 +29,11 @@ void Test() {
 					new SplitLayout(
 						new BorderFrame(
 							Border(2.0f, Color::Green),
-							WrapTextBox<WidthTraitFirst, HeightTraitFirst>(new EditBox(EditBox::Style(), L"Edit here ..."))
+							WrapTextBox<WidthTraitFirst, HeightTraitFirst>(new EditBox(EditBox::Style(), u"Edit here ..."))
 						),
 						new BorderFrame(
 							Border(2.0f, Color::Red),
-							WrapTextBox<WidthTraitSecond, HeightTraitSecond>(new EditBox(EditBox::Style(), L"Edit here, too ..."))
+							WrapTextBox<WidthTraitSecond, HeightTraitSecond>(new EditBox(EditBox::Style(), u"Edit here, too ..."))
 						)
 					)
 				)

@@ -9,7 +9,7 @@ using namespace ViewDesign;
 
 struct MainWindowStyle : TitleBarWindow::Style {
 	MainWindowStyle() {
-		title.text.assign(L"TextBoxTest");
+		title.text.assign(u"TextBoxTest");
 	}
 };
 
@@ -27,7 +27,7 @@ void App() {
 		new TitleBarWindow(
 			MainWindowStyle(),
 			new CenterFrame<Fixed, Fixed>(
-				new TextBox(TextBoxStyle(), L"Hello World!\n你好，世界！")
+				new TextBox(TextBoxStyle(), u"Hello World!\n你好，世界！")
 			)
 		)
 	);

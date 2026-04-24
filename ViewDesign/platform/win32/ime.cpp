@@ -1,4 +1,5 @@
 #include "ViewDesign/platform/win32/ime.h"
+#include "ViewDesign/platform/win32/string.h"
 
 #include <windows.h>
 
@@ -9,7 +10,7 @@ namespace Win32 {
 
 namespace {
 
-std::wstring ime_string;
+u16string ime_string;
 size_t cursor_position;
 
 } // namespace
@@ -34,12 +35,12 @@ void ImeUpdateString(HANDLE hwnd, uint type) {
 	HIMC imc = ImmGetContext((HWND)hwnd);
 	if (type & GCS_COMPSTR) {
 		LONG size = ImmGetCompositionStringW(imc, GCS_COMPSTR, nullptr, 0);
-		ime_string.resize(size / sizeof(wchar));
+		ime_string.resize(size / sizeof(u16char));
 		ImmGetCompositionStringW(imc, GCS_COMPSTR, ime_string.data(), size);
 	}
 	if (type & GCS_RESULTSTR) {
 		LONG size = ImmGetCompositionStringW(imc, GCS_RESULTSTR, nullptr, 0);
-		ime_string.resize(size / sizeof(wchar));
+		ime_string.resize(size / sizeof(u16char));
 		ImmGetCompositionStringW(imc, GCS_RESULTSTR, ime_string.data(), size);
 	}
 	if (type & GCS_CURSORPOS) {
@@ -49,7 +50,7 @@ void ImeUpdateString(HANDLE hwnd, uint type) {
 }
 
 
-std::wstring ImeGetString() { return std::move(ime_string); }
+u16string ImeGetString() { return std::move(ime_string); }
 
 size_t ImeGetCursorPosition() { return cursor_position; }
 

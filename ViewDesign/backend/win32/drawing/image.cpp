@@ -2,6 +2,7 @@
 #include "ViewDesign/platform/win32/d2d_api.h"
 #include "ViewDesign/platform/win32/wic_api.h"
 #include "ViewDesign/platform/win32/directx_helper.h"
+#include "ViewDesign/platform/win32/string.h"
 
 #include <stdexcept>
 
@@ -30,11 +31,11 @@ ComPtr<IWICFormatConverter> LoadFromDecoder(ComPtr<IWICBitmapDecoder> decoder) {
 	return converter;
 }
 
-ComPtr<IWICFormatConverter> LoadImageFromFile(std::wstring file_name) {
+ComPtr<IWICFormatConverter> LoadImageFromFile(u16string file_name) {
 	try {
 		ComPtr<IWICBitmapDecoder> decoder;
 		hr << GetWICFactory().CreateDecoderFromFilename(
-			file_name.c_str(),
+			as_wchar_str(file_name.c_str()),
 			NULL,
 			GENERIC_READ,
 			WICDecodeMetadataCacheOnDemand,
@@ -85,7 +86,7 @@ inline ComPtr<D2DBitmap> CreateD2DBitmapFromWicBitmap(IWICFormatConverter& conve
 } // namespace
 
 
-Image::Image(std::wstring file_name) : source(static_cast<ImageSource*>(LoadImageFromFile(file_name).Detach())), size(GetImageSize(*source)) {}
+Image::Image(u16string file_name) : source(static_cast<ImageSource*>(LoadImageFromFile(file_name).Detach())), size(GetImageSize(*source)) {}
 
 Image::Image(void* address, size_t size) : source(static_cast<ImageSource*>(LoadImageFromMemory(address, size).Detach())), size(GetImageSize(*source)) {}
 

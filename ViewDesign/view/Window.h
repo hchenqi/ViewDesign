@@ -15,12 +15,12 @@ private:
 	friend struct WindowApi;
 
 public:
-	Window(std::wstring title, view_ptr<> child);
+	Window(u16string title, view_ptr<> child);
 	~Window();
 
 	// style
 public:
-	void SetTitle(std::wstring title);
+	void SetTitle(u16string title);
 
 	// layout
 private:

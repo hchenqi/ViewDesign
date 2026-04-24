@@ -12,16 +12,16 @@ public:
 	using Style = TextBlockStyle;
 
 public:
-	TextBox(Style style, std::wstring text) : style(style), text(text) { text_block.SetText(style, text); }
+	TextBox(Style style, u16string text) : style(style), text(text) { text_block.SetText(style, text); }
 	~TextBox() {}
 
 	// text
 protected:
 	Style style;
-	std::wstring text;
+	u16string text;
 	TextBlock text_block;
 public:
-	const std::wstring& GetText() const { return text; }
+	const u16string& GetText() const { return text; }
 protected:
 	virtual void OnTextUpdate() {
 		text_block.SetText(style, text);
@@ -35,11 +35,11 @@ protected:
 		}
 	}
 public:
-	void Assign(std::wstring str) { text.assign(std::move(str)); OnTextUpdate(); }
-	void Insert(size_t pos, wchar ch) { text.insert(pos, 1, ch); OnTextUpdate(); }
-	void Insert(size_t pos, const std::wstring& str) { text.insert(pos, str); OnTextUpdate(); }
-	void Replace(TextRange range, wchar ch) { text.replace(range.begin(), range.length(), 1, ch); OnTextUpdate(); }
-	void Replace(TextRange range, const std::wstring& str) { text.replace(range.begin(), range.length(), str); OnTextUpdate(); }
+	void Assign(u16string str) { text.assign(std::move(str)); OnTextUpdate(); }
+	void Insert(size_t pos, u16char ch) { text.insert(pos, 1, ch); OnTextUpdate(); }
+	void Insert(size_t pos, const u16string& str) { text.insert(pos, str); OnTextUpdate(); }
+	void Replace(TextRange range, u16char ch) { text.replace(range.begin(), range.length(), 1, ch); OnTextUpdate(); }
+	void Replace(TextRange range, const u16string& str) { text.replace(range.begin(), range.length(), str); OnTextUpdate(); }
 	void Erase(size_t pos) { text.erase(pos); OnTextUpdate(); }
 	void Erase(TextRange range) { text.erase(range.begin(), range.length()); OnTextUpdate(); }
 

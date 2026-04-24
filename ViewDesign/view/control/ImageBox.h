@@ -9,7 +9,7 @@ namespace ViewDesign {
 
 class ImageBox : public ViewType<Auto, Auto> {
 public:
-	ImageBox(std::wstring image_file) : image(image_file) {}
+	ImageBox(u16string image_file) : image(image_file) {}
 protected:
 	Image image;
 protected:
@@ -26,7 +26,7 @@ protected:
 
 class ImageRepeatBox : public ViewType<Fixed, Fixed> {
 public:
-	ImageRepeatBox(std::wstring image_file, Point offset = point_zero) : image(image_file), offset(offset - point_zero) {}
+	ImageRepeatBox(u16string image_file, Point offset = point_zero) : image(image_file), offset(offset - point_zero) {}
 protected:
 	Image image;
 	Vector offset;

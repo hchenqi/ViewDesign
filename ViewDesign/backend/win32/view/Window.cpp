@@ -15,7 +15,7 @@ inline float RoundWin32Length(float length) { length = floorf(length); return le
 } // namespace
 
 
-Window::Window(std::wstring title, view_ptr<> child) : ViewFrame(std::move(child)) {
+Window::Window(u16string title, view_ptr<> child) : ViewFrame(std::move(child)) {
 	hwnd = Win32::CreateWnd(region_empty, title);
 	Win32::SetWndUserData(hwnd, this);
 	scale = Scale(Win32::GetWndDpiScale(hwnd));
@@ -27,7 +27,7 @@ Window::~Window() {
 	Win32::DestroyWnd(hwnd);
 }
 
-void Window::SetTitle(std::wstring title) { Win32::SetWndTitle(hwnd, title); }
+void Window::SetTitle(u16string title) { Win32::SetWndTitle(hwnd, title); }
 
 void Window::InitializeRegion(Size size_ref) {
 	region = OnWindowSizeRefUpdate(size_ref * scale.Invert()) * scale;

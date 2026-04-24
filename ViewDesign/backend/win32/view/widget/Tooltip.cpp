@@ -17,14 +17,14 @@ namespace {
 class Tooltip : public Window {
 private:
 	Tooltip() : Window(
-		L"",
+		u"",
 		new MaxFrame(
 			Size(200.0f, 200.0f),
 			new BorderFrame(
 				Border(1.5f, 0x767676),
 				new PaddingFrame(
 					Padding(5.0f, 2.0f),
-					text_box = new SolidColorBackground<TextBox, 0xF1F2F7>(TextStyle(), L"")
+					text_box = new SolidColorBackground<TextBox, 0xF1F2F7>(TextStyle(), u"")
 				)
 			)
 		)
@@ -124,7 +124,7 @@ private:
 private:
 	ref_ptr<ViewBase> view;
 public:
-	void Show(ViewBase& view, const std::wstring& text) {
+	void Show(ViewBase& view, const u16string& text) {
 		this->view = &view;
 		text_box->Assign(text);
 		switch (state) {
@@ -191,7 +191,7 @@ public:
 } // namespace
 
 
-void ShowTooltip(ViewBase& view, const std::wstring& text) {
+void ShowTooltip(ViewBase& view, const u16string& text) {
 	Tooltip::Get().Show(view, text);
 }
 
