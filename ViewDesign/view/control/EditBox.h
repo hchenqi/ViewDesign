@@ -1,18 +1,18 @@
 #pragma once
 
 #include "ViewDesign/view/control/TextBox.h"
+#include "ViewDesign/view/wrapper/Cursor.h"
+#include "ViewDesign/common/unicode_helper.h"
 #include "ViewDesign/event/timer.h"
 #include "ViewDesign/event/ime.h"
 #include "ViewDesign/event/mouse_tracker.h"
 #include "ViewDesign/event/key_tracker.h"
-#include "ViewDesign/common/unicode_helper.h"
-#include "ViewDesign/view/wrapper/Cursor.h"
 
 
 namespace ViewDesign {
 
 
-class EditBox : public CustomizedCursor<TextBox, Cursor::Text> {
+class EditBox : public CustomizedCursor<TextBox, CursorStyle::Text> {
 protected:
 	struct EditBoxStyle {
 		struct EditStyle {

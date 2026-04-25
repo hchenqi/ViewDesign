@@ -78,7 +78,7 @@ public:
 	};
 
 protected:
-	class ResizeBorder : public CustomizedCursor<HitSelfFallback<BorderFrame<Fixed, Fixed>>, Cursor::Default> {
+	class ResizeBorder : public CustomizedCursor<HitSelfFallback<BorderFrame<Fixed, Fixed>>, CursorStyle::NoChange> {
 	public:
 		using Base::Base;
 	protected:
@@ -86,7 +86,7 @@ protected:
 			if (event.type == MouseEvent::Move || event.type == MouseEvent::LeftDown) {
 				BorderPosition border_position = HitTestBorderPosition(size, border._width + border._radius, event.point);
 				if (event.type == MouseEvent::Move) {
-					SetCursor(GetBorderPositionCursor(border_position));
+					SetCursor(GetCursor(GetBorderPositionCursorStyle(border_position)));
 				} else {
 					Win32::AeroSnapBorderResizingEffect(*this, border_position);
 				}

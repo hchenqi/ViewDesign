@@ -50,17 +50,17 @@ inline BorderPosition HitTestBorderPosition(Size size, float border_width, Point
 	}
 }
 
-inline Cursor GetBorderPositionCursor(BorderPosition border_position) {
+inline CursorStyle GetBorderPositionCursorStyle(BorderPosition border_position) {
 	switch (border_position) {
-	case BorderPosition::Left: return Cursor::ResizeWE;
-	case BorderPosition::Top: return Cursor::ResizeNS;
-	case BorderPosition::Right: return Cursor::ResizeWE;
-	case BorderPosition::Bottom: return Cursor::ResizeNS;
-	case BorderPosition::LeftTop: return Cursor::ResizeNWSE;
-	case BorderPosition::RightTop: return Cursor::ResizeNESW;
-	case BorderPosition::LeftBottom: return Cursor::ResizeNESW;
-	case BorderPosition::RightBottom: return Cursor::ResizeNWSE;
-	default: return Cursor::Default;
+	case BorderPosition::Left: return CursorStyle::ResizeWE;
+	case BorderPosition::Top: return CursorStyle::ResizeNS;
+	case BorderPosition::Right: return CursorStyle::ResizeWE;
+	case BorderPosition::Bottom: return CursorStyle::ResizeNS;
+	case BorderPosition::LeftTop: return CursorStyle::ResizeNWSE;
+	case BorderPosition::RightTop: return CursorStyle::ResizeNESW;
+	case BorderPosition::LeftBottom: return CursorStyle::ResizeNESW;
+	case BorderPosition::RightBottom: return CursorStyle::ResizeNWSE;
+	default: return CursorStyle::NoChange;
 	}
 }
 

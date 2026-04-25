@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ViewDesign/common/uncopyable.h"
-#include "ViewDesign/style/cursor_style.h"
+#include "ViewDesign/system/cursor.h"
 #include "ViewDesign/drawing/canvas.h"
 #include "ViewDesign/event/event.h"
 
@@ -26,7 +26,7 @@ protected:
 
 	// style
 protected:
-	Cursor cursor = Cursor::Arrow;
+	std::reference_wrapper<Cursor> cursor = GetCursor(CursorStyle::Arrow);
 
 	// parent
 private:
