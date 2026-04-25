@@ -6,7 +6,7 @@
       "hidden": true,
       "binaryDir": "${sourceDir}/build/${presetName}",
       "cacheVariables": {
-        "CMAKE_CXX_STANDARD": "20"
+        "CMAKE_CXX_STANDARD": "23"
       }
     },
 
