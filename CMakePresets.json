@@ -143,17 +143,24 @@
 
     // Backend presets
     {
-      "name": "win32",
+      "name": "glfw-opengl",
       "hidden": true,
       "cacheVariables": {
-        "BACKEND": "Win32"
+        "BACKEND": "GLFW-OpenGL"
       }
     },
     {
-      "name": "glfw",
+      "name": "glfw-vulkan",
       "hidden": true,
       "cacheVariables": {
-        "BACKEND": "GLFW"
+        "BACKEND": "GLFW-Vulkan"
+      }
+    },
+    {
+      "name": "win32-directx",
+      "hidden": true,
+      "cacheVariables": {
+        "BACKEND": "Win32-DirectX"
       }
     }
   ]

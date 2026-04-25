@@ -142,19 +142,22 @@ More examples can also be found in sub-folder [Test](Test).
 
 ## Build Instruction
 
-The static library `ViewDesign` along with test executables can be built with CMake by various compilers targeting Windows.
+The static library `ViewDesign` along with test executables can be built with CMake by various compilers targeting multiple backends cross-platform.
 
 Tools to install:
 - CMake: https://cmake.org/download/
-- Ninja: https://ninja-build.org/ (recommended for faster build)
+- Ninja: https://ninja-build.org/ (recommended CMake generator for faster build)
+- Visual Studio Code: https://code.visualstudio.com/ (recommended code editor)
+	- CMake Tools (extension integrating CMake in VS Code)
+- vcpkg: https://learn.microsoft.com/en-us/vcpkg/get_started/get-started (recommended C++ package manager for installing and managing libraries)
 
-The configuring and building procedure follows CMake convention. Various base presets are specified in `CMakePresets.json` and can be inherited as in example `CMakeUserPresets.example.json`. One may create a copy and rename it to `CMakeUserPresets.json` for actual use.
+The configuring and building of this library follows CMake routines. Possible base presets are specified in `CMakePresets.json` and can be inherited as in example `CMakeUserPresets.example.json`. One may create a copy and rename it to `CMakeUserPresets.json` for actual use.
 
-One can include `ViewDesign` in their own cmake project using `add_subdirectory` and `target_link_libraries`.
+`ViewDesign` can be included in a C++ project by CMake using `add_subdirectory` and `target_link_libraries`.
 
 ### Compiler
 
-**Windows Target**
+*Windows Target*
 
 #### MSVC
 
@@ -198,20 +201,42 @@ Mingw-w64 can also be used for cross-compiling windows applications on Linux hos
 (Debian / Ubuntu)
 - `sudo apt install g++-mingw-w64-x86-64`
 
-**Linux Target**
+*Linux Target*
 
-### Backend
+### Platform
+
+The following platform tools will be searched and included automatically in the static library.
 
 #### Win32
 
 Windows SDK is included in the compiler tool chains targeting Windows. No additional library needs to be installed.
 
+#### OpenGL
+
+OpenGL is available for major operating systems. No additional library needs to be installed.
+
 #### GLFW
 
-GLFW can be installed from vcpkg on Windows:
-- Install vcpkg: https://learn.microsoft.com/en-us/vcpkg/get_started/get-started
-- Set `VCPKG_ROOT` environment variable and add VCPKG_ROOT to path
-- Install GLFW: `vcpkg install glfw3`
+GLFW can be installed from vcpkg by `vcpkg install glfw3`.
+
+GLFW (https://www.glfw.org/) is a cross-platform library for managing windows, interacting with OpenGL, Vulkan or other renderers and receiving input and events.
+
+#### glad
+
+glad can be installed from vcpkg by `vcpkg install glad`.
+
+glad dynamically loads OpenGL functions as global variables that can be directly accessed. A function might be nullptr if it's not provided by OpenGL and should be checked before use.
+
+#### Vulkan
+
+Vulkan SDK can be installed from vcpkg by `vcpkg install vulkan` or its website https://vulkan.lunarg.com/.
+
+### Backend
+
+The following backends can be selected for building `ViewDesign`:
+- Win32-DirectX
+- GLFW-OpenGL
+- GLFW-Vulkan
 
 ## Concepts
 

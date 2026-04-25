@@ -5,6 +5,7 @@ endif()
 file(GLOB_RECURSE LIB_SOURCES *.h *.cpp)
 add_library(ViewDesignWin32 STATIC ${LIB_SOURCES})
 add_library(ViewDesign::Win32 ALIAS ViewDesignWin32)
+set_target_properties(ViewDesignWin32 PROPERTIES FOLDER "Platform")
 
 target_include_directories(ViewDesignWin32 PUBLIC ${PROJECT_SOURCE_DIR})
 
@@ -15,4 +16,4 @@ target_link_libraries(ViewDesignWin32 PRIVATE dwrite)
 target_link_libraries(ViewDesignWin32 PRIVATE windowscodecs)
 target_link_libraries(ViewDesignWin32 PRIVATE imm32)
 
-target_link_libraries(ViewDesign PRIVATE ViewDesign::Win32)
+target_link_libraries(ViewDesign PUBLIC ViewDesign::Win32)
