@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ViewDesign/drawing/bitmap.h"
+#include "ViewDesign/drawing/texture.h"
 #include "ViewDesign/drawing/figure.h"
 #include "ViewDesign/common/unicode.h"
 
@@ -15,13 +15,13 @@ private:
 	friend struct ImageFigure;
 	owner_ptr<ImageSource> source;
 	Size size;
-	mutable Bitmap bitmap;
+	mutable Texture texture;
 public:
 	Image(u16string file_name);
 	Image(void* address, size_t size);
 	~Image();
 	Size GetSize() const { return size; }
-	void CreateBitmap() const;
+	void CreateTexture() const;
 };
 
 
@@ -32,7 +32,7 @@ struct ImageFigure : Figure {
 
 	ImageFigure(const Image& image, Rect region = region_infinite, uchar opacity = 0xFF) :
 		image(image), region(Rect(point_zero, image.size).Intersect(region)), opacity(opacity) {
-		image.CreateBitmap();
+		image.CreateTexture();
 	}
 
 	virtual void DrawOn(RenderTarget& target, Point point) const override;

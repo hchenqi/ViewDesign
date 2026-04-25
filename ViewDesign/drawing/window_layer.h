@@ -18,8 +18,8 @@ public:
 	WindowLayer() : swap_chain(nullptr), comp_target(nullptr) {}
 	~WindowLayer() { Destroy(); }
 private:
-	void CreateBitmap();
-	void DestroyBitmap();
+	void CreateTexture();
+	void DestroyTexture();
 public:
 	void Create(HANDLE hwnd, Size size);
 	void Destroy();

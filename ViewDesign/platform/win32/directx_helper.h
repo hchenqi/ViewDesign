@@ -39,7 +39,7 @@ using WICFormatConverter = IWICFormatConverter;
 struct SwapChain : DXGISwapChain {};
 struct CompositionTarget : DCompositionTarget {};
 struct RenderTarget : D2DDeviceContext {};
-struct BitmapResource : D2DBitmap {};
+struct TextureResource : D2DBitmap {};
 struct TextLayout : DWriteTextLayout {};
 struct ImageSource : WICFormatConverter {};
 

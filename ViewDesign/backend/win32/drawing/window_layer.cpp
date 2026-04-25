@@ -30,10 +30,10 @@ void WindowLayer::Create(HANDLE hwnd, Size size) {
 	swap_chain_desc.Flags = 0;
 	swap_chain_desc.AlphaMode = DXGI_ALPHA_MODE_PREMULTIPLIED;
 	hr << GetDXGIFactory().CreateSwapChainForComposition(&GetD3DDevice(), &swap_chain_desc, nullptr, &swap_chain);
-	this->swap_chain = static_cast<SwapChain*>(swap_chain.Detach());
+	this->swap_chain = static_cast<owner_ptr<SwapChain>>(swap_chain.Detach());
 
-	// Create bitmap.
-	CreateBitmap();
+	// Create texture.
+	CreateTexture();
 
 	// Create DComp resource.
 	ComPtr<IDCompositionVisual> comp_visual;
@@ -43,18 +43,18 @@ void WindowLayer::Create(HANDLE hwnd, Size size) {
 	ComPtr<IDCompositionTarget> comp_target;
 	hr << GetDCompositionDevice().CreateTargetForHwnd((HWND)hwnd, false, &comp_target);
 	comp_target->SetRoot(comp_visual.Get());
-	this->comp_target = static_cast<CompositionTarget*>(comp_target.Detach());
+	this->comp_target = static_cast<owner_ptr<CompositionTarget>>(comp_target.Detach());
 
 	GetDCompositionDevice().Commit();
 }
 
 void WindowLayer::Destroy() {
 	SafeRelease(&comp_target);
-	DestroyBitmap();
+	DestroyTexture();
 	SafeRelease(&swap_chain);
 }
 
-void WindowLayer::CreateBitmap() {
+void WindowLayer::CreateTexture() {
 	ComPtr<IDXGISurface> dxgi_surface;
 	hr << swap_chain->GetBuffer(0, IID_PPV_ARGS(&dxgi_surface));
 
@@ -64,17 +64,17 @@ void WindowLayer::CreateBitmap() {
 		D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED)
 	);
 	hr << GetD2DDeviceContext().CreateBitmapFromDxgiSurface(dxgi_surface.Get(), &bitmap_properties, &bitmap);
-	this->bitmap.Set(static_cast<BitmapResource*>(bitmap.Detach()));
+	this->texture.Set(static_cast<owner_ptr<TextureResource>>(bitmap.Detach()));
 }
 
-void WindowLayer::DestroyBitmap() {
-	bitmap.Destroy();
+void WindowLayer::DestroyTexture() {
+	texture.Destroy();
 }
 
 void WindowLayer::Resize(Size size) {
-	DestroyBitmap();
+	DestroyTexture();
 	hr << swap_chain->ResizeBuffers(0, (uint)ceilf(size.width), (uint)ceilf(size.height), DXGI_FORMAT_UNKNOWN, 0);
-	CreateBitmap();
+	CreateTexture();
 }
 
 void WindowLayer::Present(Rect rect) {

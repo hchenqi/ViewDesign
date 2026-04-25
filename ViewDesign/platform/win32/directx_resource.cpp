@@ -6,7 +6,7 @@
 #include "ViewDesign/platform/win32/wic_api.h"
 #include "ViewDesign/platform/win32/directx_resource.h"
 #include "ViewDesign/platform/win32/directx_helper.h"
-#include "ViewDesign/drawing/bitmap.h"
+#include "ViewDesign/drawing/texture.h"
 
 #include <unordered_set>
 
@@ -43,8 +43,8 @@ public:
 	// WIC
 	ComPtr<WICFactory> wic_factory;
 
-	// Bitmap (D2D bitmap)
-	std::unordered_set<ref_ptr<Bitmap>> bitmap_set;
+	// Texture (D2D bitmap)
+	std::unordered_set<ref_ptr<Texture>> texture_set;
 
 public:
 	DirectXResource();
@@ -132,7 +132,7 @@ void DirectXResource::CreateDeviceDependentResource() {
 }
 
 void DirectXResource::DiscardDeviceDependentResource() {
-	for (auto bitmap : bitmap_set) { bitmap->Destroy(); }
+	for (auto texture : texture_set) { texture->Destroy(); }
 
 	d2d_solid_color_brush.Reset();
 	d2d_device_context.Reset();
@@ -157,8 +157,8 @@ void DirectXResource::DiscardDeviceDependentResource() {
 namespace Win32 {
 
 
-void RegisterBitmap(Bitmap& bitmap) { directx_resource.bitmap_set.insert(&bitmap); }
-void UnregisterBitmap(Bitmap& bitmap) { directx_resource.bitmap_set.erase(&bitmap); }
+void RegisterTexture(Texture& texture) { directx_resource.texture_set.insert(&texture); }
+void UnregisterTexture(Texture& texture) { directx_resource.texture_set.erase(&texture); }
 
 void DirectXRecreateResource() { directx_resource.RecreateDeviceDependentResource(); }
 

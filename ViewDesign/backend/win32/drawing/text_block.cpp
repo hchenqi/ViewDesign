@@ -38,7 +38,7 @@ void TextBlock::SetText(const TextBlockStyle& style, const u16string& text) {
 		format.Get(), 0, 0, &layout_0
 	);
 	hr << layout_0.As(&layout_);
-	layout = static_cast<TextLayout*>(layout_.Detach());
+	layout = static_cast<owner_ptr<TextLayout>>(layout_.Detach());
 
 	// font fallback
 	ComPtr<IDWriteFontFallbackBuilder> font_fallback_builder;

@@ -3,13 +3,13 @@
 
 namespace ViewDesign {
 
-class Bitmap;
+class Texture;
 
 namespace Win32 {
 
 
-void RegisterBitmap(Bitmap& bitmap);
-void UnregisterBitmap(Bitmap& bitmap);
+void RegisterTexture(Texture& texture);
+void UnregisterTexture(Texture& texture);
 
 void DirectXRecreateResource();
 

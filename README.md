@@ -273,17 +273,19 @@ A view whose content is updated without size change can also initiate redraw. A 
 
 A view initiating redraw notifies its parent view about its updated region, and the parent view translates and clips the region as its own region and notifies its own parent view until the `Window` which then draws all child views in the updated region and presents the window.
 
-### Figure / Canvas / Layer
+### Figure / Canvas / Layer / Texture / RenderTarget
 
-A `Figure` can draw itself on a render target. Different figure types like `Rectangle`, `Circle`, `TextBlock` and `Image` all inherit the `Figure` base class.
+`Figure` is the unit for drawing. A figure can draw itself on a backend-dependent `RenderTarget`. Different figure types like `Rectangle`, `Circle`, `TextBlock` and `Image` all inherit the `Figure` base class.
 
-Each view can draw its content as figures on a `Canvas` provided to it. It can pass the `Canvas` to its child views to draw on.
+A view can draw its content as figures on a `Canvas` provided to it by its parent view. It can transform the coordinates of the canvas relative to a child view and pass the canvas further for the child view to draw on.
 
-A `Canvas` is a virtual render target for views, which actually collects the figures drawn by the views as drawing commands for rendering on the actual render target `Bitmap` of a `Layer`.
+A canvas is an abstract render target for views, which actually collects the figures provided by the views with their positions and transforms as drawing commands for rendering on the actual render target.
 
-A `LayerFrame` maintains a `Layer` like a cache where its child views are directly drawn on. The layer itself as a figure can be drawn on another layer.
+A `Layer` is where the figures collected in a canvas is directly drawn on. It holds a `Texture` which is a wrapper for the backend-dependent render target where the figures can draw themselves on.
 
-Each `Window` maintains a `WindowLayer` for finally rendering the content in the window.
+A `LayerFrame` is a view maintaining a layer in itself as a cache where its child views are directly drawn on. The layer can further be drawn like a figure as the content of the `LayerFrame` on another layer.
+
+A `Window` maintains a backend-dependent `WindowLayer` for rendering the content in the window and presenting the window.
 
 ### MouseEvent / KeyEvent / FocusEvent
 

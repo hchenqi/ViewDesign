@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ViewDesign/drawing/bitmap.h"
+#include "ViewDesign/drawing/texture.h"
 #include "ViewDesign/drawing/figure.h"
 
 
@@ -12,13 +12,13 @@ class Canvas;
 class Layer : Uncopyable {
 protected:
 	friend struct LayerFigure;
-	Bitmap bitmap;
+	Texture texture;
 public:
 	Layer() {}
 	~Layer() {}
-	bool IsEmpty() const { return bitmap.IsEmpty(); }
+	bool IsEmpty() const { return texture.IsEmpty(); }
 	void Create(Size size);
-	void Destroy() { bitmap.Destroy(); }
+	void Destroy() { texture.Destroy(); }
 public:
 	void DrawCanvas(const Canvas& canvas, Vector offset, Rect clip_region);
 };
