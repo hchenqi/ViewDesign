@@ -17,9 +17,8 @@ public:
 	enum Set : uint;
 
 public:
-	constexpr Color() : blue(), green(), red(), alpha() {}
+	constexpr Color() : Color(0x000000, 0x00) {}
 	constexpr Color(uint rgb, uchar alpha = 0xFF) : blue(rgb & 0xFF), green((rgb >> 8) & 0xFF), red((rgb >> 16) & 0xFF), alpha(alpha) {}
-	constexpr Color(Set rgb, uchar alpha = 0xFF) : Color((uint)rgb, alpha) {}
 
 	constexpr uint AsUnsigned() const { return blue | (green << 8) | (red << 16) | (alpha << 24); }
 
@@ -174,7 +173,7 @@ public:
 	};
 };
 
-constexpr Color color_transparent = Color(0x000000, 0x00);
+constexpr Color color_transparent = Color();
 
 
 } // namespace ViewDesign

@@ -14,7 +14,6 @@ using namespace Win32;
 
 namespace {
 
-
 ComPtr<IWICFormatConverter> LoadFromDecoder(ComPtr<IWICBitmapDecoder> decoder) {
 	ComPtr<IWICFormatConverter> converter;
 	ComPtr<IWICBitmapFrameDecode> source;
@@ -65,23 +64,18 @@ ComPtr<IWICFormatConverter> LoadImageFromMemory(void* address, size_t size) {
 	}
 }
 
-
 inline Size GetImageSize(ImageSource& source) {
 	uint width, height;
 	hr << source.GetSize(&width, &height);
 	return Size((float)width, (float)height);
 }
 
-inline ComPtr<ID2D1Bitmap1> CreateD2DBitmapFromWicBitmap(IWICFormatConverter& converter) {
+inline owner_ptr<ID2D1Bitmap1> CreateD2DBitmapFromWicBitmap(IWICFormatConverter& converter) {
+	D2D1_BITMAP_PROPERTIES1 bitmap_properties = D2D1::BitmapProperties1(D2D1_BITMAP_OPTIONS_NONE, D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED));
 	ComPtr<ID2D1Bitmap1> bitmap;
-	D2D1_BITMAP_PROPERTIES1 bitmap_properties = D2D1::BitmapProperties1(
-		D2D1_BITMAP_OPTIONS_NONE,
-		D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED)
-	);
 	hr << GetD2DDeviceContext().CreateBitmapFromWicBitmap(&converter, &bitmap_properties, &bitmap);
-	return bitmap;
+	return bitmap.Detach();
 }
-
 
 } // namespace
 
@@ -92,16 +86,17 @@ Image::Image(void* address, size_t size) : source(static_cast<owner_ptr<ImageSou
 
 Image::~Image() { SafeRelease(&source); }
 
-void Image::CreateTexture() const {
+const Texture& Image::GetTexture() const {
 	if (texture.IsEmpty()) {
-		texture.Set(static_cast<owner_ptr<TextureResource>>(CreateD2DBitmapFromWicBitmap(*source).Detach()));
+		texture.Set(static_cast<owner_ptr<TextureResource>>(CreateD2DBitmapFromWicBitmap(*source)));
 	}
+	return texture;
 }
 
 
 void ImageFigure::DrawOn(RenderTarget& target, Point point) const {
 	target.DrawBitmap(
-		image.texture.Get(),
+		image.GetTexture().GetResource(),
 		AsD2DRect(Rect(point, region.size)),
 		OpacityAsFloat(opacity),
 		D2D1_BITMAP_INTERPOLATION_MODE_LINEAR,

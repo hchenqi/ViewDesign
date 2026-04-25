@@ -11,6 +11,18 @@ namespace ViewDesign {
 using namespace Win32;
 
 
+namespace {
+
+inline owner_ptr<ID2D1Bitmap1> CreateD2DBitmapFromDxgiSurface(IDXGISurface& dxgi_surface) {
+	D2D1_BITMAP_PROPERTIES1 bitmap_properties = D2D1::BitmapProperties1(D2D1_BITMAP_OPTIONS_TARGET | D2D1_BITMAP_OPTIONS_CANNOT_DRAW, D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED));
+	ComPtr<ID2D1Bitmap1> bitmap;
+	hr << GetD2DDeviceContext().CreateBitmapFromDxgiSurface(&dxgi_surface, &bitmap_properties, &bitmap);
+	return bitmap.Detach();
+}
+
+} // namespace
+
+
 void WindowLayer::Create(HANDLE hwnd, Size size) {
 	Destroy();
 
@@ -54,27 +66,16 @@ void WindowLayer::Destroy() {
 	SafeRelease(&swap_chain);
 }
 
-void WindowLayer::CreateTexture() {
-	ComPtr<IDXGISurface> dxgi_surface;
-	hr << swap_chain->GetBuffer(0, IID_PPV_ARGS(&dxgi_surface));
-
-	ComPtr<ID2D1Bitmap1> bitmap;
-	D2D1_BITMAP_PROPERTIES1 bitmap_properties = D2D1::BitmapProperties1(
-		D2D1_BITMAP_OPTIONS_TARGET | D2D1_BITMAP_OPTIONS_CANNOT_DRAW,
-		D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED)
-	);
-	hr << GetD2DDeviceContext().CreateBitmapFromDxgiSurface(dxgi_surface.Get(), &bitmap_properties, &bitmap);
-	this->texture.Set(static_cast<owner_ptr<TextureResource>>(bitmap.Detach()));
-}
-
-void WindowLayer::DestroyTexture() {
-	texture.Destroy();
-}
-
 void WindowLayer::Resize(Size size) {
 	DestroyTexture();
 	hr << swap_chain->ResizeBuffers(0, (uint)ceilf(size.width), (uint)ceilf(size.height), DXGI_FORMAT_UNKNOWN, 0);
 	CreateTexture();
+}
+
+void WindowLayer::CreateTexture() {
+	ComPtr<IDXGISurface> dxgi_surface;
+	hr << swap_chain->GetBuffer(0, IID_PPV_ARGS(&dxgi_surface));
+	texture.Set(static_cast<owner_ptr<TextureResource>>(CreateD2DBitmapFromDxgiSurface(*dxgi_surface.Get())));
 }
 
 void WindowLayer::Present(Rect rect) {

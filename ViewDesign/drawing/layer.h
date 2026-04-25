@@ -10,13 +10,15 @@ class Canvas;
 
 
 class Layer : Uncopyable {
-protected:
-	friend struct LayerFigure;
-	Texture texture;
 public:
 	Layer() {}
 	~Layer() {}
+protected:
+	Texture texture;
+public:
 	bool IsEmpty() const { return texture.IsEmpty(); }
+	const Texture& GetTexture() const { return texture; }
+public:
 	void Create(Size size);
 	void Destroy() { texture.Destroy(); }
 public:

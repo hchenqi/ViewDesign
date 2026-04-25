@@ -8,9 +8,13 @@ namespace ViewDesign {
 using namespace Win32;
 
 
+namespace {
+
 inline D2D1_RECT_F ShrinkD2DRect(D2D1_RECT_F rect, float length) {
 	return D2D1::RectF(rect.left + length, rect.top + length, rect.right - length, rect.bottom - length);
 }
+
+} // namespace
 
 
 void Line::DrawOn(RenderTarget& target, Point point) const {

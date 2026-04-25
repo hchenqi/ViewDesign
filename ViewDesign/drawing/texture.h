@@ -17,10 +17,12 @@ private:
 public:
 	Texture();
 	~Texture();
+public:
 	bool IsEmpty() const { return resource == nullptr; }
+	ref_ptr<TextureResource> GetResource() const { if (IsEmpty()) { throw std::invalid_argument("invalid texture resource"); } return resource; }
+public:
 	void Set(owner_ptr<TextureResource> resource) { Destroy(); this->resource = resource; }
 	void Destroy();
-	ref_ptr<TextureResource> Get() const { if (IsEmpty()) { throw std::invalid_argument("invalid texture resource"); } return resource; }
 };
 
 
