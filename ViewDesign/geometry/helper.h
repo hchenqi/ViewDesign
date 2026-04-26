@@ -27,6 +27,11 @@ constexpr Rect Extend(Rect region, Margin margin) {
 }
 
 
+constexpr Rect RoundUp(Rect region) {
+	return Rect(floorf(region.point.x), floorf(region.point.y), ceilf(region.size.width), ceilf(region.size.height));
+}
+
+
 constexpr float square(float x) { return x * x; };
 
 constexpr float square_distance(Point a, Point b) { return square(a.x - b.x) + square(a.y - b.y); }

@@ -1,5 +1,8 @@
 #include "ViewDesign/view/Desktop.h"
+#include "ViewDesign/system/desktop.h"
+#include "ViewDesign/system/window.h"
 #include "ViewDesign/system/cursor.h"
+#include "ViewDesign/system/event_loop.h"
 #include "ViewDesign/common/reversion_wrapper.h"
 
 
@@ -51,6 +54,10 @@ Window& Desktop::GetWindowPoint(ViewBase& view, Point& point) {
 	return static_cast<Window&>(*child);
 }
 
+Size ViewDesign::Desktop::GetSize() const {
+	return GetDesktopSize();
+}
+
 void Desktop::RecreateFrameLayer() {
 	for (auto& window : window_list) {
 		window->RecreateLayer();
@@ -59,6 +66,14 @@ void Desktop::RecreateFrameLayer() {
 
 void Desktop::OnChildRedraw(ViewBase& child, Rect child_redraw_region) {
 	static_cast<Window&>(child).Redraw(child_redraw_region);
+}
+
+void Desktop::SetWindowCapture(Window& window) {
+	ViewDesign::SetWindowCapture(window.GetPlatformHandle());
+}
+
+void Desktop::ReleaseWindowCapture() {
+	ViewDesign::ReleaseWindowCapture();
 }
 
 void Desktop::SetTrack(ViewBase& view) {
@@ -138,6 +153,10 @@ void Desktop::DispatchMouseEvent(Window& window, MouseEvent event) {
 	}
 }
 
+void Desktop::SetWindowFocus(ref_ptr<Window> window_focus) {
+	ViewDesign::SetWindowFocus(window_focus ? window_focus->GetPlatformHandle() : nullptr);
+}
+
 void Desktop::SetFocus(ViewBase& view) {
 	if (!view_focus_stack.empty() && view_focus_stack.back() == &view) { return; }
 	std::vector<ref_ptr<ViewBase>> trace;
@@ -198,6 +217,18 @@ void Desktop::DispatchKeyEvent(KeyEvent event) {
 	}
 }
 
+void Desktop::ImeWindowEnable() {
+	ViewDesign::ImeWindowEnable(window_focus->GetPlatformHandle());
+}
+
+void Desktop::ImeWindowDisable() {
+	ViewDesign::ImeWindowDisable(window_focus->GetPlatformHandle());
+}
+
+void Desktop::ImeWindowSetPosition(Window& window, Point point) {
+	ViewDesign::ImeWindowSetPosition(window.GetPlatformHandle(), point);
+}
+
 void Desktop::ImeSetPosition(ViewBase& view, Point point) {
 	Window& window = GetWindowPoint(view, point);
 	ImeWindowSetPosition(window, point);
@@ -212,6 +243,15 @@ void Desktop::ReleaseView(ViewBase& view) {
 	ReleaseCapture(view);
 	ReleaseFocus(view);
 	ImeDisable(view);
+}
+
+void Desktop::EventLoop() {
+	ViewDesign::EventLoop();
+}
+
+void Desktop::Terminate() {
+	window_list.clear();
+	ViewDesign::Terminate();
 }
 
 

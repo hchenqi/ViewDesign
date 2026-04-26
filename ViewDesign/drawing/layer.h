@@ -22,7 +22,7 @@ public:
 	void Create(Size size);
 	void Destroy() { texture.Destroy(); }
 public:
-	void DrawCanvas(const Canvas& canvas, Vector offset, Rect clip_region);
+	void RenderCanvas(const Canvas& canvas, Vector offset, Rect clip_region);
 };
 
 

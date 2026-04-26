@@ -23,7 +23,7 @@ inline owner_ptr<ID2D1Bitmap1> CreateD2DBitmapFromDxgiSurface(IDXGISurface& dxgi
 } // namespace
 
 
-void WindowLayer::Create(HANDLE hwnd, Size size) {
+void WindowLayer::Create(Handle handle, Size size) {
 	Destroy();
 
 	// Create swapchain.
@@ -53,7 +53,7 @@ void WindowLayer::Create(HANDLE hwnd, Size size) {
 	comp_visual->SetContent(this->swap_chain);
 
 	ComPtr<IDCompositionTarget> comp_target;
-	hr << GetDCompositionDevice().CreateTargetForHwnd((HWND)hwnd, false, &comp_target);
+	hr << GetDCompositionDevice().CreateTargetForHwnd((HWND)handle, false, &comp_target);
 	comp_target->SetRoot(comp_visual.Get());
 	this->comp_target = static_cast<owner_ptr<CompositionTarget>>(comp_target.Detach());
 

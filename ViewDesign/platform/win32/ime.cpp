@@ -1,8 +1,6 @@
 #include "ViewDesign/platform/win32/ime.h"
 #include "ViewDesign/platform/win32/string.h"
 
-#include <windows.h>
-
 
 namespace ViewDesign {
 
@@ -16,23 +14,23 @@ size_t cursor_position;
 } // namespace
 
 
-void ImeEnable(HANDLE hwnd) {
-	ImmAssociateContextEx((HWND)hwnd, nullptr, IACE_DEFAULT);
+void ImeEnable(HWND hwnd) {
+	ImmAssociateContextEx(hwnd, nullptr, IACE_DEFAULT);
 }
 
-void ImeDisable(HANDLE hwnd) {
-	ImmAssociateContextEx((HWND)hwnd, nullptr, 0);
+void ImeDisable(HWND hwnd) {
+	ImmAssociateContextEx(hwnd, nullptr, 0);
 }
 
-void ImeSetPosition(HANDLE hwnd, Point point) {
-	HIMC imc = ImmGetContext((HWND)hwnd);
+void ImeSetPosition(HWND hwnd, Point point) {
+	HIMC imc = ImmGetContext(hwnd);
 	CANDIDATEFORM cf = { 0, CFS_CANDIDATEPOS, { (int)point.x, (int)point.y }, {} };
 	ImmSetCandidateWindow(imc, &cf);
-	ImmReleaseContext((HWND)hwnd, imc);
+	ImmReleaseContext(hwnd, imc);
 }
 
-void ImeUpdateString(HANDLE hwnd, uint type) {
-	HIMC imc = ImmGetContext((HWND)hwnd);
+void ImeUpdateString(HWND hwnd, uint type) {
+	HIMC imc = ImmGetContext(hwnd);
 	if (type & GCS_COMPSTR) {
 		LONG size = ImmGetCompositionStringW(imc, GCS_COMPSTR, nullptr, 0);
 		ime_string.resize(size / sizeof(u16char));
@@ -46,12 +44,11 @@ void ImeUpdateString(HANDLE hwnd, uint type) {
 	if (type & GCS_CURSORPOS) {
 		cursor_position = ImmGetCompositionStringW(imc, GCS_CURSORPOS, NULL, 0);
 	}
-	ImmReleaseContext((HWND)hwnd, imc);
+	ImmReleaseContext(hwnd, imc);
 }
 
 
 u16string ImeGetString() { return std::move(ime_string); }
-
 size_t ImeGetCursorPosition() { return cursor_position; }
 
 

@@ -1,15 +1,23 @@
-#include "ViewDesign/platform/win32/win32_api.h"
-#include "ViewDesign/platform/win32/ime.h"
+#include "ViewDesign/system/window.h"
+#include "ViewDesign/system/cursor.h"
+#include "ViewDesign/system/desktop.h"
 #include "ViewDesign/platform/win32/string.h"
+#include "ViewDesign/platform/win32/window.h"
+#include "ViewDesign/platform/win32/geometry_helper.h"
+#include "ViewDesign/platform/win32/ime.h"
+#include "ViewDesign/platform/win32/directx_resource.h"
 #include "ViewDesign/view/Desktop.h"
 
 #include <windows.h>
 #include <windowsx.h>
 
+#undef CreateWindow
+
 
 namespace ViewDesign {
 
 struct WindowApi : Window {
+	using Window::HasParent;
 	using Window::GetRegion;
 	using Window::SetScale;
 	using Window::SetSize;
@@ -17,11 +25,11 @@ struct WindowApi : Window {
 	using Window::GetMinMaxRegion;
 	using Window::State;
 	using Window::SetState;
-	using Window::Destroy;
 	using Window::OnDraw;
 };
 
 struct DesktopApi : Desktop {
+	using Desktop::RecreateFrameLayer;
 	using Desktop::LoseTrack;
 	using Desktop::LoseCapture;
 	using Desktop::LoseFocus;
@@ -29,18 +37,14 @@ struct DesktopApi : Desktop {
 	using Desktop::DispatchKeyEvent;
 };
 
-
-namespace Win32 {
+using namespace Win32;
 
 namespace {
 
 constexpr float dpi_default = 96.0f;
 
 inline bool IsMouseMsg(UINT msg) { return WM_MOUSEFIRST <= msg && msg <= WM_MOUSELAST; }
-inline bool IsKeyboardMsg(UINT msg) { return WM_KEYFIRST <= msg && msg <= WM_IME_KEYLAST; }
-
-inline RECT AsWin32Rect(Rect rect) { return { (int)floorf(rect.left()), (int)floorf(rect.top()), (int)ceilf(rect.right()), (int)ceilf(rect.bottom()) }; }
-inline Rect AsRect(RECT rect) { return Rect((float)rect.left, (float)rect.top, (float)(rect.right - rect.left), (float)(rect.bottom - rect.top)); }
+inline bool IsKeyMsg(UINT msg) { return WM_KEYFIRST <= msg && msg <= WM_IME_KEYLAST; }
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 	static bool is_mouse_tracked = false;
@@ -81,7 +85,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 	}
 
 	// keyboard message
-	if (IsKeyboardMsg(msg)) {
+	if (IsKeyMsg(msg)) {
 		KeyEvent key_event;
 		key_event.key = static_cast<Key>(wparam);
 		key_event.ch = static_cast<u16char>(wparam);
@@ -100,10 +104,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 
 	{
 		switch (msg) {
-			// region message
+			// layout
 		case WM_GETMINMAXINFO: {
 			MINMAXINFO* min_max_info = reinterpret_cast<MINMAXINFO*>(lparam);
-			auto [size_min, region_max] = window->GetMinMaxRegion(Win32::GetDesktopSize());
+			auto [size_min, region_max] = window->GetMinMaxRegion(GetDesktopSize());
 			min_max_info->ptMaxPosition = { (int)floorf(region_max.point.x), (int)floorf(region_max.point.y) };
 			min_max_info->ptMaxSize = { (int)ceilf(region_max.size.width), (int)ceilf(region_max.size.height) };
 			min_max_info->ptMinTrackSize = { (int)floorf(size_min.width), (int)floorf(size_min.height) };
@@ -112,28 +116,33 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 		case WM_WINDOWPOSCHANGING: break;
 		case WM_WINDOWPOSCHANGED: return DefWindowProc(hwnd, msg, wparam, lparam);
 		case WM_MOVE: window->SetPoint(Point((short)LOWORD(lparam), (short)HIWORD(lparam))); break;
-		case WM_SIZE: window->SetState(static_cast<WindowApi::State>(wparam <= 2 ? wparam : 2));
-			if (wparam != SIZE_MINIMIZED) { window->SetSize(Size(LOWORD(lparam), HIWORD(lparam))); } break;
+		case WM_SIZE: window->SetState(static_cast<WindowApi::State>(wparam <= 2 ? wparam : 2)); if (wparam != SIZE_MINIMIZED) { window->SetSize(Size(LOWORD(lparam), HIWORD(lparam))); } break;
+		case WM_DPICHANGED: window->SetScale(LOWORD(wparam) / dpi_default); break;
 
-			// notifications
+			// drawing
 		case WM_PAINT: {
 			PAINTSTRUCT ps;
 			HDC hdc = BeginPaint(hwnd, &ps);
-			window->OnDraw();
+			try {
+				window->OnDraw();
+			} catch (std::runtime_error&) {
+				DirectXRecreateResource();
+				static_cast<DesktopApi&>(desktop).RecreateFrameLayer();
+			}
 			EndPaint(hwnd, &ps);
 		}break;
 		case WM_ERASEBKGND: return true;
+
+			// event
 		case WM_MOUSELEAVE: is_mouse_tracked = false; static_cast<DesktopApi&>(desktop).LoseTrack(); break;
 		case WM_CAPTURECHANGED: static_cast<DesktopApi&>(desktop).LoseCapture(); break;
-
-		case WM_DPICHANGED: window->SetScale(LOWORD(wparam) / dpi_default); break;
 
 			// convert scroll message to mouse wheel message
 		case WM_HSCROLL:
 		case WM_VSCROLL: {
 			short wheel_delta = 0;
 			short key_state = 0;
-			Point cursor_position = Win32::GetCursorPos();
+			Point cursor_position = GetCursorPosition();
 			if (GetAsyncKeyState(VK_SHIFT)) { key_state |= MK_SHIFT; }
 			if (GetAsyncKeyState(VK_CONTROL)) { key_state |= MK_CONTROL; }
 			switch (LOWORD(wparam)) {
@@ -146,6 +155,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 				(wheel_delta << 16) | key_state, ((short)cursor_position.y << 16) | (short)cursor_position.x
 			);
 		}
+
+		case WM_DESTROY: if (window->HasParent()) { static_cast<DesktopApi&>(desktop).RemoveWindow(*window); } break;
+
 		default: goto FrameIrrelevantMessages;
 		}
 		return 0;
@@ -154,157 +166,68 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 FrameIrrelevantMessages:
 	switch (msg) {
 	case WM_CREATE: break;
-	case WM_DESTROY: if (window != nullptr) { window->Destroy(); }  break;
-
 	case WM_KILLFOCUS: static_cast<DesktopApi&>(desktop).LoseFocus(); break;
-
 	case WM_NCCALCSIZE: break;
 	case WM_NCHITTEST: return HTCLIENT;
 	case WM_NCPAINT: break;
 	case WM_NCACTIVATE: return true;
-
 	default: return DefWindowProc(hwnd, msg, wparam, lparam);
 	}
 	return 0;
 }
 
-static const u16char wnd_class_name[] = u"ViewDesignFrame";
 HINSTANCE hInstance = NULL;
-
-inline void RegisterWndClass() {
-	static bool is_wnd_class_registered = false;
-	if (!is_wnd_class_registered) {
-		WNDCLASSEXW wcex = {};
-		wcex.cbSize = sizeof(WNDCLASSEXW);
-		wcex.lpfnWndProc = WndProc;
-		wcex.hInstance = hInstance = GetModuleHandle(NULL);
-		wcex.lpszClassName = as_wchar_str(wnd_class_name);
-		wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
-		ATOM res = RegisterClassExW(&wcex);
-		if (res == 0) { throw std::runtime_error("register class error"); }
-		is_wnd_class_registered = true;
-	}
-}
+const u16char wnd_class_name[] = u"ViewDesignFrame";
+WNDCLASSEXW wnd_class = [] {
+	WNDCLASSEXW wcex = {};
+	wcex.cbSize = sizeof(WNDCLASSEXW);
+	wcex.lpfnWndProc = WndProc;
+	wcex.hInstance = hInstance = GetModuleHandle(NULL);
+	wcex.lpszClassName = as_wchar_str(wnd_class_name);
+	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+	return wcex;
+}();
 
 } // namespace
 
 
-Size GetDesktopSize() { RECT rect; SystemParametersInfoW(SPI_GETWORKAREA, 0, &rect, 0); return AsRect(rect).size; }
-
-Point GetCursorPos() {
-	POINT cursor_position; GetCursorPos(&cursor_position);
-	return Point((float)cursor_position.x, (float)cursor_position.y);
-}
-
-HANDLE CreateWnd(Rect region, u16string title) {
-	RegisterWndClass();
+Handle CreateWindow(Window& window, const u16string& title) {
+	static ATOM wnd_class_atom = RegisterClassExW(&wnd_class);
+	if (wnd_class_atom == 0) {
+		throw std::runtime_error("register class error");
+	}
 	HWND hwnd = CreateWindowExW(WS_EX_NOREDIRECTIONBITMAP, as_wchar_str(wnd_class_name), as_wchar_str(title.c_str()),
 								WS_POPUP | WS_THICKFRAME | WS_MAXIMIZEBOX | WS_HSCROLL | WS_VSCROLL,
-								(int)floorf(region.point.x), (int)floorf(region.point.y), (int)ceilf(region.size.width), (int)ceilf(region.size.height),
-								NULL, NULL, hInstance, NULL);
-	if (hwnd == NULL) { throw std::runtime_error("create window error"); }
+								0, 0, 0, 0, NULL, NULL, hInstance, NULL);
+	if (hwnd == NULL) {
+		throw std::runtime_error("create window error");
+	}
+	SetWindowLongPtrW((HWND)hwnd, GWLP_USERDATA, (LONG_PTR)&window);
 	return hwnd;
 }
 
-void DestroyWnd(HANDLE hwnd) { DestroyWindow((HWND)hwnd); }
+Scale GetWindowScale(Handle handle) { return GetDpiForWindow((HWND)handle) / dpi_default; }
 
-void SetWndUserData(HANDLE hwnd, void* data) {
-	SetWindowLongPtrW((HWND)hwnd, GWLP_USERDATA, (LONG_PTR)data);
-}
+void SetWindowTitle(Handle handle, const u16string& title) { SetWindowTextW((HWND)handle, as_wchar_str(title.c_str())); }
+void SetWindowRegion(Handle handle, Rect region) { MoveWindow((HWND)handle, (int)floorf(region.point.x), (int)floorf(region.point.y), (int)ceilf(region.size.width), (int)ceilf(region.size.height), false); }
+void SetWindowOpacity(Handle handle, uchar opacity) { SetWndStyle((HWND)handle, WS_EX_LAYERED);	SetLayeredWindowAttributes((HWND)handle, 0, opacity, LWA_ALPHA); }
 
-float GetWndDpiScale(HANDLE hwnd) {
-	return GetDpiForWindow((HWND)hwnd) / dpi_default;
-}
+void ShowWindow(Handle handle) { ShowWindow((HWND)handle, SW_SHOWNOACTIVATE); }
+void HideWindow(Handle handle) { ShowWindow((HWND)handle, SW_HIDE); }
+void MinimizeWindow(Handle handle) { ShowWindow((HWND)handle, SW_MINIMIZE); }
+void MaximizeWindow(Handle handle) { ShowWindow((HWND)handle, SW_MAXIMIZE); }
+void RestoreWindow(Handle handle) { ShowWindow((HWND)handle, SW_RESTORE); }
+void CloseWindow(Handle handle) { DestroyWindow((HWND)handle); }
 
-Point GetCursorPosWithWndDpi(HANDLE hwnd) {
-	Point point = GetCursorPos(); float dpi = GetWndDpiScale(hwnd);
-	return Point(point.x / dpi, point.y / dpi);
-}
+void RedrawWindowRegion(Handle handle, Rect region) { RECT rect = AsWin32Rect(region); InvalidateRect((HWND)handle, &rect, false); }
 
-void SetWndTitle(HANDLE hwnd, u16string title) {
-	SetWindowTextW((HWND)hwnd, as_wchar_str(title.c_str()));
-}
+void SetWindowCapture(Handle handle) { SetCapture((HWND)handle); }
+void ReleaseWindowCapture() { ReleaseCapture(); }
+void SetWindowFocus(Handle handle) { SetFocus((HWND)handle); }
 
-void SetWndRegion(HANDLE hwnd, Rect region) {
-	MoveWindow((HWND)hwnd, (int)floorf(region.point.x), (int)floorf(region.point.y), (int)ceilf(region.size.width), (int)ceilf(region.size.height), false);
-}
+void ImeWindowEnable(Handle handle) { ImeEnable((HWND)handle); }
+void ImeWindowDisable(Handle handle) { ImeDisable((HWND)handle); }
+void ImeWindowSetPosition(Handle handle, Point point) { ImeSetPosition((HWND)handle, point); }
 
-void SetWndStyleTool(HANDLE hwnd, bool style_tool) {
-	LONG style = GetWindowLong((HWND)hwnd, GWL_EXSTYLE);
-	if (style_tool) {
-		style |= WS_EX_TOOLWINDOW;
-	} else {
-		style &= ~WS_EX_TOOLWINDOW;
-	}
-	SetWindowLong((HWND)hwnd, GWL_EXSTYLE, style);
-}
-
-void SetWndNoActivate(HANDLE hwnd, bool no_activate) {
-	LONG style = GetWindowLong((HWND)hwnd, GWL_EXSTYLE);
-	if (no_activate) {
-		style |= WS_EX_NOACTIVATE;
-	} else {
-		style &= ~WS_EX_NOACTIVATE;
-	}
-	SetWindowLong((HWND)hwnd, GWL_EXSTYLE, style);
-}
-
-void SetWndTopMost(HANDLE hwnd, bool top_most) {
-	SetWindowPos((HWND)hwnd, top_most ? HWND_TOPMOST : HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
-}
-
-void SetWndOpacity(HANDLE hwnd, uchar opacity) {
-	LONG style = GetWindowLong((HWND)hwnd, GWL_EXSTYLE);
-	if (!(style & WS_EX_LAYERED)) {
-		style |= WS_EX_LAYERED;
-		SetWindowLong((HWND)hwnd, GWL_EXSTYLE, style);
-	}
-	SetLayeredWindowAttributes((HWND)hwnd, 0, opacity, LWA_ALPHA);
-}
-
-void SetWndMousePenetrate(HANDLE hwnd, bool mouse_penetrate) {
-	LONG style = GetWindowLong((HWND)hwnd, GWL_EXSTYLE);
-	if (mouse_penetrate) {
-		style |= WS_EX_TRANSPARENT;
-	} else {
-		style &= ~WS_EX_TRANSPARENT;
-	}
-	SetWindowLong((HWND)hwnd, GWL_EXSTYLE, style);
-}
-
-void ShowWnd(HANDLE hwnd) { ShowWindow((HWND)hwnd, SW_SHOWNOACTIVATE); }
-void HideWnd(HANDLE hwnd) { ShowWindow((HWND)hwnd, SW_HIDE); }
-void SetForegroundWnd(HANDLE hwnd) { SetForegroundWindow((HWND)hwnd); }
-void MinimizeWnd(HANDLE hwnd) { ShowWindow((HWND)hwnd, SW_MINIMIZE); }
-void MaximizeWnd(HANDLE hwnd) { ShowWindow((HWND)hwnd, SW_MAXIMIZE); }
-void RestoreWnd(HANDLE hwnd) { ShowWindow((HWND)hwnd, SW_RESTORE); }
-
-void InvalidateWndRegion(HANDLE hwnd, Rect region) {
-	RECT rect = AsWin32Rect(region);
-	InvalidateRect((HWND)hwnd, &rect, false);
-}
-
-void SetCapture(HANDLE hwnd) { ::SetCapture((HWND)hwnd); }
-void ReleaseCapture() { ::ReleaseCapture(); }
-void SetFocus(HANDLE hwnd) { ::SetFocus((HWND)hwnd); }
-
-int MessageLoop() {
-	MSG msg;
-	while (GetMessageW(&msg, nullptr, 0, 0)) {
-		TranslateMessage(&msg);
-		DispatchMessageW(&msg);
-	}
-	return (int)msg.wParam;
-}
-
-bool CheckMessage() {
-	MSG msg;
-	return PeekMessageW(&msg, nullptr, 0, 0, PM_NOREMOVE);
-}
-
-void Terminate() { PostQuitMessage(0); }
-
-
-} // namespace Win32
 
 } // namespace ViewDesign

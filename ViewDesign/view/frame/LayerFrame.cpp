@@ -39,7 +39,7 @@ void _LayerFrame_Base::OnDraw(Canvas& canvas, Rect draw_region) {
 				DrawChild(child, point_zero, canvas, redraw_region * scale.Invert());
 			});
 		});
-		layer.DrawCanvas(canvas, vector_zero, redraw_region);
+		layer.RenderCanvas(canvas, vector_zero, redraw_region);
 		invalid_region.Sub(redraw_region);
 	}
 	canvas.draw(draw_region.point, new LayerFigure(layer, composite_region, draw_region.size, opacity));

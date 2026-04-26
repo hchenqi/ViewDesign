@@ -15,12 +15,19 @@ private:
 	friend struct WindowApi;
 
 public:
-	Window(u16string title, view_ptr<> child);
+	Window(const u16string& title, view_ptr<> child);
 	~Window();
+
+public:
+	using Handle = void*;
+private:
+	Handle handle;
+public:
+	Handle GetPlatformHandle() const { return handle; }
 
 	// style
 public:
-	void SetTitle(u16string title);
+	void SetTitle(const u16string& title);
 
 	// layout
 private:
@@ -41,9 +48,6 @@ protected:
 	virtual std::pair<Size, Size> CalculateMinMaxSize(Size size_ref) { return { size_empty, size_ref }; }
 	virtual Rect OnWindowSizeRefUpdate(Size size_ref) { UpdateChildSizeRef(child, size_ref); return Rect(point_zero, size_ref); }
 	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override {}
-private:
-	void SizeUpdated() {}  // never used
-	virtual Size OnSizeRefUpdate(Size size_ref) override final { return size_ref; }  // never used
 
 	// state
 protected:
@@ -59,35 +63,27 @@ protected:
 protected:
 	void Show();
 	void Hide();
-	void SetForeground();
 	void Minimize();
 	void Maximize();
 	void Restore();
-protected:
-	void Destroy();
+	void Close();
 
 	// drawing
-public:
-	using HANDLE = void*;
 private:
-	HANDLE hwnd = nullptr;
 	WindowLayer layer;
 	Region invalid_region;
-public:
-	HANDLE GetHWND() const { return hwnd; }
 private:
 	void ResizeLayer();
 	void RecreateLayer();
 protected:
 	void Redraw(Rect redraw_region);
-	using ViewFrame::OnDraw;
 private:
 	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override final { Redraw(child_redraw_region); }
 	void OnDraw();
 
 	// event
 public:
-	Point GetDesktopCursorPosition() const;
+	Point GetCursorPosition() const;
 private:
 	virtual ref_ptr<ViewBase> HitTest(MouseEvent& event) override final { event.point *= scale.Invert(); return ViewFrame::HitTest(event); }
 };

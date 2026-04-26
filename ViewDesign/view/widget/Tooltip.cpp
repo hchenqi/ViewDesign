@@ -7,7 +7,11 @@
 #include "ViewDesign/view/wrapper/Background.h"
 #include "ViewDesign/geometry/clamp.h"
 #include "ViewDesign/event/timer.h"
-#include "ViewDesign/platform/win32/win32_api.h"
+#include "ViewDesign/system/window.h"
+
+#if defined(_WIN32)
+#include "ViewDesign/platform/win32/window.h"
+#endif
 
 
 namespace ViewDesign {
@@ -29,10 +33,8 @@ private:
 			)
 		)
 	) {
-		Win32::SetWndStyleTool(GetHWND());
-		Win32::SetWndNoActivate(GetHWND());
-		Win32::SetWndTopMost(GetHWND());
-		Win32::SetWndMousePenetrate(GetHWND());
+		Win32::SetWndStyle((HWND)GetPlatformHandle(), WS_EX_TOOLWINDOW | WS_EX_TRANSPARENT | WS_EX_NOACTIVATE);
+		Win32::SetWndTopMost((HWND)GetPlatformHandle());
 	}
 
 private:
@@ -66,7 +68,7 @@ public:
 private:
 	void ShowSelf() { desktop.AddWindow(std::move(self)); }
 	void HideSelf() { self.reset(static_cast<owner_ptr<Tooltip>>(desktop.RemoveWindow(*this).release())); }
-	void SetOpacity(uchar opacity) { Win32::SetWndOpacity(GetHWND(), opacity); }
+	void SetOpacity(uchar opacity) { SetWindowOpacity(GetPlatformHandle(), opacity); }
 
 private:
 	static constexpr uint wait_time = 1 * 1000;  // 1 s
@@ -89,7 +91,7 @@ private:
 			state = State::Showing;
 			animation_step = 0;
 			timer.Set(animation_interval);
-			region.point = GetDesktopCursorPosition() + Vector(0, 10);
+			region.point = GetCursorPosition() + Vector(0, 10);
 			SetOpacity(0);
 			ShowSelf();
 			break;

@@ -1,3 +1,5 @@
+#pragma once
+
 #include "ViewDesign/drawing/color.h"
 
 #include <vector>

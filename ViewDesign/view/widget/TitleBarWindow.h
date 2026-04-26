@@ -170,7 +170,7 @@ protected:
 				canvas.draw(Point(20.0f, 20.0f), new Line(Vector(10.0f, -10.0f), 1.0f, foreground));
 			}
 		protected:
-			virtual void OnClick() override { Context::Get<TitleBarWindow>().Destroy(); }
+			virtual void OnClick() override { Context::Get<TitleBarWindow>().Close(); }
 		};
 
 	public:

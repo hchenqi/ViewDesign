@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ViewDesign/system/cursor.h"
+#include "ViewDesign/drawing/pixel_buffer.h"
 
 #include <windows.h>
 

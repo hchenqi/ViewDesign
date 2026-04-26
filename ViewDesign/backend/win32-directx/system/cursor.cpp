@@ -1,3 +1,4 @@
+#include "ViewDesign/system/cursor.h"
 #include "ViewDesign/platform/win32/cursor.h"
 
 #include <array>
@@ -77,6 +78,12 @@ void SetCursor(std::reference_wrapper<Cursor> cursor) {
 		::SetCursor(cursor.get().handle);
 		break;
 	}
+}
+
+
+Point GetCursorPosition() {
+	POINT cursor_position; GetCursorPos(&cursor_position);
+	return Point((float)cursor_position.x, (float)cursor_position.y);
 }
 
 

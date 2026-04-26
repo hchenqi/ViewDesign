@@ -26,7 +26,7 @@ void Layer::Create(Size size) {
 	texture.Set(static_cast<owner_ptr<TextureResource>>(CreateEmptyD2DBitmap(size)));
 }
 
-void Layer::DrawCanvas(const Canvas& canvas, Vector offset, Rect clip_region) {
+void Layer::RenderCanvas(const Canvas& canvas, Vector offset, Rect clip_region) {
 	ID2D1DeviceContext& device_context = GetD2DDeviceContext(); device_context.SetTarget(texture.GetResource());
 	device_context.SetTransform(AsD2DTransform(offset));
 	device_context.PushAxisAlignedClip(AsD2DRect(clip_region), D2D1_ANTIALIAS_MODE_PER_PRIMITIVE);

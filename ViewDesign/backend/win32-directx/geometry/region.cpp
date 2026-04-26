@@ -1,26 +1,17 @@
 #include "ViewDesign/geometry/region.h"
 #include "ViewDesign/geometry/helper.h"
-
-#include <windows.h>
-#include <windowsx.h>
+#include "ViewDesign/platform/win32/geometry_helper.h"
 
 
 namespace ViewDesign {
 
+using namespace Win32;
+
 namespace {
-
-inline RECT AsWin32Rect(Rect rect) {
-	return { (int)roundf(rect.left()), (int)roundf(rect.top()), (int)roundf(rect.right()), (int)roundf(rect.bottom()) };
-}
-
-inline Rect AsRect(RECT rect) {
-	return Rect((float)rect.left, (float)rect.top, (float)(rect.right - rect.left), (float)(rect.bottom - rect.top));
-}
-
 
 Region region_temp;
 
-inline Region& TempRegion(Rect rect) { region_temp.Set(rect); return region_temp; }
+Region& TempRegion(Rect rect) { region_temp.Set(rect); return region_temp; }
 
 } // namespace
 
