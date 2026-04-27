@@ -4,25 +4,25 @@ A C++ GUI library
 
 ## Introduction
 
-`ViewDesign` is a GUI framework in C++, currently still under development. It is object-oriented, highly modular and flexible, fit for both small and large-scale projects. It features static layout compatibility check through C++ templating which is particularly helpful for designing complex UI components with minimal run-time overhead. It also provides a basic but easily extensible component library for intuitive and explicit UI building.
+**ViewDesign** is a GUI framework in C++, currently still under development. It is object-oriented, highly modular and flexible, featuring combination of components with frames and static layout compatibility check through C++ templating which are particularly helpful for designing complex UI components with minimal run-time overhead. It also provides a basic but easily extensible component library for intuitive and explicit UI building.
 
 ### Highlight
 
 - written in modern C++, object-oriented and without any markup language
-- highly modular, flexible and extensible
+- lightweight, highly modular, flexible and extensible
 - simple and clear logic for reflow and redraw
 - static check of layout compatibility between components by size traits
 - conceptual separation of components as control, frame and layout
 
 ### Limitation
 
-- lacks comprehensive documentation
-- currently Windows-only, needs cross-platform support
+- detailed documentation and cross-platform support in progress
 - component library to be extended
-- requires extensive correctness and performance testing
+- extensive correctness and performance testing needed
+- hot reloading unsupported
 - lack of a high-level and user-friendly designer for UI building
-- no support for accessibility and internationalization yet
 - no particular support for exception handling and multi-threading
+- no support for accessibility and internationalization yet
 
 ### Comparison
 
@@ -121,7 +121,7 @@ One can replace `CenterFrame<Fixed, Fixed>` with `ClipFrame<Fixed, Fixed, TopLef
 	)
 ```
 
-One can also use `std::make_unique<>` instead of `new` to create component instances. But using `new` is syntactically simpler and not unsafe because each argument will be immediately converted to a `view_ptr` parameter as `unique_ptr` in the constructor functions of the components.
+One can use `std::make_unique<>` instead of `new` to create component instances with strong exception-safe guarantee. Using `new` here is just syntactically simpler and in most cases safe because in the constructor functions of most components each argument will be immediately converted to a `view_ptr` parameter as `unique_ptr`. However, using `new` is risky for components like `ListLayout`, `DivideLayout` and `StackLayoutMultiple` that accept variable number of arguments.
 
 ```cpp
 	desktop.AddWindow(
@@ -157,6 +157,8 @@ The configuring and building of this library follows CMake routines. Possible ba
 
 ### Compiler
 
+The following compilers can be used to build this project.
+
 *Windows Target*
 
 #### MSVC
@@ -168,6 +170,8 @@ The configuring and building of this library follows CMake routines. Possible ba
 - Install msys2: https://www.msys2.org/
 
 Mingw-w64 can be used with GCC or Clang/LLVM.
+
+> Mingw-w64 might use an older version of Windows SDK that doesn't include some headers like `icu.h`.
 
 ##### G++
 
@@ -205,7 +209,7 @@ Mingw-w64 can also be used for cross-compiling windows applications on Linux hos
 
 ### Platform
 
-The following platform tools will be searched and included automatically in the static library.
+The following platform tools will be searched and included automatically in the static library when available.
 
 #### Win32
 
@@ -231,12 +235,16 @@ glad dynamically loads OpenGL functions as global variables that can be directly
 
 Vulkan SDK can be installed from vcpkg by `vcpkg install vulkan` or its website https://vulkan.lunarg.com/.
 
+#### ICU
+
+ICU (International Components for Unicode) can be installed from vcpkg by `vcpkg install icu`.
+
 ### Backend
 
 The following backends can be selected for building `ViewDesign`:
 - Win32-DirectX
-- GLFW-OpenGL
-- GLFW-Vulkan
+- GLFW-OpenGL (in progress)
+- GLFW-Vulkan (in progress)
 
 ## Concepts
 
@@ -300,17 +308,17 @@ A view initiating redraw notifies its parent view about its updated region, and 
 
 ### Figure / Canvas / Layer / Texture / RenderTarget
 
-`Figure` is the unit for drawing. A figure can draw itself on a backend-dependent `RenderTarget`. Different figure types like `Rectangle`, `Circle`, `TextBlock` and `Image` all inherit the `Figure` base class.
+`Figure` is the unit for drawing. A figure can draw itself on a backend-dependent `RenderTarget`. Different figure types like `Rectangle`, `Circle`, `TextBlock` and `Image` all inherit the abstract `Figure` base class.
 
 A view can draw its content as figures on a `Canvas` provided to it by its parent view. It can transform the coordinates of the canvas relative to a child view and pass the canvas further for the child view to draw on.
 
-A canvas is an abstract render target for views, which actually collects the figures provided by the views with their positions and transforms as drawing commands for rendering on the actual render target.
+A canvas is an abstract render target for views, which actually collects the figures provided by the views with their positions and transforms as drawing commands for rendering on a `Layer`.
 
-A `Layer` is where the figures collected in a canvas is directly drawn on. It holds a `Texture` which is a wrapper for the backend-dependent render target where the figures can draw themselves on.
+A layer is where a canvas is rendered on. It holds a `Texture` which is a wrapper for the backend-dependent render target where each figure collected in the canvas draws itself on.
 
-A `LayerFrame` is a view maintaining a layer in itself as a cache where its child views are directly drawn on. The layer can further be drawn like a figure as the content of the `LayerFrame` on another layer.
+A `LayerFrame` is a view maintaining a layer in itself as a cache where its child views are directly drawn on. The layer can be further rendered as a figure on another layer.
 
-A `Window` maintains a backend-dependent `WindowLayer` for rendering the content in the window and presenting the window.
+A `Window` maintains a backend-dependent `WindowLayer` for rendering and presenting the window.
 
 ### MouseEvent / KeyEvent / FocusEvent
 
@@ -342,11 +350,11 @@ The `common` sub-folder keeps the core type definitions and utility functions.
 
 #### ref_ptr / owner_ptr
 
-This project tries to avoid using C++ raw pointers and prefers `std::unique_ptr` in most scenarios. But raw pointers are still useful sometimes for nullable references or holding special resources, and for accepting constructed view objects by the simpler `operator new`. Therefore, the two aliases for `T*`, `ref_ptr<T>` and `owner_ptr<T>` are defined in this project as a coding convention to mark and distinguish the usage of a raw pointer. As aliases, there is no safety check for these pointers and it is advised to use them only in a controlled manner.
+This project tries to avoid using raw pointers and prefers `std::unique_ptr` or `std::reference_wrapper` in most scenarios. But raw pointers are still useful sometimes for nullable references or holding special resources, and for accepting constructed view objects by the simpler `operator new`. Therefore, the two aliases for `T*`, `ref_ptr<T>` and `owner_ptr<T>` are defined in this project as a coding convention to mark and distinguish the usage of a raw pointer. As aliases, there is no safety check for these pointers and it is advised to use them only in a controlled manner.
 
 #### u16char / u16string
 
-In alignment with ICU (International Components for Unicode), UTF-16 strings are used in this project. `u16char` is an alias of `char16_t` and `u16string` an alias of `std::u16string`.
+In alignment with ICU, UTF-16 strings are used in this project. `u16char` is an alias of `char16_t` and `u16string` an alias of `std::u16string`.
 
 Converters between `std::u8string` and `std::u16string` are provided. `reinterpret_cast` is used at platform boundaries for casting between `char16_t*` and `wchar_t*` on Windows, and between `char8_t*` and `char*`.
 
@@ -494,12 +502,17 @@ Converters between `std::u8string` and `std::u16string` are provided. `reinterpr
 
 ##### TitleBarWindow
 
+## Known Issues
+
+- TextBox/EditBox don't well support vertical text layout (the text layout direction is related with the choice of ClipFrame)
+- Tooltip might display an additional thin border in background color (because the region of a window is rounded up to integer coordinates and background is drawn without clipping)
+
 ## History
 
 This project spans several years of development under a former name `WndDesign`. The design principle and the coding style has shifted largely after multiple initial rewrites until reaching its current pattern at the year of 2021, and was since then under maintenance and further underwent several major refactorings in the course of refinement without changing the core architectural design. So as to say, this current project is not completely built up from scratch, but rather a simplification from more complex previous implementations that are not satisfactory.
 
 The very first version sticks to Win32 API, without much object-oriented and modular design, even without proper version controlling with git. I was at an early stage of learning C++/STL and Win32 APIs and tried to implement basic data structures on my own and manually draw everything on bitmaps by manipulating the pixels. I had to stop at font and text rendering because of its huge complexity, and turned to using Direct2D and DirectWrite libraries.
 
-The next two versions over-complicated the framework by having both a dynamic library and a static library, and enforcing every window (the former name of a view) to have a non-client region and styles for layout calculation of both client and non-client regions, making it much difficult to check all cases of layout dependencies for abstracting a common interface. A queue for reflowing was used to store the windows whose size has changed, and the windows in the queue are then checked if their size change will affect other windows bottom-up by the order of the depth of the window on the tree, whose layouts are then finally updated top-down. It also tried to optimize drawing of large windows, introducing layers and tiling mechanism for every window. But in these versions a lot of helpful ideas, structures and also critics were established, providing a strong basis and reference for designing the current and final version.
+The next two versions over-complicated the framework by having both a dynamic library and a static library, and enforcing every window (the former name for a view) to have a non-client region and styles for layout calculation of both client and non-client regions, making it difficult to check all scenarios of layout dependencies for abstracting a minimal interface. A queue for reflowing was used to store the windows whose size has changed, and the windows in the queue are then checked if their size change will affect other windows bottom-up by the order of the depth of the window on the tree, whose layouts are then finally updated top-down. It also tried to optimize drawing of large windows, introducing layers and tiling mechanism for every window, making it costly for creating a single window. Nevertheless, in the previous versions a lot of helpful ideas, structures and also critics were established, providing a strong basis and reference for designing the current and final version.
 
-By sticking to a lightweight view definition without having non-client region and layer by default, and with the concept of size reference and frames, the current version abstracted the minimal logic for reflow, redraw and event handling, and became modular and elegant.
+By adopting a lightweight view definition without non-client region and layer by default, and with the concept of size reference and frames, the current version abstracted the minimal logic for reflow, redraw and event handling, and became modular and elegant.
