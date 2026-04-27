@@ -2,7 +2,7 @@
 
 #include "ViewDesign/view/control/TextBox.h"
 #include "ViewDesign/view/wrapper/Cursor.h"
-#include "ViewDesign/common/unicode_helper.h"
+#include "ViewDesign/common/word_iterator.h"
 #include "ViewDesign/event/timer.h"
 #include "ViewDesign/event/ime.h"
 #include "ViewDesign/event/mouse_tracker.h"
@@ -46,7 +46,7 @@ protected:
 protected:
 	using HitTestInfo = TextBlock::HitTestInfo;
 protected:
-	mutable WordBreakIterator word_break_iterator;
+	mutable WordIterator word_iterator;
 protected:
 	size_t GetCharacterLength(size_t position) const;
 	TextRange GetWordRange(size_t position) const;

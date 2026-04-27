@@ -9,14 +9,15 @@
 namespace ViewDesign {
 
 
-class WordBreakIterator : Uncopyable {
+class WordIterator : Uncopyable {
 private:
 	owner_ptr<void> iter;
-	ref_ptr<const u16char> str; size_t length;
+	ref_ptr<const u16char> str;
+	size_t length;
 	size_t begin, end;
 public:
-	WordBreakIterator();
-	~WordBreakIterator();
+	WordIterator();
+	~WordIterator();
 public:
 	void SetText(const u16string& str);
 	TextRange Seek(size_t pos);

@@ -4,7 +4,7 @@
 #include "ViewDesign/view/wrapper/Background.h"
 #include "ViewDesign/view/wrapper/Cursor.h"
 
-#if defined(_WIN32)
+#if defined(VIEWDESIGN_WIN32)
 #include "ViewDesign/platform/win32/aero_snap.h"
 #endif
 

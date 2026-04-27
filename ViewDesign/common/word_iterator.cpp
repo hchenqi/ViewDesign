@@ -1,14 +1,14 @@
-#include "ViewDesign/common/unicode_helper.h"
+#include "ViewDesign/common/word_iterator.h"
 
 #include <cassert>
 #include <stdexcept>
 
-#if __has_include(<icu.h>) || __has_include(<unicode/ubrk.h>)
+#if defined(VIEWDESIGN_ICU) || defined(VIEWDESIGN_WIN32)
 
-#if __has_include(<icu.h>)
-#include <icu.h>
-#else
+#if defined(VIEWDESIGN_ICU)
 #include <unicode/ubrk.h>
+#else
+#include <icu.h>
 #endif
 
 
@@ -22,34 +22,32 @@ inline UBreakIterator* AsUBreakIterator(void* iter) { return static_cast<UBreakI
 
 } // namespace
 
-static_assert(sizeof(u16char) == sizeof(UChar));
 
-
-WordBreakIterator::WordBreakIterator() {
+WordIterator::WordIterator() {
 	iter = ubrk_open(UBRK_WORD, nullptr, nullptr, 0, &status); assert(U_SUCCESS(status));
 	str = nullptr; length = 0;
 	begin = end = UBRK_DONE;
 }
 
-WordBreakIterator::~WordBreakIterator() {
+WordIterator::~WordIterator() {
 	ubrk_close(AsUBreakIterator(iter));
 }
 
-void WordBreakIterator::SetText(const u16string& str) {
-	ubrk_setText(AsUBreakIterator(iter), (const UChar*)str.c_str(), (uint)str.length(), &status); assert(U_SUCCESS(status));
+void WordIterator::SetText(const u16string& str) {
+	ubrk_setText(AsUBreakIterator(iter), str.c_str(), (int)str.length(), &status); assert(U_SUCCESS(status));
 	this->str = str.c_str(); this->length = str.length();
 	begin = end = UBRK_DONE;
 }
 
-TextRange WordBreakIterator::Seek(size_t pos) {
+TextRange WordIterator::Seek(size_t pos) {
 	if (str == nullptr || pos >= length) { throw std::invalid_argument("invalid text position"); }
-	begin = ubrk_preceding(AsUBreakIterator(iter), (uint)(pos + 1)); assert(begin != UBRK_DONE);
+	begin = ubrk_preceding(AsUBreakIterator(iter), (int)(pos + 1)); assert(begin != UBRK_DONE);
 	end = ubrk_next(AsUBreakIterator(iter)); assert(end != UBRK_DONE);
 	assert(end > begin);
 	return TextRange(begin, end - begin);
 }
 
-TextRange WordBreakIterator::Next() {
+TextRange WordIterator::Next() {
 	if (str == nullptr || begin == -1) { throw std::invalid_argument("invalid text position"); }
 	if (end >= length) { throw std::invalid_argument("cannot increment iterator past end"); }
 	begin = end;
@@ -58,11 +56,11 @@ TextRange WordBreakIterator::Next() {
 	return TextRange(begin, end - begin);
 }
 
-TextRange WordBreakIterator::Prev() {
+TextRange WordIterator::Prev() {
 	if (str == nullptr || begin == -1) { throw std::invalid_argument("invalid text position"); }
 	if (begin == 0) { throw std::invalid_argument("cannot decrement iterator before begin"); }
 	end = begin;
-	begin = ubrk_preceding(AsUBreakIterator(iter), (uint)begin); assert(begin != UBRK_DONE);
+	begin = ubrk_preceding(AsUBreakIterator(iter), (int)begin); assert(begin != UBRK_DONE);
 	assert(end > begin);
 	return TextRange(begin, end - begin);
 }
@@ -75,16 +73,16 @@ TextRange WordBreakIterator::Prev() {
 namespace ViewDesign {
 
 
-WordBreakIterator::WordBreakIterator() : iter(nullptr), str(nullptr), length(0), begin(0), end(0) {}
+WordIterator::WordIterator() : iter(nullptr), str(nullptr), length(0), begin(0), end(0) {}
 
-WordBreakIterator::~WordBreakIterator() {}
+WordIterator::~WordIterator() {}
 
-void WordBreakIterator::SetText(const u16string& str) {
+void WordIterator::SetText(const u16string& str) {
 	this->str = str.c_str(); this->length = str.length();
 	begin = end = 0;
 }
 
-TextRange WordBreakIterator::Seek(size_t pos) {
+TextRange WordIterator::Seek(size_t pos) {
 	if (str == nullptr || pos >= length) {
 		throw std::invalid_argument("invalid text position");
 	}
@@ -108,13 +106,13 @@ TextRange WordBreakIterator::Seek(size_t pos) {
 	return TextRange(begin, end - begin);
 }
 
-TextRange WordBreakIterator::Next() {
+TextRange WordIterator::Next() {
 	if (str == nullptr) { throw std::invalid_argument("invalid text position"); }
 	if (end >= length) { throw std::invalid_argument("cannot increment iterator past end"); }
 	return Seek(end);
 }
 
-TextRange WordBreakIterator::Prev() {
+TextRange WordIterator::Prev() {
 	if (str == nullptr) { throw std::invalid_argument("invalid text position"); }
 	if (begin == 0) { throw std::invalid_argument("cannot decrement iterator before begin"); }
 	return Seek(begin - 1);

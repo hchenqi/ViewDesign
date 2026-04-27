@@ -26,5 +26,8 @@ constexpr U16UnitType GetU16UnitType(u16char ch) {
 using u8char = char8_t;
 using u8string = std::u8string;
 
+u8string to_u8string(const u16string& str);
+u16string to_u16string(const u8string& str);
+
 
 } // namespace ViewDesign

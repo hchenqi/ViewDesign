@@ -20,15 +20,17 @@ constexpr size_t GetCharacterLength(u16char ch) {
 
 EditBox::EditBox(Style style, u16string text) : Base(style, text), style(style) {
 	style.edit._disabled ? ime.Disable(*this) : ime.Enable(*this);
-	word_break_iterator.SetText(this->text);
+	word_iterator.SetText(this->text);
 }
 
-size_t EditBox::GetCharacterLength(size_t position) const { return ViewDesign::GetCharacterLength(text[position]); }
+size_t EditBox::GetCharacterLength(size_t position) const {
+	return ViewDesign::GetCharacterLength(text[position]);
+}
 
 TextRange EditBox::GetWordRange(size_t position) const {
 	if (text.length() == 0) { return text_range_empty; }
 	if (position >= text.length()) { position--; }
-	return word_break_iterator.Seek(position);
+	return word_iterator.Seek(position);
 }
 
 TextRange EditBox::GetParagraphRange(size_t position) const {
@@ -41,7 +43,10 @@ TextRange EditBox::GetParagraphRange(size_t position) const {
 	return TextRange(begin, end - begin);
 }
 
-void EditBox::OnTextUpdate() { word_break_iterator.SetText(text); TextBox::OnTextUpdate(); }
+void EditBox::OnTextUpdate() {
+	word_iterator.SetText(text);
+	TextBox::OnTextUpdate();
+}
 
 Size EditBox::OnSizeRefUpdate(Size size_ref) {
 	Size size = TextBox::OnSizeRefUpdate(size_ref);

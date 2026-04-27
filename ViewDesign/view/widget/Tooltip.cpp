@@ -9,7 +9,7 @@
 #include "ViewDesign/event/timer.h"
 #include "ViewDesign/system/window.h"
 
-#if defined(_WIN32)
+#if defined(VIEWDESIGN_WIN32)
 #include "ViewDesign/platform/win32/window.h"
 #endif
 

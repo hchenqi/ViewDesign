@@ -15,5 +15,7 @@ target_link_libraries(ViewDesignWin32 PRIVATE d2d1)
 target_link_libraries(ViewDesignWin32 PRIVATE dwrite)
 target_link_libraries(ViewDesignWin32 PRIVATE windowscodecs)
 target_link_libraries(ViewDesignWin32 PRIVATE imm32)
+target_link_libraries(ViewDesignWin32 PRIVATE icu)
 
 target_link_libraries(ViewDesign PUBLIC ViewDesign::Win32)
+target_compile_definitions(ViewDesign PUBLIC VIEWDESIGN_WIN32)

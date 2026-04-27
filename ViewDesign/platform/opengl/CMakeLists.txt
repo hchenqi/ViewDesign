@@ -14,3 +14,4 @@ target_include_directories(ViewDesignOpenGL PUBLIC ${PROJECT_SOURCE_DIR})
 target_link_libraries(ViewDesignOpenGL PUBLIC OpenGL::GL)
 
 target_link_libraries(ViewDesign PUBLIC ViewDesign::OpenGL)
+target_compile_definitions(ViewDesign PUBLIC VIEWDESIGN_OPENGL)

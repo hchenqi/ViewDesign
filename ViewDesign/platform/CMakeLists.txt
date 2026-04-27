@@ -1,5 +1,6 @@
 add_subdirectory(glad)
 add_subdirectory(glfw)
+add_subdirectory(icu)
 add_subdirectory(opengl)
 add_subdirectory(vulkan)
 add_subdirectory(win32)
