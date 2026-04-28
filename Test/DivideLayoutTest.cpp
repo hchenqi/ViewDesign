@@ -80,20 +80,20 @@ void App() {
 		new TitleBarWindow(
 			MainWindowStyle(),
 			new Background<DivideLayout<Vertical>>(
-				new Background<DivideLayout<Horizontal>>(
-					new Block(),
-					new Block(),
-					new Block()
+				create<Background<DivideLayout<Horizontal>>>(
+					create<Block>(),
+					create<Block>(),
+					create<Block>()
 				),
-				new Background<DivideLayout<Horizontal>>(
-					new Block(),
-					new Block(),
-					new Block()
+				create<Background<DivideLayout<Horizontal>>>(
+					create<Block>(),
+					create<Block>(),
+					create<Block>()
 				),
-				new Background<DivideLayout<Horizontal>>(
-					new Block(),
-					new Block(),
-					new Block()
+				create<Background<DivideLayout<Horizontal>>>(
+					create<Block>(),
+					create<Block>(),
+					create<Block>()
 				)
 			)
 		)

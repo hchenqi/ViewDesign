@@ -30,7 +30,7 @@ private:
 		}
 	}
 protected:
-	_ListLayout_Base(float gap, auto... child) : _ListLayout_Base(gap, [&]() {
+	_ListLayout_Base(float gap, auto... child) requires (is_unique_ptr<decltype(child)> && ...) : _ListLayout_Base(gap, [&]() {
 		std::vector<ChildInfo> child_list; child_list.reserve(sizeof...(child));
 		(child_list.emplace_back(std::move(child)), ...);
 		return child_list;
@@ -198,7 +198,7 @@ public:
 	using child_type = view_ptr<WidthTrait, Auto>;
 
 public:
-	ListLayoutVertical(auto&&... args) : _ListLayoutVertical_Base(std::forward<decltype(args)>(args)...) {
+	ListLayoutVertical(float gap, auto... child) requires (is_compatible_unique_ptr<decltype(child), child_type> && ...) : _ListLayoutVertical_Base(gap, std::move(child)...) {
 		if constexpr (IsAuto<WidthTrait>) {
 			for (auto& child : child_list) {
 				child.region.size = UpdateChildSizeRef(child.view, Size(width_ref, length_min));
@@ -206,6 +206,10 @@ public:
 			size.width = CalculateMaxWidth();
 			UpdateOffsetHeight(child_list.begin(), child_list.end());
 		}
+	}
+	ListLayoutVertical(float gap, auto... child) requires (!is_compatible_unique_ptr<decltype(child), child_type> || ...) {
+		static_assert((is_unique_ptr<decltype(child)> && ...), "ListLayoutVertical: child view arguments should be wrapped with unique_ptr.");
+		static_assert((is_ptr_compatible<decltype(child), child_type> && ...), "ListLayoutVertical: child view size traits incompatible.");
 	}
 
 public:
@@ -482,7 +486,7 @@ public:
 	using child_type = view_ptr<Auto, HeightTrait>;
 
 public:
-	ListLayoutHorizontal(auto&&... args) : _ListLayoutHorizontal_Base(std::forward<decltype(args)>(args)...) {
+	ListLayoutHorizontal(float gap, auto... child) requires (is_compatible_unique_ptr<decltype(child), child_type> && ...) : _ListLayoutHorizontal_Base(gap, std::move(child)...) {
 		if constexpr (IsAuto<HeightTrait>) {
 			for (auto& child : child_list) {
 				child.region.size = UpdateChildSizeRef(child.view, Size(length_min, height_ref));
@@ -490,6 +494,10 @@ public:
 			size.height = CalculateMaxHeight();
 			UpdateOffsetWidth(child_list.begin(), child_list.end());
 		}
+	}
+	ListLayoutHorizontal(float gap, auto... child) requires (!is_compatible_unique_ptr<decltype(child), child_type> || ...) {
+		static_assert((is_unique_ptr<decltype(child)> && ...), "ListLayoutHorizontal: child view arguments should be wrapped with unique_ptr.");
+		static_assert((is_ptr_compatible<decltype(child), child_type> && ...), "ListLayoutHorizontal: child view size traits incompatible.");
 	}
 
 public:

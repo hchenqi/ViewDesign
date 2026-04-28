@@ -121,14 +121,14 @@ One can replace `CenterFrame<Fixed, Fixed>` with `ClipFrame<Fixed, Fixed, TopLef
 	)
 ```
 
-One can use `std::make_unique<>` instead of `new` to create component instances with strong exception-safe guarantee. Using `new` here is just syntactically simpler and in most cases safe because in the constructor functions of most components each argument will be immediately converted to a `view_ptr` parameter as `unique_ptr`. However, using `new` is risky for components like `ListLayout`, `DivideLayout` and `StackLayoutMultiple` that accept variable number of arguments.
+One can use `create` (an alias of `std::make_unique`) instead of `new` to create component instances with strong exception-safe guarantee. Using `new` here is just a little simpler syntactically and in most cases safe because in the constructor functions of most components each argument will be immediately converted to a `view_ptr` parameter as `unique_ptr`. However, for components like `ListLayout`, `DivideLayout` and `StackLayoutMultiple` that accept variable number of arguments, passing raw pointers created by `new` is forbidden.
 
 ```cpp
 	desktop.AddWindow(
-		std::make_unique<TitleBarWindow>(
+		create<TitleBarWindow>(
 			MainWindowStyle(),
-			std::make_unique<CenterFrame<Fixed, Fixed>>(
-				std::make_unique<TextBox>(TextBoxStyle(), u"Hello World!")
+			create<CenterFrame<Fixed, Fixed>>(
+				create<TextBox>(TextBoxStyle(), u"Hello World!")
 			)
 		)
 	);

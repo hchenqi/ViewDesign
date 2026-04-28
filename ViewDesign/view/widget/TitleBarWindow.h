@@ -177,21 +177,21 @@ protected:
 		TitleBar(const TitleBarStyle::BarStyle& style, menu_type menu, owner_ptr<Title> title) : Base(
 			style._height,
 			new StackLayoutMultiple(
-				new HitThrough<CenterFrame<Fixed, Fixed>>(
+				create<HitThrough<CenterFrame<Fixed, Fixed>>>(
 					new MaxFrame(
 						Size(style._max_title_length, length_max),
 						std::move(title)
 					)
 				),
-				new HitThroughMargin<ClipFrame<Fixed, Fixed, Left>>(
+				create<HitThroughMargin<ClipFrame<Fixed, Fixed, Left>>>(
 					std::move(menu)
 				),
-				new HitThroughMargin<ClipFrame<Fixed, Fixed, Right>>(
+				create<HitThroughMargin<ClipFrame<Fixed, Fixed, Right>>>(
 					new ListLayoutHorizontal(
 						0.0f,
-						new MinimizeButton(style._background_color, style._foreground_color, u"minimize"),
-						new MaximizeButton(style._background_color, style._foreground_color, u""),
-						new CloseButton(style._background_color, style._foreground_color, u"close")
+						create<MinimizeButton>(style._background_color, style._foreground_color, u"minimize"),
+						create<MaximizeButton>(style._background_color, style._foreground_color, u""),
+						create<CloseButton>(style._background_color, style._foreground_color, u"close")
 					)
 				)
 			)

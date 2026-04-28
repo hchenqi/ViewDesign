@@ -104,9 +104,13 @@ public:
 	using child_type = view_ptr<Fixed, Fixed>;
 
 public:
-	StackLayoutMultiple(auto... child) : child_list() {
+	StackLayoutMultiple(auto... child) requires (is_compatible_unique_ptr<decltype(child), child_type> && ...) : child_list() {
 		child_list.reserve(sizeof...(child)); (child_list.emplace_back(std::move(child)), ...);
 		for (auto& child : child_list) { RegisterChild(child); }
+	}
+	StackLayoutMultiple(auto... child) requires (!is_compatible_unique_ptr<decltype(child), child_type> || ...) {
+		static_assert((is_unique_ptr<decltype(child)> && ...), "StackLayoutMultiple: child view arguments should be wrapped with unique_ptr.");
+		static_assert((is_ptr_compatible<decltype(child), child_type> && ...), "StackLayoutMultiple: child view size traits incompatible.");
 	}
 
 	// child

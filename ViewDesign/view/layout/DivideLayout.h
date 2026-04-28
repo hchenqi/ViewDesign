@@ -24,6 +24,15 @@ protected:
 			SetChildIndex(child, index++);
 		}
 	}
+	_DivideLayout_Base(auto... child) requires (is_compatible_unique_ptr<decltype(child), child_type> && ...) : _DivideLayout_Base([&]() {
+		std::vector<child_type> child_list; child_list.reserve(sizeof...(child));
+		(child_list.emplace_back(std::move(child)), ...);
+		return child_list;
+	}()) {}
+	_DivideLayout_Base(auto... child) requires (!is_compatible_unique_ptr<decltype(child), child_type> || ...) {
+		static_assert((is_unique_ptr<decltype(child)> && ...), "DivideLayout: child view arguments should be wrapped with unique_ptr.");
+		static_assert((is_ptr_compatible<decltype(child), child_type> && ...), "DivideLayout: child view size traits incompatible.");
+	}
 
 	// child
 protected:
@@ -44,11 +53,7 @@ protected:
 template<>
 class DivideLayout<Vertical> : public _DivideLayout_Base {
 public:
-	DivideLayout(auto... child) : _DivideLayout_Base([&]() {
-		std::vector<child_type> child_list; child_list.reserve(sizeof...(child));
-		(child_list.emplace_back(std::move(child)), ...);
-		return child_list;
-	}()) {}
+	DivideLayout(auto&& ...args) : _DivideLayout_Base(std::forward<decltype(args)>(args)...) {}
 
 	// layout
 protected:
@@ -99,11 +104,7 @@ protected:
 template<>
 class DivideLayout<Horizontal> : public _DivideLayout_Base {
 public:
-	DivideLayout(auto... child) : _DivideLayout_Base([&]() {
-		std::vector<child_type> child_list; child_list.reserve(sizeof...(child));
-		(child_list.emplace_back(std::move(child)), ...);
-		return child_list;
-	}()) {}
+	DivideLayout(auto&& ...args) : _DivideLayout_Base(std::forward<decltype(args)>(args)...) {}
 
 	// layout
 protected:

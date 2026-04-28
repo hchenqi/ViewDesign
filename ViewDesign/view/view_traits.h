@@ -133,6 +133,19 @@ struct extract_size_trait<view_ptr<WidthTrait, HeightTrait>> {
 };
 
 
+template<class T>
+concept is_unique_ptr = std::derived_from<T, std::unique_ptr<typename T::element_type, typename T::deleter_type>>;
+
+template<class T, class D>
+concept is_ptr_compatible = std::derived_from<extract_width_trait<T>, extract_width_trait<D>> && std::derived_from<extract_height_trait<T>, extract_height_trait<D>>;
+
+template<class T, class D>
+concept is_compatible_unique_ptr = is_unique_ptr<T> && is_ptr_compatible<T, D>;
+
+template<class T>
+auto create(auto&&... args) { return std::make_unique<T>(std::forward<decltype(args)>(args)...); }
+
+
 struct Vertical {};
 struct Horizontal {};
 struct Bidirectional {};
