@@ -29,7 +29,7 @@ Window& Desktop::AddWindow(std::unique_ptr<Window> window) {
 
 std::unique_ptr<Window> Desktop::RemoveWindow(Window& window) {
 	auto it = std::find_if(window_list.begin(), window_list.end(), [&](const std::unique_ptr<Window>& ptr) { return ptr.get() == &window; });
-	if (it == window_list.end()) { throw std::invalid_argument("invalid desktop window"); }
+	if (it == window_list.end()) { throw std::invalid_argument("window not registered"); }
 	window.Hide();
 	UnregisterChild(window);
 	std::unique_ptr<Window> ptr = std::move(*it); window_list.erase(it);
@@ -58,7 +58,7 @@ Size ViewDesign::Desktop::GetSize() const {
 	return GetDesktopSize();
 }
 
-void Desktop::RecreateFrameLayer() {
+void Desktop::RecreateWindowLayer() {
 	for (auto& window : window_list) {
 		window->RecreateLayer();
 	}
@@ -250,6 +250,7 @@ void Desktop::EventLoop() {
 }
 
 void Desktop::Terminate() {
+	for (auto& window : window_list) { UnregisterChild(*window); }
 	window_list.clear();
 	ViewDesign::Terminate();
 }

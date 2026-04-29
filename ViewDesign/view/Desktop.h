@@ -43,7 +43,7 @@ public:
 
 	// drawing
 private:
-	void RecreateFrameLayer();
+	void RecreateWindowLayer();
 private:
 	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override;
 

@@ -29,7 +29,7 @@ struct WindowApi : Window {
 };
 
 struct DesktopApi : Desktop {
-	using Desktop::RecreateFrameLayer;
+	using Desktop::RecreateWindowLayer;
 	using Desktop::LoseTrack;
 	using Desktop::LoseCapture;
 	using Desktop::LoseFocus;
@@ -50,7 +50,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 	static bool is_mouse_tracked = false;
 
 	ref_ptr<WindowApi> window = reinterpret_cast<ref_ptr<WindowApi>>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
-	if (window == nullptr) { goto FrameIrrelevantMessages; }
+	if (window == nullptr) { goto WindowIrrelevantMessages; }
 
 	// mouse message
 	if (IsMouseMsg(msg)) {
@@ -127,7 +127,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 				window->OnDraw();
 			} catch (std::runtime_error&) {
 				DirectXRecreateResource();
-				static_cast<DesktopApi&>(desktop).RecreateFrameLayer();
+				static_cast<DesktopApi&>(desktop).RecreateWindowLayer();
 			}
 			EndPaint(hwnd, &ps);
 		}break;
@@ -158,12 +158,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 
 		case WM_DESTROY: if (window->HasParent()) { static_cast<DesktopApi&>(desktop).RemoveWindow(*window); } break;
 
-		default: goto FrameIrrelevantMessages;
+		default: goto WindowIrrelevantMessages;
 		}
 		return 0;
 	}
 
-FrameIrrelevantMessages:
+WindowIrrelevantMessages:
 	switch (msg) {
 	case WM_CREATE: break;
 	case WM_KILLFOCUS: static_cast<DesktopApi&>(desktop).LoseFocus(); break;
@@ -177,7 +177,7 @@ FrameIrrelevantMessages:
 }
 
 HINSTANCE hInstance = NULL;
-const u16char wnd_class_name[] = u"ViewDesignFrame";
+const u16char wnd_class_name[] = u"ViewDesignWindow";
 WNDCLASSEXW wnd_class = [] {
 	WNDCLASSEXW wcex = {};
 	wcex.cbSize = sizeof(WNDCLASSEXW);
