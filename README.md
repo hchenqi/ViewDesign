@@ -60,7 +60,7 @@ Dear ImGui allows for quick GUI development with simple commands of displaying c
 
 ## Example
 
-A basic example program below displays "Hello World!" at the center of the main window: (from [Test/TextBoxTest.cpp](Test/TextBoxTest.cpp))
+An example program below displays "Hello World!" at the center of the main window: (from [Test/TextBoxTest.cpp](Test/TextBoxTest.cpp))
 
 ```cpp
 #include "ViewDesign/view/Desktop.h"
@@ -95,6 +95,8 @@ void App() {
 }
 ```
 
+![Screenshot 1](docs/screenshot-1.png)
+
 We first include the header files for `Desktop` and the components we need. Then we extend and define the styles for `TitleBarWindow` and `TextBox`. Finally in the entrypoint `void App()`, we create the component instances, combine the components, add the main window and enter the event loop. `CenterFrame<Fixed, Fixed>` makes the `TextBox` compatible to `TitleBarWindow` and at the same time places it at the center of the main window.
 
 The main window has a fixed initial size and a resizable border to change its size, thus expecting both the child view's width and height to be fixed. But a `TextBox` always determines its size based on its content, making its layout incompatible to the main window. This enforces one to specify where to put the `TextBox` in the main window since the `TextBox` doesn't have a fixed size.
@@ -120,6 +122,8 @@ One can replace `CenterFrame<Fixed, Fixed>` with `ClipFrame<Fixed, Fixed, TopLef
 		)
 	)
 ```
+
+![Screenshot 2](docs/screenshot-2.png)
 
 One can use `create` (an alias of `std::make_unique`) instead of `new` to create component instances with strong exception-safe guarantee. Using `new` here is just a little simpler syntactically and in most cases safe because in the constructor functions of most components each argument will be immediately converted to a `view_ptr` parameter as `unique_ptr`. However, for components like `ListLayout`, `DivideLayout` and `StackLayoutMultiple` that accept variable number of arguments, passing raw pointers created by `new` is forbidden.
 
