@@ -1,7 +1,6 @@
 #include "ViewDesign/view/Desktop.h"
 #include "ViewDesign/system/desktop.h"
 #include "ViewDesign/system/window.h"
-#include "ViewDesign/system/cursor.h"
 #include "ViewDesign/system/event_loop.h"
 #include "ViewDesign/common/reversion_wrapper.h"
 

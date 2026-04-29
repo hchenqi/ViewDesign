@@ -1,5 +1,4 @@
 #include "ViewDesign/system/window.h"
-#include "ViewDesign/system/cursor.h"
 #include "ViewDesign/system/desktop.h"
 #include "ViewDesign/platform/win32/string.h"
 #include "ViewDesign/platform/win32/window.h"

@@ -1,6 +1,6 @@
 #include "ViewDesign/common/unicode.h"
 
-#if defined(VIEWDESIGN_ICU)
+#if defined(VIEWDESIGN_PLATFORM_ICU)
 
 #include <unicode/unistr.h>
 

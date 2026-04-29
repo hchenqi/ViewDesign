@@ -9,7 +9,7 @@
 #include "ViewDesign/event/timer.h"
 #include "ViewDesign/system/window.h"
 
-#if defined(VIEWDESIGN_WIN32)
+#if defined(VIEWDESIGN_BACKEND_WIN32_DIRECTX)
 #include "ViewDesign/platform/win32/window.h"
 #endif
 
@@ -33,8 +33,10 @@ private:
 			)
 		)
 	) {
+#if defined(VIEWDESIGN_BACKEND_WIN32_DIRECTX)
 		Win32::SetWndStyle((HWND)GetPlatformHandle(), WS_EX_TOOLWINDOW | WS_EX_TRANSPARENT | WS_EX_NOACTIVATE);
 		Win32::SetWndTopMost((HWND)GetPlatformHandle());
+#endif
 	}
 
 private:

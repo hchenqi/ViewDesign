@@ -3,9 +3,9 @@
 #include <cassert>
 #include <stdexcept>
 
-#if defined(VIEWDESIGN_ICU) || defined(VIEWDESIGN_WIN32)
+#if defined(VIEWDESIGN_PLATFORM_ICU) || defined(VIEWDESIGN_PLATFORM_WIN32)
 
-#if defined(VIEWDESIGN_ICU)
+#if defined(VIEWDESIGN_PLATFORM_ICU)
 #include <unicode/ubrk.h>
 #else
 #include <icu.h>

@@ -14,4 +14,4 @@ target_include_directories(ViewDesignGLFW PUBLIC ${PROJECT_SOURCE_DIR})
 target_link_libraries(ViewDesignGLFW PUBLIC glfw)
 
 target_link_libraries(ViewDesign PUBLIC ViewDesign::GLFW)
-target_compile_definitions(ViewDesign PUBLIC VIEWDESIGN_GLFW)
+target_compile_definitions(ViewDesign PUBLIC VIEWDESIGN_PLATFORM_GLFW)

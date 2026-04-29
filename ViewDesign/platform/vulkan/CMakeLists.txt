@@ -14,4 +14,4 @@ target_include_directories(ViewDesignVulkan PUBLIC ${PROJECT_SOURCE_DIR})
 target_link_libraries(ViewDesignVulkan PUBLIC Vulkan::Vulkan)
 
 target_link_libraries(ViewDesign PUBLIC ViewDesign::Vulkan)
-target_compile_definitions(ViewDesign PUBLIC VIEWDESIGN_VULKAN)
+target_compile_definitions(ViewDesign PUBLIC VIEWDESIGN_PLATFORM_VULKAN)

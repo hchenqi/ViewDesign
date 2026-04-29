@@ -18,4 +18,4 @@ target_link_libraries(ViewDesignWin32 PRIVATE imm32)
 target_link_libraries(ViewDesignWin32 PRIVATE icu)
 
 target_link_libraries(ViewDesign PUBLIC ViewDesign::Win32)
-target_compile_definitions(ViewDesign PUBLIC VIEWDESIGN_WIN32)
+target_compile_definitions(ViewDesign PUBLIC VIEWDESIGN_PLATFORM_WIN32)

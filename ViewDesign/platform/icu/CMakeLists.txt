@@ -14,4 +14,4 @@ target_include_directories(ViewDesignICU PUBLIC ${PROJECT_SOURCE_DIR})
 target_link_libraries(ViewDesignICU PUBLIC ICU::uc)
 
 target_link_libraries(ViewDesign PUBLIC ViewDesign::ICU)
-target_compile_definitions(ViewDesign PUBLIC VIEWDESIGN_ICU)
+target_compile_definitions(ViewDesign PUBLIC VIEWDESIGN_PLATFORM_ICU)
