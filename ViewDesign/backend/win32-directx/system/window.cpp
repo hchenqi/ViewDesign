@@ -38,6 +38,7 @@ struct DesktopApi : Desktop {
 
 using namespace Win32;
 
+
 namespace {
 
 constexpr float dpi_default = 96.0f;
@@ -193,13 +194,13 @@ WNDCLASSEXW wnd_class = [] {
 Handle CreateWindow(Window& window, const u16string& title) {
 	static ATOM wnd_class_atom = RegisterClassExW(&wnd_class);
 	if (wnd_class_atom == 0) {
-		throw std::runtime_error("register class error");
+		throw std::runtime_error("Win32: register class error");
 	}
 	HWND hwnd = CreateWindowExW(WS_EX_NOREDIRECTIONBITMAP, as_wchar_str(wnd_class_name), as_wchar_str(title.c_str()),
 								WS_POPUP | WS_THICKFRAME | WS_MAXIMIZEBOX | WS_HSCROLL | WS_VSCROLL,
 								0, 0, 0, 0, NULL, NULL, hInstance, NULL);
 	if (hwnd == NULL) {
-		throw std::runtime_error("create window error");
+		throw std::runtime_error("Win32: create window error");
 	}
 	SetWindowLongPtrW((HWND)hwnd, GWLP_USERDATA, (LONG_PTR)&window);
 	return hwnd;
@@ -216,12 +217,13 @@ void HideWindow(Handle handle) { ShowWindow((HWND)handle, SW_HIDE); }
 void MinimizeWindow(Handle handle) { ShowWindow((HWND)handle, SW_MINIMIZE); }
 void MaximizeWindow(Handle handle) { ShowWindow((HWND)handle, SW_MAXIMIZE); }
 void RestoreWindow(Handle handle) { ShowWindow((HWND)handle, SW_RESTORE); }
+
 void CloseWindow(Handle handle) { DestroyWindow((HWND)handle); }
 
 void RedrawWindowRegion(Handle handle, Rect region) { RECT rect = AsWin32Rect(region); InvalidateRect((HWND)handle, &rect, false); }
 
 void SetWindowCapture(Handle handle) { SetCapture((HWND)handle); }
-void ReleaseWindowCapture() { ReleaseCapture(); }
+void ReleaseWindowCapture(Handle handle) { ReleaseCapture(); }
 void SetWindowFocus(Handle handle) { SetFocus((HWND)handle); }
 
 void ImeWindowEnable(Handle handle) { ImeEnable((HWND)handle); }

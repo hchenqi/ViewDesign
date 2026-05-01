@@ -5,14 +5,15 @@
 
 namespace ViewDesign {
 
-class ViewBase;
+using Handle = void*;
+
 
 namespace Win32 {
 
 
-void AeroSnapDraggingEffect(ViewBase& view);
+void AeroSnapDraggingEffect(Handle handle);
 
-void AeroSnapBorderResizingEffect(ViewBase& view, BorderPosition border_position);
+void AeroSnapBorderResizingEffect(Handle handle, BorderPosition border_position);
 
 
 } // namespace Win32

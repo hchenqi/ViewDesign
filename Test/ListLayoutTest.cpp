@@ -1,4 +1,4 @@
-#include "ViewDesign/view/Desktop.h"
+#include "ViewDesign/view/widget/TitleBarWindow.h"
 #include "ViewDesign/view/frame/ScrollFrame.h"
 #include "ViewDesign/view/frame/ClipFrame.h"
 #include "ViewDesign/view/frame/ScaleFrame.h"
@@ -8,7 +8,6 @@
 #include "ViewDesign/view/layout/StackLayout.h"
 #include "ViewDesign/view/control/EditBox.h"
 #include "ViewDesign/view/wrapper/HitTestHelper.h"
-#include "ViewDesign/view/widget/TitleBarWindow.h"
 
 #include "TextBoxHelper.h"
 

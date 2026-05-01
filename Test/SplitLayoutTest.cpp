@@ -1,9 +1,8 @@
-#include "ViewDesign/view/Desktop.h"
+#include "ViewDesign/view/widget/TitleBarWindow.h"
 #include "ViewDesign/view/frame/CenterFrame.h"
 #include "ViewDesign/view/frame/BorderFrame.h"
 #include "ViewDesign/view/layout/SplitLayout.h"
 #include "ViewDesign/view/control/EditBox.h"
-#include "ViewDesign/view/widget/TitleBarWindow.h"
 
 #include "TextBoxHelper.h"
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ViewDesign/view/Window.h"
+#include "ViewDesign/view/Desktop.h"
 #include "ViewDesign/view/frame/MutableFrame.h"
 #include "ViewDesign/view/frame/PaddingFrame.h"
 #include "ViewDesign/view/frame/BorderFrame.h"
@@ -23,7 +23,7 @@
 #include "ViewDesign/messaging/context.h"
 #include "ViewDesign/geometry/border_helper.h"
 
-#if defined(VIEWDESIGN_BACKEND_WIN32_DIRECTX)
+#if defined(VIEWDESIGN_BACKEND_WIN32)
 #include "ViewDesign/platform/win32/aero_snap.h"
 #endif
 
@@ -86,10 +86,12 @@ protected:
 			if (event.type == MouseEvent::Move || event.type == MouseEvent::LeftDown) {
 				BorderPosition border_position = HitTestBorderPosition(size, border._width + border._radius, event.point);
 				if (event.type == MouseEvent::Move) {
+#if defined(VIEWDESIGN_BACKEND_WIN32)
 					SetCursor(GetCursor(GetBorderPositionCursorStyle(border_position)));
+#endif
 				} else {
-#if defined(VIEWDESIGN_BACKEND_WIN32_DIRECTX)
-					Win32::AeroSnapBorderResizingEffect(*this, border_position);
+#if defined(VIEWDESIGN_BACKEND_WIN32)
+					Win32::AeroSnapBorderResizingEffect(desktop.GetWindow(*this).GetHandle(), border_position);
 #endif
 				}
 			}
@@ -206,8 +208,8 @@ protected:
 	protected:
 		virtual void OnMouseEvent(MouseEvent event) override {
 			switch (mouse_tracker.Track(event)) {
-#if defined(VIEWDESIGN_BACKEND_WIN32_DIRECTX)
-			case MouseTrackEvent::LeftDown: Win32::AeroSnapDraggingEffect(*this); break;
+#if defined(VIEWDESIGN_BACKEND_WIN32)
+			case MouseTrackEvent::LeftDown: Win32::AeroSnapDraggingEffect(desktop.GetWindow(*this).GetHandle()); break;
 #endif
 			case MouseTrackEvent::LeftDoubleClick: Context::Get<TitleBarWindow>().MaximizeOrRestore(); break;
 			}

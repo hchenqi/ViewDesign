@@ -23,7 +23,7 @@ public:
 private:
 	Handle handle;
 public:
-	Handle GetPlatformHandle() const { return handle; }
+	Handle GetHandle() const { return handle; }
 
 	// style
 public:
@@ -33,34 +33,36 @@ public:
 private:
 	Scale scale;
 	Rect region;
+protected:
+	Scale GetScale() const { return scale; }
+	Rect GetRegion() const { return region; }
 private:
-	Rect GetRegion() { return region; }
-	void SetScale(float value) { scale = Scale(value); }
-	void SetSize(Size size);
-	void SetPoint(Point point) { region.point = point; }
 	std::pair<Size, Rect> GetMinMaxRegion(Size size_ref);
 	void InitializeRegion(Size size_ref);
+	void SetSize(Size size);
+	void SetPoint(Point point) { region.point = point; }
+	void SetScale(float value) { scale = Scale(value); }
 protected:
 	void WindowRegionUpdated(Rect region);
 private:
-	virtual Transform GetChildTransform(ViewBase& child) const override final { return scale; }
+	virtual Transform GetChildTransform(ViewBase& child) const override { return scale; }
 protected:
 	virtual std::pair<Size, Size> CalculateMinMaxSize(Size size_ref) { return { size_empty, size_ref }; }
 	virtual Rect OnWindowSizeRefUpdate(Size size_ref) { UpdateChildSizeRef(child, size_ref); return Rect(point_zero, size_ref); }
 	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override {}
 
 	// state
-protected:
+public:
 	enum class State { Normal, Minimized, Maximized };
 private:
 	State state = State::Normal;
 private:
 	void SetState(State state) { if (this->state != state) { this->state = state; OnStateChange(state); } }
-protected:
+public:
 	State GetState() { return state; }
 protected:
 	virtual void OnStateChange(State state) {}
-protected:
+public:
 	void Show();
 	void Hide();
 	void Minimize();
@@ -78,14 +80,12 @@ private:
 protected:
 	void Redraw(Rect redraw_region);
 private:
-	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override final { Redraw(child_redraw_region); }
+	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override { Redraw(child_redraw_region); }
 	void OnDraw();
 
 	// event
-public:
-	Point GetCursorPosition() const;
 private:
-	virtual ref_ptr<ViewBase> HitTest(MouseEvent& event) override final { event.point *= scale.Invert(); return ViewFrame::HitTest(event); }
+	virtual ref_ptr<ViewBase> HitTest(MouseEvent& event) override { event.point *= scale.Invert(); return ViewFrame::HitTest(event); }
 };
 
 

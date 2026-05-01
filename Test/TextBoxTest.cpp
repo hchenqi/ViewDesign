@@ -1,7 +1,6 @@
-#include "ViewDesign/view/Desktop.h"
+#include "ViewDesign/view/widget/TitleBarWindow.h"
 #include "ViewDesign/view/frame/CenterFrame.h"
 #include "ViewDesign/view/control/TextBox.h"
-#include "ViewDesign/view/widget/TitleBarWindow.h"
 
 
 using namespace ViewDesign;

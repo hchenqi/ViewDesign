@@ -63,16 +63,12 @@ void Desktop::RecreateWindowLayer() {
 	}
 }
 
-void Desktop::OnChildRedraw(ViewBase& child, Rect child_redraw_region) {
-	static_cast<Window&>(child).Redraw(child_redraw_region);
-}
-
 void Desktop::SetWindowCapture(Window& window) {
-	ViewDesign::SetWindowCapture(window.GetPlatformHandle());
+	ViewDesign::SetWindowCapture(window.GetHandle());
 }
 
-void Desktop::ReleaseWindowCapture() {
-	ViewDesign::ReleaseWindowCapture();
+void Desktop::ReleaseWindowCapture(Window& window) {
+	ViewDesign::ReleaseWindowCapture(window.GetHandle());
 }
 
 void Desktop::SetTrack(ViewBase& view) {
@@ -100,7 +96,9 @@ void Desktop::SetTrack(ViewBase& view) {
 		view_track_map.emplace(trace.back(), view_track_stack.size());
 	}
 	view.OnFocusEvent(FocusEvent::MouseOver);
+#if defined(VIEWDESIGN_BACKEND_WIN32)
 	SetCursor(view.cursor);
+#endif
 }
 
 void Desktop::LoseTrack() {
@@ -123,7 +121,7 @@ void Desktop::SetCapture(ViewBase& view) {
 
 void Desktop::ReleaseCapture(ViewBase& view) {
 	if (view_capture == &view) {
-		ReleaseWindowCapture();
+		ReleaseWindowCapture(*window_capture);
 	}
 }
 
@@ -153,7 +151,7 @@ void Desktop::DispatchMouseEvent(Window& window, MouseEvent event) {
 }
 
 void Desktop::SetWindowFocus(ref_ptr<Window> window_focus) {
-	ViewDesign::SetWindowFocus(window_focus ? window_focus->GetPlatformHandle() : nullptr);
+	ViewDesign::SetWindowFocus(window_focus ? window_focus->GetHandle() : nullptr);
 }
 
 void Desktop::SetFocus(ViewBase& view) {
@@ -217,15 +215,15 @@ void Desktop::DispatchKeyEvent(KeyEvent event) {
 }
 
 void Desktop::ImeWindowEnable() {
-	ViewDesign::ImeWindowEnable(window_focus->GetPlatformHandle());
+	ViewDesign::ImeWindowEnable(window_focus->GetHandle());
 }
 
 void Desktop::ImeWindowDisable() {
-	ViewDesign::ImeWindowDisable(window_focus->GetPlatformHandle());
+	ViewDesign::ImeWindowDisable(window_focus->GetHandle());
 }
 
 void Desktop::ImeWindowSetPosition(Window& window, Point point) {
-	ViewDesign::ImeWindowSetPosition(window.GetPlatformHandle(), point);
+	ViewDesign::ImeWindowSetPosition(window.GetHandle(), point);
 }
 
 void Desktop::ImeSetPosition(ViewBase& view, Point point) {

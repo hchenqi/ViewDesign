@@ -63,10 +63,9 @@ Dear ImGui allows for quick GUI development with simple commands of displaying c
 An example program below displays "Hello World!" at the center of the main window: (from [Test/TextBoxTest.cpp](Test/TextBoxTest.cpp))
 
 ```cpp
-#include "ViewDesign/view/Desktop.h"
+#include "ViewDesign/view/widget/TitleBarWindow.h"
 #include "ViewDesign/view/frame/CenterFrame.h"
 #include "ViewDesign/view/control/TextBox.h"
-#include "ViewDesign/view/widget/TitleBarWindow.h"
 
 using namespace ViewDesign;
 
@@ -97,7 +96,7 @@ void App() {
 
 ![Screenshot 1](docs/screenshot-1.png)
 
-We first include the header files for `Desktop` and the components we need. Then we extend and define the styles for `TitleBarWindow` and `TextBox`. Finally in the entrypoint `void App()`, we create the component instances, combine the components, add the main window and enter the event loop. `CenterFrame<Fixed, Fixed>` makes the `TextBox` compatible to `TitleBarWindow` and at the same time places it at the center of the main window.
+We first include the header files for the components we need. Then we extend and define the styles for `TitleBarWindow` and `TextBox`. Finally in the entrypoint `void App()`, we create the component instances, combine the components, add the main window and enter the event loop. `CenterFrame<Fixed, Fixed>` makes the `TextBox` compatible to `TitleBarWindow` and at the same time places it at the center of the main window.
 
 The main window has a fixed initial size and a resizable border to change its size, thus expecting both the child view's width and height to be fixed. But a `TextBox` always determines its size based on its content, making its layout incompatible to the main window. This enforces one to specify where to put the `TextBox` in the main window since the `TextBox` doesn't have a fixed size.
 
@@ -113,7 +112,7 @@ We say that the main window accepts a child view with size trait `<Fixed, Fixed>
 One can replace `CenterFrame<Fixed, Fixed>` with `ClipFrame<Fixed, Fixed, TopLeft>` to make the text appear at the top-left corner of the window. If the text is too long, the overflowing part will also be clipped away.
 
 ```cpp
-	// need to include "ViewDesign/view/frame/ClipFrame.h"
+	// #include "ViewDesign/view/frame/ClipFrame.h"
 
 	new TitleBarWindow(
 		MainWindowStyle(),
@@ -509,7 +508,6 @@ Converters between `std::u8string` and `std::u16string` are provided. `reinterpr
 ## Known Issues
 
 - TextBox/EditBox don't well support vertical text layout (the text layout direction is related with the choice of ClipFrame)
-- Tooltip might display an additional thin border in background color (because the region of a window is rounded up to integer coordinates and background is drawn without clipping)
 
 ## History
 

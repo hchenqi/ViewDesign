@@ -1,6 +1,6 @@
 #include "ViewDesign/view/Desktop.h"
 #include "ViewDesign/system/window.h"
-#include "ViewDesign/system/drawing.h"
+#include "ViewDesign/drawing/drawing.h"
 #include "ViewDesign/geometry/helper.h"
 
 
@@ -18,6 +18,17 @@ void Window::SetTitle(const u16string& title) {
 	SetWindowTitle(handle, title);
 }
 
+std::pair<Size, Rect> Window::GetMinMaxRegion(Size size_ref) {
+	auto [size_min, size_max] = CalculateMinMaxSize(size_ref * scale.Invert());
+	return { size_min * scale, Rect(point_zero, size_max * scale) };
+}
+
+void Window::InitializeRegion(Size size_ref) {
+	region = Round(OnWindowSizeRefUpdate(size_ref * scale.Invert()) * scale);
+	SetWindowRegion(handle, region);
+	RecreateLayer();
+}
+
 void Window::SetSize(Size size) {
 	if (region.size != size) {
 		region.size = size;
@@ -26,20 +37,9 @@ void Window::SetSize(Size size) {
 	}
 }
 
-std::pair<Size, Rect> Window::GetMinMaxRegion(Size size_ref) {
-	auto [size_min, size_max] = CalculateMinMaxSize(size_ref * scale.Invert());
-	return { size_min * scale, Rect(point_zero, size_max * scale) };
-}
-
-void Window::InitializeRegion(Size size_ref) {
-	region = RoundUp(OnWindowSizeRefUpdate(size_ref * scale.Invert()) * scale);
-	SetWindowRegion(handle, region);
-	RecreateLayer();
-}
-
 void Window::WindowRegionUpdated(Rect region) {
 	if (!HasParent()) { return; }
-	region = RoundUp(region * scale);
+	region = Round(region * scale);
 	if (this->region.size != region.size) {
 		this->region.size = region.size;
 		ResizeLayer();
@@ -67,7 +67,7 @@ void Window::RecreateLayer() {
 }
 
 void Window::Redraw(Rect redraw_region) {
-	redraw_region = Extend(redraw_region * scale, 0.5f).Intersect(Rect(point_zero, region.size));
+	redraw_region = RoundUp((redraw_region * scale).Intersect(Rect(point_zero, region.size)));
 	invalid_region.Union(redraw_region);
 	RedrawWindowRegion(handle, redraw_region);
 }
@@ -82,10 +82,6 @@ void Window::OnDraw() {
 	EndDraw();
 	invalid_region.Clear();
 	layer.Present(render_rect);
-}
-
-Point Window::GetCursorPosition() const {
-	return ViewDesign::GetCursorPosition() * scale.Invert();
 }
 
 

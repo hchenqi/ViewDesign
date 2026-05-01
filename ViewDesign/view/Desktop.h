@@ -44,8 +44,6 @@ public:
 	// drawing
 private:
 	void RecreateWindowLayer();
-private:
-	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override;
 
 	// mouse event
 private:
@@ -55,7 +53,7 @@ private:
 	ref_ptr<ViewBase> view_capture = nullptr;
 private:
 	void SetWindowCapture(Window& window);
-	void ReleaseWindowCapture();
+	void ReleaseWindowCapture(Window& window);
 private:
 	void SetTrack(ViewBase& view);
 	void LoseTrack();

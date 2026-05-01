@@ -23,6 +23,8 @@ inline owner_ptr<ID2D1Bitmap1> CreateD2DBitmapFromDxgiSurface(IDXGISurface& dxgi
 } // namespace
 
 
+WindowLayer::WindowLayer() : swap_chain(nullptr), comp_target(nullptr) {}
+
 void WindowLayer::Create(Handle handle, Size size) {
 	Destroy();
 

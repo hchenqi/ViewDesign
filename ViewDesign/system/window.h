@@ -31,7 +31,7 @@ void CloseWindow(Handle handle);
 void RedrawWindowRegion(Handle handle, Rect region);
 
 void SetWindowCapture(Handle handle);
-void ReleaseWindowCapture();
+void ReleaseWindowCapture(Handle handle);
 void SetWindowFocus(Handle handle);
 
 void ImeWindowEnable(Handle handle);
