@@ -4,6 +4,7 @@
 #include "ViewDesign/platform/win32/dcomp_api.h"
 #include "ViewDesign/platform/win32/d2d_api.h"
 #include "ViewDesign/platform/win32/directx_helper.h"
+#include "ViewDesign/platform/win32/geometry_helper.h"
 
 
 namespace ViewDesign {
@@ -78,12 +79,22 @@ void WindowLayer::CreateTexture() {
 	ComPtr<IDXGISurface> dxgi_surface;
 	hr << swap_chain->GetBuffer(0, IID_PPV_ARGS(&dxgi_surface));
 	texture.Set(static_cast<owner_ptr<TextureResource>>(CreateD2DBitmapFromDxgiSurface(*dxgi_surface.Get())));
+	invalid_region = region_empty;
 }
 
-void WindowLayer::Present(Rect rect) {
-	RECT dirty_rect = { (int)rect.left(), (int)rect.top(), (int)rect.right(), (int)rect.bottom() };
+void WindowLayer::Redraw(Rect redraw_region) {
+	invalid_region = invalid_region.Union(redraw_region);
+}
+
+void WindowLayer::RenderCanvas(const Canvas& canvas) {
+	Layer::RenderCanvas(canvas, vector_zero, invalid_region);
+}
+
+void WindowLayer::Present() {
+	RECT dirty_rect = Win32::AsRECT(invalid_region);
 	DXGI_PRESENT_PARAMETERS present_parameters = { 1, &dirty_rect };
 	hr << swap_chain->Present1(0, 0, &present_parameters);
+	invalid_region = region_empty;
 }
 
 

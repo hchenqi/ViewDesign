@@ -69,11 +69,6 @@ public:
 		transform = prev_transform; offset = prev_offset;
 		groups.push_back({ (uint)figures.size(), transform, region_empty });
 	}
-
-public:
-	Canvas(auto func) {
-		Group(Transform::Identity(), region_infinite, [&]() { func(*this); });
-	}
 };
 
 

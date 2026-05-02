@@ -27,13 +27,15 @@ void Layer::Create(Size size) {
 }
 
 void Layer::RenderCanvas(const Canvas& canvas, Vector offset, Rect clip_region) {
-	ID2D1DeviceContext& device_context = GetD2DDeviceContext(); device_context.SetTarget(texture.GetResource());
+	ID2D1DeviceContext& device_context = GetD2DDeviceContext();
+	device_context.SetTarget(texture.GetResource());
+	device_context.BeginDraw();
 	device_context.SetTransform(AsD2DTransform(offset));
 	device_context.PushAxisAlignedClip(AsD2DRect(clip_region), D2D1_ANTIALIAS_MODE_PER_PRIMITIVE);
 	device_context.Clear(AsD2DColor(color_transparent));
 	auto& groups = canvas.GetFigureGroups();
 	auto& figures = canvas.GetFigures();
-	for (size_t figure_index = 0, group_index = 1; group_index < groups.size(); ++group_index) {
+	for (size_t figure_index = 0, group_index = 0; group_index < groups.size(); ++group_index) {
 		auto& group = groups[group_index];
 		for (; figure_index < group.figure_index; ++figure_index) {
 			figures[figure_index].figure->DrawOn(static_cast<RenderTarget&>(device_context), figures[figure_index].offset);
@@ -46,6 +48,9 @@ void Layer::RenderCanvas(const Canvas& canvas, Vector offset, Rect clip_region) 
 			device_context.SetTransform(AsD2DTransform(group.transform * offset));
 		}
 	}
+	device_context.PopAxisAlignedClip();
+	hr << device_context.EndDraw();
+	device_context.SetTarget(nullptr);
 }
 
 

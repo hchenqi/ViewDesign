@@ -1,6 +1,5 @@
 #include "ViewDesign/view/Desktop.h"
 #include "ViewDesign/system/window.h"
-#include "ViewDesign/drawing/drawing.h"
 #include "ViewDesign/geometry/helper.h"
 
 
@@ -56,32 +55,26 @@ void Window::Close() { CloseWindow(handle); }
 
 void Window::ResizeLayer() {
 	layer.Resize(region.size);
-	invalid_region.Clear();
 	Redraw(region_infinite);
 }
 
 void Window::RecreateLayer() {
 	layer.Create(handle, region.size);
-	invalid_region.Clear();
 	Redraw(region_infinite);
 }
 
 void Window::Redraw(Rect redraw_region) {
 	redraw_region = RoundUp((redraw_region * scale).Intersect(Rect(point_zero, region.size)));
-	invalid_region.Union(redraw_region);
+	layer.Redraw(redraw_region);
 	RedrawWindowRegion(handle, redraw_region);
 }
 
 void Window::OnDraw() {
-	Rect render_rect = invalid_region.GetBoundingRect(); if (render_rect.IsEmpty()) { return; }
-	BeginDraw();
-	Canvas canvas([&](Canvas& canvas) {
-		canvas.Group(scale, region_infinite, [&]() { ViewFrame::OnDraw(canvas, render_rect * scale.Invert()); });
-	});
-	layer.RenderCanvas(canvas, vector_zero, render_rect);
-	EndDraw();
-	invalid_region.Clear();
-	layer.Present(render_rect);
+	Rect draw_region = layer.GetInvalidRegion(); if (draw_region.IsEmpty()) { return; }
+	Canvas canvas;
+	canvas.Group(scale, region_infinite, [&]() { ViewFrame::OnDraw(canvas, draw_region * scale.Invert()); });
+	layer.RenderCanvas(canvas);
+	layer.Present();
 }
 
 

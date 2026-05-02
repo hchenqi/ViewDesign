@@ -10,7 +10,7 @@ namespace ViewDesign {
 namespace Win32 {
 
 
-inline RECT AsWin32Rect(Rect rect) {
+inline RECT AsRECT(Rect rect) {
 	return { (int)floorf(rect.left()), (int)floorf(rect.top()), (int)ceilf(rect.right()), (int)ceilf(rect.bottom()) };
 }
 

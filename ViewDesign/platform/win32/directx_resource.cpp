@@ -187,16 +187,6 @@ D2DSolidColorBrush& GetD2DSolidColorBrush(Color color) {
 }
 
 
-void BeginDraw() {
-	GetD2DDeviceContext().BeginDraw();
-}
-
-void EndDraw() {
-	hr << GetD2DDeviceContext().EndDraw();
-	GetD2DDeviceContext().SetTarget(nullptr);
-}
-
-
 } // namespace Win32
 
 } // namespace ViewDesign

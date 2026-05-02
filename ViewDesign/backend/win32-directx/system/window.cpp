@@ -220,7 +220,7 @@ void RestoreWindow(Handle handle) { ShowWindow((HWND)handle, SW_RESTORE); }
 
 void CloseWindow(Handle handle) { DestroyWindow((HWND)handle); }
 
-void RedrawWindowRegion(Handle handle, Rect region) { RECT rect = AsWin32Rect(region); InvalidateRect((HWND)handle, &rect, false); }
+void RedrawWindowRegion(Handle handle, Rect region) { RECT rect = AsRECT(region); InvalidateRect((HWND)handle, &rect, false); }
 
 void SetWindowCapture(Handle handle) { SetCapture((HWND)handle); }
 void ReleaseWindowCapture(Handle handle) { ReleaseCapture(); }

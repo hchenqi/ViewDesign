@@ -16,9 +16,6 @@ D2DFactory& GetD2DFactory();
 D2DDeviceContext& GetD2DDeviceContext();
 D2DSolidColorBrush& GetD2DSolidColorBrush(Color color);
 
-void BeginDraw();
-void EndDraw();
-
 
 } // namespace Win32
 

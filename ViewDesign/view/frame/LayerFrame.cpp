@@ -34,11 +34,8 @@ void _LayerFrame_Base::OnDraw(Canvas& canvas, Rect draw_region) {
 		redraw_region = render_region.GetBoundingRect();
 	}
 	if (!redraw_region.IsEmpty()) {
-		Canvas canvas([&](Canvas& canvas) {
-			canvas.Group(scale, region_infinite, [&]() {
-				DrawChild(child, point_zero, canvas, redraw_region * scale.Invert());
-			});
-		});
+		Canvas canvas;
+		canvas.Group(scale, region_infinite, [&]() {DrawChild(child, point_zero, canvas, redraw_region * scale.Invert()); });
 		layer.RenderCanvas(canvas, vector_zero, redraw_region);
 		invalid_region.Sub(redraw_region);
 	}

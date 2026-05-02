@@ -17,7 +17,7 @@ Region& TempRegion(Rect rect) { region_temp.Set(rect); return region_temp; }
 
 
 Region::Region(Rect region) {
-	RECT rect = AsWin32Rect(region);
+	RECT rect = AsRECT(region);
 	rgn = CreateRectRgn(rect.left, rect.top, rect.right, rect.bottom);
 }
 
@@ -30,7 +30,7 @@ bool Region::IsEmpty() const {
 }
 
 void Region::Set(Rect region) {
-	RECT rect = AsWin32Rect(region);
+	RECT rect = AsRECT(region);
 	SetRectRgn((HRGN)rgn, rect.left, rect.top, rect.right, rect.bottom);
 }
 

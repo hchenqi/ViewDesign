@@ -18,6 +18,7 @@ public:
 private:
 	using Handle = void*;
 #if defined(VIEWDESIGN_BACKEND_WIN32_DIRECTX)
+private:
 	owner_ptr<SwapChain> swap_chain;
 	owner_ptr<CompositionTarget> comp_target;
 #endif
@@ -28,11 +29,14 @@ public:
 private:
 	void CreateTexture();
 	void DestroyTexture() { texture.Destroy(); }
+private:
+	Rect invalid_region;
 public:
-#if defined(VIEWDESIGN_BACKEND_WIN32_DIRECTX)
-	using Layer::RenderCanvas;
-#endif
-	void Present(Rect dirty_rect);
+	Rect GetInvalidRegion() const { return invalid_region; }
+	void Redraw(Rect redraw_region);
+public:
+	void RenderCanvas(const Canvas& canvas);
+	void Present();
 };
 
 

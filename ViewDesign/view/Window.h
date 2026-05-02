@@ -2,7 +2,6 @@
 
 #include "ViewDesign/view/ViewFrame.h"
 #include "ViewDesign/geometry/scale.h"
-#include "ViewDesign/geometry/region.h"
 #include "ViewDesign/drawing/window_layer.h"
 
 
@@ -73,7 +72,6 @@ public:
 	// drawing
 private:
 	WindowLayer layer;
-	Region invalid_region;
 private:
 	void ResizeLayer();
 	void RecreateLayer();
