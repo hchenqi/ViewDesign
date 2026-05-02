@@ -1,4 +1,4 @@
-#include "ViewDesign/common/unicode.h"
+#include "ViewDesign/platform/glfw/string.h"
 
 #if defined(VIEWDESIGN_PLATFORM_ICU)
 
@@ -13,7 +13,7 @@ u8string to_u8string(const u16string& str) {
 }
 
 u16string to_u16string(const u8string& str) {
-	icu::UnicodeString s = icu::UnicodeString::fromUTF8(str);
+	icu::UnicodeString s = icu::UnicodeString::fromUTF8(GLFW::as_char_str(str.c_str()));
 	return u16string(s.getBuffer(), s.length());
 }
 

@@ -14,6 +14,9 @@ public:
 	Layer() {}
 	~Layer() {}
 protected:
+#if defined(VIEWDESIGN_BACKEND_GLFW_OPENGL)
+	Size size;
+#endif
 	Texture texture;
 public:
 	bool IsEmpty() const { return texture.IsEmpty(); }

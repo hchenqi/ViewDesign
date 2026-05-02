@@ -22,6 +22,10 @@ private:
 	owner_ptr<SwapChain> swap_chain;
 	owner_ptr<CompositionTarget> comp_target;
 #endif
+#if defined(VIEWDESIGN_BACKEND_GLFW_OPENGL)
+private:
+	Handle handle;
+#endif
 public:
 	void Create(Handle handle, Size size);
 	void Destroy();
@@ -31,6 +35,9 @@ private:
 	void DestroyTexture() { texture.Destroy(); }
 private:
 	Rect invalid_region;
+#if defined(VIEWDESIGN_BACKEND_GLFW_OPENGL)
+	Rect invalid_region_front_buffer;
+#endif
 public:
 	Rect GetInvalidRegion() const { return invalid_region; }
 	void Redraw(Rect redraw_region);
