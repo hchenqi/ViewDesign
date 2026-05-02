@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ViewDesign/common/type.h"
 #include "ViewDesign/geometry/point.h"
 
 
@@ -8,17 +9,7 @@ namespace ViewDesign {
 
 struct MouseEvent {
 	Point point;
-	enum : uchar {
-		LeftDown,
-		LeftUp,
-		RightDown,
-		RightUp,
-		MiddleDown,
-		MiddleUp,
-		Move,
-		WheelVertical,
-		WheelHorizontal,
-	}type;
+	short wheel_delta;
 	union {
 		struct {
 			bool left : 1;
@@ -31,7 +22,17 @@ struct MouseEvent {
 		};
 		uchar _key_state;
 	};
-	short wheel_delta;
+	enum : uchar {
+		LeftDown,
+		LeftUp,
+		RightDown,
+		RightUp,
+		MiddleDown,
+		MiddleUp,
+		Move,
+		WheelVertical,
+		WheelHorizontal,
+	}type;
 };
 
 

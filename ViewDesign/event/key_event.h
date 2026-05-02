@@ -13,6 +13,8 @@ enum class Key : uchar;
 
 
 struct KeyEvent {
+	u16pair ch;
+	Key key;
 	enum : uchar {
 		Char,
 		KeyDown,
@@ -21,8 +23,6 @@ struct KeyEvent {
 		ImeString,
 		ImeEnd,
 	}type;
-	Key key;
-	u16char ch;
 };
 
 
@@ -36,23 +36,23 @@ enum class Key : uchar {
 	XButton1 = 0x05,
 	XButton2 = 0x06,
 
-	Backspace = 0x08,  // Back
+	Backspace = 0x08,
 	Tab = 0x09,
 
 	Clear = 0x0C,
-	Enter = 0x0D,  // Return
+	Enter = 0x0D,
 
 	Shift = 0x10,
-	Ctrl = 0x11,  // Control
-	Alt = 0x12,  // Menu
+	Ctrl = 0x11,
+	Alt = 0x12,
 	Pause = 0x13,
-	CapsLock = 0x14,  // Capital
+	CapsLock = 0x14,
 
 	Escape = 0x1B,
 
 	Space = 0x20,
-	PageUp = 0x21,  // Prior
-	PageDown = 0x22,  // Next
+	PageUp = 0x21,
+	PageDown = 0x22,
 	End = 0x23,
 	Home = 0x24,
 	Left = 0x25,
@@ -62,14 +62,14 @@ enum class Key : uchar {
 	Select = 0x29,
 	Print = 0x2A,
 	Execute = 0x2B,
-	PrintScreen = 0x2C,  // Snapshot
+	PrintScreen = 0x2C,
 	Insert = 0x2D,
 	Delete = 0x2E,
 	Help = 0x2F,
 
-	// 0-9  Usage: CharKey('6')
+	// CharKey 0 - 9
 
-	// A-Z  Usage: CharKey('N')
+	// CharKey A - Z
 
 	LWin = 0x5B,
 	RWin = 0x5C,
@@ -107,7 +107,7 @@ enum class Key : uchar {
 	F12 = 0x7B,
 
 	NumLock = 0x90,
-	ScrollLock = 0x91,  // Scroll
+	ScrollLock = 0x91,
 
 	LShift = 0xA0,
 	RShift = 0xA1,
@@ -118,8 +118,7 @@ enum class Key : uchar {
 };
 
 constexpr Key CharKey(char ch) {
-	if ((ch >= '0' && ch <= '9') ||   // Numbers        : 0x30 - 0x39
-		(ch >= 'A' && ch <= 'Z')) {   // Captial letters: 0x41 - 0x5A
+	if ((ch >= '0' && ch <= '9') || (ch >= 'A' && ch <= 'Z')) {
 		return static_cast<Key>(ch);
 	}
 	throw std::invalid_argument("ch should be number or captial letter");

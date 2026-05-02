@@ -202,6 +202,17 @@ void EditBox::Insert(u16char ch) {
 	}
 }
 
+void EditBox::Insert(u16pair ch) {
+	if (IsEditDisabled()) { return; }
+	if (HasSelection()) {
+		TextBox::Replace(selection_range, ch);
+		SetCaret(selection_range.begin() + ch.length());
+	} else {
+		TextBox::Insert(caret_position, ch);
+		SetCaret(caret_position + ch.length());
+	}
+}
+
 void EditBox::Insert(const u16string& str) {
 	if (IsEditDisabled()) { return; }
 	if (HasSelection()) {
@@ -324,7 +335,9 @@ void EditBox::OnKeyEvent(KeyEvent event) {
 		break;
 	case KeyEvent::Char:
 		if (key_tracker.ctrl) { break; }
-		if (!iswcntrl(event.ch)) { Insert(event.ch); };
+		if (event.ch.empty()) { break; }
+		if (event.ch.single()) { if (!iswcntrl(event.ch.first)) { Insert(event.ch.first); } break; }
+		Insert(event.ch);
 		break;
 	case KeyEvent::ImeBegin: OnImeBegin(); break;
 	case KeyEvent::ImeString: OnImeString(); break;

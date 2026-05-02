@@ -121,6 +121,7 @@ protected:
 	// keyboard input
 protected:
 	void Insert(u16char ch);
+	void Insert(u16pair ch);
 	void Insert(const u16string& str);
 	void Delete(bool is_backspace);
 
