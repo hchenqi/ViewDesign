@@ -1,8 +1,7 @@
 #pragma once
 
-#include "ViewDesign/common/type.h"
 #include "ViewDesign/common/unicode.h"
-#include "ViewDesign/geometry/geometry.h"
+#include "ViewDesign/system/cursor.h"
 
 
 namespace ViewDesign {
@@ -20,6 +19,7 @@ Scale GetWindowScale(Handle handle);
 void SetWindowTitle(Handle handle, const u16string& title);
 void SetWindowRegion(Handle handle, Rect region);
 void SetWindowOpacity(Handle handle, uchar opacity);
+void SetWindowCursor(Handle handle, std::reference_wrapper<Cursor> cursor);
 
 void ShowWindow(Handle handle);
 void HideWindow(Handle handle);

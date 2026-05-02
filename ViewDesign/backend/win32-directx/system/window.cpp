@@ -156,7 +156,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 			);
 		}
 
-		case WM_DESTROY: if (window->HasParent()) { static_cast<DesktopApi&>(desktop).RemoveWindow(*window); } break;
+		case WM_CLOSE: static_cast<DesktopApi&>(desktop).RemoveWindow(*window); break;
+		case WM_DESTROY: break;
 
 		default: goto WindowIrrelevantMessages;
 		}
@@ -206,11 +207,14 @@ Handle CreateWindow(Window& window, const u16string& title) {
 	return hwnd;
 }
 
+void DestroyWindow(Handle handle) { DestroyWindow((HWND)handle); }
+
 Scale GetWindowScale(Handle handle) { return GetDpiForWindow((HWND)handle) / dpi_default; }
 
 void SetWindowTitle(Handle handle, const u16string& title) { SetWindowTextW((HWND)handle, as_wchar_str(title.c_str())); }
 void SetWindowRegion(Handle handle, Rect region) { MoveWindow((HWND)handle, (int)floorf(region.point.x), (int)floorf(region.point.y), (int)ceilf(region.size.width), (int)ceilf(region.size.height), false); }
 void SetWindowOpacity(Handle handle, uchar opacity) { SetWndStyle((HWND)handle, WS_EX_LAYERED);	SetLayeredWindowAttributes((HWND)handle, 0, opacity, LWA_ALPHA); }
+void SetWindowCursor(Handle handle, std::reference_wrapper<Cursor> cursor) { SetCursor(cursor); }
 
 void ShowWindow(Handle handle) { ShowWindow((HWND)handle, SW_SHOWNOACTIVATE); }
 void HideWindow(Handle handle) { ShowWindow((HWND)handle, SW_HIDE); }
@@ -218,7 +222,7 @@ void MinimizeWindow(Handle handle) { ShowWindow((HWND)handle, SW_MINIMIZE); }
 void MaximizeWindow(Handle handle) { ShowWindow((HWND)handle, SW_MAXIMIZE); }
 void RestoreWindow(Handle handle) { ShowWindow((HWND)handle, SW_RESTORE); }
 
-void CloseWindow(Handle handle) { DestroyWindow((HWND)handle); }
+void CloseWindow(Handle handle) { SendMessageW((HWND)handle, WM_CLOSE, 0, 0); }
 
 void RedrawWindowRegion(Handle handle, Rect region) { RECT rect = AsRECT(region); InvalidateRect((HWND)handle, &rect, false); }
 

@@ -8,10 +8,7 @@ namespace ViewDesign {
 
 Window::Window(const u16string& title, view_ptr<> child) : ViewFrame(std::move(child)), handle(CreateWindow(*this, title)), scale(GetWindowScale(handle)) {}
 
-Window::~Window() {
-	layer.Destroy();
-	Close();
-}
+Window::~Window() { layer.Destroy(); DestroyWindow(handle); }
 
 void Window::SetTitle(const u16string& title) {
 	SetWindowTitle(handle, title);

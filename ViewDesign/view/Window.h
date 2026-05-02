@@ -40,7 +40,7 @@ private:
 	void InitializeRegion(Size size_ref);
 	void SetSize(Size size);
 	void SetPoint(Point point) { region.point = point; }
-	void SetScale(float value) { scale = Scale(value); }
+	void SetScale(Scale scale) { this->scale = Scale(scale); }
 protected:
 	void WindowRegionUpdated(Rect region);
 private:

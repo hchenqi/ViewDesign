@@ -77,10 +77,8 @@ void Desktop::SetTrack(ViewBase& view) {
 	for (ref_ptr<ViewBase> curr = &view;;) {
 		trace.push_back(curr);
 		curr = curr->parent;
-		if (curr == nullptr || curr == &desktop) {
-			LoseTrack();
-			break;
-		}
+		if (curr == nullptr) { LoseTrack(); return; }
+		if (curr == &desktop) { LoseTrack(); break; }
 		if (view_track_map.contains(curr)) {
 			view_track_stack.back()->OnFocusEvent(FocusEvent::MouseOut);
 			for (size_t index = view_track_map[curr]; view_track_stack.size() > index; view_track_stack.pop_back()) {
@@ -96,9 +94,7 @@ void Desktop::SetTrack(ViewBase& view) {
 		view_track_map.emplace(trace.back(), view_track_stack.size());
 	}
 	view.OnFocusEvent(FocusEvent::MouseOver);
-#if defined(VIEWDESIGN_BACKEND_WIN32)
-	SetCursor(view.cursor);
-#endif
+	SetWindowCursor(static_cast<Window&>(*view_track_stack.front()).GetHandle(), view.cursor);
 }
 
 void Desktop::LoseTrack() {
@@ -247,7 +243,6 @@ void Desktop::EventLoop() {
 }
 
 void Desktop::Terminate() {
-	for (auto& window : window_list) { UnregisterChild(*window); }
 	window_list.clear();
 	ViewDesign::Terminate();
 }
