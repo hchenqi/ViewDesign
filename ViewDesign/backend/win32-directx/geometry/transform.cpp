@@ -10,8 +10,8 @@ namespace ViewDesign {
 using namespace Win32;
 
 
-Transform Transform::Identity() {
-	return AsTransform(D2D1::Matrix3x2F::Identity());
+Transform::Transform() {
+	*this = AsTransform(D2D1::Matrix3x2F::Identity());
 }
 
 Transform Transform::Translation(Vector offset) {
@@ -38,10 +38,6 @@ Transform Transform::Invert() const {
 
 ViewDesign::Scale Transform::GetScale() const {
 	return ViewDesign::Scale(sqrtf(square(matrix[0][0]) + square(matrix[0][1])), sqrtf(square(matrix[1][0]) + square(matrix[1][1])));
-}
-
-bool Transform::IsAxisAligned() const {
-	return (matrix[0][0] == 0.0f || matrix[0][1] == 0.0f) && (matrix[1][0] == 0.0f || matrix[1][1] == 0.0f);
 }
 
 
