@@ -1,6 +1,7 @@
 {
   "version": 3,
   "configurePresets": [
+    // msvc-win32-directx
     {
       "name": "ninja-windows-msvc-x64-debug-win32-directx",
       "displayName": "Ninja Windows MSVC x64 Debug (Backend: Win32-DirectX)",
@@ -21,6 +22,8 @@
       "displayName": "VS2026 Windows MSVC x64 Debug (Backend: Win32-DirectX)",
       "inherits": ["vs2026", "msvc-x64", "debug", "win32-directx"]
     },
+
+    // mingw-win32-directx
     {
       "name": "ninja-windows-mingw-gcc-x64-debug-win32-directx",
       "displayName": "Ninja Windows MinGW (GCC) x64 Debug (Backend: Win32-DirectX)",
@@ -49,12 +52,28 @@
       "displayName": "Ninja Linux MinGW (GCC) x64 Debug (Backend: Win32-DirectX)",
       "inherits": ["ninja", "linux-mingw-gcc-x64", "debug", "win32-directx"]
     },
+
+    // msvc-win32-vulkan
+    {
+      "name": "ninja-windows-msvc-x64-debug-win32-vulkan",
+      "displayName": "Ninja Windows MSVC x64 Debug (Backend: Win32-Vulkan)",
+      "inherits": ["ninja", "msvc-x64", "debug", "win32-vulkan"],
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+        "VCPKG_TARGET_TRIPLET": "x64-windows",
+        "VCPKG_MANIFEST_FEATURES": "win32-vulkan"
+      }
+    },
+
+    // msvc-glfw
     {
       "name": "ninja-windows-msvc-x64-debug-glfw-opengl",
       "displayName": "Ninja Windows MSVC x64 Debug (Backend: GLFW-OpenGL)",
       "inherits": ["ninja", "msvc-x64", "debug", "glfw-opengl"],
       "cacheVariables": {
-        "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+        "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+        "VCPKG_TARGET_TRIPLET": "x64-windows",
+        "VCPKG_MANIFEST_FEATURES": "glfw-opengl"
       }
     },
     {
@@ -62,10 +81,13 @@
       "displayName": "Ninja Windows MSVC x64 Debug (Backend: GLFW-Vulkan)",
       "inherits": ["ninja", "msvc-x64", "debug", "glfw-vulkan"],
       "cacheVariables": {
-        "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+        "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+        "VCPKG_TARGET_TRIPLET": "x64-windows",
+        "VCPKG_MANIFEST_FEATURES": "glfw-vulkan"
       }
     }
   ],
+
   "buildPresets": [
     {
       "name": "make-k",

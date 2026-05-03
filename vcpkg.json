@@ -1,0 +1,20 @@
+{
+  "features": {
+    "win32-directx": {
+      "description": "Backend: Win32-DirectX",
+      "dependencies": []
+    },
+    "win32-vulkan": {
+      "description": "Backend: Win32-Vulkan",
+      "dependencies": ["vulkan"]
+    },
+    "glfw-opengl": {
+      "description": "Backend: GLFW-OpenGL",
+      "dependencies": ["icu", "glfw3", "glad"]
+    },
+    "glfw-vulkan": {
+      "description": "Backend: GLFW-Vulkan",
+      "dependencies": ["icu", "glfw3", "vulkan"]
+    }
+  }
+}

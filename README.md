@@ -150,9 +150,9 @@ The static library `ViewDesign` along with test executables can be built with CM
 Tools to install:
 - CMake: https://cmake.org/download/
 - Ninja: https://ninja-build.org/ (recommended CMake generator for faster build)
+- vcpkg: https://learn.microsoft.com/en-us/vcpkg/get_started/get-started (recommended C++ package manager for automatically installing required libraries)
 - Visual Studio Code: https://code.visualstudio.com/ (recommended code editor)
 	- CMake Tools (extension integrating CMake in VS Code)
-- vcpkg: https://learn.microsoft.com/en-us/vcpkg/get_started/get-started (recommended C++ package manager for installing and managing libraries)
 
 The configuring and building of this library follows CMake routines. Possible base presets are specified in `CMakePresets.json` and can be inherited as in example `CMakeUserPresets.example.json`. One may create a copy and rename it to `CMakeUserPresets.json` for actual use.
 
@@ -160,94 +160,57 @@ The configuring and building of this library follows CMake routines. Possible ba
 
 ### Compiler
 
-The following compilers can be used to build this project.
+The following compilers can be used to build this project:
 
 *Windows Target*
 
-#### MSVC
+- MSVC: https://visualstudio.microsoft.com/downloads/
+- Mingw-w64:
+	- Install msys2: https://www.msys2.org/
+	- Using G++ (Target x64):
+		- Install from msys2: `pacman -S mingw-w64-ucrt-x86_64-gcc`
+		- Install from msys2: `pacman -S mingw-w64-ucrt-x86_64-gdb` (optional for debugging)
+		- Add `C:\msys64\ucrt64\bin` to path (or your installation directory)
+	- Using G++ (Target x86):
+		- Install from msys2: `pacman -S mingw-w64-i686-gcc`
+		- Add `C:\msys64\mingw32\bin` to path (or your installation directory)
+	- Using Clang/LLVM (Target x64):
+		- Install from msys2: `pacman -S mingw-w64-clang-x86_64-clang`
+		- Add `C:\msys64\clang64\bin` to path (or your installation directory)
+- Mingw-w64 (Linux host):
+	- Install G++ (Debian / Ubuntu): `sudo apt install g++-mingw-w64-x86-64`
 
-- Install MSVC Build Tools (Visual Studio): https://visualstudio.microsoft.com/downloads/
-
-#### Mingw-w64
-
-- Install msys2: https://www.msys2.org/
-
-Mingw-w64 can be used with GCC or Clang/LLVM.
-
-> Mingw-w64 might use an older version of Windows SDK that doesn't include some headers like `icu.h`.
-
-##### G++
-
-Different packages need to be installed for x64 target and x86 target.
-
-###### Target x64
-
-- Install packages from msys2:
-	- `pacman -S mingw-w64-ucrt-x86_64-gcc`
-	- `pacman -S mingw-w64-ucrt-x86_64-gdb` (optional for debugging)
-- Add `C:\msys64\ucrt64\bin` to path (or your installation directory)
-
-###### Target x86
-
-- Install packages from msys2:
-	- `pacman -S mingw-w64-i686-gcc`
-- Add `C:\msys64\mingw32\bin` to path (or your installation directory)
-
-##### Clang/LLVM
-
-With Clang/LLVM only x64 target is supported.
-
-- Install packages from msys2:
-	- `pacman -S mingw-w64-clang-x86_64-clang`
-- Add `C:\msys64\clang64\bin` to path (or your installation directory)
-
-#### Mingw-w64 (Linux host)
-
-Mingw-w64 can also be used for cross-compiling windows applications on Linux host.
-
-(Debian / Ubuntu)
-- `sudo apt install g++-mingw-w64-x86-64`
+> Mingw-w64 might use an older version of Windows SDK that doesn't include the header `icu.h`.
 
 *Linux Target*
 
-### Platform
-
-The following platform tools will be searched and included automatically in the static library when available.
-
-#### Win32
-
-Windows SDK is included in the compiler tool chains targeting Windows. No additional library needs to be installed.
-
-#### OpenGL
-
-OpenGL is available for major operating systems. No additional library needs to be installed.
-
-#### GLFW
-
-GLFW can be installed from vcpkg by `vcpkg install glfw3`.
-
-GLFW (https://www.glfw.org/) is a cross-platform library for managing windows, interacting with OpenGL, Vulkan or other renderers and receiving input and events.
-
-#### glad
-
-glad can be installed from vcpkg by `vcpkg install glad`.
-
-glad dynamically loads OpenGL functions as global variables that can be directly accessed. A function might be nullptr if it's not provided by OpenGL and should be checked before use.
-
-#### Vulkan
-
-Vulkan SDK can be installed from vcpkg by `vcpkg install vulkan` or its website https://vulkan.lunarg.com/.
-
-#### ICU
-
-ICU (International Components for Unicode) can be installed from vcpkg by `vcpkg install icu`.
+- 
 
 ### Backend
 
 The following backends can be selected for building `ViewDesign`:
 - Win32-DirectX
-- GLFW-OpenGL (in progress)
-- GLFW-Vulkan (in progress)
+- Win32-Vulkan
+- GLFW-OpenGL
+- GLFW-Vulkan
+
+Additional platform packages might be required for a backend. These packages can be installed with vcpkg globally, or via vcpkg manifest `vcpkg.json`.
+
+### Platform
+
+The following platform packages will be searched and included automatically:
+- Win32 SDK (already included in the compiler tool chain targeting Windows)
+- OpenGL (available for major operating systems)
+- GLFW: https://www.glfw.org/
+- glad: https://glad.dav1d.de/
+- Vulkan: https://vulkan.lunarg.com/
+- ICU (International Components for Unicode): https://icu.unicode.org/
+
+> Backend / Platform:
+> 
+> Every backend has its implementation of the system and drawing interfaces. For each build there's only one backend to be chosen at configure time.
+>
+> Every platform provides helper functions under its own namespace for a backend to use. Multiple platforms that are compatible to the current build can be available at the same time.
 
 ## Concepts
 
@@ -336,12 +299,6 @@ If another view is to be tracked or to consume the next mouse event, the view tr
 If a view acquires mouse capture, all subsequent mouse events will be directly translated and sent to this view.
 
 A view can acquire focus to receive key events as instances of `KeyEvent`. This view is also tracked by `Desktop` in another stack, and all its parent views and itself will receive `FocusIn` event as `FocusEvent`, and the view itself will additionally receive `Focus` event. The view which acquired focus before will receive `Blur` event and its parent views that are not the parent views of the newly tracked view will receive `FocusOut` event.
-
-### Backend / Platform
-
-Backend implements common interfaces, and a user programs is unaware by which backend these interfaces are implemented. For each build there's only one backend to be chosen at configure time.
-
-Platform implements platform-specific interfaces under its own namespace. Multiple platforms that are compatible to the current OS can be available for user programs in one build.
 
 ## Implementation
 
