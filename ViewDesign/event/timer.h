@@ -10,9 +10,10 @@ namespace ViewDesign {
 
 
 class Timer : Uncopyable {
+public:
+	using Handle = void*;
 private:
-	using HANDLE = void*;
-	HANDLE timer;
+	Handle timer;
 public:
 	std::function<void(void)> callback;
 public:
@@ -20,7 +21,7 @@ public:
 	~Timer() { Stop(); }
 public:
 	bool IsSet() const { return timer != nullptr; }
-	void Set(uint period);  // in milliseconds
+	void Set(uint period); // milliseconds
 	void Stop();
 };
 
