@@ -47,9 +47,10 @@ public:
 private:
 	void RecreateWindowLayer();
 
-	// view
+	// context
 private:
 	void ReleaseView(ViewBase& view);
+	void ReleaseWindow(Window& window);
 
 	// mouse event
 private:

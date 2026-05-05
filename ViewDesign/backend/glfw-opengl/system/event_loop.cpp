@@ -18,8 +18,6 @@ using namespace GLFW;
 
 
 void EventLoop() {
-	std::vector<std::unique_ptr<Window>> window_list_removed;
-
 	for (;;) {
 		double timeout = ProcessTimerQueue();
 		if (timeout > 0) {
@@ -31,7 +29,7 @@ void EventLoop() {
 		auto& window_list = static_cast<DesktopApi&>(desktop).window_list;
 
 		window_list.erase(std::remove_if(window_list.begin(), window_list.end(), [&](auto& window) {
-			return glfwWindowShouldClose(AsGLFWWindow(window->GetHandle())) == GLFW_TRUE ? window_list_removed.emplace_back(std::move(window)), true : false;
+			return glfwWindowShouldClose(AsGLFWWindow(window->GetHandle())) == GLFW_TRUE;
 		}), window_list.end());
 
 		if (window_list.empty()) {

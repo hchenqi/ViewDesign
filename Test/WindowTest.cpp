@@ -87,14 +87,11 @@ void App() {
 	desktop.AddWindow(new MainWindow(u"WindowTest", new MainView()));
 	desktop.EventLoop();
 
+	desktop.AddWindow(new MainWindow(u"WindowTest", new MainView()));
 	desktop.AddWindow(new MainWindow(u"WindowTest", new ViewFrame(new MainView())));
-	desktop.EventLoop();
-
 	desktop.AddWindow(new MainWindow(u"WindowTest", new MutableFrame(new MainView())));
-	desktop.EventLoop();
 
 	std::unique_ptr<MainView> view(new MainView());
-
 	desktop.AddWindow(new MainWindow(u"WindowTest", new ViewFrameRef(*view)));
 	desktop.EventLoop();
 }

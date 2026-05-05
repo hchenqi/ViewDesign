@@ -38,8 +38,13 @@ private:
 private:
 	inline static owner_ptr<GLFWwindow> helper_window = nullptr;
 public:
-	inline static ref_ptr<GLFWwindow> GetHelperWindow() { return helper_window; }
 	inline static bool Initialized() { return helper_window != nullptr; }
+	inline static ref_ptr<GLFWwindow> GetHelperWindow() {
+		if (!Initialized()) {
+			throw std::runtime_error("GLFW: helper window not created");
+		}
+		return helper_window;
+	}
 private:
 	void InitializeWindowHint() {
 		glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
@@ -53,7 +58,7 @@ public:
 			InitializeWindowHint();
 			helper_window = glfwCreateWindow(1, 1, "", nullptr, nullptr);
 			if (helper_window == nullptr) {
-				throw std::runtime_error("GLFW: create helper window failed");
+				throw std::runtime_error("GLFW: failed to create helper window");
 			}
 		}
 		glfwMakeContextCurrent(helper_window);

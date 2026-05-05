@@ -71,13 +71,16 @@ void Desktop::RecreateWindowLayer() {
 
 void Desktop::ReleaseView(ViewBase& view) {
 	if (&view == &desktop) { return; }
-	if (view_track_map.contains(&view)) {
-		PopTrack(view_track_map[&view]);
-		PushTrack({});
-	}
-	ReleaseCapture(view);
-	ReleaseFocus(view);
-	ImeDisable(view);
+	if (view_track_map.contains(&view)) { PopTrack(view_track_map[&view]); PushTrack({}); }
+	if (view_capture == &view) { ReleaseWindowCapture(*window_capture); }
+	if (view_focus_map.contains(&view)) { LoseFocus(); }
+	ime_enabled_view.erase(&view);
+}
+
+void Desktop::ReleaseWindow(Window& window) {
+	if (view_track_map.contains(&window)) { LoseTrack(); }
+	if (window_capture == &window) { ReleaseWindowCapture(window); }
+	if (view_focus_map.contains(&window)) { LoseFocus(); }
 }
 
 void Desktop::SetWindowCapture(Window& window) {
@@ -203,7 +206,7 @@ void Desktop::SetFocus(ViewBase& view) {
 }
 
 void Desktop::ReleaseFocus(ViewBase& view) {
-	if (!view_focus_stack.empty() && view_focus_map.contains(&view)) {
+	if (view_focus_map.contains(&view)) {
 		LoseFocus();
 	}
 }
