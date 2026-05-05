@@ -1,6 +1,7 @@
 #include "ViewDesign/system/window.h"
-#include "ViewDesign/platform/glfw/string.h"
 #include "ViewDesign/platform/glfw/window.h"
+#include "ViewDesign/platform/glfw/string.h"
+#include "ViewDesign/platform/glfw/context.h"
 #include "ViewDesign/platform/glfw/key.h"
 #include "ViewDesign/view/Desktop.h"
 
@@ -186,7 +187,11 @@ Handle CreateWindow(Window& window, const u16string& title) {
 	return glfw_window;
 }
 
-void DestroyWindow(Handle handle) { glfwDestroyWindow(AsGLFWWindow(handle)); }
+void DestroyWindow(Handle handle) {
+	if (Context::Initialized()) {
+		glfwDestroyWindow(AsGLFWWindow(handle));
+	}
+}
 
 Scale GetWindowScale(Handle handle) {
 	float xscale = 1.0f, yscale = 1.0f;

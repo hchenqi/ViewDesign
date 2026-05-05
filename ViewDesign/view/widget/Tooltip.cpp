@@ -38,6 +38,7 @@ private:
 		Win32::SetWndStyle(GetHandle(), WS_EX_TOOLWINDOW | WS_EX_TRANSPARENT | WS_EX_NOACTIVATE);
 		Win32::SetWndTopMost(GetHandle());
 #endif
+		region.size = UpdateChildSizeRef(child, size_empty);
 	}
 
 private:
@@ -58,19 +59,18 @@ private:
 	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override { region.size = child_size; }
 
 private:
-	std::unique_ptr<Tooltip> self;
+	inline static std::unique_ptr<Tooltip> instance = nullptr;
+	inline static ref_ptr<Tooltip> ref = nullptr;
 public:
 	static Tooltip& Get() {
-		static Tooltip& tooltip = []() -> Tooltip& {
-			std::unique_ptr<Tooltip> tooltip(new Tooltip);
-			Tooltip& ref = *tooltip; ref.self = std::move(tooltip);
-			return ref;
-		}();
-		return tooltip;
+		if (ref == nullptr) {
+			instance.reset(ref = new Tooltip());
+		}
+		return *ref;
 	}
 private:
-	void ShowSelf() { desktop.AddWindow(std::move(self)); }
-	void HideSelf() { self.reset(static_cast<owner_ptr<Tooltip>>(desktop.RemoveWindow(*this).release())); }
+	void ShowSelf() { desktop.AddWindow(std::move(instance)); }
+	void HideSelf() { instance.reset(static_cast<owner_ptr<Tooltip>>(desktop.RemoveWindow(*this).release())); }
 	void SetOpacity(uchar opacity) { SetWindowOpacity(GetHandle(), opacity); }
 
 private:
