@@ -1,4 +1,4 @@
-find_package(ICU OPTIONAL COMPONENTS uc)
+find_package(ICU COMPONENTS uc)
 
 if (NOT ICU_FOUND)
     return()

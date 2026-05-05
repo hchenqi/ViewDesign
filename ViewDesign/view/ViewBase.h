@@ -6,6 +6,7 @@
 #include "ViewDesign/event/event.h"
 
 #include <stdexcept>
+#include <cstring>
 
 
 namespace ViewDesign {

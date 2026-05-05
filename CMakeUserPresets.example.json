@@ -53,7 +53,17 @@
       "inherits": ["ninja", "linux-mingw-gcc-x64", "debug", "win32-directx"]
     },
 
-    // msvc-win32-vulkan
+    // msvc-win32
+    {
+      "name": "ninja-windows-msvc-x64-debug-win32-opengl",
+      "displayName": "Ninja Windows MSVC x64 Debug (Backend: Win32-OpenGL)",
+      "inherits": ["ninja", "msvc-x64", "debug", "win32-opengl"],
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+        "VCPKG_TARGET_TRIPLET": "x64-windows",
+        "VCPKG_MANIFEST_FEATURES": "win32-opengl"
+      }
+    },
     {
       "name": "ninja-windows-msvc-x64-debug-win32-vulkan",
       "displayName": "Ninja Windows MSVC x64 Debug (Backend: Win32-Vulkan)",
@@ -84,6 +94,18 @@
         "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
         "VCPKG_TARGET_TRIPLET": "x64-windows",
         "VCPKG_MANIFEST_FEATURES": "glfw-vulkan"
+      }
+    },
+
+    // gcc-glfw
+    {
+      "name": "ninja-linux-gcc-debug-glfw-opengl",
+      "displayName": "Ninja Linux GCC Debug (Backend: GLFW-OpenGL)",
+      "inherits": ["ninja", "gcc", "debug", "glfw-opengl"],
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+        "VCPKG_TARGET_TRIPLET": "x64-linux",
+        "VCPKG_MANIFEST_FEATURES": "glfw-opengl"
       }
     }
   ],

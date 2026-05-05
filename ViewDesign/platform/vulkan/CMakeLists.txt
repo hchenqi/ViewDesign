@@ -1,4 +1,4 @@
-find_package(Vulkan OPTIONAL)
+find_package(Vulkan)
 
 if(NOT Vulkan_FOUND)
     return()

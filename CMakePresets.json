@@ -6,7 +6,8 @@
       "hidden": true,
       "binaryDir": "${sourceDir}/build/${presetName}",
       "cacheVariables": {
-        "CMAKE_CXX_STANDARD": "23"
+        "CMAKE_CXX_STANDARD": "23",
+        "ICU_ROOT": "$env{ICU_ROOT}"
       }
     },
 
@@ -59,7 +60,7 @@
       }
     },
 
-    // Toolset presets
+    // Toolset presets (Windows Target)
     {
       "name": "msvc",
       "inherits": "host-windows",
@@ -125,6 +126,16 @@
       }
     },
 
+    // Toolset presets (Linux Target)
+    {
+      "name": "gcc",
+      "inherits": "host-linux",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "g++"
+      }
+    },
+
     // Build type presets
     {
       "name": "debug",
@@ -147,6 +158,13 @@
       "hidden": true,
       "cacheVariables": {
         "BACKEND": "Win32-DirectX"
+      }
+    },
+    {
+      "name": "win32-opengl",
+      "hidden": true,
+      "cacheVariables": {
+        "BACKEND": "Win32-OpenGL"
       }
     },
     {

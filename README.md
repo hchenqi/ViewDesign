@@ -70,27 +70,27 @@ An example program below displays "Hello World!" at the center of the main windo
 using namespace ViewDesign;
 
 struct MainWindowStyle : TitleBarWindow::Style {
-	MainWindowStyle() {
-		title.text.assign(u"Example");
-	}
+    MainWindowStyle() {
+        title.text.assign(u"Example");
+    }
 };
 
 struct TextBoxStyle : TextBox::Style {
-	TextBoxStyle() {
-		font.size(75).color(Color::Black);
-	}
+    TextBoxStyle() {
+        font.size(75).color(Color::Black);
+    }
 };
 
 void App() {
-	desktop.AddWindow(
-		new TitleBarWindow(
-			MainWindowStyle(),
-			new CenterFrame<Fixed, Fixed>(
-				new TextBox(TextBoxStyle(), u"Hello World!")
-			)
-		)
-	);
-	desktop.EventLoop();
+    desktop.AddWindow(
+        new TitleBarWindow(
+            MainWindowStyle(),
+            new CenterFrame<Fixed, Fixed>(
+                new TextBox(TextBoxStyle(), u"Hello World!")
+            )
+        )
+    );
+    desktop.EventLoop();
 }
 ```
 
@@ -103,23 +103,23 @@ The main window has a fixed initial size and a resizable border to change its si
 We say that the main window accepts a child view with size trait `<Fixed, Fixed>`, meaning that both width and height of the child view should be fixed by the main window. A `TextBox` has size trait `<Relative, Relative>`, meaning both width and height of a `TextBox` is dependent on but not strictly assigned by its parent view. A `CenterFrame<Fixed, Fixed>` itself has size trait `<Fixed, Fixed>` whose width and height are assigned by its parent view, but accepts a child view with size trait `<Relative, Relative>` by always putting the child view at its center clipping the overflowing part of the child view. Without the `CenterFrame<Fixed, Fixed>`, the code below doesn't compile with a clear message `size traits incompatible` followed by detailed error information that helps developers to diagnose the incompatibility and clarify the intention.
 
 ```cpp
-	new TitleBarWindow(
-		MainWindowStyle(),
-		new TextBox(TextBoxStyle(), u"Hello World!")
-	)
+    new TitleBarWindow(
+        MainWindowStyle(),
+        new TextBox(TextBoxStyle(), u"Hello World!")
+    )
 ```
 
 One can replace `CenterFrame<Fixed, Fixed>` with `ClipFrame<Fixed, Fixed, TopLeft>` to make the text appear at the top-left corner of the window. If the text is too long, the overflowing part will also be clipped away.
 
 ```cpp
-	// #include "ViewDesign/view/frame/ClipFrame.h"
+    // #include "ViewDesign/view/frame/ClipFrame.h"
 
-	new TitleBarWindow(
-		MainWindowStyle(),
-		new ClipFrame<Fixed, Fixed, TopLeft>(
-			new TextBox(TextBoxStyle(), u"Hello World!")
-		)
-	)
+    new TitleBarWindow(
+        MainWindowStyle(),
+        new ClipFrame<Fixed, Fixed, TopLeft>(
+            new TextBox(TextBoxStyle(), u"Hello World!")
+        )
+    )
 ```
 
 ![Screenshot 2](docs/screenshot-2.png)
@@ -127,14 +127,14 @@ One can replace `CenterFrame<Fixed, Fixed>` with `ClipFrame<Fixed, Fixed, TopLef
 One can use `create` (an alias of `std::make_unique`) instead of `new` to create component instances with strong exception-safe guarantee. Using `new` here is just a little simpler syntactically and in most cases safe because in the constructor functions of most components each argument will be immediately converted to a `view_ptr` parameter as `unique_ptr`. However, for components like `ListLayout`, `DivideLayout` and `StackLayoutMultiple` that accept variable number of arguments, passing raw pointers created by `new` is forbidden.
 
 ```cpp
-	desktop.AddWindow(
-		create<TitleBarWindow>(
-			MainWindowStyle(),
-			create<CenterFrame<Fixed, Fixed>>(
-				create<TextBox>(TextBoxStyle(), u"Hello World!")
-			)
-		)
-	);
+    desktop.AddWindow(
+        create<TitleBarWindow>(
+            MainWindowStyle(),
+            create<CenterFrame<Fixed, Fixed>>(
+                create<TextBox>(TextBoxStyle(), u"Hello World!")
+            )
+        )
+    );
 ```
 
 UTF-16 strings are used across this project. Prefix `u` is used for UTF-16 string literals.
@@ -152,9 +152,9 @@ Tools to install:
 - Ninja: https://ninja-build.org/ (recommended CMake generator for faster build)
 - vcpkg: https://learn.microsoft.com/en-us/vcpkg/get_started/get-started (recommended C++ package manager for automatically installing required libraries)
 - Visual Studio Code: https://code.visualstudio.com/ (recommended code editor)
-	- CMake Tools (extension integrating CMake in VS Code)
+  - CMake Tools (extension integrating CMake in VS Code)
 
-The configuring and building of this library follows CMake routines. Possible base presets are specified in `CMakePresets.json` and can be inherited as in example `CMakeUserPresets.example.json`. One may create a copy and rename it to `CMakeUserPresets.json` for actual use.
+The configuring and building of this library follow CMake routines. Possible base presets are specified in `CMakePresets.json` and can be inherited as in example `CMakeUserPresets.example.json`. One may create a copy and rename it to `CMakeUserPresets.json` for actual use.
 
 `ViewDesign` can be included in a C++ project by CMake using `add_subdirectory` and `target_link_libraries`.
 
@@ -166,51 +166,80 @@ The following compilers can be used to build this project:
 
 - MSVC: https://visualstudio.microsoft.com/downloads/
 - Mingw-w64:
-	- Install msys2: https://www.msys2.org/
-	- Using G++ (Target x64):
-		- Install from msys2: `pacman -S mingw-w64-ucrt-x86_64-gcc`
-		- Install from msys2: `pacman -S mingw-w64-ucrt-x86_64-gdb` (optional for debugging)
-		- Add `C:\msys64\ucrt64\bin` to path (or your installation directory)
-	- Using G++ (Target x86):
-		- Install from msys2: `pacman -S mingw-w64-i686-gcc`
-		- Add `C:\msys64\mingw32\bin` to path (or your installation directory)
-	- Using Clang/LLVM (Target x64):
-		- Install from msys2: `pacman -S mingw-w64-clang-x86_64-clang`
-		- Add `C:\msys64\clang64\bin` to path (or your installation directory)
+  - Install msys2: https://www.msys2.org/
+  - Using G++ (Target x64):
+    - Install from msys2: `pacman -S mingw-w64-ucrt-x86_64-gcc`
+    - Install from msys2: `pacman -S mingw-w64-ucrt-x86_64-gdb` (optional for debugging)
+    - Add `C:\msys64\ucrt64\bin` to path (or your installation directory)
+  - Using G++ (Target x86):
+    - Install from msys2: `pacman -S mingw-w64-i686-gcc`
+    - Add `C:\msys64\mingw32\bin` to path (or your installation directory)
+  - Using Clang/LLVM (only Target x64 supported):
+    - Install from msys2: `pacman -S mingw-w64-clang-x86_64-clang`
+    - Add `C:\msys64\clang64\bin` to path (or your installation directory)
 - Mingw-w64 (Linux host):
-	- Install G++ (Debian / Ubuntu): `sudo apt install g++-mingw-w64-x86-64`
+  - Install G++: (Debian / Ubuntu) `sudo apt install g++-mingw-w64-x86-64`
 
-> Mingw-w64 might use an older version of Windows SDK that doesn't include the header `icu.h`.
+> Mingw-w64 might use an older version of Windows SDK that doesn't include the header `icu.h`. In this case, ICU can be installed independently.
 
 *Linux Target*
 
-- 
+- G++: (Ubuntu) `sudo apt install g++`
 
 ### Backend
 
 The following backends can be selected for building `ViewDesign`:
-- Win32-DirectX
-- Win32-Vulkan
-- GLFW-OpenGL
-- GLFW-Vulkan
+- Win32-DirectX (Windows)
+- Win32-OpenGL (Windows)
+- Win32-Vulkan (Windows)
+- GLFW-OpenGL (Windows, Linux)
+- GLFW-Vulkan (Windows, Linux)
 
-Additional platform packages might be required for a backend. These packages can be installed with vcpkg globally, or via vcpkg manifest `vcpkg.json`.
+> Backends other than Win32-DirectX are not yet fully implemented especially for drawing and text rendering.
 
-### Platform
-
-The following platform packages will be searched and included automatically:
-- Win32 SDK (already included in the compiler tool chain targeting Windows)
-- OpenGL (available for major operating systems)
-- GLFW: https://www.glfw.org/
-- glad: https://glad.dav1d.de/
-- Vulkan: https://vulkan.lunarg.com/
-- ICU (International Components for Unicode): https://icu.unicode.org/
+Additional platform packages might be required for a backend. These packages can be installed with vcpkg or the system package manager globally or via vcpkg manifest `vcpkg.json`. Some packages might need to be built from source due to version mismatches.
 
 > Backend / Platform:
 > 
 > Every backend has its implementation of the system and drawing interfaces. For each build there's only one backend to be chosen at configure time.
 >
 > Every platform provides helper functions under its own namespace for a backend to use. Multiple platforms that are compatible to the current build can be available at the same time.
+
+### Platform
+
+The following platform packages will be searched and included automatically.
+
+#### Win32 SDK (Already included in the compiler tool chain targeting Windows)
+
+#### OpenGL (Already available on major operating systems)
+
+#### ICU (International Components for Unicode, https://icu.unicode.org/)
+
+> ICU is built with C++17 by default, which doesn't include some functions related with `std::u16string`, causing linking errors. It can be built and installed from [its source](https://github.com/unicode-org/icu/releases) with C++ standard specified as C++23:
+> (current directory at `icu/source`)
+> - Linux:
+>   - Run `CXXFLAGS=-std=c++23 ./configure;` `make -j$(nproc);` `sudo make install;`
+> - Windows:
+>   - Run `msbuild allinone/allinone.sln /p:OverrideLanguageStandard=stdcpp23 /p:Configuration=Release /p:Platform=x64` (within Developer Command Prompt from Visual Studio)
+>   - Set `ICU_ROOT` environment variable to `icu/` for cmake `find_package(ICU)` to locate the built files
+
+#### GLFW (https://www.glfw.org/)
+
+> GLFW installed by `sudo apt install libglfw3-dev` (Ubuntu) might be in a lower version which doesn't include some definitions. It can be built and installed from [its source](https://github.com/glfw/glfw/releases) with CMake:
+> (current directory at `glfw/`)
+> - `cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug`
+> - `cmake --build build -j$(nproc)`
+> - `sudo cmake --install build`
+>
+> It is still recommended to use vcpkg manifest `vcpkg.json` for installing GLFW and glad together.
+
+> On Linux, GLFW- backends currently don't work well with Wayland. Set environment variable `export XDG_SESSION_TYPE=x11` or `export WAYLAND_DISPLAY=` before running the program to let GLFW choose x11 as platform if both are available at runtime.
+
+#### glad (https://glad.dav1d.de/)
+
+> glad can be installed with vcpkg manifest (Ubuntu)
+
+#### Vulkan (https://vulkan.lunarg.com/)
 
 ## Concepts
 

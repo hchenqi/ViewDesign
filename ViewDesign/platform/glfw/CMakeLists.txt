@@ -1,4 +1,4 @@
-find_package(glfw3 CONFIG OPTIONAL)
+find_package(glfw3 CONFIG)
 
 if(NOT glfw3_FOUND)
     return()

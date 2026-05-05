@@ -2,6 +2,7 @@
 
 #include <stdexcept>
 #include <string>
+#include <iostream>
 
 #include <GLFW/glfw3.h>
 
@@ -16,7 +17,7 @@ public:
 	Context() {
 		glfwSetErrorCallback(ErrorCallback);
 		if (!glfwInit()) {
-			throw std::runtime_error("GLFW initialization failed.");
+			throw std::runtime_error("GLFW: initialization failed");
 		}
 	}
 	~Context() {
@@ -28,7 +29,11 @@ public:
 	}
 private:
 	static void ErrorCallback(int error, const char* description) {
-		throw std::runtime_error("Error " + std::to_string(error) + ": " + description);
+		try {
+			throw std::runtime_error("GLFW: Error " + std::to_string(error) + ": " + description);
+		} catch (std::runtime_error& exception) {
+			std::cerr << exception.what() << std::endl;
+		}
 	}
 private:
 	inline static owner_ptr<GLFWwindow> helper_window = nullptr;
@@ -48,7 +53,7 @@ public:
 			InitializeWindowHint();
 			helper_window = glfwCreateWindow(1, 1, "", nullptr, nullptr);
 			if (helper_window == nullptr) {
-				throw std::runtime_error("GLFW: create helper window error");
+				throw std::runtime_error("GLFW: create helper window failed");
 			}
 		}
 		glfwMakeContextCurrent(helper_window);

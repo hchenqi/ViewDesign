@@ -1,4 +1,4 @@
-find_package(glad CONFIG OPTIONAL)
+find_package(glad CONFIG)
 
 if(NOT glad_FOUND)
     return()

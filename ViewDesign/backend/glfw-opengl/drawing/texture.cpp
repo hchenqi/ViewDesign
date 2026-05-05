@@ -4,8 +4,6 @@
 
 namespace ViewDesign {
 
-using namespace OpenGL;
-
 
 Texture::Texture() : resource(nullptr) {}
 
