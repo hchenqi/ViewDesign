@@ -28,6 +28,7 @@ struct WindowApi : Window {
 };
 
 struct DesktopApi : Desktop {
+	using Desktop::window_list;
 	using Desktop::RecreateWindowLayer;
 	using Desktop::LoseTrack;
 	using Desktop::LoseCapture;
@@ -157,7 +158,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 		}
 
 		case WM_CLOSE: static_cast<DesktopApi&>(desktop).RemoveWindow(*window); break;
-		case WM_DESTROY: break;
 
 		default: goto WindowIrrelevantMessages;
 		}
@@ -167,6 +167,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 WindowIrrelevantMessages:
 	switch (msg) {
 	case WM_CREATE: break;
+	case WM_DESTROY: if (static_cast<DesktopApi&>(desktop).window_list.empty()) { PostQuitMessage(0); } break;
 	case WM_KILLFOCUS: static_cast<DesktopApi&>(desktop).LoseFocus(); break;
 	case WM_NCCALCSIZE: break;
 	case WM_NCHITTEST: return HTCLIENT;
