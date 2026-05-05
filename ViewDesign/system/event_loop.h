@@ -8,7 +8,5 @@ namespace ViewDesign {
 
 void EventLoop();
 
-void Terminate();
-
 
 } // namespace ViewDesign

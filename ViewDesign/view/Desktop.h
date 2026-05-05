@@ -36,6 +36,8 @@ public:
 public:
 	Window& GetWindow(ViewBase& view);
 	Window& GetWindowPoint(ViewBase& view, Point& point);
+public:
+	void CloseAllWindows();
 
 	// layout
 public:
@@ -44,6 +46,10 @@ public:
 	// drawing
 private:
 	void RecreateWindowLayer();
+
+	// view
+private:
+	void ReleaseView(ViewBase& view);
 
 	// mouse event
 private:
@@ -56,7 +62,10 @@ private:
 	void ReleaseWindowCapture(Window& window);
 private:
 	void SetTrack(ViewBase& view);
-	void LoseTrack();
+	void PopTrack(size_t index);
+	void PushTrack(std::vector<ref_ptr<ViewBase>> trace);
+	void LoseTrack() { PopTrack(0); }
+private:
 	void SetCapture(ViewBase& view);
 	void ReleaseCapture(ViewBase& view);
 	void LoseCapture();
@@ -69,7 +78,7 @@ private:
 	std::unordered_map<ref_ptr<ViewBase>, size_t> view_focus_map;
 	ref_ptr<Window> window_focus = nullptr;
 private:
-	void SetWindowFocus(ref_ptr<Window> window_focus);
+	void SetWindowFocus(Window& window_focus);
 private:
 	void SetFocus(ViewBase& view);
 	void ReleaseFocus(ViewBase& view);
@@ -90,13 +99,8 @@ private:
 	void ImeSetPosition(ViewBase& view, Point point);
 
 	// event
-private:
-	void ReleaseView(ViewBase& view);
-
-	// system
 public:
 	void EventLoop();
-	void Terminate();
 };
 
 extern Desktop& desktop;

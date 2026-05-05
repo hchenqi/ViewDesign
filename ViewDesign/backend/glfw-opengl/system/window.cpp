@@ -35,9 +35,7 @@ inline ref_ptr<WindowApi> GetWindow(GLFWwindow* glfw_window) {
 }
 
 
-void WindowCloseCallback(GLFWwindow* glfw_window) {
-	static_cast<DesktopApi&>(desktop).RemoveWindow(*GetWindow(glfw_window));
-}
+void WindowCloseCallback(GLFWwindow* glfw_window) {}
 
 
 void WindowSizeCallback(GLFWwindow* glfw_window, int width, int height) {
@@ -212,7 +210,7 @@ void MinimizeWindow(Handle handle) { glfwIconifyWindow(AsGLFWWindow(handle)); }
 void MaximizeWindow(Handle handle) { glfwMaximizeWindow(AsGLFWWindow(handle)); }
 void RestoreWindow(Handle handle) { glfwRestoreWindow(AsGLFWWindow(handle)); }
 
-void CloseWindow(Handle handle) { WindowCloseCallback(AsGLFWWindow(handle)); }
+void CloseWindow(Handle handle) { glfwSetWindowShouldClose(AsGLFWWindow(handle), GLFW_TRUE); }
 
 void RedrawWindowRegion(Handle handle, Rect region) {}
 

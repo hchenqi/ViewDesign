@@ -31,8 +31,8 @@ std::unique_ptr<Window> Desktop::RemoveWindow(Window& window) {
 	if (it == window_list.end()) { throw std::invalid_argument("window not registered"); }
 	window.Hide();
 	UnregisterChild(window);
-	std::unique_ptr<Window> ptr = std::move(*it); window_list.erase(it);
-	if (window_list.empty()) { Terminate(); }
+	std::unique_ptr<Window> ptr = std::move(*it);
+	window_list.erase(it);
 	return ptr;
 }
 
@@ -53,6 +53,12 @@ Window& Desktop::GetWindowPoint(ViewBase& view, Point& point) {
 	return static_cast<Window&>(*child);
 }
 
+void Desktop::CloseAllWindows() {
+	for (auto& window : window_list) {
+		window->Close();
+	}
+}
+
 Size ViewDesign::Desktop::GetSize() const {
 	return GetDesktopSize();
 }
@@ -61,6 +67,17 @@ void Desktop::RecreateWindowLayer() {
 	for (auto& window : window_list) {
 		window->RecreateLayer();
 	}
+}
+
+void Desktop::ReleaseView(ViewBase& view) {
+	if (&view == &desktop) { return; }
+	if (view_track_map.contains(&view)) {
+		PopTrack(view_track_map[&view]);
+		PushTrack({});
+	}
+	ReleaseCapture(view);
+	ReleaseFocus(view);
+	ImeDisable(view);
 }
 
 void Desktop::SetWindowCapture(Window& window) {
@@ -77,34 +94,32 @@ void Desktop::SetTrack(ViewBase& view) {
 	for (ref_ptr<ViewBase> curr = &view;;) {
 		trace.push_back(curr);
 		curr = curr->parent;
-		if (curr == nullptr) { LoseTrack(); return; }
-		if (curr == &desktop) { LoseTrack(); break; }
-		if (view_track_map.contains(curr)) {
-			view_track_stack.back()->OnFocusEvent(FocusEvent::MouseOut);
-			for (size_t index = view_track_map[curr]; view_track_stack.size() > index; view_track_stack.pop_back()) {
-				view_track_stack.back()->OnFocusEvent(FocusEvent::MouseLeave);
-				view_track_map.erase(view_track_stack.back());
-			}
-			break;
-		}
+		if (curr == nullptr) { PopTrack(0); return; }
+		if (curr == &desktop) { PopTrack(0); break; }
+		if (view_track_map.contains(curr)) { PopTrack(view_track_map[curr] + 1); break; }
 	}
-	for (; !trace.empty(); trace.pop_back()) {
-		trace.back()->OnFocusEvent(FocusEvent::MouseEnter);
-		view_track_stack.push_back(trace.back());
-		view_track_map.emplace(trace.back(), view_track_stack.size());
-	}
-	view.OnFocusEvent(FocusEvent::MouseOver);
-	SetWindowCursor(static_cast<Window&>(*view_track_stack.front()).GetHandle(), view.cursor);
+	PushTrack(std::move(trace));
 }
 
-void Desktop::LoseTrack() {
-	if (view_track_stack.empty()) { return; }
+void Desktop::PopTrack(size_t index) {
+	if (index == view_track_stack.size()) { return; }
 	view_track_stack.back()->OnFocusEvent(FocusEvent::MouseOut);
-	for (auto view : reverse(view_track_stack)) {
-		view->OnFocusEvent(FocusEvent::MouseLeave);
+	for (; view_track_stack.size() > index; view_track_stack.pop_back()) {
+		view_track_stack.back()->OnFocusEvent(FocusEvent::MouseLeave);
+		view_track_map.erase(view_track_stack.back());
 	}
-	view_track_stack.clear();
-	view_track_map.clear();
+}
+
+void Desktop::PushTrack(std::vector<ref_ptr<ViewBase>> trace) {
+	for (; !trace.empty(); trace.pop_back()) {
+		view_track_map.emplace(trace.back(), view_track_stack.size());
+		view_track_stack.push_back(trace.back());
+		view_track_stack.back()->OnFocusEvent(FocusEvent::MouseEnter);
+	}
+	if (!view_track_stack.empty()) {
+		view_track_stack.back()->OnFocusEvent(FocusEvent::MouseOver);
+		SetWindowCursor(static_cast<Window&>(*view_track_stack.front()).GetHandle(), view_track_stack.back()->cursor);
+	}
 }
 
 void Desktop::SetCapture(ViewBase& view) {
@@ -146,8 +161,8 @@ void Desktop::DispatchMouseEvent(Window& window, MouseEvent event) {
 	}
 }
 
-void Desktop::SetWindowFocus(ref_ptr<Window> window_focus) {
-	ViewDesign::SetWindowFocus(window_focus ? window_focus->GetHandle() : nullptr);
+void Desktop::SetWindowFocus(Window& window_focus) {
+	ViewDesign::SetWindowFocus(window_focus.GetHandle());
 }
 
 void Desktop::SetFocus(ViewBase& view) {
@@ -163,7 +178,7 @@ void Desktop::SetFocus(ViewBase& view) {
 		if (next == &desktop) {
 			LoseFocus();
 			window_focus = static_cast<ref_ptr<Window>>(curr);
-			SetWindowFocus(window_focus);
+			SetWindowFocus(*window_focus);
 			break;
 		}
 		if (view_focus_map.contains(curr)) {
@@ -188,8 +203,8 @@ void Desktop::SetFocus(ViewBase& view) {
 }
 
 void Desktop::ReleaseFocus(ViewBase& view) {
-	if (!view_focus_stack.empty() && view_focus_stack.back() == &view) {
-		SetWindowFocus(nullptr);
+	if (!view_focus_stack.empty() && view_focus_map.contains(&view)) {
+		LoseFocus();
 	}
 }
 
@@ -227,24 +242,8 @@ void Desktop::ImeSetPosition(ViewBase& view, Point point) {
 	ImeWindowSetPosition(window, point);
 }
 
-void Desktop::ReleaseView(ViewBase& view) {
-	if (&view == &desktop) { return; }
-	if (view_track_map.contains(&view)) {
-		view_track_stack.clear();
-		view_track_map.clear();
-	}
-	ReleaseCapture(view);
-	ReleaseFocus(view);
-	ImeDisable(view);
-}
-
 void Desktop::EventLoop() {
 	ViewDesign::EventLoop();
-}
-
-void Desktop::Terminate() {
-	window_list.clear();
-	ViewDesign::Terminate();
 }
 
 
