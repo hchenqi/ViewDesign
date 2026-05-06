@@ -17,15 +17,19 @@ protected:
 	struct EditBoxStyle {
 		struct EditStyle {
 		public:
-			bool _disabled = false;  // can only select and copy if disabled
+			bool _disabled = false; // can only select and copy if disabled
+			float _caret_width = 1.0f;
 			Color _caret_color = Color::DimGray;
 			Color _selection_color = Color(Color::DimGray, 0x7f);
+			float _ime_composition_underline_width = 1.0f;
 			Color _ime_composition_underline_color = Color::DimGray;
 		public:
 			constexpr EditStyle& enable() { _disabled = false; return *this; }
 			constexpr EditStyle& disable() { _disabled = true; return *this; }
+			constexpr EditStyle& caret_width(float width) { _caret_width = width; return *this; }
 			constexpr EditStyle& caret_color(Color color) { _caret_color = color; return *this; }
 			constexpr EditStyle& selection_color(Color color) { _selection_color = color; return *this; }
+			constexpr EditStyle& ime_composition_underline_width(float width) { _ime_composition_underline_width = width; return *this; }
 			constexpr EditStyle& ime_composition_underline_color(Color color) { _ime_composition_underline_color = color; return *this; }
 		}edit;
 	};
@@ -44,7 +48,8 @@ protected:
 
 	// text
 protected:
-	using HitTestInfo = TextBlock::HitTestInfo;
+	using HitTestPointInfo = TextBlock::HitTestPointInfo;
+	using HitTestRangeInfo = TextBlock::HitTestRangeInfo;
 protected:
 	mutable WordIterator word_iterator;
 protected:
@@ -65,16 +70,16 @@ protected:
 
 	// caret
 protected:
-	static constexpr float caret_width = 1.0f;
 	enum class CaretMoveDirection { Left, Right, Up, Down, Home, End };
 protected:
 	size_t caret_position = 0;
 	Rect caret_region = region_empty;
 protected:
-	void UpdateCaret(const HitTestInfo& info);
+	Rect GetCaretRegion(const HitTestPointInfo& info) const;
+	void UpdateCaret(const HitTestPointInfo& info);
 	void UpdateCaret(size_t position) { UpdateCaret(text_block.HitTestPosition(position)); }
 protected:
-	void SetCaret(const HitTestInfo& info);
+	void SetCaret(const HitTestPointInfo& info);
 	void SetCaret(Point point) { SetCaret(text_block.HitTestPoint(point)); }
 	void SetCaret(size_t position) { SetCaret(text_block.HitTestPosition(position)); }
 	void MoveCaret(CaretMoveDirection direction);
@@ -114,7 +119,7 @@ protected:
 	void SelectParagraph();
 	void SelectAll() { UpdateSelection(GetEntireRange()); }
 protected:
-	void DoSelect(const HitTestInfo& info);
+	void DoSelect(const HitTestPointInfo& info);
 	void DoSelect(Point current_point) { DoSelect(text_block.HitTestPoint(current_point)); }
 	void DoSelect(size_t current_position) { DoSelect(text_block.HitTestPosition(current_position)); }
 
@@ -126,8 +131,6 @@ protected:
 	void Delete(bool is_backspace);
 
 	// ime input
-protected:
-	static constexpr float ime_composition_underline_height = 1.0f;
 protected:
 	TextRange ime_composition_range;
 	std::vector<Rect> ime_composition_region_list;

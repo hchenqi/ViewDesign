@@ -1,9 +1,9 @@
 #pragma once
 
 #include "ViewDesign/common/uncopyable.h"
+#include "ViewDesign/style/text_block_style.h"
 #include "ViewDesign/common/text_range.h"
 #include "ViewDesign/drawing/figure.h"
-#include "ViewDesign/style/text_block_style.h"
 
 #include <vector>
 
@@ -28,14 +28,12 @@ public:
 	Rect UpdateLayout(Size size_ref);
 
 public:
-	struct HitTestInfo {
-		TextRange range;
-		Rect region;
-	};
+	using HitTestPointInfo = std::pair<TextRange, Rect>;
+	using HitTestRangeInfo = std::vector<std::pair<TextRange, Rect>>;
 public:
-	HitTestInfo HitTestPoint(Point point) const;
-	HitTestInfo HitTestPosition(size_t position) const;
-	std::vector<HitTestInfo> HitTestRange(TextRange range) const;
+	HitTestPointInfo HitTestPoint(Point point) const;
+	HitTestPointInfo HitTestPosition(size_t position) const;
+	HitTestRangeInfo HitTestRange(TextRange range) const;
 };
 
 

@@ -1,23 +1,44 @@
 #include "ViewDesign/drawing/text_block.h"
+#include "ViewDesign/common/text_layout_placeholder.h"
 
 
 namespace ViewDesign {
 
 
-TextBlock::~TextBlock() {}
+TextBlock::~TextBlock() {
+	if (layout != nullptr) {
+		delete layout;
+		layout = nullptr;
+	}
+}
 
-void TextBlock::SetText(const TextBlockStyle& style, const u16string& text) {}
+void TextBlock::SetText(const TextBlockStyle& style, const u16string& text) {
+	if (layout != nullptr) {
+		delete layout;
+	}
+	layout = new TextLayout(style.font._size, text.length());
+}
 
-Rect TextBlock::UpdateLayout(Size size_ref) { return region_empty; }
+Rect TextBlock::UpdateLayout(Size size_ref) {
+	return Rect(point_zero, layout->UpdateLayout(size_ref));
+}
 
-TextBlock::HitTestInfo TextBlock::HitTestPoint(Point point) const { return TextBlock::HitTestInfo{ IndexRange() , region_empty }; }
+TextBlock::HitTestPointInfo TextBlock::HitTestPoint(Point point) const {
+	return layout->HitTestPoint(point);
+}
 
-TextBlock::HitTestInfo TextBlock::HitTestPosition(size_t text_position) const { return TextBlock::HitTestInfo{ IndexRange() , region_empty }; }
+TextBlock::HitTestPointInfo TextBlock::HitTestPosition(size_t position) const {
+	return layout->HitTestPosition(position);
+}
 
-std::vector<TextBlock::HitTestInfo> TextBlock::HitTestRange(TextRange range) const { return {}; }
+TextBlock::HitTestRangeInfo TextBlock::HitTestRange(TextRange range) const {
+	return layout->HitTestRange(range);
+}
 
 
-void TextBlockFigure::DrawOn(RenderTarget& target, Point point) const {}
+void TextBlockFigure::DrawOn(RenderTarget& target, Point point) const {
+	text_block.layout->DrawOn(target, point, font_color);
+}
 
 
 } // namespace ViewDesign

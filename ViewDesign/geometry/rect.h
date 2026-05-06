@@ -42,13 +42,6 @@ struct Rect {
 	constexpr bool Contains(const Point& point) const { return point >= this->point && point < RightBottom(); }
 	constexpr bool Contains(const Rect& rect) const { return rect.point >= point && rect.RightBottom() <= RightBottom(); }
 
-	constexpr Rect Intersect(const Rect& rect) const {
-		Point posl1 = point, posl2 = rect.point, posh1 = RightBottom(), posh2 = rect.RightBottom();
-		Point posl = Point(std::max(posl1.x, posl2.x), std::max(posl1.y, posl2.y));
-		Point posh = Point(std::min(posh1.x, posh2.x), std::min(posh1.y, posh2.y));
-		return posh > posl ? Rect(posl, Size(posh.x - posl.x, posh.y - posl.y)) : Rect();
-	}
-
 	constexpr Rect Union(const Rect& rect) const {
 		if (IsEmpty()) { return rect; } if (rect.IsEmpty()) { return *this; }
 		Point posl1 = point, posl2 = rect.point, posh1 = RightBottom(), posh2 = rect.RightBottom();
@@ -57,8 +50,15 @@ struct Rect {
 		return Rect(posl, Size(posh.x - posl.x, posh.y - posl.y));
 	}
 
-	static Rect Intersect(const Rect& rect1, const Rect& rect2) { return rect1.Intersect(rect2); }
+	constexpr Rect Intersect(const Rect& rect) const {
+		Point posl1 = point, posl2 = rect.point, posh1 = RightBottom(), posh2 = rect.RightBottom();
+		Point posl = Point(std::max(posl1.x, posl2.x), std::max(posl1.y, posl2.y));
+		Point posh = Point(std::min(posh1.x, posh2.x), std::min(posh1.y, posh2.y));
+		return posh > posl ? Rect(posl, Size(posh.x - posl.x, posh.y - posl.y)) : Rect();
+	}
+
 	static Rect Union(const Rect& rect1, const Rect& rect2) { return rect1.Union(rect2); }
+	static Rect Intersect(const Rect& rect1, const Rect& rect2) { return rect1.Intersect(rect2); }
 };
 
 

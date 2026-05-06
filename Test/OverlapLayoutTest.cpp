@@ -77,8 +77,8 @@ private:
 			key_tracker.Track(event);
 			if (event.type == KeyEvent::KeyDown) {
 				switch (event.key) {
-				case CharKey('F'): key_tracker.ctrl ? BringToFront() : BringForward(); break;
-				case CharKey('B'): key_tracker.ctrl ? SendToBack() : SendBackward(); break;
+				case Key::Char('F'): key_tracker.ctrl ? BringToFront() : BringForward(); break;
+				case Key::Char('B'): key_tracker.ctrl ? SendToBack() : SendBackward(); break;
 				}
 			}
 		}

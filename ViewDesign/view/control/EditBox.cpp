@@ -2,6 +2,8 @@
 #include "ViewDesign/drawing/shape.h"
 #include "ViewDesign/system/clipboard.h"
 
+#include <utility>
+
 
 namespace ViewDesign {
 
@@ -67,18 +69,26 @@ void EditBox::OnDraw(Canvas& canvas, Rect draw_region) {
 	}
 	if (HasImeComposition()) {
 		for (auto& rect : ime_composition_region_list) {
-			canvas.draw(Point(rect.left(), rect.top() + rect.height() - ime_composition_underline_height), new Rectangle(Size(rect.width(), ime_composition_underline_height), style.edit._ime_composition_underline_color));
+			canvas.draw(Point(rect.left(), rect.top() + rect.height() - style.edit._ime_composition_underline_width), new Rectangle(Size(rect.width(), style.edit._ime_composition_underline_width), style.edit._ime_composition_underline_color));
 		}
 	}
 }
 
-void EditBox::UpdateCaret(const HitTestInfo& info) {
-	caret_position = info.range.begin();
-	Rect caret_region_old = caret_region; caret_region = Rect(info.region.point, Size(caret_width, info.region.size.height));
-	Redraw(caret_region_old.Union(caret_region));
+Rect EditBox::GetCaretRegion(const HitTestPointInfo& info) const {
+	const auto& [range, region] = info;
+	if (range.length() == 0) {
+		return Rect(region.point, Size(style.edit._caret_width, region.size.height));
+	} else {
+		return Rect(Point(region.point.x + region.size.width, region.point.y), Size(style.edit._caret_width, region.size.height));
+	}
 }
 
-void EditBox::SetCaret(const HitTestInfo& info) {
+void EditBox::UpdateCaret(const HitTestPointInfo& info) {
+	caret_position = info.first.end();
+	Redraw(std::exchange(caret_region, GetCaretRegion(info)).Union(caret_region));
+}
+
+void EditBox::SetCaret(const HitTestPointInfo& info) {
 	UpdateCaret(info);
 	caret_state = CaretState::Show;
 	ClearSelection();
@@ -154,15 +164,16 @@ void EditBox::CaretBlink() {
 void EditBox::UpdateSelection(TextRange range) {
 	selection_range = range;
 	selection_region_list.clear();
-	Rect selection_region_union_old = selection_region_union; selection_region_union = region_empty;
+	Rect selection_region_union = region_empty;
 	if (!selection_range.empty()) {
-		std::vector<HitTestInfo> selection_info = text_block.HitTestRange(selection_range); selection_region_list.reserve(selection_info.size());
+		HitTestRangeInfo selection_info = text_block.HitTestRange(selection_range); selection_region_list.reserve(selection_info.size());
 		for (auto& it : selection_info) {
-			selection_region_list.emplace_back(it.region);
-			selection_region_union = Rect::Union(selection_region_union, it.region);
+			it.second.size = it.second.size.Union(Size(5.0f, 5.0f));
+			selection_region_list.emplace_back(it.second);
+			selection_region_union = Rect::Union(selection_region_union, it.second);
 		}
 	}
-	Redraw(selection_region_union_old.Union(selection_region_union));
+	Redraw(std::exchange(this->selection_region_union, selection_region_union).Union(this->selection_region_union));
 }
 
 void EditBox::SelectWord() {
@@ -179,12 +190,12 @@ void EditBox::SelectParagraph() {
 	UpdateCaret(selection_range.end());
 }
 
-void EditBox::DoSelect(const HitTestInfo& info) {
+void EditBox::DoSelect(const HitTestPointInfo& info) {
 	TextRange current_range;
 	switch (selection_mode) {
-	case SelectionMode::Character: current_range = TextRange(info.range.begin(), 0); break;
-	case SelectionMode::Word: current_range = GetWordRange(info.range.begin()); break;
-	case SelectionMode::Paragraph: current_range = GetParagraphRange(info.range.begin()); break;
+	case SelectionMode::Character: current_range = TextRange(info.first.end(), 0); break;
+	case SelectionMode::Word: current_range = GetWordRange(info.first.begin()); break;
+	case SelectionMode::Paragraph: current_range = GetParagraphRange(info.first.begin()); break;
 	}
 	size_t begin = std::min(current_range.begin(), selection_initial_range.begin()), end = std::max(current_range.end(), selection_initial_range.end());
 	UpdateCaret(begin < selection_initial_range.begin() ? begin : end);
@@ -246,9 +257,9 @@ void EditBox::UpdateImeComposition(TextRange range) {
 	ime_composition_range = range;
 	ime_composition_region_list.clear();
 	if (!ime_composition_range.empty()) {
-		std::vector<HitTestInfo> ime_composition_info = text_block.HitTestRange(ime_composition_range); ime_composition_region_list.reserve(ime_composition_info.size());
+		HitTestRangeInfo ime_composition_info = text_block.HitTestRange(ime_composition_range); ime_composition_region_list.reserve(ime_composition_info.size());
 		for (auto& it : ime_composition_info) {
-			ime_composition_region_list.emplace_back(it.region);
+			ime_composition_region_list.emplace_back(it.second);
 		}
 	}
 }
@@ -327,10 +338,10 @@ void EditBox::OnKeyEvent(KeyEvent event) {
 		case Key::Backspace: Delete(true); break;
 		case Key::Delete: Delete(false); break;
 
-		case CharKey('A'): if (key_tracker.ctrl) { SelectAll(); } break;
-		case CharKey('X'): if (key_tracker.ctrl) { Cut(); } break;
-		case CharKey('C'): if (key_tracker.ctrl) { Copy(); } break;
-		case CharKey('V'): if (key_tracker.ctrl) { Paste(); } break;
+		case Key::Char('A'): if (key_tracker.ctrl) { SelectAll(); } break;
+		case Key::Char('X'): if (key_tracker.ctrl) { Cut(); } break;
+		case Key::Char('C'): if (key_tracker.ctrl) { Copy(); } break;
+		case Key::Char('V'): if (key_tracker.ctrl) { Paste(); } break;
 		}
 		break;
 	case KeyEvent::Char:

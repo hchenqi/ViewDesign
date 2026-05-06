@@ -88,7 +88,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 	// keyboard message
 	if (IsKeyMsg(msg)) {
 		KeyEvent key_event;
-		key_event.key = static_cast<Key>(wparam);
+		key_event.key = static_cast<Key::Value>(wparam);
 		key_event.ch = { static_cast<u16char>(wparam), 0 };
 		switch (msg) {
 		case WM_KEYDOWN: key_event.type = KeyEvent::KeyDown; break;

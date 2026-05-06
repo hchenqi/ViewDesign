@@ -83,42 +83,34 @@ Rect TextBlock::UpdateLayout(Size size_ref) {
 	return Rect(metrics.left, metrics.top, metrics.widthIncludingTrailingWhitespace, metrics.height);
 }
 
-
-inline TextBlock::HitTestInfo HitTestMetricsToInfo(DWRITE_HIT_TEST_METRICS& metrics) {
-	return TextBlock::HitTestInfo{
-		TextRange(metrics.textPosition, metrics.length),
-		Rect(metrics.left, metrics.top, metrics.width, metrics.height)
-	};
-}
-
-TextBlock::HitTestInfo TextBlock::HitTestPoint(Point point) const {
+TextBlock::HitTestPointInfo TextBlock::HitTestPoint(Point point) const {
 	BOOL isTrailingHit; BOOL isInside; DWRITE_HIT_TEST_METRICS metrics;
 	layout->HitTestPoint(point.x, point.y, &isTrailingHit, &isInside, &metrics);
-	if (isTrailingHit) { metrics.textPosition += metrics.length; metrics.left += metrics.width; }
-	return HitTestMetricsToInfo(metrics);
+	return std::make_pair(TextRange(metrics.textPosition, isTrailingHit ? metrics.length : 0), Rect(metrics.left, metrics.top, metrics.width, metrics.height));
 }
 
-TextBlock::HitTestInfo TextBlock::HitTestPosition(size_t text_position) const {
+TextBlock::HitTestPointInfo TextBlock::HitTestPosition(size_t text_position) const {
 	FLOAT x, y; DWRITE_HIT_TEST_METRICS metrics;
-	layout->HitTestTextPosition((uint)text_position, false, &x, &y, &metrics);
-	return HitTestMetricsToInfo(metrics);
+	layout->HitTestTextPosition((UINT32)text_position, false, &x, &y, &metrics);
+	return std::make_pair(TextRange(metrics.textPosition, 0), Rect(metrics.left, metrics.top, metrics.width, metrics.height));
 }
 
-std::vector<TextBlock::HitTestInfo> TextBlock::HitTestRange(TextRange range) const {
-	UINT32 line_cnt; layout->GetLineMetrics((DWRITE_LINE_METRICS*)nullptr, 0, &line_cnt);
-	UINT32 actual_size = line_cnt;
-	std::vector<DWRITE_HIT_TEST_METRICS> metrics;
+TextBlock::HitTestRangeInfo TextBlock::HitTestRange(TextRange range) const {
+	UINT32 line_count;
+	layout->GetLineMetrics((DWRITE_LINE_METRICS*)nullptr, 0, &line_count);
+	UINT32 range_count = line_count;
+	std::vector<DWRITE_HIT_TEST_METRICS> metrics_list;
 	do {
-		metrics.resize(actual_size);
-		layout->HitTestTextRange((uint)range.begin(), (uint)range.length(), 0, 0, metrics.data(), (uint)metrics.size(), &actual_size);
-	} while (actual_size > metrics.size());
-	metrics.resize(actual_size);
-	std::vector<HitTestInfo> geometry_regions(metrics.size());
-	for (size_t i = 0; i < geometry_regions.size(); ++i) {
-		geometry_regions[i] = HitTestMetricsToInfo(metrics[i]);
-		if (geometry_regions[i].region.size.width < 5.0f) { geometry_regions[i].region.size.width = 5.0f; }
+		metrics_list.resize(range_count);
+		layout->HitTestTextRange((UINT32)range.begin(), (UINT32)range.length(), 0, 0, metrics_list.data(), (UINT32)metrics_list.size(), &range_count);
+	} while (range_count > metrics_list.size());
+	metrics_list.resize(range_count);
+
+	HitTestRangeInfo range_info; range_info.reserve(range_count);
+	for (const auto& metrics : metrics_list) {
+		range_info.emplace_back(std::make_pair(TextRange(metrics.textPosition, metrics.length), Rect(metrics.left, metrics.top, metrics.width, metrics.height)));
 	}
-	return geometry_regions;
+	return range_info;
 }
 
 

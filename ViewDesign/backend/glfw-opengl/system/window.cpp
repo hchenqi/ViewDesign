@@ -135,6 +135,7 @@ void KeyCallback(GLFWwindow* glfw_window, int key, int scancode, int action, int
 	KeyEvent key_event;
 	key_event.key = AsKey(key);
 	switch (action) {
+	case GLFW_REPEAT:
 	case GLFW_PRESS: key_event.type = KeyEvent::KeyDown; break;
 	case GLFW_RELEASE: key_event.type = KeyEvent::KeyUp; break;
 	default: return;
