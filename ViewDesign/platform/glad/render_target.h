@@ -25,7 +25,7 @@ public:
 		glOrtho(0, width, height, 0, -1, 1);
 
 		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
 		glEnable(GL_SCISSOR_TEST);
 	}
