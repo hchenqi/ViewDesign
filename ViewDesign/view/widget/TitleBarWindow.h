@@ -22,6 +22,7 @@
 #include "ViewDesign/event/mouse_tracker.h"
 #include "ViewDesign/messaging/context.h"
 #include "ViewDesign/geometry/border_helper.h"
+#include "ViewDesign/system/window.h"
 
 #if defined(VIEWDESIGN_BACKEND_WIN32)
 #include "ViewDesign/platform/win32/aero_snap.h"
@@ -86,9 +87,7 @@ protected:
 			if (event.type == MouseEvent::Move || event.type == MouseEvent::LeftDown) {
 				BorderPosition border_position = HitTestBorderPosition(size, border._width + border._radius, event.point);
 				if (event.type == MouseEvent::Move) {
-#if defined(VIEWDESIGN_BACKEND_WIN32)
-					SetCursor(GetCursor(GetBorderPositionCursorStyle(border_position)));
-#endif
+					SetWindowCursor(desktop.GetWindow(*this).GetHandle(), GetCursor(GetBorderPositionCursorStyle(border_position)));
 				} else {
 #if defined(VIEWDESIGN_BACKEND_WIN32)
 					Win32::AeroSnapBorderResizingEffect(desktop.GetWindow(*this).GetHandle(), border_position);

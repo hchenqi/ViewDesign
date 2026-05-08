@@ -175,7 +175,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 WindowIrrelevantMessages:
 	switch (msg) {
 	case WM_CREATE: break;
-	case WM_DESTROY: break;
+	case WM_DESTROY: if (GetDesktop().window_list.empty()) { PostQuitMessage(0); } break;
 	case WM_KILLFOCUS: GetDesktop().LoseFocus(); break;
 	case WM_NCCALCSIZE: break;
 	case WM_NCHITTEST: return HTCLIENT;
@@ -212,36 +212,36 @@ Handle CreateWindow(Window& window, const u16string& title) {
 	if (hwnd == NULL) {
 		throw std::runtime_error("Win32: create window error");
 	}
-	SetWindowLongPtrW((HWND)hwnd, GWLP_USERDATA, (LONG_PTR)&window);
+	SetWindowLongPtrW(hwnd, GWLP_USERDATA, (LONG_PTR)&window);
 	return hwnd;
 }
 
-void DestroyWindow(Handle handle) { DestroyWindow((HWND)handle); }
+void DestroyWindow(Handle handle) { DestroyWindow(AsHWND(handle)); }
 
-Scale GetWindowScale(Handle handle) { return GetDpiForWindow((HWND)handle) / dpi_default; }
+Scale GetWindowScale(Handle handle) { return GetDpiForWindow(AsHWND(handle)) / dpi_default; }
 
-void SetWindowTitle(Handle handle, const u16string& title) { SetWindowTextW((HWND)handle, as_wchar_str(title.c_str())); }
-void SetWindowRegion(Handle handle, Rect region) { MoveWindow((HWND)handle, (int)floorf(region.point.x), (int)floorf(region.point.y), (int)ceilf(region.size.width), (int)ceilf(region.size.height), false); }
-void SetWindowOpacity(Handle handle, uchar opacity) { SetWndStyle((HWND)handle, WS_EX_LAYERED);	SetLayeredWindowAttributes((HWND)handle, 0, opacity, LWA_ALPHA); }
+void SetWindowTitle(Handle handle, const u16string& title) { SetWindowTextW(AsHWND(handle), as_wchar_str(title.c_str())); }
+void SetWindowRegion(Handle handle, Rect region) { MoveWindow(AsHWND(handle), (int)floorf(region.point.x), (int)floorf(region.point.y), (int)ceilf(region.size.width), (int)ceilf(region.size.height), false); }
+void SetWindowOpacity(Handle handle, uchar opacity) { SetWndStyle(AsHWND(handle), WS_EX_LAYERED);	SetLayeredWindowAttributes(AsHWND(handle), 0, opacity, LWA_ALPHA); }
 void SetWindowCursor(Handle handle, std::reference_wrapper<Cursor> cursor) { SetCursor(cursor); }
 
-void ShowWindow(Handle handle) { ShowWindow((HWND)handle, SW_SHOWNOACTIVATE); }
-void HideWindow(Handle handle) { ShowWindow((HWND)handle, SW_HIDE); }
-void MinimizeWindow(Handle handle) { ShowWindow((HWND)handle, SW_MINIMIZE); }
-void MaximizeWindow(Handle handle) { ShowWindow((HWND)handle, SW_MAXIMIZE); }
-void RestoreWindow(Handle handle) { ShowWindow((HWND)handle, SW_RESTORE); }
+void ShowWindow(Handle handle) { ShowWindow(AsHWND(handle), SW_SHOWNOACTIVATE); }
+void HideWindow(Handle handle) { ShowWindow(AsHWND(handle), SW_HIDE); }
+void MinimizeWindow(Handle handle) { ShowWindow(AsHWND(handle), SW_MINIMIZE); }
+void MaximizeWindow(Handle handle) { ShowWindow(AsHWND(handle), SW_MAXIMIZE); }
+void RestoreWindow(Handle handle) { ShowWindow(AsHWND(handle), SW_RESTORE); }
 
-void CloseWindow(Handle handle) { SendMessageW((HWND)handle, WM_CLOSE, 0, 0); }
+void CloseWindow(Handle handle) { SendMessageW(AsHWND(handle), WM_CLOSE, 0, 0); }
 
-void RedrawWindowRegion(Handle handle, Rect region) { RECT rect = AsRECT(region); InvalidateRect((HWND)handle, &rect, false); }
+void RedrawWindowRegion(Handle handle, Rect region) { RECT rect = AsRECT(region); InvalidateRect(AsHWND(handle), &rect, false); }
 
-void SetWindowCapture(Handle handle) { SetCapture((HWND)handle); }
+void SetWindowCapture(Handle handle) { SetCapture(AsHWND(handle)); }
 void ReleaseWindowCapture(Handle handle) { ReleaseCapture(); }
-void SetWindowFocus(Handle handle) { SetFocus((HWND)handle); }
+void SetWindowFocus(Handle handle) { SetFocus(AsHWND(handle)); }
 
-void ImeWindowEnable(Handle handle) { ImeEnable((HWND)handle); }
-void ImeWindowDisable(Handle handle) { ImeDisable((HWND)handle); }
-void ImeWindowSetPosition(Handle handle, Point point) { ImeSetPosition((HWND)handle, point); }
+void ImeWindowEnable(Handle handle) { ImeEnable(AsHWND(handle)); }
+void ImeWindowDisable(Handle handle) { ImeDisable(AsHWND(handle)); }
+void ImeWindowSetPosition(Handle handle, Point point) { ImeSetPosition(AsHWND(handle), point); }
 
 
 } // namespace ViewDesign

@@ -18,13 +18,23 @@ public:
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
-	glClear(GL_COLOR_BUFFER_BIT);
+
+	glEnable(GL_SCISSOR_TEST);
+	glScissor(0, 0, width, height);
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	glOrtho(0, width, height, 0, -1, 1);
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
+
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
 
 	glScissor(200, height - 150 - 50, 50, 50);
 
@@ -33,6 +43,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 		glColor4f(r, g, b, a);
 	} {
 		auto [l, r, t, b] = std::make_tuple(200, 300, 100, 300);
+		// auto [l, r, t, b] = std::make_tuple(0, width, 0, height);
 		glBegin(GL_POLYGON);
 		glVertex2f(l, t);
 		glVertex2f(r, t);
@@ -46,15 +57,12 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 
 int main() {
 	GLFWEnvironment glfw;
-	// glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
+	glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
 	glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
-	glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 	glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
 	// glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	// glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	// glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	// glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
-	// glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 	GLFWwindow* window = glfwCreateWindow(800, 600, "GLFWOpenGLTest", nullptr, nullptr);
 	if (!window) {
 		throw std::runtime_error("Failed to create GLFW window");
@@ -67,13 +75,8 @@ int main() {
 
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	glEnable(GL_SCISSOR_TEST);
-
-	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-	framebuffer_size_callback(window, 800, 600);
+	glfwMaximizeWindow(window);
+	// framebuffer_size_callback(window, 800, 600);
 
 	for (;;) {
 		glfwWaitEvents();
@@ -82,6 +85,10 @@ int main() {
 			glfwDestroyWindow(window);
 			break;
 		}
+
+		int width, height;
+		glfwGetFramebufferSize(window, &width, &height);
+		framebuffer_size_callback(window, width, height);
 	}
 
 	return 0;

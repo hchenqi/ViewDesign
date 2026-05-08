@@ -1,5 +1,7 @@
 #pragma once
 
+#include <windows.h>
+
 
 namespace ViewDesign {
 
@@ -9,9 +11,14 @@ using Handle = void*;
 namespace Win32 {
 
 
-void SetWndStyle(Handle handle, int mask);
+inline HWND AsHWND(Handle handle) {
+	return static_cast<HWND>(handle);
+}
 
-void SetWndTopMost(Handle handle);
+
+void SetWndStyle(HWND hwnd, int mask);
+
+void SetWndTopMost(HWND hwnd);
 
 
 } // namespace Win32

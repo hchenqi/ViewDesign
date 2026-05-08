@@ -1,3 +1,7 @@
+if(DEFINED VIEWDESIGN_BACKEND)
+    set(BACKEND "${VIEWDESIGN_BACKEND}")
+endif()
+
 if(NOT DEFINED BACKEND)
     message(FATAL_ERROR "Backend not specified.")
 elseif(BACKEND STREQUAL "Win32-DirectX")

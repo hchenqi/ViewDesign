@@ -5,6 +5,7 @@
 #include "ViewDesign/platform/win32/d2d_api.h"
 #include "ViewDesign/platform/win32/directx_helper.h"
 #include "ViewDesign/platform/win32/geometry_helper.h"
+#include "ViewDesign/platform/win32/window.h"
 
 
 namespace ViewDesign {
@@ -56,7 +57,7 @@ void WindowLayer::Create(Handle handle, Size size) {
 	comp_visual->SetContent(this->swap_chain);
 
 	ComPtr<IDCompositionTarget> comp_target;
-	hr << GetDCompositionDevice().CreateTargetForHwnd((HWND)handle, false, &comp_target);
+	hr << GetDCompositionDevice().CreateTargetForHwnd(AsHWND(handle), false, &comp_target);
 	comp_target->SetRoot(comp_visual.Get());
 	this->comp_target = static_cast<owner_ptr<CompositionTarget>>(comp_target.Detach());
 

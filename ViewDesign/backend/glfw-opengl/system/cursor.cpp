@@ -29,39 +29,32 @@ public:
 };
 
 
-namespace {
-
-std::array<Cursor, static_cast<size_t>(CursorStyle::_Count)> cursor_cache_shared = {
-	Cursor(Cursor::Type::Hidden, nullptr),
-	Cursor(Cursor::Type::NoChange, nullptr),
-	Cursor(Cursor::Type::Shared, glfwCreateStandardCursor(GLFW_ARROW_CURSOR)),
-	Cursor(Cursor::Type::Shared, glfwCreateStandardCursor(GLFW_POINTING_HAND_CURSOR)),
-	Cursor(Cursor::Type::Shared, glfwCreateStandardCursor(GLFW_IBEAM_CURSOR)),
-	Cursor(Cursor::Type::Shared, glfwCreateStandardCursor(GLFW_RESIZE_ALL_CURSOR)),
-	Cursor(Cursor::Type::Shared, nullptr),
-	Cursor(Cursor::Type::Shared, glfwCreateStandardCursor(GLFW_CROSSHAIR_CURSOR)),
-	Cursor(Cursor::Type::Shared, nullptr),
-	Cursor(Cursor::Type::Shared, nullptr),
-	Cursor(Cursor::Type::Shared, glfwCreateStandardCursor(GLFW_NOT_ALLOWED_CURSOR)),
-	Cursor(Cursor::Type::Shared, glfwCreateStandardCursor(GLFW_RESIZE_EW_CURSOR)),
-	Cursor(Cursor::Type::Shared, glfwCreateStandardCursor(GLFW_RESIZE_NESW_CURSOR)),
-	Cursor(Cursor::Type::Shared, glfwCreateStandardCursor(GLFW_RESIZE_NS_CURSOR)),
-	Cursor(Cursor::Type::Shared, glfwCreateStandardCursor(GLFW_RESIZE_NWSE_CURSOR)),
-};
-
-std::vector<Cursor> cursor_cache_custom;
-
-} // namespace
-
-
 std::reference_wrapper<Cursor> GetCursor(CursorStyle style) {
 	if (style >= CursorStyle::_Count) {
 		throw std::out_of_range("GetCursor: invalid cursor style");
 	}
+	static std::array<Cursor, static_cast<size_t>(CursorStyle::_Count)> cursor_cache_shared = {
+		Cursor(Cursor::Type::Hidden, nullptr),
+		Cursor(Cursor::Type::NoChange, nullptr),
+		Cursor(Cursor::Type::Shared, glfwCreateStandardCursor(GLFW_ARROW_CURSOR)),
+		Cursor(Cursor::Type::Shared, glfwCreateStandardCursor(GLFW_POINTING_HAND_CURSOR)),
+		Cursor(Cursor::Type::Shared, glfwCreateStandardCursor(GLFW_IBEAM_CURSOR)),
+		Cursor(Cursor::Type::Shared, glfwCreateStandardCursor(GLFW_RESIZE_ALL_CURSOR)),
+		Cursor(Cursor::Type::Shared, nullptr),
+		Cursor(Cursor::Type::Shared, glfwCreateStandardCursor(GLFW_CROSSHAIR_CURSOR)),
+		Cursor(Cursor::Type::Shared, nullptr),
+		Cursor(Cursor::Type::Shared, nullptr),
+		Cursor(Cursor::Type::Shared, glfwCreateStandardCursor(GLFW_NOT_ALLOWED_CURSOR)),
+		Cursor(Cursor::Type::Shared, glfwCreateStandardCursor(GLFW_RESIZE_EW_CURSOR)),
+		Cursor(Cursor::Type::Shared, glfwCreateStandardCursor(GLFW_RESIZE_NESW_CURSOR)),
+		Cursor(Cursor::Type::Shared, glfwCreateStandardCursor(GLFW_RESIZE_NS_CURSOR)),
+		Cursor(Cursor::Type::Shared, glfwCreateStandardCursor(GLFW_RESIZE_NWSE_CURSOR)),
+	};
 	return cursor_cache_shared[static_cast<size_t>(style)];
 }
 
 std::reference_wrapper<Cursor> CreateCursor(const PixelBuffer& pixel_buffer, std::pair<uint, uint> hotspot) {
+	static std::vector<Cursor> cursor_cache_custom;
 	return cursor_cache_custom.emplace_back(Cursor::Type::Custom, GLFW::CreateCursorFromPixelBuffer(pixel_buffer, hotspot));
 }
 

@@ -11,7 +11,9 @@
 
 #if defined(VIEWDESIGN_BACKEND_WIN32)
 #include "ViewDesign/platform/win32/window.h"
-#include <windows.h>
+#endif
+#if defined(VIEWDESIGN_BACKEND_GLFW)
+#include "ViewDesign/platform/glfw/window.h"
 #endif
 
 
@@ -35,8 +37,13 @@ private:
 		)
 	) {
 #if defined(VIEWDESIGN_BACKEND_WIN32)
-		Win32::SetWndStyle(GetHandle(), WS_EX_TOOLWINDOW | WS_EX_TRANSPARENT | WS_EX_NOACTIVATE);
-		Win32::SetWndTopMost(GetHandle());
+		Win32::SetWndStyle(Win32::AsHWND(GetHandle()), WS_EX_TOOLWINDOW | WS_EX_TRANSPARENT | WS_EX_NOACTIVATE);
+		Win32::SetWndTopMost(Win32::AsHWND(GetHandle()));
+#endif
+#if defined(VIEWDESIGN_BACKEND_GLFW)
+		glfwSetWindowAttrib(GLFW::AsGLFWWindow(GetHandle()), GLFW_FLOATING, GLFW_TRUE);
+		glfwSetWindowAttrib(GLFW::AsGLFWWindow(GetHandle()), GLFW_MOUSE_PASSTHROUGH, GLFW_TRUE);
+		glfwSetWindowAttrib(GLFW::AsGLFWWindow(GetHandle()), GLFW_FOCUS_ON_SHOW, GLFW_FALSE);
 #endif
 		region.size = UpdateChildSizeRef(child, size_empty);
 	}
