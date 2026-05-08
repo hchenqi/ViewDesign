@@ -22,6 +22,12 @@ private:
 	owner_ptr<SwapChain> swap_chain;
 	owner_ptr<CompositionTarget> comp_target;
 #endif
+#if defined(VIEWDESIGN_BACKEND_WIN32_OPENGL)
+private:
+	Handle handle;
+	Handle hdc;
+	Handle hglrc;
+#endif
 #if defined(VIEWDESIGN_BACKEND_GLFW_OPENGL)
 private:
 	Handle handle;
@@ -35,7 +41,7 @@ private:
 	void DestroyTexture() { texture.Destroy(); }
 private:
 	Rect invalid_region;
-#if defined(VIEWDESIGN_BACKEND_GLFW_OPENGL)
+#if defined(VIEWDESIGN_BACKEND_OPENGL)
 	Rect invalid_region_front_buffer;
 #endif
 public:

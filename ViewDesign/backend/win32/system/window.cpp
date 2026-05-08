@@ -8,6 +8,9 @@
 
 #include <windows.h>
 #include <windowsx.h>
+#if defined(VIEWDESIGN_BACKEND_WIN32_OPENGL)
+#include <dwmapi.h>
+#endif
 
 #undef CreateWindow
 
@@ -199,12 +202,24 @@ Handle CreateWindow(Window& window, const u16string& title) {
 	if (wnd_class_atom == 0) {
 		throw std::runtime_error("Win32: register class error");
 	}
-	HWND hwnd = CreateWindowExW(WS_EX_NOREDIRECTIONBITMAP, as_wchar_str(wnd_class_name), as_wchar_str(title.c_str()),
-								WS_POPUP | WS_THICKFRAME | WS_MAXIMIZEBOX | WS_HSCROLL | WS_VSCROLL,
-								0, 0, 0, 0, NULL, NULL, hInstance, NULL);
+	HWND hwnd = CreateWindowExW(
+#if defined(VIEWDESIGN_BACKEND_WIN32_DIRECTX)
+		WS_EX_NOREDIRECTIONBITMAP,
+#endif
+#if defined(VIEWDESIGN_BACKEND_WIN32_OPENGL)
+		NULL,
+#endif
+		as_wchar_str(wnd_class_name), as_wchar_str(title.c_str()),
+		WS_POPUP | WS_THICKFRAME | WS_MAXIMIZEBOX | WS_HSCROLL | WS_VSCROLL,
+		0, 0, 0, 0, NULL, NULL, hInstance, NULL
+	);
 	if (hwnd == NULL) {
 		throw std::runtime_error("Win32: create window error");
 	}
+#if defined(VIEWDESIGN_BACKEND_WIN32_OPENGL)
+	MARGINS m = { -1 };
+	DwmExtendFrameIntoClientArea(hwnd, &m);
+#endif
 	SetWindowLongPtrW(hwnd, GWLP_USERDATA, (LONG_PTR)&window);
 	return hwnd;
 }

@@ -1,3 +1,5 @@
+#pragma once
+
 #include "ViewDesign/common/type.h"
 
 #include <stdexcept>
