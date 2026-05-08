@@ -1,12 +1,18 @@
 #include "ViewDesign/drawing/layer.h"
 #include "ViewDesign/drawing/canvas.h"
-#include "ViewDesign/platform/win32/d2d_api.h"
-#include "ViewDesign/platform/win32/directx_helper.h"
+#include "ViewDesign/platform/directx/d2d_api.h"
+#include "ViewDesign/platform/directx/directx_resource.h"
+#include "ViewDesign/platform/directx/directx_helper.h"
+#include "ViewDesign/view/Desktop.h"
 
 
 namespace ViewDesign {
 
-using namespace Win32;
+struct DesktopPrivateAccess : Desktop {
+	using Desktop::RecreateWindowLayer;
+};
+
+using namespace DirectX;
 
 
 namespace {
@@ -49,7 +55,12 @@ void Layer::RenderCanvas(const Canvas& canvas, Vector offset, Rect clip_region) 
 		}
 	}
 	device_context.PopAxisAlignedClip();
-	hr << device_context.EndDraw();
+	try {
+		hr << device_context.EndDraw();
+	} catch (std::runtime_error&) {
+		DirectXRecreateResource();
+		static_cast<DesktopPrivateAccess&>(desktop.Get()).RecreateWindowLayer();
+	}
 	device_context.SetTarget(nullptr);
 }
 

@@ -1,5 +1,5 @@
-if(NOT TARGET ViewDesign::GLFW)
-    message(FATAL_ERROR "GLFW not found.")
+if(NOT TARGET ViewDesign::Win32)
+    message(FATAL_ERROR "Not Win32 platform.")
 endif()
 
 if(NOT TARGET ViewDesign::OpenGL)
@@ -13,8 +13,4 @@ endif()
 file(GLOB_RECURSE LIB_SOURCES *.cpp)
 target_sources(ViewDesign PRIVATE ${LIB_SOURCES})
 
-target_compile_definitions(ViewDesign PUBLIC VIEWDESIGN_BACKEND_GLFW_OPENGL)
-
-
-add_executable(GLFWOpenGLTest test.cpp)
-target_link_libraries(GLFWOpenGLTest PRIVATE ViewDesign)
+target_compile_definitions(ViewDesign PUBLIC VIEWDESIGN_BACKEND_WIN32_OPENGL)

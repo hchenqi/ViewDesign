@@ -3,7 +3,7 @@
 
 namespace ViewDesign {
 
-namespace Win32 {
+namespace DirectX {
 
 struct WICFactory;
 
@@ -11,6 +11,6 @@ struct WICFactory;
 WICFactory& GetWICFactory();
 
 
-} // namespace Win32
+} // namespace DirectX
 
 } // namespace ViewDesign

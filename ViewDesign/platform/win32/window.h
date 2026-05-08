@@ -11,9 +11,7 @@ using Handle = void*;
 namespace Win32 {
 
 
-inline HWND AsHWND(Handle handle) {
-	return static_cast<HWND>(handle);
-}
+inline HWND AsHWND(Handle handle) { return static_cast<HWND>(handle); }
 
 
 void SetWndStyle(HWND hwnd, int mask);

@@ -3,7 +3,7 @@
 
 namespace ViewDesign {
 
-namespace Win32 {
+namespace DirectX {
 
 struct DCompositionDevice;
 
@@ -11,6 +11,6 @@ struct DCompositionDevice;
 DCompositionDevice& GetDCompositionDevice();
 
 
-} // namespace Win32
+} // namespace DirectX
 
 } // namespace ViewDesign

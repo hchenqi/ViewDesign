@@ -1,11 +1,11 @@
 #include "ViewDesign/drawing/texture.h"
-#include "ViewDesign/platform/win32/directx_resource.h"
-#include "ViewDesign/platform/win32/directx_helper.h"
+#include "ViewDesign/platform/directx/directx_resource.h"
+#include "ViewDesign/platform/directx/directx_helper.h"
 
 
 namespace ViewDesign {
 
-using namespace Win32;
+using namespace DirectX;
 
 
 Texture::Texture() : resource(nullptr) { RegisterTexture(*this); }

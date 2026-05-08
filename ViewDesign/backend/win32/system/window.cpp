@@ -4,7 +4,6 @@
 #include "ViewDesign/platform/win32/window.h"
 #include "ViewDesign/platform/win32/geometry_helper.h"
 #include "ViewDesign/platform/win32/ime.h"
-#include "ViewDesign/platform/win32/directx_resource.h"
 #include "ViewDesign/view/Desktop.h"
 
 #include <windows.h>
@@ -29,7 +28,6 @@ struct WindowPrivateAccess : Window {
 
 struct DesktopPrivateAccess : Desktop {
 	using Desktop::window_list;
-	using Desktop::RecreateWindowLayer;
 	using Desktop::LoseTrack;
 	using Desktop::LoseCapture;
 	using Desktop::LoseFocus;
@@ -132,12 +130,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 		case WM_PAINT: {
 			PAINTSTRUCT ps;
 			HDC hdc = BeginPaint(hwnd, &ps);
-			try {
-				window->OnDraw();
-			} catch (std::runtime_error&) {
-				DirectXRecreateResource();
-				GetDesktop().RecreateWindowLayer();
-			}
+			window->OnDraw();
 			EndPaint(hwnd, &ps);
 		}break;
 		case WM_ERASEBKGND: return true;

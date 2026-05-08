@@ -3,7 +3,7 @@
 
 namespace ViewDesign {
 
-namespace Win32 {
+namespace DirectX {
 
 struct DXGIDevice;
 struct DXGIAdapter;
@@ -15,6 +15,6 @@ DXGIAdapter& GetDXGIAdapter();
 DXGIFactory& GetDXGIFactory();
 
 
-} // namespace Win32
+} // namespace DirectX
 
 } // namespace ViewDesign

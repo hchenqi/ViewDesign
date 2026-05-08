@@ -1,15 +1,16 @@
 #include "ViewDesign/drawing/window_layer.h"
-#include "ViewDesign/platform/win32/d3d_api.h"
-#include "ViewDesign/platform/win32/dxgi_api.h"
-#include "ViewDesign/platform/win32/dcomp_api.h"
-#include "ViewDesign/platform/win32/d2d_api.h"
-#include "ViewDesign/platform/win32/directx_helper.h"
+#include "ViewDesign/platform/directx/d3d_api.h"
+#include "ViewDesign/platform/directx/dxgi_api.h"
+#include "ViewDesign/platform/directx/dcomp_api.h"
+#include "ViewDesign/platform/directx/d2d_api.h"
+#include "ViewDesign/platform/directx/directx_helper.h"
 #include "ViewDesign/platform/win32/geometry_helper.h"
 #include "ViewDesign/platform/win32/window.h"
 
 
 namespace ViewDesign {
 
+using namespace DirectX;
 using namespace Win32;
 
 

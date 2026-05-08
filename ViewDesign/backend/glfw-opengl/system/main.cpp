@@ -1,6 +1,7 @@
 #include <glad/glad.h>
 #include "ViewDesign/platform/glfw/context.h"
 
+
 void App();
 
 int main() {
@@ -10,6 +11,7 @@ int main() {
 	App();
 	return 0;
 }
+
 
 #if defined(VIEWDESIGN_PLATFORM_WIN32)
 

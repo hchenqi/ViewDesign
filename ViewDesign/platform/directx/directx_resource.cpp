@@ -1,11 +1,11 @@
-#include "ViewDesign/platform/win32/d3d_api.h"
-#include "ViewDesign/platform/win32/dxgi_api.h"
-#include "ViewDesign/platform/win32/dcomp_api.h"
-#include "ViewDesign/platform/win32/d2d_api.h"
-#include "ViewDesign/platform/win32/dwrite_api.h"
-#include "ViewDesign/platform/win32/wic_api.h"
-#include "ViewDesign/platform/win32/directx_resource.h"
-#include "ViewDesign/platform/win32/directx_helper.h"
+#include "ViewDesign/platform/directx/d3d_api.h"
+#include "ViewDesign/platform/directx/dxgi_api.h"
+#include "ViewDesign/platform/directx/dcomp_api.h"
+#include "ViewDesign/platform/directx/d2d_api.h"
+#include "ViewDesign/platform/directx/dwrite_api.h"
+#include "ViewDesign/platform/directx/wic_api.h"
+#include "ViewDesign/platform/directx/directx_resource.h"
+#include "ViewDesign/platform/directx/directx_helper.h"
 #include "ViewDesign/drawing/texture.h"
 
 #include <unordered_set>
@@ -15,8 +15,8 @@ namespace ViewDesign {
 
 namespace {
 
-using Win32::ComPtr;
-using Win32::hr;
+using DirectX::ComPtr;
+using DirectX::hr;
 
 
 struct DirectXResource {
@@ -154,7 +154,7 @@ void DirectXResource::DiscardDeviceDependentResource() {
 
 } // namespace
 
-namespace Win32 {
+namespace DirectX {
 
 
 void RegisterTexture(Texture& texture) { directx_resource.texture_set.insert(&texture); }
@@ -187,6 +187,6 @@ D2DSolidColorBrush& GetD2DSolidColorBrush(Color color) {
 }
 
 
-} // namespace Win32
+} // namespace DirectX
 
 } // namespace ViewDesign

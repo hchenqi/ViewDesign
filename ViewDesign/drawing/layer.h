@@ -14,7 +14,7 @@ public:
 	Layer() {}
 	~Layer() {}
 protected:
-#if defined(VIEWDESIGN_BACKEND_GLFW_OPENGL)
+#if defined(VIEWDESIGN_BACKEND_OPENGL)
 	Size size;
 #endif
 	Texture texture;
