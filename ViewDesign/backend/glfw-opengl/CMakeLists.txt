@@ -14,7 +14,3 @@ file(GLOB_RECURSE LIB_SOURCES *.cpp)
 target_sources(ViewDesign PRIVATE ${LIB_SOURCES})
 
 target_compile_definitions(ViewDesign PUBLIC VIEWDESIGN_BACKEND_GLFW_OPENGL)
-
-
-add_executable(GLFWOpenGLTest test.cpp)
-target_link_libraries(GLFWOpenGLTest PRIVATE ViewDesign)
