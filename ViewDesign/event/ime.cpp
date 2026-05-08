@@ -4,18 +4,27 @@
 
 namespace ViewDesign {
 
-struct DesktopApi : Desktop {
+struct DesktopPrivateAccess : Desktop {
 	using Desktop::ImeEnable;
 	using Desktop::ImeDisable;
 	using Desktop::ImeSetPosition;
 };
 
 
-void Ime::Enable(ViewBase& view) { static_cast<DesktopApi&>(desktop).ImeEnable(view); }
+namespace {
 
-void Ime::Disable(ViewBase& view) { static_cast<DesktopApi&>(desktop).ImeDisable(view); }
+inline DesktopPrivateAccess& GetDesktop() {
+	return static_cast<DesktopPrivateAccess&>(desktop.Get());
+}
 
-void Ime::SetPosition(ViewBase& view, Point point) { static_cast<DesktopApi&>(desktop).ImeSetPosition(view, point); }
+} // namespace
+
+
+void Ime::Enable(ViewBase& view) { GetDesktop().ImeEnable(view); }
+
+void Ime::Disable(ViewBase& view) { GetDesktop().ImeDisable(view); }
+
+void Ime::SetPosition(ViewBase& view, Point point) { GetDesktop().ImeSetPosition(view, point); }
 
 
 } // namespace ViewDesign

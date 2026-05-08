@@ -6,11 +6,11 @@
 
 namespace ViewDesign {
 
-struct WindowApi : Window {
+struct WindowPrivateAccess : Window {
 	using Window::OnDraw;
 };
 
-struct DesktopApi : Desktop {
+struct DesktopPrivateAccess : Desktop {
 	using Desktop::window_list;
 };
 
@@ -26,18 +26,22 @@ void EventLoop() {
 			glfwWaitEvents();
 		}
 
-		auto& window_list = static_cast<DesktopApi&>(desktop).window_list;
+		auto& window_list = static_cast<DesktopPrivateAccess&>(desktop.Get()).window_list;
 
-		window_list.erase(std::remove_if(window_list.begin(), window_list.end(), [&](auto& window) {
-			return glfwWindowShouldClose(AsGLFWWindow(window->GetHandle())) == GLFW_TRUE;
-		}), window_list.end());
+		for (;;) {
+			std::vector<std::unique_ptr<Window>> window_closed;
+			window_list.erase(std::remove_if(window_list.begin(), window_list.end(), [&](auto& window) {
+				return glfwWindowShouldClose(AsGLFWWindow(window->GetHandle())) == GLFW_TRUE ? window_closed.emplace_back(std::move(window)), true : false;
+			}), window_list.end());
+			if (window_closed.empty()) { break; }
+		}
 
 		if (window_list.empty()) {
 			break;
 		}
 
 		for (auto& window : window_list) {
-			static_cast<WindowApi&>(*window).OnDraw();
+			static_cast<WindowPrivateAccess&>(*window).OnDraw();
 		}
 	}
 }

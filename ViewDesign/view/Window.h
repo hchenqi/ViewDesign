@@ -11,7 +11,7 @@ namespace ViewDesign {
 class Window : public ViewFrame {
 private:
 	friend class Desktop;
-	friend struct WindowApi;
+	friend struct WindowPrivateAccess;
 
 public:
 	Window(const u16string& title, view_ptr<> child);

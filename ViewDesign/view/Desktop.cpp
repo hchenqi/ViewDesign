@@ -7,8 +7,6 @@
 
 namespace ViewDesign {
 
-Desktop& desktop = Desktop::Get();
-
 
 Desktop::Desktop() {}
 
@@ -38,7 +36,7 @@ std::unique_ptr<Window> Desktop::RemoveWindow(Window& window) {
 
 Window& Desktop::GetWindow(ViewBase& view) {
 	ref_ptr<ViewBase> child = &view;
-	for (ref_ptr<ViewBase> parent = child->parent; parent != &desktop; child = parent, parent = child->parent) {
+	for (ref_ptr<ViewBase> parent = child->parent; parent != &desktop.Get(); child = parent, parent = child->parent) {
 		if (parent == nullptr) { throw std::invalid_argument("view not registered"); }
 	}
 	return static_cast<Window&>(*child);
@@ -46,7 +44,7 @@ Window& Desktop::GetWindow(ViewBase& view) {
 
 Window& Desktop::GetWindowPoint(ViewBase& view, Point& point) {
 	ref_ptr<ViewBase> child = &view;
-	for (ref_ptr<ViewBase> parent = child->parent; parent != &desktop; child = parent, parent = child->parent) {
+	for (ref_ptr<ViewBase> parent = child->parent; parent != &desktop.Get(); child = parent, parent = child->parent) {
 		if (parent == nullptr) { throw std::invalid_argument("view not registered"); }
 		point *= parent->GetChildTransform(*child);
 	}
@@ -70,7 +68,7 @@ void Desktop::RecreateWindowLayer() {
 }
 
 void Desktop::ReleaseView(ViewBase& view) {
-	if (&view == &desktop) { return; }
+	if (&view == &desktop.Get()) { return; }
 	if (view_track_map.contains(&view)) { PopTrack(view_track_map[&view]); PushTrack({}); }
 	if (view_capture == &view) { ReleaseWindowCapture(*window_capture); }
 	if (view_focus_map.contains(&view)) { LoseFocus(); }
@@ -98,7 +96,7 @@ void Desktop::SetTrack(ViewBase& view) {
 		trace.push_back(curr);
 		curr = curr->parent;
 		if (curr == nullptr) { PopTrack(0); return; }
-		if (curr == &desktop) { PopTrack(0); break; }
+		if (curr == &desktop.Get()) { PopTrack(0); break; }
 		if (view_track_map.contains(curr)) { PopTrack(view_track_map[curr] + 1); break; }
 	}
 	PushTrack(std::move(trace));
@@ -178,7 +176,7 @@ void Desktop::SetFocus(ViewBase& view) {
 			LoseFocus();
 			break;
 		}
-		if (next == &desktop) {
+		if (next == &desktop.Get()) {
 			LoseFocus();
 			window_focus = static_cast<ref_ptr<Window>>(curr);
 			SetWindowFocus(*window_focus);

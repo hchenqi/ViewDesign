@@ -15,7 +15,7 @@
 
 namespace ViewDesign {
 
-struct WindowApi : Window {
+struct WindowPrivateAccess : Window {
 	using Window::HasParent;
 	using Window::GetRegion;
 	using Window::SetScale;
@@ -27,7 +27,7 @@ struct WindowApi : Window {
 	using Window::OnDraw;
 };
 
-struct DesktopApi : Desktop {
+struct DesktopPrivateAccess : Desktop {
 	using Desktop::window_list;
 	using Desktop::RecreateWindowLayer;
 	using Desktop::LoseTrack;
@@ -42,6 +42,14 @@ using namespace Win32;
 
 namespace {
 
+inline ref_ptr<WindowPrivateAccess> GetWindow(HWND hwnd) {
+	return reinterpret_cast<ref_ptr<WindowPrivateAccess>>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
+}
+
+inline DesktopPrivateAccess& GetDesktop() {
+	return static_cast<DesktopPrivateAccess&>(Desktop::Get());
+}
+
 constexpr float dpi_default = 96.0f;
 
 inline bool IsMouseMsg(UINT msg) { return WM_MOUSEFIRST <= msg && msg <= WM_MOUSELAST; }
@@ -50,7 +58,7 @@ inline bool IsKeyMsg(UINT msg) { return WM_KEYFIRST <= msg && msg <= WM_IME_KEYL
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 	static bool is_mouse_tracked = false;
 
-	ref_ptr<WindowApi> window = reinterpret_cast<ref_ptr<WindowApi>>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
+	ref_ptr<WindowPrivateAccess> window = GetWindow(hwnd);
 	if (window == nullptr) { goto WindowIrrelevantMessages; }
 
 	// mouse message
@@ -81,7 +89,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 		case WM_MOUSEHWHEEL: mouse_event.type = MouseEvent::WheelHorizontal; mouse_event.point -= window->GetRegion().point - point_zero; break;
 		default: return DefWindowProc(hwnd, msg, wparam, lparam);
 		}
-		static_cast<DesktopApi&>(desktop).DispatchMouseEvent(*window, mouse_event);
+		GetDesktop().DispatchMouseEvent(*window, mouse_event);
 		return 0;
 	}
 
@@ -99,7 +107,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 		case WM_IME_ENDCOMPOSITION: key_event.type = KeyEvent::ImeEnd; break;
 		default: return DefWindowProc(hwnd, msg, wparam, lparam);
 		}
-		static_cast<DesktopApi&>(desktop).DispatchKeyEvent(key_event);
+		GetDesktop().DispatchKeyEvent(key_event);
 		return 0;
 	}
 
@@ -117,7 +125,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 		case WM_WINDOWPOSCHANGING: break;
 		case WM_WINDOWPOSCHANGED: return DefWindowProc(hwnd, msg, wparam, lparam);
 		case WM_MOVE: window->SetPoint(Point((short)LOWORD(lparam), (short)HIWORD(lparam))); break;
-		case WM_SIZE: window->SetState(static_cast<WindowApi::State>(wparam <= 2 ? wparam : 2)); if (wparam != SIZE_MINIMIZED) { window->SetSize(Size(LOWORD(lparam), HIWORD(lparam))); } break;
+		case WM_SIZE: window->SetState(static_cast<WindowPrivateAccess::State>(wparam <= 2 ? wparam : 2)); if (wparam != SIZE_MINIMIZED) { window->SetSize(Size(LOWORD(lparam), HIWORD(lparam))); } break;
 		case WM_DPICHANGED: window->SetScale(LOWORD(wparam) / dpi_default); break;
 
 			// drawing
@@ -128,15 +136,15 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 				window->OnDraw();
 			} catch (std::runtime_error&) {
 				DirectXRecreateResource();
-				static_cast<DesktopApi&>(desktop).RecreateWindowLayer();
+				GetDesktop().RecreateWindowLayer();
 			}
 			EndPaint(hwnd, &ps);
 		}break;
 		case WM_ERASEBKGND: return true;
 
 			// event
-		case WM_MOUSELEAVE: is_mouse_tracked = false; static_cast<DesktopApi&>(desktop).LoseTrack(); break;
-		case WM_CAPTURECHANGED: static_cast<DesktopApi&>(desktop).LoseCapture(); break;
+		case WM_MOUSELEAVE: is_mouse_tracked = false; GetDesktop().LoseTrack(); break;
+		case WM_CAPTURECHANGED: GetDesktop().LoseCapture(); break;
 
 			// convert scroll message to mouse wheel message
 		case WM_HSCROLL:
@@ -157,7 +165,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 			);
 		}
 
-		case WM_CLOSE: static_cast<DesktopApi&>(desktop).RemoveWindow(*window); break;
+		case WM_CLOSE: GetDesktop().RemoveWindow(*window); break;
 
 		default: goto WindowIrrelevantMessages;
 		}
@@ -167,8 +175,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 WindowIrrelevantMessages:
 	switch (msg) {
 	case WM_CREATE: break;
-	case WM_DESTROY: if (static_cast<DesktopApi&>(desktop).window_list.empty()) { PostQuitMessage(0); } break;
-	case WM_KILLFOCUS: static_cast<DesktopApi&>(desktop).LoseFocus(); break;
+	case WM_DESTROY: break;
+	case WM_KILLFOCUS: GetDesktop().LoseFocus(); break;
 	case WM_NCCALCSIZE: break;
 	case WM_NCHITTEST: return HTCLIENT;
 	case WM_NCPAINT: break;

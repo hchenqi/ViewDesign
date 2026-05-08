@@ -59,18 +59,21 @@ private:
 	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override { region.size = child_size; }
 
 private:
-	inline static std::unique_ptr<Tooltip> instance = nullptr;
 	inline static ref_ptr<Tooltip> ref = nullptr;
+	inline static ref_ptr<std::unique_ptr<Tooltip>> instance_ref = nullptr;
 public:
 	static Tooltip& Get() {
+		static std::unique_ptr<Tooltip> instance = nullptr;
 		if (ref == nullptr) {
-			instance.reset(ref = new Tooltip());
+			instance.reset(new Tooltip());
+			ref = instance.get();
+			instance_ref = &instance;
 		}
 		return *ref;
 	}
 private:
-	void ShowSelf() { desktop.AddWindow(std::move(instance)); }
-	void HideSelf() { instance.reset(static_cast<owner_ptr<Tooltip>>(desktop.RemoveWindow(*this).release())); }
+	void ShowSelf() { desktop.AddWindow(std::move(*instance_ref)); }
+	void HideSelf() { instance_ref->reset(static_cast<owner_ptr<Tooltip>>(desktop.RemoveWindow(*this).release())); }
 	void SetOpacity(uchar opacity) { SetWindowOpacity(GetHandle(), opacity); }
 
 private:
@@ -117,7 +120,6 @@ private:
 				animation_step--;
 				SetOpacity(0xFF * animation_step / animation_step_max);
 			} else {
-				this->view = nullptr;
 				timer.Stop();
 				state = State::Hidden;
 				HideSelf();
@@ -149,10 +151,6 @@ public:
 		}
 	}
 	void Hide(ViewBase& view) {
-		if (this->view != &view) {
-			return;
-		}
-		this->view = nullptr;
 		switch (state) {
 		case State::Hidden:
 			break;
@@ -174,7 +172,6 @@ public:
 		if (this->view != &view) {
 			return;
 		}
-		this->view = nullptr;
 		switch (state) {
 		case State::Hidden:
 			break;

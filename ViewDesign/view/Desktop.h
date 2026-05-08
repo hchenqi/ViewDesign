@@ -17,7 +17,7 @@ class Desktop : public ViewBase {
 private:
 	friend class ViewBase;
 	friend class Window;
-	friend struct DesktopApi;
+	friend struct DesktopPrivateAccess;
 
 private:
 	Desktop();
@@ -104,7 +104,31 @@ public:
 	void EventLoop();
 };
 
-extern Desktop& desktop;
+
+inline struct DesktopAPI {
+public:
+	Desktop& Get() { return Desktop::Get(); }
+	const Desktop& Get() const { return Desktop::Get(); }
+
+	// window
+public:
+	Window& AddWindow(std::unique_ptr<Window> window) { return Get().AddWindow(std::move(window)); }
+	Window& AddWindow(owner_ptr<Window> window) { return Get().AddWindow(window); }
+	std::unique_ptr<Window> RemoveWindow(Window& window) { return Get().RemoveWindow(window); }
+public:
+	Window& GetWindow(ViewBase& view) { return Get().GetWindow(view); }
+	Window& GetWindowPoint(ViewBase& view, Point& point) { return Get().GetWindowPoint(view, point); }
+public:
+	void CloseAllWindows() { return Get().CloseAllWindows(); }
+
+	// layout
+public:
+	Size GetSize() const { return Get().GetSize(); }
+
+	// event
+public:
+	void EventLoop() { return Get().EventLoop(); }
+} desktop;
 
 
 } // namespace ViewDesign

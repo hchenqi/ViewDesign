@@ -9,7 +9,7 @@ ViewBase::~ViewBase() {
 	if (HasParent()) {
 		GetParent().UnregisterChild(*this);
 	}
-	desktop.ReleaseView(*this);
+	desktop.Get().ReleaseView(*this);
 }
 
 ViewBase& ViewBase::GetDirectChild(ViewBase& descendent) const {
@@ -53,13 +53,13 @@ void ViewBase::DrawChild(ViewBase& child, Rect child_region, Canvas& canvas, Rec
 }
 
 
-void ViewBase::SetCapture() { desktop.SetCapture(*this); }
+void ViewBase::SetCapture() { desktop.Get().SetCapture(*this); }
 
-void ViewBase::ReleaseCapture() { desktop.ReleaseCapture(*this); }
+void ViewBase::ReleaseCapture() { desktop.Get().ReleaseCapture(*this); }
 
-void ViewBase::SetFocus() { desktop.SetFocus(*this); }
+void ViewBase::SetFocus() { desktop.Get().SetFocus(*this); }
 
-void ViewBase::ReleaseFocus() { desktop.ReleaseFocus(*this); }
+void ViewBase::ReleaseFocus() { desktop.Get().ReleaseFocus(*this); }
 
 
 } // namespace ViewDesign
