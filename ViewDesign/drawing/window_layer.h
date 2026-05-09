@@ -44,7 +44,6 @@ public:
 	void Redraw(Rect redraw_region);
 public:
 	void RenderCanvas(const Canvas& canvas);
-	void Present();
 };
 
 

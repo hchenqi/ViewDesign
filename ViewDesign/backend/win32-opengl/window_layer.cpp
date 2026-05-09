@@ -59,10 +59,10 @@ void WindowLayer::Redraw(Rect redraw_region) {
 void WindowLayer::RenderCanvas(const Canvas& canvas) {
 	wglMakeCurrent((HDC)hdc, (HGLRC)hglrc);
 	Layer::RenderCanvas(canvas, vector_zero, invalid_region);
-}
 
-void WindowLayer::Present() {
 	SwapBuffers((HDC)hdc);
+	wglMakeCurrent(nullptr, nullptr);
+
 	invalid_region = invalid_region_front_buffer;
 	invalid_region_front_buffer = region_empty;
 }

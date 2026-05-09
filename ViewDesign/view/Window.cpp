@@ -71,7 +71,6 @@ void Window::OnDraw() {
 	Canvas canvas;
 	canvas.Group(scale, region_infinite, [&]() { ViewFrame::OnDraw(canvas, draw_region * scale.Invert()); });
 	layer.RenderCanvas(canvas);
-	layer.Present();
 }
 
 

@@ -33,10 +33,10 @@ void WindowLayer::Redraw(Rect redraw_region) {
 void WindowLayer::RenderCanvas(const Canvas& canvas) {
 	glfwMakeContextCurrent(AsGLFWWindow(window));
 	Layer::RenderCanvas(canvas, vector_zero, invalid_region);
-}
 
-void WindowLayer::Present() {
 	glfwSwapBuffers(AsGLFWWindow(window));
+	glfwMakeContextCurrent(nullptr);
+
 	invalid_region = invalid_region_front_buffer;
 	invalid_region_front_buffer = region_empty;
 }

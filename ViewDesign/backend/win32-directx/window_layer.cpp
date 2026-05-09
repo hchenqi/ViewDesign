@@ -90,9 +90,7 @@ void WindowLayer::Redraw(Rect redraw_region) {
 
 void WindowLayer::RenderCanvas(const Canvas& canvas) {
 	Layer::RenderCanvas(canvas, vector_zero, invalid_region);
-}
 
-void WindowLayer::Present() {
 	RECT dirty_rect = Win32::AsRECT(invalid_region);
 	DXGI_PRESENT_PARAMETERS present_parameters = { 1, &dirty_rect };
 	hr << static_cast<ref_ptr<SwapChain>>(swap_chain)->Present1(0, 0, &present_parameters);
