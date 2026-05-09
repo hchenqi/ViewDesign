@@ -182,13 +182,12 @@ WindowIrrelevantMessages:
 	return 0;
 }
 
-HINSTANCE hInstance = NULL;
 const u16char wnd_class_name[] = u"ViewDesignWindow";
 WNDCLASSEXW wnd_class = [] {
 	WNDCLASSEXW wcex = {};
 	wcex.cbSize = sizeof(WNDCLASSEXW);
 	wcex.lpfnWndProc = WndProc;
-	wcex.hInstance = hInstance = GetModuleHandle(NULL);
+	wcex.hInstance = GetHInstance();
 	wcex.lpszClassName = as_wchar_str(wnd_class_name);
 	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
 	return wcex;
@@ -211,7 +210,7 @@ Handle CreateWindow(Window& window, const u16string& title) {
 #endif
 		as_wchar_str(wnd_class_name), as_wchar_str(title.c_str()),
 		WS_POPUP | WS_THICKFRAME | WS_MAXIMIZEBOX | WS_HSCROLL | WS_VSCROLL,
-		0, 0, 0, 0, NULL, NULL, hInstance, NULL
+		0, 0, 0, 0, NULL, NULL, GetHInstance(), NULL
 	);
 	if (hwnd == NULL) {
 		throw std::runtime_error("Win32: create window error");
@@ -224,32 +223,32 @@ Handle CreateWindow(Window& window, const u16string& title) {
 	return hwnd;
 }
 
-void DestroyWindow(Handle handle) { DestroyWindow(AsHWND(handle)); }
+void DestroyWindow(Handle window) { DestroyWindow(AsHWND(window)); }
 
-Scale GetWindowScale(Handle handle) { return GetDpiForWindow(AsHWND(handle)) / dpi_default; }
+Scale GetWindowScale(Handle window) { return GetDpiForWindow(AsHWND(window)) / dpi_default; }
 
-void SetWindowTitle(Handle handle, const u16string& title) { SetWindowTextW(AsHWND(handle), as_wchar_str(title.c_str())); }
-void SetWindowRegion(Handle handle, Rect region) { MoveWindow(AsHWND(handle), (int)floorf(region.point.x), (int)floorf(region.point.y), (int)ceilf(region.size.width), (int)ceilf(region.size.height), false); }
-void SetWindowOpacity(Handle handle, uchar opacity) { SetWndStyle(AsHWND(handle), WS_EX_LAYERED);	SetLayeredWindowAttributes(AsHWND(handle), 0, opacity, LWA_ALPHA); }
-void SetWindowCursor(Handle handle, std::reference_wrapper<Cursor> cursor) { SetCursor(cursor); }
+void SetWindowTitle(Handle window, const u16string& title) { SetWindowTextW(AsHWND(window), as_wchar_str(title.c_str())); }
+void SetWindowRegion(Handle window, Rect region) { MoveWindow(AsHWND(window), (int)floorf(region.point.x), (int)floorf(region.point.y), (int)ceilf(region.size.width), (int)ceilf(region.size.height), false); }
+void SetWindowOpacity(Handle window, uchar opacity) { SetWndStyle(AsHWND(window), WS_EX_LAYERED);	SetLayeredWindowAttributes(AsHWND(window), 0, opacity, LWA_ALPHA); }
+void SetWindowCursor(Handle window, std::reference_wrapper<Cursor> cursor) { SetCursor(cursor); }
 
-void ShowWindow(Handle handle) { ShowWindow(AsHWND(handle), SW_SHOWNOACTIVATE); }
-void HideWindow(Handle handle) { ShowWindow(AsHWND(handle), SW_HIDE); }
-void MinimizeWindow(Handle handle) { ShowWindow(AsHWND(handle), SW_MINIMIZE); }
-void MaximizeWindow(Handle handle) { ShowWindow(AsHWND(handle), SW_MAXIMIZE); }
-void RestoreWindow(Handle handle) { ShowWindow(AsHWND(handle), SW_RESTORE); }
+void ShowWindow(Handle window) { ShowWindow(AsHWND(window), SW_SHOWNOACTIVATE); }
+void HideWindow(Handle window) { ShowWindow(AsHWND(window), SW_HIDE); }
+void MinimizeWindow(Handle window) { ShowWindow(AsHWND(window), SW_MINIMIZE); }
+void MaximizeWindow(Handle window) { ShowWindow(AsHWND(window), SW_MAXIMIZE); }
+void RestoreWindow(Handle window) { ShowWindow(AsHWND(window), SW_RESTORE); }
 
-void CloseWindow(Handle handle) { SendMessageW(AsHWND(handle), WM_CLOSE, 0, 0); }
+void CloseWindow(Handle window) { SendMessageW(AsHWND(window), WM_CLOSE, 0, 0); }
 
-void RedrawWindowRegion(Handle handle, Rect region) { RECT rect = AsRECT(region); InvalidateRect(AsHWND(handle), &rect, false); }
+void RedrawWindowRegion(Handle window, Rect region) { RECT rect = AsRECT(region); InvalidateRect(AsHWND(window), &rect, false); }
 
-void SetWindowCapture(Handle handle) { SetCapture(AsHWND(handle)); }
-void ReleaseWindowCapture(Handle handle) { ReleaseCapture(); }
-void SetWindowFocus(Handle handle) { SetFocus(AsHWND(handle)); }
+void SetWindowCapture(Handle window) { SetCapture(AsHWND(window)); }
+void ReleaseWindowCapture(Handle window) { ReleaseCapture(); }
+void SetWindowFocus(Handle window) { SetFocus(AsHWND(window)); }
 
-void ImeWindowEnable(Handle handle) { ImeEnable(AsHWND(handle)); }
-void ImeWindowDisable(Handle handle) { ImeDisable(AsHWND(handle)); }
-void ImeWindowSetPosition(Handle handle, Point point) { ImeSetPosition(AsHWND(handle), point); }
+void ImeWindowEnable(Handle window) { ImeEnable(AsHWND(window)); }
+void ImeWindowDisable(Handle window) { ImeDisable(AsHWND(window)); }
+void ImeWindowSetPosition(Handle window, Point point) { ImeSetPosition(AsHWND(window), point); }
 
 
 } // namespace ViewDesign

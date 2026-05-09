@@ -1,17 +1,17 @@
 #include "ViewDesign/drawing/window_layer.h"
+#include "ViewDesign/platform/win32/window.h"
+#include "ViewDesign/platform/win32/geometry_helper.h"
 #include "ViewDesign/platform/directx/d3d_api.h"
 #include "ViewDesign/platform/directx/dxgi_api.h"
 #include "ViewDesign/platform/directx/dcomp_api.h"
 #include "ViewDesign/platform/directx/d2d_api.h"
 #include "ViewDesign/platform/directx/directx_helper.h"
-#include "ViewDesign/platform/win32/geometry_helper.h"
-#include "ViewDesign/platform/win32/window.h"
 
 
 namespace ViewDesign {
 
-using namespace DirectX;
 using namespace Win32;
+using namespace DirectX;
 
 
 namespace {
@@ -28,7 +28,7 @@ inline owner_ptr<ID2D1Bitmap1> CreateD2DBitmapFromDxgiSurface(IDXGISurface& dxgi
 
 WindowLayer::WindowLayer() : swap_chain(nullptr), comp_target(nullptr) {}
 
-void WindowLayer::Create(Handle handle, Size size) {
+void WindowLayer::Create(Handle window, Size size) {
 	Destroy();
 
 	// Create swapchain.
@@ -55,10 +55,10 @@ void WindowLayer::Create(Handle handle, Size size) {
 	// Create DComp resource.
 	ComPtr<IDCompositionVisual> comp_visual;
 	hr << GetDCompositionDevice().CreateVisual(&comp_visual);
-	comp_visual->SetContent(this->swap_chain);
+	comp_visual->SetContent(static_cast<ref_ptr<SwapChain>>(this->swap_chain));
 
 	ComPtr<IDCompositionTarget> comp_target;
-	hr << GetDCompositionDevice().CreateTargetForHwnd(AsHWND(handle), false, &comp_target);
+	hr << GetDCompositionDevice().CreateTargetForHwnd(AsHWND(window), false, &comp_target);
 	comp_target->SetRoot(comp_visual.Get());
 	this->comp_target = static_cast<owner_ptr<CompositionTarget>>(comp_target.Detach());
 
@@ -66,20 +66,20 @@ void WindowLayer::Create(Handle handle, Size size) {
 }
 
 void WindowLayer::Destroy() {
-	SafeRelease(&comp_target);
+	SafeRelease(reinterpret_cast<owner_ptr<CompositionTarget>*>(&comp_target));
 	DestroyTexture();
-	SafeRelease(&swap_chain);
+	SafeRelease(reinterpret_cast<owner_ptr<SwapChain>*>(&swap_chain));
 }
 
 void WindowLayer::Resize(Size size) {
 	DestroyTexture();
-	hr << swap_chain->ResizeBuffers(0, (uint)ceilf(size.width), (uint)ceilf(size.height), DXGI_FORMAT_UNKNOWN, 0);
+	hr << static_cast<ref_ptr<SwapChain>>(swap_chain)->ResizeBuffers(0, (uint)ceilf(size.width), (uint)ceilf(size.height), DXGI_FORMAT_UNKNOWN, 0);
 	CreateTexture();
 }
 
 void WindowLayer::CreateTexture() {
 	ComPtr<IDXGISurface> dxgi_surface;
-	hr << swap_chain->GetBuffer(0, IID_PPV_ARGS(&dxgi_surface));
+	hr << static_cast<ref_ptr<SwapChain>>(swap_chain)->GetBuffer(0, IID_PPV_ARGS(&dxgi_surface));
 	texture.Set(static_cast<owner_ptr<TextureResource>>(CreateD2DBitmapFromDxgiSurface(*dxgi_surface.Get())));
 	invalid_region = region_empty;
 }
@@ -95,7 +95,7 @@ void WindowLayer::RenderCanvas(const Canvas& canvas) {
 void WindowLayer::Present() {
 	RECT dirty_rect = Win32::AsRECT(invalid_region);
 	DXGI_PRESENT_PARAMETERS present_parameters = { 1, &dirty_rect };
-	hr << swap_chain->Present1(0, 0, &present_parameters);
+	hr << static_cast<ref_ptr<SwapChain>>(swap_chain)->Present1(0, 0, &present_parameters);
 	invalid_region = region_empty;
 }
 

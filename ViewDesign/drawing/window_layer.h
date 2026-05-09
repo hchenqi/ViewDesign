@@ -5,11 +5,6 @@
 
 namespace ViewDesign {
 
-#if defined(VIEWDESIGN_BACKEND_WIN32_DIRECTX)
-struct SwapChain;
-struct CompositionTarget;
-#endif
-
 
 class WindowLayer : private Layer {
 public:
@@ -19,21 +14,21 @@ private:
 	using Handle = void*;
 #if defined(VIEWDESIGN_BACKEND_WIN32_DIRECTX)
 private:
-	owner_ptr<SwapChain> swap_chain;
-	owner_ptr<CompositionTarget> comp_target;
+	Handle swap_chain;
+	Handle comp_target;
 #endif
 #if defined(VIEWDESIGN_BACKEND_WIN32_OPENGL)
 private:
-	Handle handle;
+	Handle window;
 	Handle hdc;
 	Handle hglrc;
 #endif
 #if defined(VIEWDESIGN_BACKEND_GLFW_OPENGL)
 private:
-	Handle handle;
+	Handle window;
 #endif
 public:
-	void Create(Handle handle, Size size);
+	void Create(Handle window, Size size);
 	void Destroy();
 	void Resize(Size size);
 private:

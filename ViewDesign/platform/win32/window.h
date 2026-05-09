@@ -11,12 +11,25 @@ using Handle = void*;
 namespace Win32 {
 
 
-inline HWND AsHWND(Handle handle) { return static_cast<HWND>(handle); }
+inline HWND AsHWND(Handle window) { return static_cast<HWND>(window); }
 
 
-void SetWndStyle(HWND hwnd, int mask);
+inline HINSTANCE GetHInstance() {
+	static HINSTANCE hInstance = GetModuleHandleW(NULL);
+	return hInstance;
+}
 
-void SetWndTopMost(HWND hwnd);
+
+inline void SetWndStyle(HWND hwnd, int mask) {
+	LONG style = GetWindowLongW(hwnd, GWL_EXSTYLE);
+	if (!(style & mask)) {
+		SetWindowLongW(hwnd, GWL_EXSTYLE, style | mask);
+	}
+}
+
+inline void SetWndTopMost(HWND hwnd) {
+	SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+}
 
 
 } // namespace Win32

@@ -11,8 +11,8 @@ using Handle = void*;
 namespace GLFW {
 
 
-inline GLFWwindow* AsGLFWWindow(Handle handle) {
-	return static_cast<GLFWwindow*>(handle);
+inline GLFWwindow* AsGLFWWindow(Handle window) {
+	return static_cast<GLFWwindow*>(window);
 }
 
 

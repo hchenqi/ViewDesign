@@ -7,12 +7,12 @@ namespace ViewDesign {
 namespace Win32 {
 
 
-void AeroSnapDraggingEffect(Handle handle) {
-	SendMessageW(AsHWND(handle), WM_NCLBUTTONDOWN, HTCAPTION, 0);
+void AeroSnapDraggingEffect(Handle window) {
+	SendMessageW(AsHWND(window), WM_NCLBUTTONDOWN, HTCAPTION, 0);
 }
 
-void AeroSnapBorderResizingEffect(Handle handle, BorderPosition border_position) {
-	SendMessageW(AsHWND(handle), WM_NCLBUTTONDOWN, (WPARAM)border_position, 0);
+void AeroSnapBorderResizingEffect(Handle window, BorderPosition border_position) {
+	SendMessageW(AsHWND(window), WM_NCLBUTTONDOWN, (WPARAM)border_position, 0);
 }
 
 

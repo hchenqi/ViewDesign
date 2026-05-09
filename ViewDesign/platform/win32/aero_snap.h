@@ -11,9 +11,9 @@ using Handle = void*;
 namespace Win32 {
 
 
-void AeroSnapDraggingEffect(Handle handle);
+void AeroSnapDraggingEffect(Handle window);
 
-void AeroSnapBorderResizingEffect(Handle handle, BorderPosition border_position);
+void AeroSnapBorderResizingEffect(Handle window, BorderPosition border_position);
 
 
 } // namespace Win32

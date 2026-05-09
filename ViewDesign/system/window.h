@@ -12,31 +12,31 @@ using Handle = void*;
 
 
 Handle CreateWindow(Window& window, const u16string& title);
-void DestroyWindow(Handle handle);
+void DestroyWindow(Handle window);
 
-Scale GetWindowScale(Handle handle);
+Scale GetWindowScale(Handle window);
 
-void SetWindowTitle(Handle handle, const u16string& title);
-void SetWindowRegion(Handle handle, Rect region);
-void SetWindowOpacity(Handle handle, uchar opacity);
-void SetWindowCursor(Handle handle, std::reference_wrapper<Cursor> cursor);
+void SetWindowTitle(Handle window, const u16string& title);
+void SetWindowRegion(Handle window, Rect region);
+void SetWindowOpacity(Handle window, uchar opacity);
+void SetWindowCursor(Handle window, std::reference_wrapper<Cursor> cursor);
 
-void ShowWindow(Handle handle);
-void HideWindow(Handle handle);
-void MinimizeWindow(Handle handle);
-void MaximizeWindow(Handle handle);
-void RestoreWindow(Handle handle);
-void CloseWindow(Handle handle);
+void ShowWindow(Handle window);
+void HideWindow(Handle window);
+void MinimizeWindow(Handle window);
+void MaximizeWindow(Handle window);
+void RestoreWindow(Handle window);
+void CloseWindow(Handle window);
 
-void RedrawWindowRegion(Handle handle, Rect region);
+void RedrawWindowRegion(Handle window, Rect region);
 
-void SetWindowCapture(Handle handle);
-void ReleaseWindowCapture(Handle handle);
-void SetWindowFocus(Handle handle);
+void SetWindowCapture(Handle window);
+void ReleaseWindowCapture(Handle window);
+void SetWindowFocus(Handle window);
 
-void ImeWindowEnable(Handle handle);
-void ImeWindowDisable(Handle handle);
-void ImeWindowSetPosition(Handle handle, Point point);
+void ImeWindowEnable(Handle window);
+void ImeWindowDisable(Handle window);
+void ImeWindowSetPosition(Handle window, Point point);
 
 
 } // namespace ViewDesign

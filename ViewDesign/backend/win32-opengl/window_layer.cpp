@@ -11,17 +11,17 @@ namespace ViewDesign {
 using namespace Win32;
 
 
-WindowLayer::WindowLayer() : handle(nullptr), hdc(nullptr), hglrc(nullptr) {
+WindowLayer::WindowLayer() : window(nullptr), hdc(nullptr), hglrc(nullptr) {
 	texture.Set(new TextureResource());
 }
 
-void WindowLayer::Create(Handle handle, Size size) {
+void WindowLayer::Create(Handle window, Size size) {
 	Destroy();
 
-	this->handle = handle;
+	this->window = window;
 	this->size = size;
 
-	HDC hdc = GetDC(AsHWND(handle));
+	HDC hdc = GetDC(AsHWND(window));
 
 	PIXELFORMATDESCRIPTOR pfd = PixelFormat();
 	int pixelFormat = ChoosePixelFormat(hdc, &pfd);
@@ -42,7 +42,7 @@ void WindowLayer::Create(Handle handle, Size size) {
 
 void WindowLayer::Destroy() {
 	if (hglrc != nullptr) { wglDeleteContext((HGLRC)hglrc); hglrc = nullptr; }
-	if (hdc != nullptr) { ReleaseDC(AsHWND(handle), (HDC)hdc); hdc = nullptr; }
+	if (hdc != nullptr) { ReleaseDC(AsHWND(window), (HDC)hdc); hdc = nullptr; }
 }
 
 void WindowLayer::Resize(Size size) {

@@ -59,17 +59,17 @@ std::reference_wrapper<Cursor> CreateCursor(const PixelBuffer& pixel_buffer, std
 }
 
 
-void SetWindowCursor(Handle handle, std::reference_wrapper<Cursor> cursor) {
+void SetWindowCursor(Handle window, std::reference_wrapper<Cursor> cursor) {
 	switch (cursor.get().type) {
 	case Cursor::Type::Hidden:
-		glfwSetInputMode(AsGLFWWindow(handle), GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+		glfwSetInputMode(AsGLFWWindow(window), GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 		break;
 	case Cursor::Type::NoChange:
 		break;
 	case Cursor::Type::Shared:
 	case Cursor::Type::Custom:
-		glfwSetInputMode(AsGLFWWindow(handle), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-		glfwSetCursor(AsGLFWWindow(handle), cursor.get().handle);
+		glfwSetInputMode(AsGLFWWindow(window), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		glfwSetCursor(AsGLFWWindow(window), cursor.get().handle);
 		break;
 	}
 }
@@ -77,9 +77,9 @@ void SetWindowCursor(Handle handle, std::reference_wrapper<Cursor> cursor) {
 
 namespace {
 
-inline Point GetWindowCursorPosition(Handle handle) {
+inline Point GetWindowCursorPosition(Handle window) {
 	double xpos, ypos;
-	glfwGetCursorPos(AsGLFWWindow(handle), &xpos, &ypos);
+	glfwGetCursorPos(AsGLFWWindow(window), &xpos, &ypos);
 	return Point(static_cast<int>(xpos), static_cast<int>(ypos));
 }
 
