@@ -1,8 +1,6 @@
 #pragma once
 
-#include <stdexcept>
-
-#include <windows.h>
+#include "ViewDesign/platform/win32/context.h"
 
 
 namespace ViewDesign {
@@ -24,21 +22,10 @@ inline PIXELFORMATDESCRIPTOR PixelFormat() {
 }
 
 
-class OpenGLContext {
+class OpenGLContext : public Context {
 public:
-	OpenGLContext() {
-		if (Initialized()) {
-			throw std::invalid_argument("Win32: OpenGL context already initialized");
-		}
-
-		helper_window_hwnd = CreateWindowExW(
-			0, L"STATIC", L"",
-			WS_OVERLAPPEDWINDOW,
-			0, 0, 1, 1,
-			nullptr, nullptr, GetModuleHandle(nullptr), nullptr
-		);
-
-		helper_window_hdc = GetDC(helper_window_hwnd);
+	OpenGLContext() : Context() {
+		helper_window_hdc = GetDC(helper_window);
 
 		PIXELFORMATDESCRIPTOR pfd = PixelFormat();
 		int pixelFormat = ChoosePixelFormat(helper_window_hdc, &pfd);
@@ -49,21 +36,17 @@ public:
 	}
 
 	~OpenGLContext() {
-		if (helper_window_hwnd != nullptr) {
+		if (helper_window != nullptr) {
 			wglMakeCurrent(nullptr, nullptr);
 			wglDeleteContext(helper_window_hglrc); helper_window_hglrc = nullptr;
-			ReleaseDC(helper_window_hwnd, helper_window_hdc); helper_window_hdc = nullptr;
-			DestroyWindow(helper_window_hwnd); helper_window_hwnd = nullptr;
+			ReleaseDC(helper_window, helper_window_hdc); helper_window_hdc = nullptr;
 		}
 	}
 
 private:
-	inline static HWND helper_window_hwnd = nullptr;
 	inline static HDC helper_window_hdc = nullptr;
 	inline static HGLRC helper_window_hglrc = nullptr;
 public:
-	inline static bool Initialized() { return helper_window_hwnd != nullptr; }
-	inline static HWND GetHelperWindowHWND() { if (!Initialized()) { throw std::invalid_argument("Win32: OpenGL context not initialized"); } return helper_window_hwnd; }
 	inline static HDC GetHelperWindowHDC() { if (!Initialized()) { throw std::invalid_argument("Win32: OpenGL context not initialized"); } return helper_window_hdc; }
 	inline static HGLRC GetHelperWindowHGLRC() { if (!Initialized()) { throw std::invalid_argument("Win32: OpenGL context not initialized"); } return helper_window_hglrc; }
 };
