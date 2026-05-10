@@ -5,7 +5,7 @@
 #include "ViewDesign/platform/directx/dxgi_api.h"
 #include "ViewDesign/platform/directx/dcomp_api.h"
 #include "ViewDesign/platform/directx/d2d_api.h"
-#include "ViewDesign/platform/directx/directx_helper.h"
+#include "ViewDesign/platform/directx/helper.h"
 
 
 namespace ViewDesign {
@@ -16,23 +16,25 @@ using namespace DirectX;
 
 namespace {
 
-inline owner_ptr<ID2D1Bitmap1> CreateD2DBitmapFromDxgiSurface(IDXGISurface& dxgi_surface) {
+using SwapChain = DXGISwapChain;
+using CompositionTarget = DCompositionTarget;
+
+inline ComPtr<D2DBitmap> CreateD2DBitmapFromDxgiSurface(IDXGISurface& dxgi_surface) {
 	D2D1_BITMAP_PROPERTIES1 bitmap_properties = D2D1::BitmapProperties1(D2D1_BITMAP_OPTIONS_TARGET | D2D1_BITMAP_OPTIONS_CANNOT_DRAW, D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED));
-	ComPtr<ID2D1Bitmap1> bitmap;
+	ComPtr<D2DBitmap> bitmap;
 	hr << GetD2DDeviceContext().CreateBitmapFromDxgiSurface(&dxgi_surface, &bitmap_properties, &bitmap);
-	return bitmap.Detach();
+	return bitmap;
 }
 
 } // namespace
 
 
-WindowLayer::WindowLayer() : swap_chain(nullptr), comp_target(nullptr) {}
+WindowLayer::WindowLayer() : swap_chain(nullptr), composition_target(nullptr) {}
 
 void WindowLayer::Create(Handle window, Size size) {
 	Destroy();
 
-	// Create swapchain.
-	ComPtr<IDXGISwapChain1> swap_chain;
+	ComPtr<SwapChain> swap_chain;
 	DXGI_SWAP_CHAIN_DESC1 swap_chain_desc = { 0 };
 	swap_chain_desc.Width = (uint)ceilf(size.width);
 	swap_chain_desc.Height = (uint)ceilf(size.height);
@@ -47,40 +49,42 @@ void WindowLayer::Create(Handle window, Size size) {
 	swap_chain_desc.Flags = 0;
 	swap_chain_desc.AlphaMode = DXGI_ALPHA_MODE_PREMULTIPLIED;
 	hr << GetDXGIFactory().CreateSwapChainForComposition(&GetD3DDevice(), &swap_chain_desc, nullptr, &swap_chain);
-	this->swap_chain = static_cast<owner_ptr<SwapChain>>(swap_chain.Detach());
 
-	// Create texture.
-	CreateTexture();
+	this->swap_chain = swap_chain.Detach();
 
-	// Create DComp resource.
-	ComPtr<IDCompositionVisual> comp_visual;
-	hr << GetDCompositionDevice().CreateVisual(&comp_visual);
-	comp_visual->SetContent(static_cast<ref_ptr<SwapChain>>(this->swap_chain));
+	CreateLayerTexture(size);
 
-	ComPtr<IDCompositionTarget> comp_target;
-	hr << GetDCompositionDevice().CreateTargetForHwnd(AsHWND(window), false, &comp_target);
-	comp_target->SetRoot(comp_visual.Get());
-	this->comp_target = static_cast<owner_ptr<CompositionTarget>>(comp_target.Detach());
+	DCompositionDevice& composition_device = GetDCompositionDevice();
 
-	GetDCompositionDevice().Commit();
+	ComPtr<IDCompositionVisual> composition_visual;
+	hr << composition_device.CreateVisual(&composition_visual);
+	composition_visual->SetContent(static_cast<ref_ptr<SwapChain>>(this->swap_chain));
+
+	ComPtr<IDCompositionTarget> composition_target;
+	hr << composition_device.CreateTargetForHwnd(AsHWND(window), false, &composition_target);
+	composition_target->SetRoot(composition_visual.Get());
+
+	this->composition_target = composition_target.Detach();
+
+	composition_device.Commit();
 }
 
 void WindowLayer::Destroy() {
-	SafeRelease(reinterpret_cast<owner_ptr<CompositionTarget>*>(&comp_target));
-	DestroyTexture();
-	SafeRelease(reinterpret_cast<owner_ptr<SwapChain>*>(&swap_chain));
+	ComPtr<CompositionTarget>().Swap(reinterpret_cast<owner_ptr<CompositionTarget>&>(composition_target)).Reset();
+	DestroyLayerTexture();
+	ComPtr<SwapChain>().Swap(reinterpret_cast<owner_ptr<SwapChain>&>(swap_chain)).Reset();
 }
 
 void WindowLayer::Resize(Size size) {
-	DestroyTexture();
+	DestroyLayerTexture();
 	hr << static_cast<ref_ptr<SwapChain>>(swap_chain)->ResizeBuffers(0, (uint)ceilf(size.width), (uint)ceilf(size.height), DXGI_FORMAT_UNKNOWN, 0);
-	CreateTexture();
+	CreateLayerTexture(size);
 }
 
-void WindowLayer::CreateTexture() {
+void WindowLayer::CreateLayerTexture(Size size) {
 	ComPtr<IDXGISurface> dxgi_surface;
 	hr << static_cast<ref_ptr<SwapChain>>(swap_chain)->GetBuffer(0, IID_PPV_ARGS(&dxgi_surface));
-	texture.Set(static_cast<owner_ptr<TextureResource>>(CreateD2DBitmapFromDxgiSurface(*dxgi_surface.Get())));
+	Layer::SetTexture(size, CreateD2DBitmapFromDxgiSurface(dxgi_surface).Detach());
 	invalid_region = region_empty;
 }
 

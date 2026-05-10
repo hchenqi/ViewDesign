@@ -1,13 +1,16 @@
 #pragma once
 
+#include <dxgi1_4.h>
+
 
 namespace ViewDesign {
 
 namespace DirectX {
 
-struct DXGIDevice;
-struct DXGIAdapter;
-struct DXGIFactory;
+using DXGIDevice = IDXGIDevice;
+using DXGIAdapter = IDXGIAdapter;
+using DXGIFactory = IDXGIFactory2;
+using DXGISwapChain = IDXGISwapChain1;
 
 
 DXGIDevice& GetDXGIDevice();

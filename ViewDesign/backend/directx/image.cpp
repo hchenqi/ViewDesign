@@ -1,7 +1,7 @@
 #include "ViewDesign/drawing/image.h"
 #include "ViewDesign/platform/directx/d2d_api.h"
 #include "ViewDesign/platform/directx/wic_api.h"
-#include "ViewDesign/platform/directx/directx_helper.h"
+#include "ViewDesign/platform/directx/helper.h"
 #include "ViewDesign/platform/directx/string.h"
 
 #include <stdexcept>
@@ -14,7 +14,9 @@ using namespace DirectX;
 
 namespace {
 
-ComPtr<IWICFormatConverter> LoadFromDecoder(ComPtr<IWICBitmapDecoder> decoder) {
+using ImageSource = WICFormatConverter;
+
+ComPtr<ImageSource> LoadFromDecoder(ComPtr<IWICBitmapDecoder> decoder) {
 	ComPtr<IWICFormatConverter> converter;
 	ComPtr<IWICBitmapFrameDecode> source;
 	hr << GetWICFactory().CreateFormatConverter(&converter);
@@ -30,7 +32,7 @@ ComPtr<IWICFormatConverter> LoadFromDecoder(ComPtr<IWICBitmapDecoder> decoder) {
 	return converter;
 }
 
-ComPtr<IWICFormatConverter> LoadImageFromFile(u16string file_name) {
+ComPtr<ImageSource> LoadImageFromFile(u16string file_name) {
 	try {
 		ComPtr<IWICBitmapDecoder> decoder;
 		hr << GetWICFactory().CreateDecoderFromFilename(
@@ -46,7 +48,7 @@ ComPtr<IWICFormatConverter> LoadImageFromFile(u16string file_name) {
 	}
 }
 
-ComPtr<IWICFormatConverter> LoadImageFromMemory(void* address, size_t size) {
+ComPtr<ImageSource> LoadImageFromMemory(void* address, size_t size) {
 	try {
 		ComPtr<IWICStream> stream;
 		ComPtr<IWICBitmapDecoder> decoder;
@@ -70,35 +72,43 @@ inline Size GetImageSize(ImageSource& source) {
 	return Size((float)width, (float)height);
 }
 
-inline owner_ptr<ID2D1Bitmap1> CreateD2DBitmapFromWicBitmap(IWICFormatConverter& converter) {
+inline ComPtr<D2DBitmap> CreateD2DBitmapFromWicBitmap(ImageSource& source) {
 	D2D1_BITMAP_PROPERTIES1 bitmap_properties = D2D1::BitmapProperties1(D2D1_BITMAP_OPTIONS_NONE, D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED));
-	ComPtr<ID2D1Bitmap1> bitmap;
-	hr << GetD2DDeviceContext().CreateBitmapFromWicBitmap(&converter, &bitmap_properties, &bitmap);
-	return bitmap.Detach();
+	ComPtr<D2DBitmap> bitmap;
+	hr << GetD2DDeviceContext().CreateBitmapFromWicBitmap(&source, &bitmap_properties, &bitmap);
+	return bitmap;
 }
 
 } // namespace
 
 
-Image::Image(u16string file_name) : source(static_cast<owner_ptr<ImageSource>>(LoadImageFromFile(file_name).Detach())), size(GetImageSize(*source)) {}
+Image::Image(u16string file_name) : source(LoadImageFromFile(file_name).Detach()), size(GetImageSize(*static_cast<ref_ptr<ImageSource>>(source))) {}
 
-Image::Image(void* address, size_t size) : source(static_cast<owner_ptr<ImageSource>>(LoadImageFromMemory(address, size).Detach())), size(GetImageSize(*source)) {}
+Image::Image(void* address, size_t size) : source(LoadImageFromMemory(address, size).Detach()), size(GetImageSize(*static_cast<ref_ptr<ImageSource>>(source))) {}
 
-Image::~Image() { SafeRelease(&source); }
+Image::~Image() { ComPtr<ImageSource>().Swap(reinterpret_cast<owner_ptr<ImageSource>&>(source)); }
 
-const Texture& Image::GetTexture() const {
-	if (texture.IsEmpty()) {
-		texture.Set(static_cast<owner_ptr<TextureResource>>(CreateD2DBitmapFromWicBitmap(*source)));
+Handle Image::GetTexture() const {
+	if (texture == nullptr) {
+		texture = CreateD2DBitmapFromWicBitmap(*static_cast<ref_ptr<ImageSource>>(source)).Detach();
+		RegisterBitmap(reinterpret_cast<owner_ptr<D2DBitmap>&>(texture));
 	}
 	return texture;
+}
+
+void Image::DropTexture() const {
+	if (texture != nullptr) {
+		UnregisterBitmap(reinterpret_cast<owner_ptr<D2DBitmap>&>(texture));
+		ComPtr<D2DBitmap>().Swap(reinterpret_cast<owner_ptr<D2DBitmap>&>(texture));
+	}
 }
 
 
 void ImageFigure::DrawOn(RenderTarget& target, Point point) const {
 	target.DrawBitmap(
-		image.GetTexture().GetResource(),
+		static_cast<ref_ptr<D2DBitmap>>(image.GetTexture()),
 		AsD2DRect(Rect(point, region.size)),
-		OpacityAsFloat(opacity),
+		opacity,
 		D2D1_BITMAP_INTERPOLATION_MODE_LINEAR,
 		AsD2DRect(region)
 	);

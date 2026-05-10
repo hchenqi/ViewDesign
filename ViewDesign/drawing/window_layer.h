@@ -6,27 +6,24 @@
 namespace ViewDesign {
 
 
-class WindowLayer : private Layer {
+class WindowLayer : protected Layer {
 public:
 	WindowLayer();
 	~WindowLayer() { Destroy(); }
-#if defined(VIEWDESIGN_BACKEND_WIN32_DIRECTX)
 private:
+#if defined(VIEWDESIGN_BACKEND_WIN32_DIRECTX)
 	Handle swap_chain;
-	Handle comp_target;
+	Handle composition_target;
 #endif
 #if defined(VIEWDESIGN_BACKEND_WIN32_OPENGL)
-private:
 	Handle window;
 	Handle hdc;
 	Handle hglrc;
 #endif
 #if defined(VIEWDESIGN_BACKEND_WIN32_VULKAN)
-private:
 	Handle window_surface;
 #endif
 #if defined(VIEWDESIGN_BACKEND_GLFW_OPENGL)
-private:
 	Handle window;
 #endif
 public:
@@ -34,8 +31,8 @@ public:
 	void Destroy();
 	void Resize(Size size);
 private:
-	void CreateTexture();
-	void DestroyTexture() { texture.Destroy(); }
+	void CreateLayerTexture(Size size);
+	void DestroyLayerTexture() { Layer::DestroyTexture(); }
 private:
 	Rect invalid_region;
 #if defined(VIEWDESIGN_BACKEND_OPENGL)

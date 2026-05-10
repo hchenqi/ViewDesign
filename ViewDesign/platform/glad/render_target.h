@@ -1,21 +1,23 @@
 #pragma once
 
 #include "ViewDesign/geometry/transform.h"
-#include "ViewDesign/platform/glad/texture.h"
+#include "ViewDesign/platform/glad/frame_buffer.h"
 
 #include <vector>
 
 
 namespace ViewDesign {
 
+namespace OpenGL {
 
-class RenderTarget {
+
+struct RenderContext {
 private:
 	Size size;
 	std::vector<Rect> clip_stack;
 public:
-	RenderTarget(const TextureResource& texture, Size size) : size(size) {
-		glBindFramebuffer(GL_FRAMEBUFFER, texture.frame_buffer.id);
+	RenderContext(Size size, ref_ptr<FrameBuffer> frame_buffer) : size(size) {
+		glBindFramebuffer(GL_FRAMEBUFFER, frame_buffer == nullptr? 0 : frame_buffer->GetId());
 
 		auto [width, height] = std::make_pair((uint)ceilf(size.width), (uint)ceilf(size.height));
 		glViewport(0, 0, width, height);
@@ -60,6 +62,29 @@ public:
 		glClear(GL_COLOR_BUFFER_BIT);
 	}
 };
+
+
+inline std::tuple<float, float, float, float> AsOpenGLColor(Color color) {
+	return { color.red / 255.0f, color.green / 255.0f, color.blue / 255.0f, color.alpha / 255.0f };
+}
+
+inline std::tuple<float, float, float, float> AsOpenGLRect(Rect rect) {
+	return { rect.left(), rect.top(), rect.right(), rect.bottom() };
+}
+
+inline std::tuple<float, float, float, float> AsOpenGLRectRatio(Size size, Rect rect) {
+	return { rect.left() / size.width, rect.top() / size.height, rect.right() / size.width, rect.bottom() / size.height };
+}
+
+inline std::tuple<float, float, float, float> AsOpenGLRectShrinkBy(Rect rect, float length) {
+	return { rect.left() + length, rect.top() + length, rect.right() - length, rect.bottom() - length };
+}
+
+
+} // namespace OpenGL
+
+
+inline struct RenderTarget {} render_target;
 
 
 } // namespace ViewDesign

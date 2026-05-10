@@ -1,13 +1,12 @@
 #pragma once
 
-#include "ViewDesign/drawing/texture.h"
-#include "ViewDesign/drawing/figure.h"
+#include "ViewDesign/common/type.h"
+#include "ViewDesign/common/uncopyable.h"
 #include "ViewDesign/common/unicode.h"
+#include "ViewDesign/drawing/figure.h"
 
 
 namespace ViewDesign {
-
-struct ImageSource;
 
 
 class Image : Uncopyable {
@@ -15,22 +14,23 @@ public:
 	Image(u16string file_name);
 	Image(void* address, size_t size);
 	~Image();
-private:
-	owner_ptr<ImageSource> source;
+protected:
+	Handle source;
 	Size size;
-	mutable Texture texture;
+	mutable Handle texture = nullptr;
 public:
 	Size GetSize() const { return size; }
-	const Texture& GetTexture() const;
+	Handle GetTexture() const;
+	void DropTexture() const;
 };
 
 
 struct ImageFigure : Figure {
 	const Image& image;
 	Rect region;
-	uchar opacity;
+	float opacity;
 
-	ImageFigure(const Image& image, Rect region = region_infinite, uchar opacity = 0xFF) : image(image), region(Rect(point_zero, image.GetSize()).Intersect(region)), opacity(opacity) {}
+	ImageFigure(const Image& image, Rect region = region_infinite, float opacity = 1.0f) : image(image), region(Rect(point_zero, image.GetSize()).Intersect(region)), opacity(opacity) {}
 
 	virtual void DrawOn(RenderTarget& target, Point point) const override;
 };

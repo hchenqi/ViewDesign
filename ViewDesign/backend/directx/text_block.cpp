@@ -1,7 +1,7 @@
 #include "ViewDesign/drawing/text_block.h"
 #include "ViewDesign/platform/directx/d2d_api.h"
 #include "ViewDesign/platform/directx/dwrite_api.h"
-#include "ViewDesign/platform/directx/directx_helper.h"
+#include "ViewDesign/platform/directx/helper.h"
 #include "ViewDesign/platform/directx/string.h"
 
 
@@ -10,14 +10,27 @@ namespace ViewDesign {
 using namespace DirectX;
 
 
+namespace {
+
+using TextLayout = DWriteTextLayout;
+
+inline ref_ptr<TextLayout> AsTextLayout(Handle layout) {
+	return static_cast<ref_ptr<TextLayout>>(layout);
+}
+
+} // namespace
+
+
+TextBlock::TextBlock() : layout(nullptr) {}
+
 TextBlock::~TextBlock() {
-	SafeRelease(&layout);
+	ComPtr<TextLayout>().Swap(reinterpret_cast<owner_ptr<TextLayout>&>(layout));
 }
 
 void TextBlock::SetText(const TextBlockStyle& style, const u16string& text) {
-	SafeRelease(&layout);
+	ComPtr<TextLayout>().Swap(reinterpret_cast<owner_ptr<TextLayout>&>(layout)).Reset();
 
-	// font format
+	// text format
 	ComPtr<IDWriteTextFormat> format;
 	hr << GetDWriteFactory().CreateTextFormat(
 		as_wchar_str(u""),
@@ -30,15 +43,12 @@ void TextBlock::SetText(const TextBlockStyle& style, const u16string& text) {
 		&format
 	);
 
-	// font layout
+	// text layout
 	ComPtr<IDWriteTextLayout> layout_0;
-	ComPtr<DWriteTextLayout> layout_;
-	hr << GetDWriteFactory().CreateTextLayout(
-		as_wchar_str(text.c_str()), (uint)text.length(),
-		format.Get(), 0, 0, &layout_0
-	);
-	hr << layout_0.As(&layout_);
-	layout = static_cast<owner_ptr<TextLayout>>(layout_.Detach());
+	hr << GetDWriteFactory().CreateTextLayout(as_wchar_str(text.c_str()), (uint)text.length(), format.Get(), 0, 0, &layout_0);
+
+	ComPtr<TextLayout> layout;
+	hr << layout_0.As(&layout);
 
 	// font fallback
 	ComPtr<IDWriteFontFallbackBuilder> font_fallback_builder;
@@ -75,34 +85,36 @@ void TextBlock::SetText(const TextBlockStyle& style, const u16string& text) {
 		layout->SetLineSpacing(DWRITE_LINE_SPACING_METHOD_DEFAULT, 0.0f, 0.0f);
 	}
 	layout->SetIncrementalTabStop(tab_size.ConvertToPixel(style.font._size).value());
+
+	this->layout = layout.Detach();
 }
 
 Rect TextBlock::UpdateLayout(Size size_ref) {
-	layout->SetMaxWidth(size_ref.width); layout->SetMaxHeight(size_ref.height);
-	DWRITE_TEXT_METRICS1 metrics; layout->GetMetrics(&metrics);
+	AsTextLayout(layout)->SetMaxWidth(size_ref.width); AsTextLayout(layout)->SetMaxHeight(size_ref.height);
+	DWRITE_TEXT_METRICS1 metrics; AsTextLayout(layout)->GetMetrics(&metrics);
 	return Rect(metrics.left, metrics.top, metrics.widthIncludingTrailingWhitespace, metrics.height);
 }
 
 TextBlock::HitTestPointInfo TextBlock::HitTestPoint(Point point) const {
 	BOOL isTrailingHit; BOOL isInside; DWRITE_HIT_TEST_METRICS metrics;
-	layout->HitTestPoint(point.x, point.y, &isTrailingHit, &isInside, &metrics);
+	AsTextLayout(layout)->HitTestPoint(point.x, point.y, &isTrailingHit, &isInside, &metrics);
 	return std::make_pair(TextRange(metrics.textPosition, isTrailingHit ? metrics.length : 0), Rect(metrics.left, metrics.top, metrics.width, metrics.height));
 }
 
 TextBlock::HitTestPointInfo TextBlock::HitTestPosition(size_t text_position) const {
 	FLOAT x, y; DWRITE_HIT_TEST_METRICS metrics;
-	layout->HitTestTextPosition((UINT32)text_position, false, &x, &y, &metrics);
+	AsTextLayout(layout)->HitTestTextPosition((UINT32)text_position, false, &x, &y, &metrics);
 	return std::make_pair(TextRange(metrics.textPosition, 0), Rect(metrics.left, metrics.top, metrics.width, metrics.height));
 }
 
 TextBlock::HitTestRangeInfo TextBlock::HitTestRange(TextRange range) const {
 	UINT32 line_count;
-	layout->GetLineMetrics((DWRITE_LINE_METRICS*)nullptr, 0, &line_count);
+	AsTextLayout(layout)->GetLineMetrics((DWRITE_LINE_METRICS*)nullptr, 0, &line_count);
 	UINT32 range_count = line_count;
 	std::vector<DWRITE_HIT_TEST_METRICS> metrics_list;
 	do {
 		metrics_list.resize(range_count);
-		layout->HitTestTextRange((UINT32)range.begin(), (UINT32)range.length(), 0, 0, metrics_list.data(), (UINT32)metrics_list.size(), &range_count);
+		AsTextLayout(layout)->HitTestTextRange((UINT32)range.begin(), (UINT32)range.length(), 0, 0, metrics_list.data(), (UINT32)metrics_list.size(), &range_count);
 	} while (range_count > metrics_list.size());
 	metrics_list.resize(range_count);
 
@@ -117,7 +129,7 @@ TextBlock::HitTestRangeInfo TextBlock::HitTestRange(TextRange range) const {
 void TextBlockFigure::DrawOn(RenderTarget& target, Point point) const {
 	target.DrawTextLayout(
 		AsD2DPoint(point),
-		text_block.layout,
+		AsTextLayout(text_block.layout),
 		&GetD2DSolidColorBrush(font_color),
 		static_cast<D2D1_DRAW_TEXT_OPTIONS>(D2D1_DRAW_TEXT_OPTIONS_CLIP | D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT)
 	);

@@ -7,12 +7,12 @@ namespace ViewDesign {
 
 Size _LayerFrame_Base::OnSizeRefUpdate(Size size_ref) {
 	Size child_size = UpdateChildSizeRef(child, size_ref);
-	if (size != child_size) { size = child_size; layer.Destroy(); }
+	if (size != child_size) { size = child_size; layer.DestroyTexture(); }
 	return size;
 }
 
 void _LayerFrame_Base::OnChildSizeUpdate(ViewBase& child, Size child_size) {
-	if (size != child_size) { size = child_size; layer.Destroy(); SizeUpdated(size); }
+	if (size != child_size) { size = child_size; layer.DestroyTexture(); SizeUpdated(size); }
 }
 
 void _LayerFrame_Base::OnChildRedraw(ViewBase& child, Rect child_redraw_region) {
@@ -23,11 +23,11 @@ void _LayerFrame_Base::OnChildRedraw(ViewBase& child, Rect child_redraw_region) 
 
 void _LayerFrame_Base::OnDraw(Canvas& canvas, Rect draw_region) {
 	draw_region = draw_region.Intersect(Rect(point_zero, size)); if (draw_region.IsEmpty()) { return; }
-	if (Scale current_scale = canvas.GetTransform().GetScale(); scale != current_scale) { scale = current_scale; layer.Destroy(); }
+	if (Scale current_scale = canvas.GetTransform().GetScale(); scale != current_scale) { scale = current_scale; layer.DestroyTexture(); }
 	Rect composite_region = draw_region * scale, redraw_region = composite_region;
 	if (layer.IsEmpty()) {
 		Size layer_size = size * scale;
-		layer.Create(layer_size);
+		layer.CreateTexture(layer_size);
 		invalid_region.Set(Rect(point_zero, layer_size));
 	} else {
 		Region render_region(redraw_region); render_region.Intersect(invalid_region);

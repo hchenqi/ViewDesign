@@ -1,8 +1,10 @@
 #include "ViewDesign/view/Desktop.h"
+#include "ViewDesign/view/frame/LayerFrame.h"
 #include "ViewDesign/view/frame/MutableFrame.h"
 #include "ViewDesign/view/control/Placeholder.h"
 #include "ViewDesign/view/wrapper/Background.h"
 #include "ViewDesign/view/wrapper/Cursor.h"
+#include "ViewDesign/drawing/bitmap.h"
 
 #if defined(VIEWDESIGN_BACKEND_WIN32)
 #include "ViewDesign/platform/win32/aero_snap.h"
@@ -35,8 +37,14 @@ class MainView : public Placeholder<Fixed, Fixed> {
 	// layout
 private:
 	Size size;
+	Size patch_size;
 private:
-	virtual Size OnSizeRefUpdate(Size size_ref) override { return size = size_ref; }
+	virtual Size OnSizeRefUpdate(Size size_ref) override {
+		size = size_ref;
+		patch_size = Size(size.width / 2, size.height / 2);
+		bitmap_11.Update([&](PixelBuffer& pixel_buffer) { pixel_buffer.Resize(size.width, size.height, background_11); });
+		return size;
+	}
 
 	// drawing
 private:
@@ -47,15 +55,16 @@ private:
 private:
 	uchar alpha = 0x7F;
 private:
+	Bitmap bitmap_11;
+private:
 	virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
-		Size figure_size(size.width / 2, size.height / 2);
-		canvas.draw(point_zero, new Rectangle(figure_size, Color(background_00, alpha)));
-		canvas.Offset(Vector(figure_size.width, 0), [&]() {
-			canvas.draw(point_zero, new Rectangle(figure_size, Color(background_01, alpha)));
+		canvas.draw(point_zero, new Rectangle(patch_size, Color(background_00, alpha)));
+		canvas.Offset(Vector(patch_size.width, 0), [&]() {
+			canvas.draw(point_zero, new Rectangle(patch_size, Color(background_01, alpha)));
 		});
-		canvas.Group(Vector(0, figure_size.height), Rect(0, 0, size.width, figure_size.height), [&]() {
-			canvas.draw(point_zero, new Rectangle(figure_size, Color(background_10, alpha)));
-			canvas.draw(Point(figure_size.width, 0), new Rectangle(figure_size, Color(background_11, alpha)));
+		canvas.Group(Vector(0, patch_size.height), Rect(0, 0, size.width, patch_size.height), [&]() {
+			canvas.draw(point_zero, new Rectangle(patch_size, Color(background_10, alpha)));
+			canvas.draw(Point(patch_size.width, 0), new BitmapFigure(bitmap_11, alpha / (float)0xFF));
 		});
 	}
 
@@ -87,11 +96,10 @@ void App() {
 	desktop.AddWindow(new MainWindow(u"WindowTest", new MainView()));
 	desktop.EventLoop();
 
-	desktop.AddWindow(new MainWindow(u"WindowTest", new MainView()));
-	desktop.AddWindow(new MainWindow(u"WindowTest", new ViewFrame(new MainView())));
-	desktop.AddWindow(new MainWindow(u"WindowTest", new MutableFrame(new MainView())));
-
 	std::unique_ptr<MainView> view(new MainView());
+	desktop.AddWindow(new MainWindow(u"WindowTest", new ViewFrame(new MainView())));
 	desktop.AddWindow(new MainWindow(u"WindowTest", new ViewFrameRef(*view)));
+	// desktop.AddWindow(new MainWindow(u"WindowTest", new LayerFrame(new MainView())));
+	desktop.AddWindow(new MainWindow(u"WindowTest", new MutableFrame(new MainView())));
 	desktop.EventLoop();
 }

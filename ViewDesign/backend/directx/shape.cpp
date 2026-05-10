@@ -1,6 +1,6 @@
 #include "ViewDesign/drawing/shape.h"
 #include "ViewDesign/platform/directx/d2d_api.h"
-#include "ViewDesign/platform/directx/directx_helper.h"
+#include "ViewDesign/platform/directx/helper.h"
 
 
 namespace ViewDesign {

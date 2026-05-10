@@ -1,11 +1,14 @@
 #pragma once
 
+#include <dwrite_3.h>
+
 
 namespace ViewDesign {
 
 namespace DirectX {
 
-struct DWriteFactory;
+using DWriteFactory = IDWriteFactory2;
+using DWriteTextLayout = IDWriteTextLayout2;
 
 
 DWriteFactory& GetDWriteFactory();

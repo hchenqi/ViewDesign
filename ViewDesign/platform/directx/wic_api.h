@@ -1,11 +1,14 @@
 #pragma once
 
+#include <wincodec.h>
+
 
 namespace ViewDesign {
 
 namespace DirectX {
 
-struct WICFactory;
+using WICFactory = IWICImagingFactory;
+using WICFormatConverter = IWICFormatConverter;
 
 
 WICFactory& GetWICFactory();

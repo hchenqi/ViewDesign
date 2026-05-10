@@ -1,7 +1,10 @@
 #pragma once
 
-#include "ViewDesign/drawing/texture.h"
+#include "ViewDesign/common/type.h"
+#include "ViewDesign/common/uncopyable.h"
 #include "ViewDesign/drawing/figure.h"
+
+#include <stdexcept>
 
 
 namespace ViewDesign {
@@ -12,18 +15,18 @@ class Canvas;
 class Layer : Uncopyable {
 public:
 	Layer() {}
-	~Layer() {}
-protected:
-#if defined(VIEWDESIGN_BACKEND_OPENGL)
-	Size size;
-#endif
-	Texture texture;
+	~Layer() { DestroyTexture(); }
+private:
+	Size size = size_empty;
+	Handle texture = nullptr;
 public:
-	bool IsEmpty() const { return texture.IsEmpty(); }
-	const Texture& GetTexture() const { return texture; }
+	Size GetSize() const { return size; }
+	bool IsEmpty() const { return texture == nullptr; }
+	Handle GetTexture() const { if (IsEmpty()) { throw std::invalid_argument("Layer: texture not created"); } return texture; }
 public:
-	void Create(Size size);
-	void Destroy() { texture.Destroy(); }
+	void SetTexture(Size size, Handle texture) { DestroyTexture(); this->size = size; this->texture = texture; }
+	void CreateTexture(Size size);
+	void DestroyTexture();
 public:
 	void RenderCanvas(const Canvas& canvas, Vector offset, Rect clip_region);
 };
@@ -33,10 +36,10 @@ struct LayerFigure : Figure {
 	const Layer& layer;
 	Rect region;
 	Size size;
-	uchar opacity;
+	float opacity;
 
-	LayerFigure(const Layer& layer, Rect region, uchar opacity = 0xFF) : LayerFigure(layer, region, region.size, opacity) {}
-	LayerFigure(const Layer& layer, Rect region, Size size, uchar opacity = 0xFF) : layer(layer), region(region), size(size), opacity(opacity) {}
+	LayerFigure(const Layer& layer, Rect region, Size size, float opacity) : layer(layer), region(Rect(point_zero, layer.GetSize()).Intersect(region)), size(size), opacity(opacity) {}
+	LayerFigure(const Layer& layer, Rect region, float opacity) : LayerFigure(layer, region, region.size, opacity) {}
 
 	virtual void DrawOn(RenderTarget& target, Point point) const override;
 };

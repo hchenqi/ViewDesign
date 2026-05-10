@@ -5,6 +5,9 @@
 
 namespace ViewDesign {
 
+using namespace OpenGL;
+
+
 namespace {
 
 inline Rect operator*(Rect rect, const Transform& transform) {
@@ -22,16 +25,22 @@ inline Rect operator*(Rect rect, const Transform& transform) {
 } // namespace
 
 
-void Layer::Create(Size size) {
-	this->size = size;
-	texture.Set(new TextureResource(size));
+void Layer::CreateTexture(Size size) {
+	DestroyTexture();
+	texture = new FrameBuffer(size);
+}
+
+void Layer::DestroyTexture() {
+	if (!IsEmpty()) {
+		delete static_cast<owner_ptr<FrameBuffer>>(texture);
+	}
 }
 
 void Layer::RenderCanvas(const Canvas& canvas, Vector offset, Rect clip_region) {
-	RenderTarget render_target(*texture.GetResource(), size);
-	render_target.SetTransform(offset);
-	render_target.PushAxisAlignedClip(clip_region + offset);
-	render_target.Clear();
+	RenderContext context(size, static_cast<ref_ptr<FrameBuffer>>(texture));
+	context.SetTransform(offset);
+	context.PushAxisAlignedClip(clip_region + offset);
+	context.Clear();
 	auto& groups = canvas.GetFigureGroups();
 	auto& figures = canvas.GetFigures();
 	for (size_t figure_index = 0, group_index = 0; group_index < groups.size(); ++group_index) {
@@ -41,17 +50,34 @@ void Layer::RenderCanvas(const Canvas& canvas, Vector offset, Rect clip_region) 
 		}
 		Transform transform = group.transform * offset;
 		if (group.IsBegin()) {
-			render_target.SetTransform(transform);
-			render_target.PushAxisAlignedClip(group.clip_region * transform);
+			context.SetTransform(transform);
+			context.PushAxisAlignedClip(group.clip_region * transform);
 		} else {
-			render_target.PopAxisAlignedClip();
-			render_target.SetTransform(transform);
+			context.PopAxisAlignedClip();
+			context.SetTransform(transform);
 		}
 	}
 }
 
 
-void LayerFigure::DrawOn(RenderTarget& target, Point point) const {}
+void LayerFigure::DrawOn(RenderTarget& target, Point point) const {
+	auto [dstX0, dstY0, dstX1, dstY1] = AsOpenGLRect(Rect(point, size));
+	auto [srcU0, srcV0, srcU1, srcV1] = AsOpenGLRectRatio(layer.GetSize(), region);
+
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, static_cast<ref_ptr<FrameBuffer>>(layer.GetTexture())->Texture::GetId());
+
+	glColor4f(1.0f, 1.0f, 1.0f, opacity);
+
+	glBegin(GL_QUADS);
+	glTexCoord2f(srcU0, srcV0); glVertex2f(dstX0, dstY0);
+	glTexCoord2f(srcU1, srcV0); glVertex2f(dstX1, dstY0);
+	glTexCoord2f(srcU1, srcV1); glVertex2f(dstX1, dstY1);
+	glTexCoord2f(srcU0, srcV1); glVertex2f(dstX0, dstY1);
+	glEnd();
+
+	glDisable(GL_TEXTURE_2D);
+}
 
 
 } // namespace ViewDesign

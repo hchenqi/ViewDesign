@@ -1,27 +1,13 @@
 #include "ViewDesign/drawing/shape.h"
+#include "ViewDesign/platform/glad/render_target.h"
+
 
 #include <tuple>
-
-#include <glad/glad.h>
 
 
 namespace ViewDesign {
 
-namespace {
-
-inline std::tuple<float, float, float, float> AsOpenGLColor(Color color) {
-	return { color.red / 255.0f, color.green / 255.0f, color.blue / 255.0f, color.alpha / 255.0f };
-}
-
-inline std::tuple<float, float, float, float> AsOpenGLRect(Rect rect) {
-	return { rect.left(), rect.top(), rect.right(), rect.bottom() };
-}
-
-inline std::tuple<float, float, float, float> AsOpenGLRectShrinkBy(Rect rect, float length) {
-	return { rect.left() + length, rect.top() + length, rect.right() - length, rect.bottom() - length };
-}
-
-} // namespace
+using namespace OpenGL;
 
 
 void Line::DrawOn(RenderTarget& target, Point point) const {

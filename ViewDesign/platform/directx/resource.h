@@ -1,17 +1,14 @@
 #pragma once
 
-#include <d3d11.h>
+#include "ViewDesign/common/type.h"
 
 
 namespace ViewDesign {
 
 namespace DirectX {
 
-using D3DDevice = ID3D11Device;
-using D3DDebug = ID3D11Debug;
 
-
-D3DDevice& GetD3DDevice();
+void RecreateResource();
 
 
 } // namespace DirectX

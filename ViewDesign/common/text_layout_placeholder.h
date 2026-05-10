@@ -8,9 +8,7 @@
 namespace ViewDesign {
 
 
-struct TextLayout {
-	TextLayout(float font_size, size_t length) : symbol_size(symbol_size_default * Scale(font_size)), length(length) {}
-
+struct TextLayoutPlaceholder {
 	// style
 	static constexpr Size symbol_size_default = Size(0.5f, 1.0f);
 	static constexpr float symbol_gap = 1.0f;
@@ -18,8 +16,16 @@ struct TextLayout {
 
 	Size symbol_size;
 
+	void SetStyle(const TextBlockStyle& style) {
+		symbol_size = symbol_size_default * Scale(style.font._size);
+	}
+
 	// text
 	size_t length;
+
+	void SetText(const u16string& text) {
+		length = text.length();
+	}
 
 	// layout
 	size_t symbol_number;

@@ -1,7 +1,7 @@
 #include "ViewDesign/drawing/window_layer.h"
 #include "ViewDesign/platform/win32/window.h"
 #include "ViewDesign/platform/win32/opengl_context.h"
-#include "ViewDesign/platform/glad/texture.h"
+#include "ViewDesign/platform/glad/render_target.h"
 
 #include <GL/wglext.h>
 
@@ -11,15 +11,10 @@ namespace ViewDesign {
 using namespace Win32;
 
 
-WindowLayer::WindowLayer() : window(nullptr), hdc(nullptr), hglrc(nullptr) {
-	texture.Set(new TextureResource());
-}
+WindowLayer::WindowLayer() : window(nullptr), hdc(nullptr), hglrc(nullptr) {}
 
 void WindowLayer::Create(Handle window, Size size) {
 	Destroy();
-
-	this->window = window;
-	this->size = size;
 
 	HDC hdc = GetDC(AsHWND(window));
 
@@ -36,8 +31,11 @@ void WindowLayer::Create(Handle window, Size size) {
 	};
 	HGLRC hglrc = wglCreateContextAttribsARB(hdc, OpenGLContext::GetHelperWindowHGLRC(), attribs);
 
+	this->window = window;
 	this->hdc = hdc;
 	this->hglrc = hglrc;
+
+	CreateLayerTexture(size);
 }
 
 void WindowLayer::Destroy() {
@@ -46,10 +44,13 @@ void WindowLayer::Destroy() {
 }
 
 void WindowLayer::Resize(Size size) {
-	this->size = size;
+	CreateLayerTexture(size);
 }
 
-void WindowLayer::CreateTexture() {}
+void WindowLayer::CreateLayerTexture(Size size) {
+	Layer::SetTexture(size, nullptr);
+	invalid_region = region_empty;
+}
 
 void WindowLayer::Redraw(Rect redraw_region) {
 	invalid_region = invalid_region.Union(redraw_region);

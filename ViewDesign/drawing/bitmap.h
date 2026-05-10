@@ -1,7 +1,8 @@
 #pragma once
 
+#include "ViewDesign/common/type.h"
+#include "ViewDesign/common/uncopyable.h"
 #include "ViewDesign/drawing/pixel_buffer.h"
-#include "ViewDesign/drawing/texture.h"
 #include "ViewDesign/drawing/figure.h"
 
 
@@ -10,22 +11,31 @@ namespace ViewDesign {
 
 class Bitmap : Uncopyable {
 public:
+	Bitmap() : pixel_buffer() {}
 	Bitmap(PixelBuffer pixel_buffer) : pixel_buffer(std::move(pixel_buffer)) {}
-private:
+	~Bitmap() { DropTexture(); }
+protected:
 	PixelBuffer pixel_buffer;
-	mutable Texture texture;
+	mutable Handle texture = nullptr;
 public:
 	Size GetSize() const { auto [width, height] = pixel_buffer.Size(); return Size(width, height); }
-	const Texture& GetTexture() const;
+	Handle GetTexture() const;
+	void DropTexture() const;
+public:
+	void Set(PixelBuffer pixel_buffer) { DropTexture(); this->pixel_buffer = std::move(pixel_buffer); }
+	void Update(auto f) { DropTexture(); f(pixel_buffer); }
 };
 
 
 struct BitmapFigure : Figure {
 	const Bitmap& bitmap;
 	Rect region;
-	uchar opacity;
+	float opacity;
 
-	BitmapFigure(const Bitmap& bitmap, Rect region = region_infinite, uchar opacity = 0xFF) : bitmap(bitmap), region(Rect(point_zero, bitmap.GetSize()).Intersect(region)), opacity(opacity) {}
+	BitmapFigure(const Bitmap& bitmap, Rect region, float opacity) : bitmap(bitmap), region(Rect(point_zero, bitmap.GetSize()).Intersect(region)), opacity(opacity) {}
+	BitmapFigure(const Bitmap& bitmap, float opacity) : BitmapFigure(bitmap, region_infinite, opacity) {}
+	BitmapFigure(const Bitmap& bitmap, Rect region) : BitmapFigure(bitmap, region, 1.0f) {}
+	BitmapFigure(const Bitmap& bitmap) : BitmapFigure(bitmap, region_infinite, 1.0f) {}
 
 	virtual void DrawOn(RenderTarget& target, Point point) const override;
 };

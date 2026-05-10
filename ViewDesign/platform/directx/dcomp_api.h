@@ -1,11 +1,14 @@
 #pragma once
 
+#include <dcomp.h>
+
 
 namespace ViewDesign {
 
 namespace DirectX {
 
-struct DCompositionDevice;
+using DCompositionDevice = IDCompositionDevice;
+using DCompositionTarget = IDCompositionTarget;
 
 
 DCompositionDevice& GetDCompositionDevice();

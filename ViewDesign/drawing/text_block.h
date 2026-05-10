@@ -10,23 +10,18 @@
 
 namespace ViewDesign {
 
-struct TextLayout;
-
 
 class TextBlock : Uncopyable {
 private:
 	friend struct TextBlockFigure;
-
 public:
-	TextBlock() {}
+	TextBlock();
 	~TextBlock();
-
 protected:
-	owner_ptr<TextLayout> layout = nullptr;
+	Handle layout;
 public:
 	void SetText(const TextBlockStyle& style, const u16string& text);
 	Rect UpdateLayout(Size size_ref);
-
 public:
 	using HitTestPointInfo = std::pair<TextRange, Rect>;
 	using HitTestRangeInfo = std::vector<std::pair<TextRange, Rect>>;

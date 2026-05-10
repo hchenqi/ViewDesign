@@ -1,5 +1,5 @@
 #include "ViewDesign/drawing/window_layer.h"
-#include "ViewDesign/platform/glad/texture.h"
+#include "ViewDesign/platform/glad/frame_buffer.h"
 #include "ViewDesign/platform/glfw/window.h"
 
 
@@ -8,22 +8,23 @@ namespace ViewDesign {
 using namespace GLFW;
 
 
-WindowLayer::WindowLayer() : window(nullptr) {
-	texture.Set(new TextureResource());
-}
+WindowLayer::WindowLayer() : window(nullptr) {}
 
 void WindowLayer::Create(Handle window, Size size) {
 	this->window = window;
-	this->size = size;
+	CreateLayerTexture(size);
 }
 
 void WindowLayer::Destroy() {}
 
 void WindowLayer::Resize(Size size) {
-	this->size = size;
+	CreateLayerTexture(size);
 }
 
-void WindowLayer::CreateTexture() {}
+void WindowLayer::CreateLayerTexture(Size size) {
+	Layer::SetTexture(size, nullptr);
+	invalid_region = region_empty;
+}
 
 void WindowLayer::Redraw(Rect redraw_region) {
 	invalid_region = invalid_region.Union(redraw_region);
