@@ -23,6 +23,10 @@ private:
 	Handle hdc;
 	Handle hglrc;
 #endif
+#if defined(VIEWDESIGN_BACKEND_WIN32_VULKAN)
+private:
+	Handle window_surface;
+#endif
 #if defined(VIEWDESIGN_BACKEND_GLFW_OPENGL)
 private:
 	Handle window;

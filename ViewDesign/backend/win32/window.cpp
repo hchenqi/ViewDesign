@@ -8,7 +8,7 @@
 
 #include <windows.h>
 #include <windowsx.h>
-#if defined(VIEWDESIGN_BACKEND_WIN32_OPENGL)
+#if defined(VIEWDESIGN_BACKEND_WIN32_OPENGL) || defined(VIEWDESIGN_BACKEND_WIN32_VULKAN)
 #include <dwmapi.h>
 #endif
 
@@ -205,7 +205,7 @@ Handle CreateWindow(Window& window, const u16string& title) {
 #if defined(VIEWDESIGN_BACKEND_WIN32_DIRECTX)
 		WS_EX_NOREDIRECTIONBITMAP,
 #endif
-#if defined(VIEWDESIGN_BACKEND_WIN32_OPENGL)
+#if defined(VIEWDESIGN_BACKEND_WIN32_OPENGL) || defined(VIEWDESIGN_BACKEND_WIN32_VULKAN)
 		NULL,
 #endif
 		as_wchar_str(wnd_class_name), as_wchar_str(title.c_str()),
@@ -215,7 +215,7 @@ Handle CreateWindow(Window& window, const u16string& title) {
 	if (hwnd == NULL) {
 		throw std::runtime_error("Win32: create window error");
 	}
-#if defined(VIEWDESIGN_BACKEND_WIN32_OPENGL)
+#if defined(VIEWDESIGN_BACKEND_WIN32_OPENGL) || defined(VIEWDESIGN_BACKEND_WIN32_VULKAN)
 	MARGINS m = { -1 };
 	DwmExtendFrameIntoClientArea(hwnd, &m);
 #endif
