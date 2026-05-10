@@ -10,8 +10,6 @@ class WindowLayer : private Layer {
 public:
 	WindowLayer();
 	~WindowLayer() { Destroy(); }
-private:
-	using Handle = void*;
 #if defined(VIEWDESIGN_BACKEND_WIN32_DIRECTX)
 private:
 	Handle swap_chain;

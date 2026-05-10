@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ViewDesign/common/type.h"
 #include "ViewDesign/common/uncopyable.h"
 #include "ViewDesign/geometry/geometry.h"
 
@@ -11,8 +12,7 @@ namespace ViewDesign {
 
 class Region : Uncopyable {
 private:
-	using HANDLE = void*;
-	HANDLE rgn;
+	Handle rgn;
 
 public:
 	Region(Rect region = region_empty);

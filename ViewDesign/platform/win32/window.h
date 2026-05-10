@@ -1,12 +1,11 @@
 #pragma once
 
+#include "ViewDesign/common/type.h"
+
 #include <windows.h>
 
 
 namespace ViewDesign {
-
-using Handle = void*;
-
 
 namespace Win32 {
 

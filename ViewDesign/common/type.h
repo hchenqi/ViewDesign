@@ -4,6 +4,8 @@
 namespace ViewDesign {
 
 
+using Handle = void*;
+
 template<class T> using ref_ptr = T*;
 template<class T> using owner_ptr = T*;
 

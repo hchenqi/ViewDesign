@@ -17,8 +17,6 @@ public:
 	Window(const u16string& title, view_ptr<> child);
 	~Window();
 
-public:
-	using Handle = void*;
 private:
 	Handle handle;
 public:

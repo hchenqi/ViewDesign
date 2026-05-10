@@ -8,8 +8,6 @@ namespace ViewDesign {
 
 class Window;
 
-using Handle = void*;
-
 
 Handle CreateWindow(Window& window, const u16string& title);
 void DestroyWindow(Handle window);

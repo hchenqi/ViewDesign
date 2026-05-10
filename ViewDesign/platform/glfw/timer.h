@@ -7,8 +7,6 @@ namespace ViewDesign {
 
 namespace GLFW {
 
-using Handle = Timer::Handle;
-
 
 Handle SetTimer(uint period, Timer& timer); // milliseconds
 void ResetTimer(Handle handle, uint period);

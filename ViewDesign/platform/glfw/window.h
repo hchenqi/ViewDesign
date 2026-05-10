@@ -1,11 +1,11 @@
 #pragma once
 
+#include "ViewDesign/common/type.h"
+
 #include <GLFW/glfw3.h>
 
 
 namespace ViewDesign {
-
-using Handle = void*;
 
 
 namespace GLFW {

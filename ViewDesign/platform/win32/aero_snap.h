@@ -5,8 +5,6 @@
 
 namespace ViewDesign {
 
-using Handle = void*;
-
 
 namespace Win32 {
 
