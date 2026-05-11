@@ -42,7 +42,7 @@ private:
 	virtual Size OnSizeRefUpdate(Size size_ref) override {
 		size = size_ref;
 		patch_size = Size(size.width / 2, size.height / 2);
-		bitmap_11.Update([&](PixelBuffer& pixel_buffer) { pixel_buffer.Resize(size.width, size.height, background_11); });
+		bitmap_11.Update([&](PixelBuffer& pixel_buffer) { pixel_buffer.Resize(patch_size.width, patch_size.height, background_11); });
 		return size;
 	}
 
@@ -99,7 +99,7 @@ void App() {
 	std::unique_ptr<MainView> view(new MainView());
 	desktop.AddWindow(new MainWindow(u"WindowTest", new ViewFrame(new MainView())));
 	desktop.AddWindow(new MainWindow(u"WindowTest", new ViewFrameRef(*view)));
-	// desktop.AddWindow(new MainWindow(u"WindowTest", new LayerFrame(new MainView())));
 	desktop.AddWindow(new MainWindow(u"WindowTest", new MutableFrame(new MainView())));
+	desktop.AddWindow(new MainWindow(u"WindowTest", new LayerFrame(new MainView())));
 	desktop.EventLoop();
 }

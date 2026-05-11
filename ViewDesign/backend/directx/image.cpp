@@ -4,8 +4,6 @@
 #include "ViewDesign/platform/directx/helper.h"
 #include "ViewDesign/platform/directx/string.h"
 
-#include <stdexcept>
-
 
 namespace ViewDesign {
 
@@ -88,15 +86,14 @@ Image::Image(void* address, size_t size) : source(LoadImageFromMemory(address, s
 
 Image::~Image() { ComPtr<ImageSource>().Swap(reinterpret_cast<owner_ptr<ImageSource>&>(source)); }
 
-Handle Image::GetTexture() const {
+void Image::CreateTexture() const {
 	if (texture == nullptr) {
 		texture = CreateD2DBitmapFromWicBitmap(*static_cast<ref_ptr<ImageSource>>(source)).Detach();
 		RegisterBitmap(reinterpret_cast<owner_ptr<D2DBitmap>&>(texture));
 	}
-	return texture;
 }
 
-void Image::DropTexture() const {
+void Image::DestroyTexture() const {
 	if (texture != nullptr) {
 		UnregisterBitmap(reinterpret_cast<owner_ptr<D2DBitmap>&>(texture));
 		ComPtr<D2DBitmap>().Swap(reinterpret_cast<owner_ptr<D2DBitmap>&>(texture));

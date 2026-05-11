@@ -6,9 +6,15 @@
 #include "ViewDesign/platform/directx/dcomp_api.h"
 #include "ViewDesign/platform/directx/d2d_api.h"
 #include "ViewDesign/platform/directx/helper.h"
+#include "ViewDesign/platform/directx/resource.h"
+#include "ViewDesign/view/Desktop.h"
 
 
 namespace ViewDesign {
+
+struct DesktopPrivateAccess : Desktop {
+	using Desktop::RecreateWindowLayer;
+};
 
 using namespace Win32;
 using namespace DirectX;
@@ -92,8 +98,18 @@ void WindowLayer::Redraw(Rect redraw_region) {
 	invalid_region = invalid_region.Union(redraw_region);
 }
 
-void WindowLayer::RenderCanvas(const Canvas& canvas) {
+void WindowLayer::RenderBegin() {
+	GetD2DDeviceContext().BeginDraw();
+}
+
+void WindowLayer::RenderEnd(const Canvas& canvas) {
 	Layer::RenderCanvas(canvas, vector_zero, invalid_region);
+	try {
+		hr << GetD2DDeviceContext().EndDraw();
+	} catch (std::runtime_error&) {
+		RecreateResource();
+		static_cast<DesktopPrivateAccess&>(desktop.Get()).RecreateWindowLayer();
+	}
 
 	RECT dirty_rect = Win32::AsRECT(invalid_region);
 	DXGI_PRESENT_PARAMETERS present_parameters = { 1, &dirty_rect };

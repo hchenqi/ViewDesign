@@ -27,12 +27,14 @@ inline Rect operator*(Rect rect, const Transform& transform) {
 
 void Layer::CreateTexture(Size size) {
 	DestroyTexture();
+	this->size = size;
 	texture = new FrameBuffer(size);
 }
 
 void Layer::DestroyTexture() {
 	if (!IsEmpty()) {
 		delete static_cast<owner_ptr<FrameBuffer>>(texture);
+		texture = nullptr;
 	}
 }
 
@@ -62,12 +64,12 @@ void Layer::RenderCanvas(const Canvas& canvas, Vector offset, Rect clip_region) 
 
 void LayerFigure::DrawOn(RenderTarget& target, Point point) const {
 	auto [dstX0, dstY0, dstX1, dstY1] = AsOpenGLRect(Rect(point, size));
-	auto [srcU0, srcV0, srcU1, srcV1] = AsOpenGLRectRatio(layer.GetSize(), region);
+	auto [srcU0, srcV1, srcU1, srcV0] = AsOpenGLRectRatio(layer.GetSize(), region);
 
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, static_cast<ref_ptr<FrameBuffer>>(layer.GetTexture())->Texture::GetId());
 
-	glColor4f(1.0f, 1.0f, 1.0f, opacity);
+	glColor4f(opacity, opacity, opacity, opacity);
 
 	glBegin(GL_QUADS);
 	glTexCoord2f(srcU0, srcV0); glVertex2f(dstX0, dstY0);

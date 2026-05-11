@@ -42,7 +42,8 @@ public:
 	Rect GetInvalidRegion() const { return invalid_region; }
 	void Redraw(Rect redraw_region);
 public:
-	void RenderCanvas(const Canvas& canvas);
+	void RenderBegin();
+	void RenderEnd(const Canvas& canvas);
 };
 
 

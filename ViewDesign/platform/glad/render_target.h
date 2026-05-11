@@ -17,7 +17,7 @@ private:
 	std::vector<Rect> clip_stack;
 public:
 	RenderContext(Size size, ref_ptr<FrameBuffer> frame_buffer) : size(size) {
-		glBindFramebuffer(GL_FRAMEBUFFER, frame_buffer == nullptr? 0 : frame_buffer->GetId());
+		glBindFramebuffer(GL_FRAMEBUFFER, frame_buffer == nullptr ? 0 : frame_buffer->GetId());
 
 		auto [width, height] = std::make_pair((uint)ceilf(size.width), (uint)ceilf(size.height));
 		glViewport(0, 0, width, height);
@@ -27,7 +27,7 @@ public:
 		glOrtho(0, width, height, 0, -1, 1);
 
 		glEnable(GL_BLEND);
-		glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+		glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
 		glEnable(GL_SCISSOR_TEST);
 	}
@@ -65,7 +65,8 @@ public:
 
 
 inline std::tuple<float, float, float, float> AsOpenGLColor(Color color) {
-	return { color.red / 255.0f, color.green / 255.0f, color.blue / 255.0f, color.alpha / 255.0f };
+	float alpha = color.alpha / 255.0f;
+	return { color.red * alpha / 255.0f, color.green * alpha / 255.0f, color.blue * alpha / 255.0f, alpha };
 }
 
 inline std::tuple<float, float, float, float> AsOpenGLRect(Rect rect) {

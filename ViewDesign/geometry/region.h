@@ -12,7 +12,7 @@ namespace ViewDesign {
 
 class Region : Uncopyable {
 private:
-	Handle rgn;
+	Handle handle;
 
 public:
 	Region(Rect region = region_empty);

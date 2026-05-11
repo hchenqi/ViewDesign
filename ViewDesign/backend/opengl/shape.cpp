@@ -13,7 +13,9 @@ using namespace OpenGL;
 void Line::DrawOn(RenderTarget& target, Point point) const {
 	auto [r, g, b, a] = AsOpenGLColor(color);
 	glColor4f(r, g, b, a);
+
 	glLineWidth(width);
+
 	glBegin(GL_LINES);
 	glVertex2f(point.x + begin.x, point.y + begin.y);
 	glVertex2f(point.x + end.x, point.y + end.y);
@@ -22,36 +24,31 @@ void Line::DrawOn(RenderTarget& target, Point point) const {
 
 void Rectangle::DrawOn(RenderTarget& target, Point point) const {
 	if (fill_color.IsVisible()) {
-		{
-			auto [r, g, b, a] = AsOpenGLColor(fill_color);
-			glColor4f(r, g, b, a);
-		}
-		{
-			auto [l, t, r, b] = AsOpenGLRect(Rect(point, size));
-			glBegin(GL_POLYGON);
-			glVertex2f(l, t);
-			glVertex2f(r, t);
-			glVertex2f(r, b);
-			glVertex2f(l, b);
-			glEnd();
-		}
+		auto [r, g, b, a] = AsOpenGLColor(fill_color);
+		glColor4f(r, g, b, a);
+
+		auto [x0, y0, x1, y1] = AsOpenGLRect(Rect(point, size));
+		glBegin(GL_POLYGON);
+		glVertex2f(x0, y0);
+		glVertex2f(x1, y0);
+		glVertex2f(x1, y1);
+		glVertex2f(x0, y1);
+		glEnd();
 	}
 	if (border_width > 0.0f && border_color.IsVisible()) {
-		{
-			auto [r, g, b, a] = AsOpenGLColor(border_color);
-			glColor4f(r, g, b, a);
-		}
+		auto [r, g, b, a] = AsOpenGLColor(border_color);
+		glColor4f(r, g, b, a);
+
 		glLineWidth(border_width);
-		{
-			auto [l, t, r, b] = AsOpenGLRectShrinkBy(Rect(point, size), border_width / 2.0f);
-			glBegin(GL_LINE_STRIP);
-			glVertex2f(l, t);
-			glVertex2f(r, t);
-			glVertex2f(r, b);
-			glVertex2f(l, b);
-			glVertex2f(l, t);
-			glEnd();
-		}
+
+		auto [x0, y0, x1, y1] = AsOpenGLRectShrinkBy(Rect(point, size), border_width / 2.0f);
+		glBegin(GL_LINE_STRIP);
+		glVertex2f(x0, y0);
+		glVertex2f(x1, y0);
+		glVertex2f(x1, y1);
+		glVertex2f(x0, y1);
+		glVertex2f(x0, y0);
+		glEnd();
 	}
 }
 

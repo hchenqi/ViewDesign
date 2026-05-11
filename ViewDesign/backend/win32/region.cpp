@@ -18,40 +18,40 @@ Region& TempRegion(Rect rect) { region_temp.Set(rect); return region_temp; }
 
 Region::Region(Rect region) {
 	RECT rect = AsRECT(region);
-	rgn = CreateRectRgn(rect.left, rect.top, rect.right, rect.bottom);
+	handle = CreateRectRgn(rect.left, rect.top, rect.right, rect.bottom);
 }
 
 Region::~Region() {
-	DeleteObject(rgn);
+	DeleteObject(handle);
 }
 
 bool Region::IsEmpty() const {
-	return CombineRgn((HRGN)rgn, (HRGN)rgn, NULL, RGN_COPY) == NULLREGION;
+	return CombineRgn((HRGN)handle, (HRGN)handle, NULL, RGN_COPY) == NULLREGION;
 }
 
 void Region::Set(Rect region) {
 	RECT rect = AsRECT(region);
-	SetRectRgn((HRGN)rgn, rect.left, rect.top, rect.right, rect.bottom);
+	SetRectRgn((HRGN)handle, rect.left, rect.top, rect.right, rect.bottom);
 }
 
 void Region::Translate(Vector vector) {
-	OffsetRgn((HRGN)rgn, (int)roundf(vector.x), (int)roundf(vector.y));
+	OffsetRgn((HRGN)handle, (int)roundf(vector.x), (int)roundf(vector.y));
 }
 
 void Region::Union(const Region& region) {
-	CombineRgn((HRGN)rgn, (HRGN)rgn, (HRGN)region.rgn, RGN_OR);
+	CombineRgn((HRGN)handle, (HRGN)handle, (HRGN)region.handle, RGN_OR);
 }
 
 void Region::Intersect(const Region& region) {
-	CombineRgn((HRGN)rgn, (HRGN)rgn, (HRGN)region.rgn, RGN_AND);
+	CombineRgn((HRGN)handle, (HRGN)handle, (HRGN)region.handle, RGN_AND);
 }
 
 void Region::Sub(const Region& region) {
-	CombineRgn((HRGN)rgn, (HRGN)rgn, (HRGN)region.rgn, RGN_DIFF);
+	CombineRgn((HRGN)handle, (HRGN)handle, (HRGN)region.handle, RGN_DIFF);
 }
 
 void Region::Xor(const Region& region) {
-	CombineRgn((HRGN)rgn, (HRGN)rgn, (HRGN)region.rgn, RGN_XOR);
+	CombineRgn((HRGN)handle, (HRGN)handle, (HRGN)region.handle, RGN_XOR);
 }
 
 void Region::Union(const Rect& region) { Union(TempRegion(region)); }
@@ -61,14 +61,14 @@ void Region::Xor(const Rect& region) { Xor(TempRegion(region)); }
 
 Rect Region::GetBoundingRect() const {
 	RECT rect;
-	GetRgnBox((HRGN)rgn, &rect);
+	GetRgnBox((HRGN)handle, &rect);
 	return AsRect(rect);
 }
 
 std::pair<Rect, std::vector<Rect>> Region::GetRects() const {
 	static std::vector<char> buffer;
-	int size = GetRegionData((HRGN)rgn, 0, NULL); buffer.resize(size);
-	GetRegionData((HRGN)rgn, size, (LPRGNDATA)buffer.data());
+	int size = GetRegionData((HRGN)handle, 0, NULL); buffer.resize(size);
+	GetRegionData((HRGN)handle, size, (LPRGNDATA)buffer.data());
 	RGNDATA& data = *(LPRGNDATA)buffer.data();
 	static_assert(sizeof(RECT) == sizeof(Rect));
 	Rect bound = AsRect(data.rdh.rcBound);

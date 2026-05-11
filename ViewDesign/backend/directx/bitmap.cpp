@@ -21,15 +21,14 @@ inline ComPtr<D2DBitmap> CreateD2DBitmap(const PixelBuffer& pixel_buffer) {
 } // namespace
 
 
-Handle Bitmap::GetTexture() const {
+void Bitmap::CreateTexture() const {
 	if (texture == nullptr) {
 		texture = CreateD2DBitmap(pixel_buffer).Detach();
 		RegisterBitmap(reinterpret_cast<owner_ptr<D2DBitmap>&>(texture));
 	}
-	return texture;
 }
 
-void Bitmap::DropTexture() const {
+void Bitmap::DestroyTexture() const {
 	if (texture != nullptr) {
 		UnregisterBitmap(reinterpret_cast<owner_ptr<D2DBitmap>&>(texture));
 		ComPtr<D2DBitmap>().Swap(reinterpret_cast<owner_ptr<D2DBitmap>&>(texture));

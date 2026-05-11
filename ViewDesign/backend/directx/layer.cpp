@@ -2,15 +2,9 @@
 #include "ViewDesign/drawing/canvas.h"
 #include "ViewDesign/platform/directx/d2d_api.h"
 #include "ViewDesign/platform/directx/helper.h"
-#include "ViewDesign/platform/directx/resource.h"
-#include "ViewDesign/view/Desktop.h"
 
 
 namespace ViewDesign {
-
-struct DesktopPrivateAccess : Desktop {
-	using Desktop::RecreateWindowLayer;
-};
 
 using namespace DirectX;
 
@@ -44,9 +38,8 @@ void Layer::DestroyTexture() {
 }
 
 void Layer::RenderCanvas(const Canvas& canvas, Vector offset, Rect clip_region) {
-	ID2D1DeviceContext& device_context = GetD2DDeviceContext();
+	D2DDeviceContext& device_context = GetD2DDeviceContext();
 	device_context.SetTarget(static_cast<ref_ptr<D2DBitmap>>(GetTexture()));
-	device_context.BeginDraw();
 	device_context.SetTransform(AsD2DTransform(offset));
 	device_context.PushAxisAlignedClip(AsD2DRect(clip_region), D2D1_ANTIALIAS_MODE_PER_PRIMITIVE);
 	device_context.Clear(AsD2DColor(color_transparent));
@@ -66,12 +59,6 @@ void Layer::RenderCanvas(const Canvas& canvas, Vector offset, Rect clip_region) 
 		}
 	}
 	device_context.PopAxisAlignedClip();
-	try {
-		hr << device_context.EndDraw();
-	} catch (std::runtime_error&) {
-		RecreateResource();
-		static_cast<DesktopPrivateAccess&>(desktop.Get()).RecreateWindowLayer();
-	}
 	device_context.SetTarget(nullptr);
 }
 

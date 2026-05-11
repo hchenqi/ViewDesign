@@ -68,9 +68,10 @@ void Window::Redraw(Rect redraw_region) {
 
 void Window::OnDraw() {
 	Rect draw_region = layer.GetInvalidRegion(); if (draw_region.IsEmpty()) { return; }
+	layer.RenderBegin();
 	Canvas canvas;
 	canvas.Group(scale, region_infinite, [&]() { ViewFrame::OnDraw(canvas, draw_region * scale.Invert()); });
-	layer.RenderCanvas(canvas);
+	layer.RenderEnd(canvas);
 }
 
 

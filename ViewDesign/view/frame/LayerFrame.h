@@ -10,14 +10,14 @@ namespace ViewDesign {
 
 class _LayerFrame_Base : public ViewFrame {
 protected:
-	_LayerFrame_Base(uchar opacity, view_ptr<> child) : ViewFrame(std::move(child)), opacity(opacity) {}
+	_LayerFrame_Base(float opacity, view_ptr<> child) : ViewFrame(std::move(child)), opacity(opacity) {}
 
 	// style
 protected:
-	uchar opacity;
+	float opacity;
 public:
-	uchar GetOpacity() const { return opacity; }
-	void SetOpacity(uchar opacity) { this->opacity = opacity; Redraw(region_infinite); }
+	float GetOpacity() const { return opacity; }
+	void SetOpacity(float opacity) { this->opacity = opacity; Redraw(region_infinite); }
 
 	// layout
 protected:
@@ -40,8 +40,8 @@ protected:
 template<class WidthTrait, class HeightTrait>
 class LayerFrame : public _LayerFrame_Base, public SizeTrait<WidthTrait, HeightTrait> {
 public:
-	LayerFrame(view_ptr<WidthTrait, HeightTrait> child) : LayerFrame(0xFF, std::move(child)) {}
-	LayerFrame(uchar opacity, view_ptr<WidthTrait, HeightTrait> child) : _LayerFrame_Base(opacity, std::move(child)) {}
+	LayerFrame(view_ptr<WidthTrait, HeightTrait> child) : LayerFrame(1.0f, std::move(child)) {}
+	LayerFrame(float opacity, view_ptr<WidthTrait, HeightTrait> child) : _LayerFrame_Base(opacity, std::move(child)) {}
 };
 
 
@@ -49,7 +49,7 @@ template<class T>
 LayerFrame(T) -> LayerFrame<extract_width_trait<T>, extract_height_trait<T>>;
 
 template<class T>
-LayerFrame(uchar, T) -> LayerFrame<extract_width_trait<T>, extract_height_trait<T>>;
+LayerFrame(float, T) -> LayerFrame<extract_width_trait<T>, extract_height_trait<T>>;
 
 
 } // namespace ViewDesign
