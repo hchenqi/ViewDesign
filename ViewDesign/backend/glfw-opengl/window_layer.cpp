@@ -1,5 +1,5 @@
 #include "ViewDesign/drawing/window_layer.h"
-#include "ViewDesign/platform/glad/frame_buffer.h"
+#include "ViewDesign/platform/glad/framebuffer.h"
 #include "ViewDesign/platform/glfw/window.h"
 
 
@@ -12,17 +12,17 @@ WindowLayer::WindowLayer() : window(nullptr) {}
 
 void WindowLayer::Create(Handle window, Size size) {
 	this->window = window;
-	CreateLayerTexture(size);
+	CreateLayerFramebuffer(size);
 }
 
 void WindowLayer::Destroy() {}
 
 void WindowLayer::Resize(Size size) {
-	CreateLayerTexture(size);
+	CreateLayerFramebuffer(size);
 }
 
-void WindowLayer::CreateLayerTexture(Size size) {
-	Layer::SetTexture(size, nullptr);
+void WindowLayer::CreateLayerFramebuffer(Size size) {
+	Layer::SetFramebuffer(size, nullptr);
 	invalid_region = region_empty;
 }
 

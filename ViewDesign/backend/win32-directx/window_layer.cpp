@@ -58,7 +58,7 @@ void WindowLayer::Create(Handle window, Size size) {
 
 	this->swap_chain = swap_chain.Detach();
 
-	CreateLayerTexture(size);
+	CreateLayerFramebuffer(size);
 
 	DCompositionDevice& composition_device = GetDCompositionDevice();
 
@@ -77,20 +77,20 @@ void WindowLayer::Create(Handle window, Size size) {
 
 void WindowLayer::Destroy() {
 	ComPtr<CompositionTarget>().Swap(reinterpret_cast<owner_ptr<CompositionTarget>&>(composition_target)).Reset();
-	DestroyLayerTexture();
+	DestroyLayerFramebuffer();
 	ComPtr<SwapChain>().Swap(reinterpret_cast<owner_ptr<SwapChain>&>(swap_chain)).Reset();
 }
 
 void WindowLayer::Resize(Size size) {
-	DestroyLayerTexture();
+	DestroyLayerFramebuffer();
 	hr << static_cast<ref_ptr<SwapChain>>(swap_chain)->ResizeBuffers(0, (uint)ceilf(size.width), (uint)ceilf(size.height), DXGI_FORMAT_UNKNOWN, 0);
-	CreateLayerTexture(size);
+	CreateLayerFramebuffer(size);
 }
 
-void WindowLayer::CreateLayerTexture(Size size) {
+void WindowLayer::CreateLayerFramebuffer(Size size) {
 	ComPtr<IDXGISurface> dxgi_surface;
 	hr << static_cast<ref_ptr<SwapChain>>(swap_chain)->GetBuffer(0, IID_PPV_ARGS(&dxgi_surface));
-	Layer::SetTexture(size, CreateD2DBitmapFromDxgiSurface(dxgi_surface).Detach());
+	Layer::SetFramebuffer(size, CreateD2DBitmapFromDxgiSurface(dxgi_surface).Detach());
 	invalid_region = region_empty;
 }
 

@@ -22,24 +22,24 @@ inline ComPtr<D2DBitmap> CreateEmptyD2DBitmap(Size size) {
 } // namespace
 
 
-void Layer::CreateTexture(Size size) {
-	DestroyTexture();
+void Layer::CreateFramebuffer(Size size) {
+	DestroyFramebuffer();
 	this->size = size;
-	texture = CreateEmptyD2DBitmap(size).Detach();
-	RegisterBitmap(reinterpret_cast<owner_ptr<D2DBitmap>&>(texture));
+	framebuffer = CreateEmptyD2DBitmap(size).Detach();
+	RegisterBitmap(reinterpret_cast<owner_ptr<D2DBitmap>&>(framebuffer));
 }
 
-void Layer::DestroyTexture() {
+void Layer::DestroyFramebuffer() {
 	if (!IsEmpty()) {
-		UnregisterBitmap(reinterpret_cast<owner_ptr<D2DBitmap>&>(texture));
-		ComPtr<D2DBitmap>().Swap(reinterpret_cast<owner_ptr<D2DBitmap>&>(texture));
+		UnregisterBitmap(reinterpret_cast<owner_ptr<D2DBitmap>&>(framebuffer));
+		ComPtr<D2DBitmap>().Swap(reinterpret_cast<owner_ptr<D2DBitmap>&>(framebuffer));
 		size = size_empty;
 	}
 }
 
 void Layer::RenderCanvas(const Canvas& canvas, Vector offset, Rect clip_region) {
 	D2DDeviceContext& device_context = GetD2DDeviceContext();
-	device_context.SetTarget(static_cast<ref_ptr<D2DBitmap>>(GetTexture()));
+	device_context.SetTarget(static_cast<ref_ptr<D2DBitmap>>(GetFramebuffer()));
 	device_context.SetTransform(AsD2DTransform(offset));
 	device_context.PushAxisAlignedClip(AsD2DRect(clip_region), D2D1_ANTIALIAS_MODE_PER_PRIMITIVE);
 	device_context.Clear(AsD2DColor(color_transparent));
@@ -65,7 +65,7 @@ void Layer::RenderCanvas(const Canvas& canvas, Vector offset, Rect clip_region) 
 
 void LayerFigure::DrawOn(RenderTarget& target, Point point) const {
 	target.DrawBitmap(
-		static_cast<ref_ptr<D2DBitmap>>(layer.GetTexture()),
+		static_cast<ref_ptr<D2DBitmap>>(layer.GetFramebuffer()),
 		AsD2DRect(Rect(point, size)),
 		opacity,
 		D2D1_BITMAP_INTERPOLATION_MODE_LINEAR,

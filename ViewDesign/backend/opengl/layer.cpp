@@ -25,21 +25,21 @@ inline Rect operator*(Rect rect, const Transform& transform) {
 } // namespace
 
 
-void Layer::CreateTexture(Size size) {
-	DestroyTexture();
+void Layer::CreateFramebuffer(Size size) {
+	DestroyFramebuffer();
 	this->size = size;
-	texture = new FrameBuffer(size);
+	framebuffer = new Framebuffer(size);
 }
 
-void Layer::DestroyTexture() {
+void Layer::DestroyFramebuffer() {
 	if (!IsEmpty()) {
-		delete static_cast<owner_ptr<FrameBuffer>>(texture);
-		texture = nullptr;
+		delete static_cast<owner_ptr<Framebuffer>>(framebuffer);
+		framebuffer = nullptr;
 	}
 }
 
 void Layer::RenderCanvas(const Canvas& canvas, Vector offset, Rect clip_region) {
-	RenderContext context(size, static_cast<ref_ptr<FrameBuffer>>(texture));
+	RenderContext context(size, static_cast<ref_ptr<Framebuffer>>(framebuffer));
 	context.SetTransform(offset);
 	context.PushAxisAlignedClip(clip_region + offset);
 	context.Clear();
@@ -67,7 +67,7 @@ void LayerFigure::DrawOn(RenderTarget& target, Point point) const {
 	auto [srcU0, srcV1, srcU1, srcV0] = AsOpenGLRectRatio(layer.GetSize(), region);
 
 	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, static_cast<ref_ptr<FrameBuffer>>(layer.GetTexture())->Texture::GetId());
+	glBindTexture(GL_TEXTURE_2D, static_cast<ref_ptr<Framebuffer>>(layer.GetFramebuffer())->Texture::GetId());
 
 	glColor4f(opacity, opacity, opacity, opacity);
 

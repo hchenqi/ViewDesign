@@ -15,18 +15,18 @@ class Canvas;
 class Layer : Uncopyable {
 public:
 	Layer() {}
-	~Layer() { DestroyTexture(); }
+	~Layer() { DestroyFramebuffer(); }
 private:
 	Size size = size_empty;
-	Handle texture = nullptr;
+	Handle framebuffer = nullptr;
 public:
 	Size GetSize() const { return size; }
-	bool IsEmpty() const { return texture == nullptr; }
-	Handle GetTexture() const { if (IsEmpty()) { throw std::invalid_argument("Layer: texture not created"); } return texture; }
+	bool IsEmpty() const { return framebuffer == nullptr; }
+	Handle GetFramebuffer() const { if (IsEmpty()) { throw std::invalid_argument("Layer: framebuffer not created"); } return framebuffer; }
 public:
-	void SetTexture(Size size, Handle texture) { DestroyTexture(); this->size = size; this->texture = texture; }
-	void CreateTexture(Size size);
-	void DestroyTexture();
+	void SetFramebuffer(Size size, Handle framebuffer) { DestroyFramebuffer(); this->size = size; this->framebuffer = framebuffer; }
+	void CreateFramebuffer(Size size);
+	void DestroyFramebuffer();
 public:
 	void RenderCanvas(const Canvas& canvas, Vector offset, Rect clip_region);
 };

@@ -31,8 +31,8 @@ public:
 	void Destroy();
 	void Resize(Size size);
 private:
-	void CreateLayerTexture(Size size);
-	void DestroyLayerTexture() { Layer::DestroyTexture(); }
+	void CreateLayerFramebuffer(Size size);
+	void DestroyLayerFramebuffer() { Layer::DestroyFramebuffer(); }
 private:
 	Rect invalid_region;
 #if defined(VIEWDESIGN_BACKEND_OPENGL)

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ViewDesign/geometry/transform.h"
-#include "ViewDesign/platform/glad/frame_buffer.h"
+#include "ViewDesign/platform/glad/framebuffer.h"
 
 #include <vector>
 
@@ -16,8 +16,8 @@ private:
 	Size size;
 	std::vector<Rect> clip_stack;
 public:
-	RenderContext(Size size, ref_ptr<FrameBuffer> frame_buffer) : size(size) {
-		glBindFramebuffer(GL_FRAMEBUFFER, frame_buffer == nullptr ? 0 : frame_buffer->GetId());
+	RenderContext(Size size, ref_ptr<Framebuffer> framebuffer) : size(size) {
+		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer == nullptr ? 0 : framebuffer->GetId());
 
 		auto [width, height] = std::make_pair((uint)ceilf(size.width), (uint)ceilf(size.height));
 		glViewport(0, 0, width, height);

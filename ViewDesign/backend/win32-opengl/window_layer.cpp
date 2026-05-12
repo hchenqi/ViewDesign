@@ -35,7 +35,7 @@ void WindowLayer::Create(Handle window, Size size) {
 	this->hdc = hdc;
 	this->hglrc = hglrc;
 
-	CreateLayerTexture(size);
+	CreateLayerFramebuffer(size);
 }
 
 void WindowLayer::Destroy() {
@@ -44,11 +44,11 @@ void WindowLayer::Destroy() {
 }
 
 void WindowLayer::Resize(Size size) {
-	CreateLayerTexture(size);
+	CreateLayerFramebuffer(size);
 }
 
-void WindowLayer::CreateLayerTexture(Size size) {
-	Layer::SetTexture(size, nullptr);
+void WindowLayer::CreateLayerFramebuffer(Size size) {
+	Layer::SetFramebuffer(size, nullptr);
 	invalid_region = region_empty;
 }
 
