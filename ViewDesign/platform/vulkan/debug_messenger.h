@@ -27,7 +27,7 @@ private:
 		if (severity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT) {
 			fprintf(stderr, "[Vulkan] %s\n", data->pMessage);
 		}
-		return VK_FALSE;
+		return vk::False;
 	}
 public:
 	inline static void Initialize() {

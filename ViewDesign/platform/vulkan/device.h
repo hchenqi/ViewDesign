@@ -15,18 +15,20 @@ public:
 	vk::raii::Device device = nullptr;
 	vk::raii::Queue queue = nullptr;
 	vk::raii::CommandPool command_pool = nullptr;
+
 private:
 	DeviceContext(const vk::raii::SurfaceKHR& surface) {
 		std::tie(physical_device, queue_family_index) = FindSuitablePhysicalDevice(vk::raii::PhysicalDevices(InstanceContext::GetInstance()), surface);
 
 		float queue_priority = 1.0f;
 		vk::DeviceQueueCreateInfo queue_create_info({}, queue_family_index, 1, &queue_priority);
-		std::vector<const char*> extensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
+		std::vector<const char*> extensions = { vk::KHRSwapchainExtensionName };
 		device = physical_device.createDevice(vk::DeviceCreateInfo({}, queue_create_info, {}, extensions));
 
 		queue = device.getQueue(queue_family_index, 0);
 		command_pool = device.createCommandPool(vk::CommandPoolCreateInfo({}, queue_family_index));
 	}
+
 private:
 	static std::pair<vk::raii::PhysicalDevice, uint32_t> FindSuitablePhysicalDevice(const vk::raii::PhysicalDevices& physical_device_list, const vk::raii::SurfaceKHR& surface) {
 		for (const auto& physical_device : physical_device_list) {
@@ -39,6 +41,12 @@ private:
 		}
 		throw std::runtime_error("Vulkan: failed to find a suitable device");
 	}
+
+private:
+	ref_ptr<vk::raii::CommandBuffer> current_command_buffer = nullptr;
+public:
+	void SetCurrentCommandBuffer(ref_ptr<vk::raii::CommandBuffer> command_buffer) { current_command_buffer = command_buffer; }
+	vk::raii::CommandBuffer& GetCurrentCommandBuffer() { if (current_command_buffer == nullptr) { throw std::invalid_argument("Vulkan: current command buffer not set"); } return *current_command_buffer; }
 
 private:
 	inline static ref_ptr<DeviceContext> ref = nullptr;

@@ -21,7 +21,7 @@ private:
 	Handle hglrc;
 #endif
 #if defined(VIEWDESIGN_BACKEND_WIN32_VULKAN)
-	Handle window_surface;
+	Handle surface;
 #endif
 #if defined(VIEWDESIGN_BACKEND_GLFW_OPENGL)
 	Handle window;

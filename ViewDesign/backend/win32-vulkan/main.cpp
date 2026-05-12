@@ -13,9 +13,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		{
 			// "VK_LAYER_KHRONOS_validation"
 		}, {
-			VK_EXT_DEBUG_UTILS_EXTENSION_NAME,
-			VK_KHR_SURFACE_EXTENSION_NAME,
-			VK_KHR_WIN32_SURFACE_EXTENSION_NAME
+			vk::EXTDebugUtilsExtensionName,
+			vk::KHRSurfaceExtensionName,
+			vk::KHRWin32SurfaceExtensionName
 		}
 	);
 	ViewDesign::Vulkan::DebugMessengerContext::Initialize();

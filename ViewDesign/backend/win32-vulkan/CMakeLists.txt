@@ -10,7 +10,3 @@ file(GLOB_RECURSE LIB_SOURCES *.cpp)
 target_sources(ViewDesign PRIVATE ${LIB_SOURCES})
 
 target_compile_definitions(ViewDesign PUBLIC VIEWDESIGN_BACKEND_WIN32_VULKAN)
-
-
-add_executable(Win32VulkanTest test.cpp)
-target_link_libraries(Win32VulkanTest PRIVATE ViewDesign)

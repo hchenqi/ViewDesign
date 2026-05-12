@@ -2,7 +2,7 @@
 #include "ViewDesign/platform/win32/window.h"
 
 #define VK_USE_PLATFORM_WIN32_KHR
-#include "ViewDesign/platform/vulkan/window_surface.h"
+#include "ViewDesign/platform/vulkan/surface.h"
 
 
 namespace ViewDesign {
@@ -11,31 +11,37 @@ using namespace Win32;
 using namespace Vulkan;
 
 
-WindowLayer::WindowLayer() : window_surface(nullptr) {}
+WindowLayer::WindowLayer() : surface(nullptr) {}
 
 void WindowLayer::Create(Handle window, Size size) {
 	Destroy();
-	window_surface = new WindowSurface(InstanceContext::GetInstance().createWin32SurfaceKHR(vk::Win32SurfaceCreateInfoKHR({}, GetHInstance(), AsHWND(window))), size);
+	surface = new Surface(InstanceContext::GetInstance().createWin32SurfaceKHR(vk::Win32SurfaceCreateInfoKHR({}, GetHInstance(), AsHWND(window))), size);
 }
 
 void WindowLayer::Destroy() {
-	if (window_surface != nullptr) {
-		delete static_cast<owner_ptr<WindowSurface>>(window_surface);
-		window_surface = nullptr;
+	if (surface != nullptr) {
+		delete static_cast<owner_ptr<Surface>>(surface);
+		surface = nullptr;
 	}
 }
 
 void WindowLayer::Resize(Size size) {}
 
-void WindowLayer::CreateTexture() {}
+void WindowLayer::CreateLayerFramebuffer(Size size) {
+
+}
 
 void WindowLayer::Redraw(Rect redraw_region) {
 	invalid_region = invalid_region.Union(redraw_region);
 }
 
-void WindowLayer::RenderCanvas(const Canvas& canvas) {
-	static_cast<ref_ptr<WindowSurface>>(window_surface)->DrawFrame([]() {
+void WindowLayer::RenderBegin() {
+	static_cast<ref_ptr<Surface>>(surface)->RenderBegin();
+}
 
+void WindowLayer::RenderEnd(const Canvas& canvas) {
+	static_cast<ref_ptr<Surface>>(surface)->Render([&]() {
+		Layer::RenderCanvas(canvas, vector_zero, invalid_region);
 	});
 	invalid_region = region_empty;
 }

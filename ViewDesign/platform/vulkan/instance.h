@@ -16,7 +16,7 @@ private:
 	vk::raii::Instance instance = nullptr;
 private:
 	InstanceContext(const std::vector<const char*>& layers, const std::vector<const char*>& extensions) {
-		vk::ApplicationInfo app_info("", 1, "", 1, VK_API_VERSION_1_3);
+		vk::ApplicationInfo app_info("", 1, "", 1, vk::ApiVersion13);
 		instance = context.createInstance(vk::InstanceCreateInfo({}, &app_info, layers, extensions));
 	}
 
