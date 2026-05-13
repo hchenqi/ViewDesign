@@ -30,7 +30,7 @@ void Layer::CreateFramebuffer(Size size) {
 }
 
 void Layer::DestroyFramebuffer() {
-	if (!IsEmpty()) {
+	if (HasFramebuffer()) {
 		UnregisterBitmap(reinterpret_cast<owner_ptr<D2DBitmap>&>(framebuffer));
 		ComPtr<D2DBitmap>().Swap(reinterpret_cast<owner_ptr<D2DBitmap>&>(framebuffer));
 		size = size_empty;
@@ -40,22 +40,22 @@ void Layer::DestroyFramebuffer() {
 void Layer::RenderCanvas(const Canvas& canvas, Vector offset, Rect clip_region) {
 	D2DDeviceContext& device_context = GetD2DDeviceContext();
 	device_context.SetTarget(static_cast<ref_ptr<D2DBitmap>>(GetFramebuffer()));
-	device_context.SetTransform(AsD2DTransform(offset));
 	device_context.PushAxisAlignedClip(AsD2DRect(clip_region), D2D1_ANTIALIAS_MODE_PER_PRIMITIVE);
 	device_context.Clear(AsD2DColor(color_transparent));
-	auto& groups = canvas.GetFigureGroups();
-	auto& figures = canvas.GetFigures();
-	for (size_t figure_index = 0, group_index = 0; group_index < groups.size(); ++group_index) {
-		auto& group = groups[group_index];
-		for (; figure_index < group.figure_index; ++figure_index) {
-			figures[figure_index].figure->DrawOn(static_cast<RenderTarget&>(device_context), figures[figure_index].offset);
+	device_context.SetTransform(AsD2DTransform(offset));
+	auto& figure_list = canvas.GetFigureList(); auto& group_list = canvas.GetGroupList();
+	for (size_t figure_index = 0, group_index = 0; group_index < group_list.size(); ++group_index) {
+		auto& [group_figure_index, group_transform, group_clip_region] = group_list[group_index];
+		for (; figure_index < group_figure_index; ++figure_index) {
+			auto& [point, figure] = figure_list[figure_index];
+			figure->DrawOn(static_cast<RenderTarget&>(device_context), point);
 		}
-		if (group.IsBegin()) {
-			device_context.SetTransform(AsD2DTransform(group.transform * offset));
-			device_context.PushAxisAlignedClip(AsD2DRect(group.clip_region), D2D1_ANTIALIAS_MODE_PER_PRIMITIVE);
+		if (!group_clip_region.IsEmpty()) {
+			device_context.SetTransform(AsD2DTransform(group_transform * offset));
+			device_context.PushAxisAlignedClip(AsD2DRect(group_clip_region), D2D1_ANTIALIAS_MODE_PER_PRIMITIVE);
 		} else {
 			device_context.PopAxisAlignedClip();
-			device_context.SetTransform(AsD2DTransform(group.transform * offset));
+			device_context.SetTransform(AsD2DTransform(group_transform * offset));
 		}
 	}
 	device_context.PopAxisAlignedClip();

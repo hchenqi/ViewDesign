@@ -1,16 +1,29 @@
 #pragma once
 
 #include "ViewDesign/view/ViewFrame.h"
-#include "ViewDesign/geometry/region.h"
 #include "ViewDesign/drawing/layer.h"
+#include "ViewDesign/geometry/region.h"
+#include "ViewDesign/geometry/helper.h"
+#include "ViewDesign/geometry/tiling.h"
+
+#if !defined(NDEBUG)
+#include "ViewDesign/drawing/shape.h"
+#endif
+
+#include <unordered_map>
 
 
 namespace ViewDesign {
 
 
-class _LayerFrame_Base : public ViewFrame {
-protected:
-	_LayerFrame_Base(float opacity, view_ptr<> child) : ViewFrame(std::move(child)), opacity(opacity) {}
+template<class WidthTrait, class HeightTrait>
+class LayerFrame : public ViewFrame, public SizeTrait<WidthTrait, HeightTrait> {
+public:
+	using child_type = view_ptr<WidthTrait, HeightTrait>;
+
+public:
+	LayerFrame(float opacity, child_type child) : ViewFrame(std::move(child)), opacity(opacity) {}
+	LayerFrame(child_type child) : LayerFrame(1.0f, std::move(child)) {}
 
 	// style
 protected:
@@ -23,8 +36,8 @@ public:
 protected:
 	Size size;
 protected:
-	virtual Size OnSizeRefUpdate(Size size_ref) override;
-	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override;
+	virtual Size OnSizeRefUpdate(Size size_ref) override { return size = UpdateChildSizeRef(child, size_ref); }
+	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override { SizeUpdated(size = child_size); }
 
 	// drawing
 protected:
@@ -32,24 +45,124 @@ protected:
 	Layer layer;
 	Region invalid_region;
 protected:
-	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override;
-	virtual void OnDraw(Canvas& canvas, Rect draw_region) override;
+	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override {
+		child_redraw_region = child_redraw_region.Intersect(Rect(point_zero, size));
+		if (layer.HasFramebuffer()) { invalid_region.Union(child_redraw_region * scale); }
+		Redraw(child_redraw_region);
+	}
+	virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
+		draw_region = draw_region.Intersect(Rect(point_zero, size)); if (draw_region.IsEmpty()) { return; }
+		scale = canvas.GetCurrentTransform().GetScale();
+		Size layer_size = size * scale;
+		if (layer.GetSize() != layer_size) { layer.DestroyFramebuffer(); }
+		Rect composite_region = draw_region * scale, redraw_region = composite_region;
+		if (!layer.HasFramebuffer()) {
+			layer.CreateFramebuffer(layer_size);
+			invalid_region.Set(Rect(point_zero, layer_size));
+		} else {
+			Region render_region(redraw_region); render_region.Intersect(invalid_region);
+			redraw_region = render_region.GetBoundingRect();
+		}
+		if (!redraw_region.IsEmpty()) {
+			Canvas canvas;
+			canvas.Group(scale, region_infinite, [&]() { DrawChild(child, point_zero, canvas, redraw_region * scale.Invert()); });
+			layer.RenderCanvas(canvas, vector_zero, redraw_region);
+			invalid_region.Sub(redraw_region);
+		}
+		canvas.draw(draw_region.point, new LayerFigure(layer, composite_region, draw_region.size, opacity));
+	}
 };
 
-
-template<class WidthTrait, class HeightTrait>
-class LayerFrame : public _LayerFrame_Base, public SizeTrait<WidthTrait, HeightTrait> {
-public:
-	LayerFrame(view_ptr<WidthTrait, HeightTrait> child) : LayerFrame(1.0f, std::move(child)) {}
-	LayerFrame(float opacity, view_ptr<WidthTrait, HeightTrait> child) : _LayerFrame_Base(opacity, std::move(child)) {}
-};
-
+template<class T>
+LayerFrame(float, T) -> LayerFrame<extract_width_trait<T>, extract_height_trait<T>>;
 
 template<class T>
 LayerFrame(T) -> LayerFrame<extract_width_trait<T>, extract_height_trait<T>>;
 
+
+template<class TilingFunc, class WidthTrait, class HeightTrait>
+class LayerFrameTiled : public ViewFrame, public SizeTrait<WidthTrait, HeightTrait> {
+public:
+	using child_type = view_ptr<WidthTrait, HeightTrait>;
+
+public:
+	LayerFrameTiled(float opacity, child_type child) : ViewFrame(std::move(child)), opacity(opacity) {}
+	LayerFrameTiled(child_type child) : LayerFrameTiled(1.0f, std::move(child)) {}
+
+	// style
+protected:
+	float opacity;
+public:
+	float GetOpacity() const { return opacity; }
+	void SetOpacity(float opacity) { this->opacity = opacity; Redraw(region_infinite); }
+
+	// layout
+protected:
+	Size size;
+protected:
+	virtual Size OnSizeRefUpdate(Size size_ref) override { return size = UpdateChildSizeRef(child, size_ref); }
+	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override { SizeUpdated(size = child_size); }
+
+	// drawing
+protected:
+	Scale scale;
+	Region invalid_region;
+	Size tile_size;
+protected:
+	struct TileIndexHash {
+		size_t operator() (const TileIndex& tile_index) const {
+			return std::hash<int>()(tile_index.x) ^ std::hash<int>()(tile_index.y);
+		}
+	};
+	std::unordered_map<TileIndex, Layer, TileIndexHash> tile_cache;
+protected:
+	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override {
+		child_redraw_region = child_redraw_region.Intersect(Rect(point_zero, size));
+		invalid_region.Union(child_redraw_region * scale);
+		Redraw(child_redraw_region);
+	}
+	virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
+		draw_region = draw_region.Intersect(Rect(point_zero, size)); if (draw_region.IsEmpty()) { return; }
+		scale = canvas.GetCurrentTransform().GetScale();
+		if (Size tile_size_new = TilingFunc()(tile_size, size * scale); tile_size_new != tile_size) {
+			tile_size = tile_size_new;
+			tile_cache.clear();
+		}
+		Rect composite_region = draw_region * scale;
+		for (TileIndex tile_index : GetOverlappingTileRange(tile_size, composite_region)) {
+			if (!tile_cache.contains(tile_index)) {
+				invalid_region.Union(GetTileRegion(tile_size, tile_index).Intersect(composite_region));
+			}
+		}
+		Region render_region(composite_region); render_region.Intersect(invalid_region);
+		Rect redraw_region = render_region.GetBoundingRect();
+		if (!redraw_region.IsEmpty()) {
+			Canvas canvas;
+			canvas.Group(scale, region_infinite, [&]() { DrawChild(child, point_zero, canvas, redraw_region * scale.Invert()); });
+			for (TileIndex tile_index : GetOverlappingTileRange(tile_size, redraw_region)) {
+				Layer& layer = tile_cache[tile_index];
+				if (!layer.HasFramebuffer()) { layer.CreateFramebuffer(tile_size); }
+				Vector tile_offset = GetTileOffset(tile_size, tile_index);
+				layer.RenderCanvas(canvas, -tile_offset, redraw_region - tile_offset);
+			}
+			invalid_region.Sub(redraw_region);
+		}
+		for (TileIndex tile_index : GetOverlappingTileRange(tile_size, composite_region)) {
+			Vector tile_offset = GetTileOffset(tile_size, tile_index);
+			Rect tile_region = Rect(point_zero + tile_offset, tile_size).Intersect(composite_region);
+			canvas.draw(tile_region.point * scale.Invert(), new LayerFigure(tile_cache.at(tile_index), tile_region - tile_offset, tile_region.size * scale.Invert(), opacity));
+#if !defined(NDEBUG)
+			canvas.draw((point_zero + tile_offset) * scale.Invert(), new Rectangle(tile_size * scale.Invert(), 1.0f, Color(Color::Red, 0x7F)));
+#endif
+		}
+	}
+};
+
 template<class T>
-LayerFrame(float, T) -> LayerFrame<extract_width_trait<T>, extract_height_trait<T>>;
+LayerFrameTiled(float, T) -> LayerFrameTiled<TilingFuncDefault, extract_width_trait<T>, extract_height_trait<T>>;
+
+template<class T>
+LayerFrameTiled(T) -> LayerFrameTiled<TilingFuncDefault, extract_width_trait<T>, extract_height_trait<T>>;
 
 
 } // namespace ViewDesign

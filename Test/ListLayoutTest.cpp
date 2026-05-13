@@ -3,6 +3,7 @@
 #include "ViewDesign/view/frame/ClipFrame.h"
 #include "ViewDesign/view/frame/ScaleFrame.h"
 #include "ViewDesign/view/frame/InnerBorderFrame.h"
+#include "ViewDesign/view/frame/LayerFrame.h"
 #include "ViewDesign/view/layout/ListLayout.h"
 #include "ViewDesign/view/layout/SplitLayout.h"
 #include "ViewDesign/view/layout/StackLayout.h"
@@ -120,13 +121,15 @@ void Test() {
 	desktop.AddWindow(
 		new TitleBarWindow(
 			MainWindowStyle(),
-			new ScrollFrame(
-				new ScaleView(
-					new InnerBorderFrame(
-						Border(1.0f, 0.0f, Color::Black),
-						new PaddingFrame(
-							Padding(5.0f),
-							new ListView<ListLayout, Trait>(5)
+			new ScaleView(
+				new LayerFrame(
+					new ScrollFrame(
+						new InnerBorderFrame(
+							Border(1.0f, 0.0f, Color::Black),
+							new PaddingFrame(
+								Padding(5.0f),
+								new ListView<ListLayout, Trait>(5)
+							)
 						)
 					)
 				)

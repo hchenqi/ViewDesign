@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ViewDesign/common/type.h"
 #include "ViewDesign/drawing/figure.h"
 #include "ViewDesign/geometry/transform.h"
 
@@ -21,53 +22,43 @@ public:
 		this->offset -= offset;
 	}
 
-	// transform
-private:
-	Transform transform;
-public:
-	const Transform& GetTransform() const { return transform; }
-
 	// figure
 private:
-	struct FigureItem {
-		Point offset;
-		std::unique_ptr<const Figure> figure;
-	};
-	std::vector<FigureItem> figures;
+	std::vector<std::pair<Point, std::unique_ptr<const Figure>>> figure_list;
 public:
-	const std::vector<FigureItem>& GetFigures() const { return figures; }
+	const auto& GetFigureList() const { return figure_list; }
 public:
 	void draw(Point offset, std::unique_ptr<const Figure> figure) {
-		figures.emplace_back(FigureItem{ offset + this->offset, std::move(figure) });
+		figure_list.emplace_back(offset + this->offset, std::move(figure));
 	}
 	void draw(Point offset, owner_ptr<const Figure> figure) {
 		draw(offset, std::unique_ptr<const Figure>(figure));
 	}
-	template<class FigureType>
+	template<class T> requires std::derived_from<T, Figure>
 	void draw(Point offset, auto&&... args) {
-		draw(offset, std::make_unique<FigureType>(std::forward<decltype(args)>(args)...));
+		draw(offset, std::make_unique<T>(std::forward<decltype(args)>(args)...));
 	}
+
+	// transform
+private:
+	Transform current_transform;
+public:
+	const Transform& GetCurrentTransform() const { return current_transform; }
 
 	// group
 private:
-	struct FigureGroup {
-		uint figure_index;
-		Transform transform;
-		Rect clip_region;
-		bool IsBegin() const { return !clip_region.IsEmpty(); }
-	};
-	std::vector<FigureGroup> groups;
+	std::vector<std::tuple<uint, Transform, Rect>> group_list;
 public:
-	const std::vector<FigureGroup>& GetFigureGroups() const { return groups; }
+	const auto& GetGroupList() const { return group_list; }
 public:
-	void Group(Transform group_transform, Rect clip_region, auto func) {
+	void Group(Transform transform, Rect clip_region, auto func) {
 		if (clip_region.IsEmpty()) { return; }
-		Transform prev_transform = transform; Vector prev_offset = offset;
-		transform = group_transform * offset * transform; offset = vector_zero;
-		groups.push_back({ (uint)figures.size(), transform, clip_region });
+		Transform prev_transform = current_transform; Vector prev_offset = offset;
+		current_transform = transform * offset * current_transform; offset = vector_zero;
+		group_list.push_back(std::make_tuple((uint)figure_list.size(), current_transform, clip_region));
 		func();
-		transform = prev_transform; offset = prev_offset;
-		groups.push_back({ (uint)figures.size(), transform, region_empty });
+		current_transform = prev_transform; offset = prev_offset;
+		group_list.push_back(std::make_tuple((uint)figure_list.size(), current_transform, region_empty));
 	}
 };
 

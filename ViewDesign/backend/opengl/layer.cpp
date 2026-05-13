@@ -32,7 +32,7 @@ void Layer::CreateFramebuffer(Size size) {
 }
 
 void Layer::DestroyFramebuffer() {
-	if (!IsEmpty()) {
+	if (HasFramebuffer()) {
 		delete static_cast<owner_ptr<Framebuffer>>(framebuffer);
 		framebuffer = nullptr;
 	}
@@ -40,20 +40,20 @@ void Layer::DestroyFramebuffer() {
 
 void Layer::RenderCanvas(const Canvas& canvas, Vector offset, Rect clip_region) {
 	RenderContext context(size, static_cast<ref_ptr<Framebuffer>>(framebuffer));
-	context.SetTransform(offset);
-	context.PushAxisAlignedClip(clip_region + offset);
+	context.PushAxisAlignedClip(clip_region);
 	context.Clear();
-	auto& groups = canvas.GetFigureGroups();
-	auto& figures = canvas.GetFigures();
-	for (size_t figure_index = 0, group_index = 0; group_index < groups.size(); ++group_index) {
-		auto& group = groups[group_index];
-		for (; figure_index < group.figure_index; ++figure_index) {
-			figures[figure_index].figure->DrawOn(render_target, figures[figure_index].offset);
+	context.SetTransform(offset);
+	auto& figure_list = canvas.GetFigureList(); auto& group_list = canvas.GetGroupList();
+	for (size_t figure_index = 0, group_index = 0; group_index < group_list.size(); ++group_index) {
+		auto& [group_figure_index, group_transform, group_clip_region] = group_list[group_index];
+		for (; figure_index < group_figure_index; ++figure_index) {
+			auto& [point, figure] = figure_list[figure_index];
+			figure->DrawOn(render_target, point);
 		}
-		Transform transform = group.transform * offset;
-		if (group.IsBegin()) {
+		Transform transform = group_transform * offset;
+		if (!group_clip_region.IsEmpty()) {
 			context.SetTransform(transform);
-			context.PushAxisAlignedClip(group.clip_region * transform);
+			context.PushAxisAlignedClip(group_clip_region * transform);
 		} else {
 			context.PopAxisAlignedClip();
 			context.SetTransform(transform);

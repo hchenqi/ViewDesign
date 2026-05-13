@@ -21,8 +21,8 @@ private:
 	Handle framebuffer = nullptr;
 public:
 	Size GetSize() const { return size; }
-	bool IsEmpty() const { return framebuffer == nullptr; }
-	Handle GetFramebuffer() const { if (IsEmpty()) { throw std::invalid_argument("Layer: framebuffer not created"); } return framebuffer; }
+	bool HasFramebuffer() const { return framebuffer != nullptr; }
+	Handle GetFramebuffer() const { if (!HasFramebuffer()) { throw std::invalid_argument("Layer: framebuffer not created"); } return framebuffer; }
 public:
 	void SetFramebuffer(Size size, Handle framebuffer) { DestroyFramebuffer(); this->size = size; this->framebuffer = framebuffer; }
 	void CreateFramebuffer(Size size);

@@ -1,42 +1,48 @@
 #pragma once
 
+#include "ViewDesign/common/tile_range.h"
 #include "ViewDesign/geometry/geometry.h"
-
-#include <stdexcept>
 
 
 namespace ViewDesign {
 
 
-constexpr Point ScalePointBySize(Point point, Size size) {
-	return Point(point.x * size.width, point.y * size.height);
+inline Vector GetTileOffset(Size tile_size, TileIndex tile) {
+	return Vector(tile.x * tile_size.width, tile.y * tile_size.height);
 }
 
-constexpr Size ScaleSizeBySize(Size old_size, Size size) {
-	return Size(old_size.width * size.width, old_size.height * size.height);
+inline Rect GetTileRegion(Size tile_size, TileIndex tile) {
+	return Rect(point_zero + GetTileOffset(tile_size, tile), tile_size);
 }
 
-constexpr Rect ScaleRectBySize(Rect region, Size size) {
-	return Rect(ScalePointBySize(region.point, size), ScaleSizeBySize(region.size, size));
-}
-
-
-constexpr Rect RegionToOverlappingTileRange(Rect region, Size tile_size) {
-	if (tile_size.IsEmpty()) { return region_empty; }
-	Point point_begin(floorf(region.left() / tile_size.width), floorf(region.top() / tile_size.height));
-	Point point_end(ceilf(region.right() / tile_size.width), ceilf(region.bottom() / tile_size.height));
-	return Rect(point_begin, Size(point_end.x - point_begin.x, point_end.y - point_begin.y));
+inline TileRange GetOverlappingTileRange(Size tile_size, Rect region) {
+	if (tile_size.IsEmpty()) { throw std::invalid_argument("empty tile size"); }
+	return {
+		{ static_cast<int>(floorf(region.left() / tile_size.width)), static_cast<int>(floorf(region.top() / tile_size.height)) },
+		{ static_cast<int>(ceilf(region.right() / tile_size.width)), static_cast<int>(ceilf(region.bottom() / tile_size.height)) }
+	};
 }
 
 
-class RectPointIterator {
-private:
-	Point start, end, current;
-public:
-	RectPointIterator(Rect rect) : start(rect.point), end(rect.RightBottom()), current(start) {}
-	operator bool() const { return current < end; }
-	Point operator*() const { if (!*this) { throw std::logic_error("cannot dereference end iterator"); } return current; }
-	void operator++() { current.x++; if (current.x >= end.x) { current.x = start.x; current.y++; } }
+struct TilingFuncDefault {
+	Size operator()(Size tile_size_current, Size size_new) {			
+		Size tile_size;
+
+		if (size_new.width <= 64.0f) { tile_size.width = 64.0f; }
+		else if (size_new.width <= 128.0f) { tile_size.width = 128.0f; }
+		else if (size_new.width <= 256.0f) { tile_size.width = 256.0f; }
+		else { tile_size.width = 512.0f; }
+
+		if (size_new.height <= 64.0f) { tile_size.height = 64.0f; }
+		else if (size_new.height <= 128.0f) { tile_size.height = 128.0f; }
+		else if (size_new.height <= 256.0f) { tile_size.height = 256.0f; }
+		else { tile_size.height = 512.0f; }
+
+		if (tile_size.width < tile_size_current.width) { tile_size.width = tile_size_current.width; }
+		if (tile_size.height < tile_size_current.height) { tile_size.height = tile_size_current.height; }
+
+		return tile_size;
+	}
 };
 
 
