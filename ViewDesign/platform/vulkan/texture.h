@@ -23,15 +23,12 @@ private:
 
 public:
 	Texture(const PixelBuffer& pixel_buffer) {
-		auto [width, height] = pixel_buffer.Size();
-		size_t buffer_size_bytes = width * height * 4;
-		CreateImageView(width, height, vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eTransferSrc);
-		CopyPixelBuffer(buffer_size_bytes, pixel_buffer.Pixels().data());
+		CreateImageView(pixel_buffer.Size(), vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eTransferSrc);
+		CopyPixelBuffer(pixel_buffer.PixelDataLength(), pixel_buffer.PixelData());
 	}
 
-	Texture(Size size) {
-		auto [width, height] = std::make_pair((uint)ceilf(size.width), (uint)ceilf(size.height));
-		CreateImageView(width, height, vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eTransferSrc | vk::ImageUsageFlagBits::eColorAttachment);
+	Texture(SizeU size) {
+		CreateImageView(size, vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eTransferSrc | vk::ImageUsageFlagBits::eColorAttachment);
 		Clear();
 	}
 
@@ -67,10 +64,10 @@ public:
 	}
 
 private:
-	void CreateImageView(uint32_t width, uint32_t height, vk::ImageUsageFlags image_usage_flags) {
+	void CreateImageView(SizeU size, vk::ImageUsageFlags image_usage_flags) {
 		DeviceContext& device_context = DeviceContext::Get();
 
-		extent = vk::Extent2D(width, height);
+		extent = vk::Extent2D(size.width, size.height);
 		image = device_context.device.createImage(vk::ImageCreateInfo({}, vk::ImageType::e2D, format, vk::Extent3D(extent, 1), 1, 1, vk::SampleCountFlagBits::e1, vk::ImageTiling::eOptimal, image_usage_flags, vk::SharingMode::eExclusive));
 		image_layout = vk::ImageLayout::eUndefined;
 		image_view = device_context.device.createImageView(vk::ImageViewCreateInfo({}, image, vk::ImageViewType::e2D, format, {}, { vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1 }));

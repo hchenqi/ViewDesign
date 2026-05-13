@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ViewDesign/view/ViewFrame.h"
-#include "ViewDesign/geometry/clamp.h"
+#include "ViewDesign/geometry/helper.h"
 
 
 namespace ViewDesign {
@@ -32,8 +32,8 @@ protected:
 	// scrolling
 protected:
 	Point ClampFrameOffset(Point offset) const {
-		offset.x = child_size.width <= size.width ? 0.0f : clamp(offset.x, Interval(0.0f, child_size.width - size.width));
-		offset.y = child_size.height <= size.height ? 0.0f : clamp(offset.y, Interval(0.0f, child_size.height - size.height));
+		offset.x = child_size.width <= size.width ? 0.0f : Clamp(offset.x, Interval(0.0f, child_size.width - size.width));
+		offset.y = child_size.height <= size.height ? 0.0f : Clamp(offset.y, Interval(0.0f, child_size.height - size.height));
 		return offset;
 	}
 public:
@@ -41,7 +41,7 @@ public:
 		offset = ClampFrameOffset(offset);
 		if (frame_offset != offset) {
 			frame_offset = offset;
-			Redraw(region_infinite);
+			Redraw(rect_infinite);
 		}
 	}
 	void Scroll(Vector offset) {
@@ -50,12 +50,12 @@ public:
 		}
 	}
 	void ScrollIntoView(Point point) {
-		point = clamp(point, Rect(point_zero, child_size));
-		Scroll(point - clamp(point, Rect(frame_offset, size)));
+		point = Clamp(point, Rect(point_zero, child_size));
+		Scroll(point - Clamp(point, Rect(frame_offset, size)));
 	}
 	void ScrollIntoView(Rect rect) {
-		rect = clamp(rect, Rect(point_zero, child_size));
-		Scroll(rect.point - clamp(rect, Rect(frame_offset, size)).point);
+		rect = Clamp(rect, Rect(point_zero, child_size));
+		Scroll(rect.point - Clamp(rect, Rect(frame_offset, size)).point);
 	}
 
 	// drawing
@@ -92,7 +92,7 @@ protected:
 		if (this->child_size != child_size) {
 			this->child_size = child_size;
 			frame_offset = ClampFrameOffset(frame_offset);
-			Redraw(region_infinite);
+			Redraw(rect_infinite);
 		}
 	}
 
@@ -139,7 +139,7 @@ protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override {
 		if (size != size_ref) {
 			if (size.width != size_ref.width) {
-				child_size = Size(size_ref.width, UpdateChildSizeRef(child, Size(size_ref.width, length_max)).height);
+				child_size = Size(size_ref.width, UpdateChildSizeRef(child, Size(size_ref.width, length_infinite)).height);
 			}
 			size = size_ref;
 			frame_offset = ClampFrameOffset(frame_offset);
@@ -150,7 +150,7 @@ protected:
 		if (this->child_size.height != child_size.height) {
 			this->child_size.height = child_size.height;
 			frame_offset = ClampFrameOffset(frame_offset);
-			Redraw(region_infinite);
+			Redraw(rect_infinite);
 		}
 	}
 
@@ -194,7 +194,7 @@ protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override {
 		if (size != size_ref) {
 			if (size.height != size_ref.height) {
-				child_size = Size(UpdateChildSizeRef(child, Size(length_max, size_ref.height)).width, size_ref.height);
+				child_size = Size(UpdateChildSizeRef(child, Size(length_infinite, size_ref.height)).width, size_ref.height);
 			}
 			size = size_ref;
 			frame_offset = ClampFrameOffset(frame_offset);
@@ -205,7 +205,7 @@ protected:
 		if (this->child_size.width != child_size.width) {
 			this->child_size.width = child_size.width;
 			frame_offset = ClampFrameOffset(frame_offset);
-			Redraw(region_infinite);
+			Redraw(rect_infinite);
 		}
 	}
 

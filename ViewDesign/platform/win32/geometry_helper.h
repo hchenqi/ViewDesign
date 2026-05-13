@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ViewDesign/geometry/geometry.h"
+#include "ViewDesign/geometry/sizeu.h"
 
 #include <windows.h>
 
@@ -10,12 +10,12 @@ namespace ViewDesign {
 namespace Win32 {
 
 
-inline RECT AsRECT(Rect rect) {
-	return { (int)floorf(rect.left()), (int)floorf(rect.top()), (int)ceilf(rect.right()), (int)ceilf(rect.bottom()) };
+inline RECT AsWin32RECT(RectI rect) {
+	return { rect.left(), rect.top(), rect.right(), rect.bottom() };
 }
 
-inline Rect AsRect(RECT rect) {
-	return Rect((float)rect.left, (float)rect.top, (float)(rect.right - rect.left), (float)(rect.bottom - rect.top));
+inline RectI AsRectI(RECT rect) {
+	return RectI(PointI(rect.left, rect.top), SizeU(rect.right - rect.left, rect.bottom - rect.top));
 }
 
 

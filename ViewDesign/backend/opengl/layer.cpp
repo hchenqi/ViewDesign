@@ -25,7 +25,7 @@ inline Rect operator*(Rect rect, const Transform& transform) {
 } // namespace
 
 
-void Layer::CreateFramebuffer(Size size) {
+void Layer::CreateFramebuffer(SizeU size) {
 	DestroyFramebuffer();
 	this->size = size;
 	framebuffer = new Framebuffer(size);
@@ -48,7 +48,7 @@ void Layer::RenderCanvas(const Canvas& canvas, Vector offset, Rect clip_region) 
 		auto& [group_figure_index, group_transform, group_clip_region] = group_list[group_index];
 		for (; figure_index < group_figure_index; ++figure_index) {
 			auto& [point, figure] = figure_list[figure_index];
-			figure->DrawOn(render_target, point);
+			figure->DrawOn(static_cast<RenderTarget&>(context), point);
 		}
 		Transform transform = group_transform * offset;
 		if (!group_clip_region.IsEmpty()) {

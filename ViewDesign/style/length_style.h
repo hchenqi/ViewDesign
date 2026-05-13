@@ -12,7 +12,7 @@ struct LengthStyle {
 	ValueTag _min;
 	ValueTag _max;
 
-	constexpr LengthStyle() : LengthStyle(length_auto, length_min_tag, length_max_tag) {}
+	constexpr LengthStyle() : LengthStyle(length_auto, length_zero_tag, length_infinite_tag) {}
 	constexpr LengthStyle(ValueTag normal) : LengthStyle(normal, normal, normal) {}
 	constexpr LengthStyle(ValueTag normal, ValueTag min, ValueTag max) : _normal(normal), _min(min), _max(max) {}
 

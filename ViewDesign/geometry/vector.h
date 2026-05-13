@@ -8,11 +8,10 @@ struct Vector {
 	float x;
 	float y;
 
-	explicit constexpr Vector() : x(), y() {}
+	explicit constexpr Vector() = default;
 	explicit constexpr Vector(float x, float y) : x(x), y(y) {}
 
 	constexpr bool operator==(const Vector& vector) const { return x == vector.x && y == vector.y; }
-	constexpr bool operator!=(const Vector& vector) const { return x != vector.x || y != vector.y; }
 
 	constexpr Vector operator-() const { return Vector(-x, -y); }
 

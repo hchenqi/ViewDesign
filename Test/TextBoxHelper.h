@@ -17,17 +17,17 @@ view_ptr<Relative, Relative> WrapTextBox<Relative, Relative>(owner_ptr<TextBox> 
 
 template<>
 view_ptr<Auto, Auto> WrapTextBox<Auto, Auto>(owner_ptr<TextBox> text_box) {
-	return new MaxFrame<Auto, Auto>(size_max, text_box);
+	return new MaxFrame<Auto, Auto>(size_infinite, text_box);
 }
 
 template<>
 view_ptr<Relative, Auto> WrapTextBox<Relative, Auto>(owner_ptr<TextBox> text_box) {
-	return new MaxFrame<Relative, Auto>(length_max, text_box);
+	return new MaxFrame<Relative, Auto>(length_infinite, text_box);
 }
 
 template<>
 view_ptr<Auto, Relative> WrapTextBox<Auto, Relative>(owner_ptr<TextBox> text_box) {
-	return new MaxFrame<Auto, Relative>(length_max, text_box);
+	return new MaxFrame<Auto, Relative>(length_infinite, text_box);
 }
 
 template<>

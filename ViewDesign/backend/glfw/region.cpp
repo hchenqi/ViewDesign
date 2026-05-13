@@ -27,8 +27,8 @@ void Region::Xor(const Region& region) { Xor(*AsRect(region.handle)); }
 
 void Region::Union(const Rect& region) { *AsRect(handle) = AsRect(handle)->Union(region); }
 void Region::Intersect(const Rect& region) { *AsRect(handle) = AsRect(handle)->Intersect(region); }
-void Region::Sub(const Rect& region) { if (region.Contains(*AsRect(handle))) { *AsRect(handle) = region_empty; } }
-void Region::Xor(const Rect& region) { *AsRect(handle) = region_empty; }
+void Region::Sub(const Rect& region) { if (region.Contains(*AsRect(handle))) { *AsRect(handle) = rect_empty; } }
+void Region::Xor(const Rect& region) { *AsRect(handle) = rect_empty; }
 
 Rect Region::GetBoundingRect() const { return *AsRect(handle); }
 std::pair<Rect, std::vector<Rect>> Region::GetRects() const { return { *AsRect(handle), { *AsRect(handle) } }; }

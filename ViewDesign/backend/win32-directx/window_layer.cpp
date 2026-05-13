@@ -37,13 +37,13 @@ inline ComPtr<D2DBitmap> CreateD2DBitmapFromDxgiSurface(IDXGISurface& dxgi_surfa
 
 WindowLayer::WindowLayer() : swap_chain(nullptr), composition_target(nullptr) {}
 
-void WindowLayer::Create(Handle window, Size size) {
+void WindowLayer::Create(Handle window, SizeU size) {
 	Destroy();
 
 	ComPtr<SwapChain> swap_chain;
 	DXGI_SWAP_CHAIN_DESC1 swap_chain_desc = { 0 };
-	swap_chain_desc.Width = (uint)ceilf(size.width);
-	swap_chain_desc.Height = (uint)ceilf(size.height);
+	swap_chain_desc.Width = size.width;
+	swap_chain_desc.Height = size.height;
 	swap_chain_desc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
 	swap_chain_desc.Stereo = false;
 	swap_chain_desc.SampleDesc.Count = 1;
@@ -81,20 +81,20 @@ void WindowLayer::Destroy() {
 	ComPtr<SwapChain>().Swap(reinterpret_cast<owner_ptr<SwapChain>&>(swap_chain)).Reset();
 }
 
-void WindowLayer::Resize(Size size) {
+void WindowLayer::Resize(SizeU size) {
 	DestroyLayerFramebuffer();
-	hr << static_cast<ref_ptr<SwapChain>>(swap_chain)->ResizeBuffers(0, (uint)ceilf(size.width), (uint)ceilf(size.height), DXGI_FORMAT_UNKNOWN, 0);
+	hr << static_cast<ref_ptr<SwapChain>>(swap_chain)->ResizeBuffers(0, size.width, size.height, DXGI_FORMAT_UNKNOWN, 0);
 	CreateLayerFramebuffer(size);
 }
 
-void WindowLayer::CreateLayerFramebuffer(Size size) {
+void WindowLayer::CreateLayerFramebuffer(SizeU size) {
 	ComPtr<IDXGISurface> dxgi_surface;
 	hr << static_cast<ref_ptr<SwapChain>>(swap_chain)->GetBuffer(0, IID_PPV_ARGS(&dxgi_surface));
 	Layer::SetFramebuffer(size, CreateD2DBitmapFromDxgiSurface(dxgi_surface).Detach());
-	invalid_region = region_empty;
+	invalid_region = rect_i_empty;
 }
 
-void WindowLayer::Redraw(Rect redraw_region) {
+void WindowLayer::Redraw(RectI redraw_region) {
 	invalid_region = invalid_region.Union(redraw_region);
 }
 
@@ -111,10 +111,10 @@ void WindowLayer::RenderEnd(const Canvas& canvas) {
 		static_cast<DesktopPrivateAccess&>(desktop.Get()).RecreateWindowLayer();
 	}
 
-	RECT dirty_rect = Win32::AsRECT(invalid_region);
+	RECT dirty_rect = AsWin32RECT(invalid_region);
 	DXGI_PRESENT_PARAMETERS present_parameters = { 1, &dirty_rect };
 	hr << static_cast<ref_ptr<SwapChain>>(swap_chain)->Present1(0, 0, &present_parameters);
-	invalid_region = region_empty;
+	invalid_region = rect_i_empty;
 }
 
 

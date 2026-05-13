@@ -66,7 +66,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 	if (IsMouseMsg(msg)) {
 		MouseEvent mouse_event;
 		mouse_event.point = Point((float)GET_X_LPARAM(lparam), (float)GET_Y_LPARAM(lparam));
-		mouse_event._key_state = (uchar)GET_KEYSTATE_WPARAM(wparam);;
+		mouse_event._key_state = (uint8)GET_KEYSTATE_WPARAM(wparam);;
 		mouse_event.wheel_delta = GET_WHEEL_DELTA_WPARAM(wparam);
 		switch (msg) {
 		case WM_MOUSEMOVE: mouse_event.type = MouseEvent::Move;
@@ -104,7 +104,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 		case WM_KEYUP: key_event.type = KeyEvent::KeyUp; break;
 		case WM_CHAR: key_event.type = KeyEvent::Char; break;
 		case WM_IME_STARTCOMPOSITION: key_event.type = KeyEvent::ImeBegin; break;
-		case WM_IME_COMPOSITION: key_event.type = KeyEvent::ImeString; ImeUpdateString(hwnd, (uint)lparam); break;
+		case WM_IME_COMPOSITION: key_event.type = KeyEvent::ImeString; ImeUpdateString(hwnd, (uint32)lparam); break;
 		case WM_IME_ENDCOMPOSITION: key_event.type = KeyEvent::ImeEnd; break;
 		default: return DefWindowProc(hwnd, msg, wparam, lparam);
 		}
@@ -118,15 +118,15 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 		case WM_GETMINMAXINFO: {
 			MINMAXINFO* min_max_info = reinterpret_cast<MINMAXINFO*>(lparam);
 			auto [size_min, region_max] = window->GetMinMaxRegion(GetDesktopSize());
-			min_max_info->ptMaxPosition = { (int)floorf(region_max.point.x), (int)floorf(region_max.point.y) };
-			min_max_info->ptMaxSize = { (int)ceilf(region_max.size.width), (int)ceilf(region_max.size.height) };
-			min_max_info->ptMinTrackSize = { (int)floorf(size_min.width), (int)floorf(size_min.height) };
+			min_max_info->ptMaxPosition = { region_max.point.x, region_max.point.y };
+			min_max_info->ptMaxSize = { (LONG)region_max.size.width, (LONG)region_max.size.height };
+			min_max_info->ptMinTrackSize = { (LONG)size_min.width, (LONG)size_min.height };
 			min_max_info->ptMaxTrackSize = min_max_info->ptMaxSize;
 		}break;
 		case WM_WINDOWPOSCHANGING: break;
 		case WM_WINDOWPOSCHANGED: return DefWindowProc(hwnd, msg, wparam, lparam);
-		case WM_MOVE: window->SetPoint(Point((short)LOWORD(lparam), (short)HIWORD(lparam))); break;
-		case WM_SIZE: window->SetState(static_cast<WindowPrivateAccess::State>(wparam <= 2 ? wparam : 2)); if (wparam != SIZE_MINIMIZED) { window->SetSize(Size(LOWORD(lparam), HIWORD(lparam))); } break;
+		case WM_MOVE: window->SetPoint(PointI((short)LOWORD(lparam), (short)HIWORD(lparam))); break;
+		case WM_SIZE: window->SetState(static_cast<WindowPrivateAccess::State>(wparam <= 2 ? wparam : 2)); if (wparam != SIZE_MINIMIZED) { window->SetSize(SizeU(LOWORD(lparam), HIWORD(lparam))); } break;
 		case WM_DPICHANGED: window->SetScale(LOWORD(wparam) / dpi_default); break;
 
 			// drawing
@@ -228,8 +228,8 @@ void DestroyWindow(Handle window) { DestroyWindow(AsHWND(window)); }
 Scale GetWindowScale(Handle window) { return GetDpiForWindow(AsHWND(window)) / dpi_default; }
 
 void SetWindowTitle(Handle window, const u16string& title) { SetWindowTextW(AsHWND(window), as_wchar_str(title.c_str())); }
-void SetWindowRegion(Handle window, Rect region) { MoveWindow(AsHWND(window), (int)floorf(region.point.x), (int)floorf(region.point.y), (int)ceilf(region.size.width), (int)ceilf(region.size.height), false); }
-void SetWindowOpacity(Handle window, uchar opacity) { SetWndStyle(AsHWND(window), WS_EX_LAYERED);	SetLayeredWindowAttributes(AsHWND(window), 0, opacity, LWA_ALPHA); }
+void SetWindowRegion(Handle window, RectI region) { MoveWindow(AsHWND(window), region.point.x, region.point.y, region.size.width, region.size.height, false); }
+void SetWindowOpacity(Handle window, float opacity) { SetWndStyle(AsHWND(window), WS_EX_LAYERED); SetLayeredWindowAttributes(AsHWND(window), 0, opacity * 0xFF, LWA_ALPHA); }
 void SetWindowCursor(Handle window, std::reference_wrapper<Cursor> cursor) { SetCursor(cursor); }
 
 void ShowWindow(Handle window) { ShowWindow(AsHWND(window), SW_SHOWNOACTIVATE); }
@@ -240,7 +240,7 @@ void RestoreWindow(Handle window) { ShowWindow(AsHWND(window), SW_RESTORE); }
 
 void CloseWindow(Handle window) { SendMessageW(AsHWND(window), WM_CLOSE, 0, 0); }
 
-void RedrawWindowRegion(Handle window, Rect region) { RECT rect = AsRECT(region); InvalidateRect(AsHWND(window), &rect, false); }
+void RedrawWindowRegion(Handle window, RectI region) { RECT rect = AsWin32RECT(region); InvalidateRect(AsHWND(window), &rect, false); }
 
 void SetWindowCapture(Handle window) { SetCapture(AsHWND(window)); }
 void ReleaseWindowCapture(Handle window) { ReleaseCapture(); }
@@ -248,7 +248,7 @@ void SetWindowFocus(Handle window) { SetFocus(AsHWND(window)); }
 
 void ImeWindowEnable(Handle window) { ImeEnable(AsHWND(window)); }
 void ImeWindowDisable(Handle window) { ImeDisable(AsHWND(window)); }
-void ImeWindowSetPosition(Handle window, Point point) { ImeSetPosition(AsHWND(window), point); }
+void ImeWindowSetPosition(Handle window, PointI point) { ImeSetPosition(AsHWND(window), point); }
 
 
 } // namespace ViewDesign

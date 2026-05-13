@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ViewDesign/geometry/sizeu.h"
 #include "ViewDesign/drawing/color.h"
 
 #include <vector>
@@ -12,21 +13,21 @@ namespace ViewDesign {
 
 class PixelBuffer {
 public:
-	PixelBuffer() : width(), height(), pixels() {}
-	PixelBuffer(uint width, uint height) : width(width), height(height), pixels(width * height) {}
+	PixelBuffer(SizeU size) : size(size), pixels(size.width* size.height) {}
+	PixelBuffer() : PixelBuffer(size_u_empty) {}
 private:
-	uint width, height;
+	SizeU size;
 	std::vector<Color> pixels;
 public:
-	std::pair<uint, uint> Size() const { return { width, height }; }
+	SizeU Size() const { return size; }
 	const std::vector<Color>& Pixels() const { return pixels; }
-	const Color& At(uint x, uint y) const { if (x >= width || y >= height) { throw std::out_of_range("PixelBuffer::At: out of range"); } return pixels[y * width + x]; }
+	size_t PixelDataLength() const { static_assert(sizeof(Color) == 4); return pixels.size() * 4; }
+	const Color* PixelData() const { return pixels.data(); }
 public:
 	std::vector<Color>& Pixels() { return pixels; }
-	Color& At(uint x, uint y) { return const_cast<Color&>(const_cast<const PixelBuffer&>(*this).At(x, y)); }
 	PixelBuffer& Clear(Color color) { std::fill(pixels.begin(), pixels.end(), color); return *this; }
-	PixelBuffer& Resize(uint width, uint height) { this->width = width; this->height = height; pixels.resize(width * height); return *this; }
-	PixelBuffer& Resize(uint width, uint height, Color color) { this->width = width; this->height = height; pixels.resize(width * height, color); return *this; }
+	PixelBuffer& Resize(SizeU size) { this->size = size; pixels.resize(size.width * size.height); return *this; }
+	PixelBuffer& Resize(SizeU size, Color color) { this->size = size; pixels.resize(size.width * size.height, color); return *this; }
 };
 
 

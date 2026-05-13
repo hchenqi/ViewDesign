@@ -42,18 +42,18 @@ private:
 	virtual Size OnSizeRefUpdate(Size size_ref) override {
 		size = size_ref;
 		patch_size = Size(size.width / 2, size.height / 2);
-		bitmap_11.Update([&](PixelBuffer& pixel_buffer) { pixel_buffer.Resize(patch_size.width, patch_size.height, background_11); });
+		bitmap_11.Update([&](PixelBuffer& pixel_buffer) { pixel_buffer.Resize(Round(patch_size), background_11); });
 		return size;
 	}
 
 	// drawing
 private:
-	static constexpr uint background_00 = 0xF2521C;
-	static constexpr uint background_01 = 0x80CC29;
-	static constexpr uint background_10 = 0x00ADF0;
-	static constexpr uint background_11 = 0xFABD0A;
+	static constexpr uint32 background_00 = 0xF2521C;
+	static constexpr uint32 background_01 = 0x80CC29;
+	static constexpr uint32 background_10 = 0x00ADF0;
+	static constexpr uint32 background_11 = 0xFABD0A;
 private:
-	uchar alpha = 0x7F;
+	uint8 alpha = 0x7F;
 private:
 	Bitmap bitmap_11;
 private:
@@ -80,7 +80,7 @@ private:
 			break;
 		case MouseEvent::WheelVertical:
 			alpha = std::max(0x00, std::min(0xFF, alpha + event.wheel_delta / 4));
-			Redraw(region_infinite);
+			Redraw(rect_infinite);
 			break;
 		}
 	}

@@ -20,13 +20,13 @@ void CALLBACK TimerSyncCallback(HWND Arg1, UINT Arg2, UINT_PTR Arg3, DWORD Arg4)
 	}
 }
 
-Handle SetTimerSync(uint period, Timer& timer_object) {
+Handle SetTimerSync(uint32 period, Timer& timer_object) {
 	Handle timer = (Handle)SetTimer(NULL, (UINT_PTR)NULL, period, TimerSyncCallback);
 	timer_sync_map.emplace(timer, timer_object);
 	return timer;
 }
 
-void ResetTimerSync(Handle timer, uint period) {
+void ResetTimerSync(Handle timer, uint32 period) {
 	assert(timer_sync_map.find(timer) != timer_sync_map.end());
 	SetTimer(NULL, (UINT_PTR)timer, period, TimerSyncCallback);
 }
@@ -41,7 +41,7 @@ void KillTimerSync(Handle timer) {
 } // namespace
 
 
-void Timer::Set(uint period) {
+void Timer::Set(uint32 period) {
 	if (!IsSet()) {
 		timer = SetTimerSync(period, *this);
 	} else {

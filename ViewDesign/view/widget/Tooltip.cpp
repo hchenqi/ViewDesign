@@ -5,7 +5,7 @@
 #include "ViewDesign/view/frame/PaddingFrame.h"
 #include "ViewDesign/view/control/TextBox.h"
 #include "ViewDesign/view/wrapper/Background.h"
-#include "ViewDesign/geometry/clamp.h"
+#include "ViewDesign/geometry/helper.h"
 #include "ViewDesign/event/timer.h"
 #include "ViewDesign/system/window.h"
 
@@ -62,7 +62,7 @@ private:
 	Rect region;
 private:
 	virtual std::pair<Size, Size> CalculateMinMaxSize(Size size_ref) override { return { region.size, region.size }; }
-	virtual Rect OnWindowSizeRefUpdate(Size size_ref) override { return clamp(region, Rect(point_zero, size_ref)); }
+	virtual Rect OnWindowSizeRefUpdate(Size size_ref) override { return Clamp(region, Rect(point_zero, size_ref)); }
 	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override { region.size = child_size; }
 
 private:
@@ -81,20 +81,20 @@ public:
 private:
 	void ShowSelf() { desktop.AddWindow(std::move(*instance_ref)); }
 	void HideSelf() { instance_ref->reset(static_cast<owner_ptr<Tooltip>>(desktop.RemoveWindow(*this).release())); }
-	void SetOpacity(uchar opacity) { SetWindowOpacity(GetHandle(), opacity); }
+	void SetOpacity(float opacity) { SetWindowOpacity(GetHandle(), opacity); }
 
 private:
-	static constexpr uint wait_time = 1 * 1000;  // 1 s
-	static constexpr uint show_time = 5 * 1000;  // 5 s
-	static constexpr uint switch_interval = 200;  // 200 ms
-	static constexpr uint animation_interval = 20;  // 20 ms
-	static constexpr uint animation_time = 160;  // 160 ms
-	static constexpr uint animation_step_max = animation_time / animation_interval;  // 8
+	static constexpr uint32 wait_time = 1 * 1000;  // 1 s
+	static constexpr uint32 show_time = 5 * 1000;  // 5 s
+	static constexpr uint32 switch_interval = 200;  // 200 ms
+	static constexpr uint32 animation_interval = 20;  // 20 ms
+	static constexpr uint32 animation_time = 160;  // 160 ms
+	static constexpr uint32 animation_step_max = animation_time / animation_interval;  // 8
 private:
 	Timer timer = Timer(std::bind(&Tooltip::Callback, this));
 private:
 	enum class State { Hidden, Waiting, Showing, Shown, Hiding } state = State::Hidden;
-	uint animation_step = 0;
+	uint32 animation_step = 0;
 private:
 	void Callback() {
 		switch (state) {
@@ -104,7 +104,7 @@ private:
 			state = State::Showing;
 			animation_step = 0;
 			timer.Set(animation_interval);
-			region.point = GetCursorPosition() * GetScale().Invert() + Vector(0, 10.0f);
+			region.point = GetCursorPosition() / GetScale() + Vector(0, 10.0f);
 			SetOpacity(0);
 			ShowSelf();
 			break;

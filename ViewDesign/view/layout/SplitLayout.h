@@ -183,10 +183,10 @@ protected:
 						if constexpr (IsFixed<HeightTraitSecond>) {
 							if constexpr (IsFixed<WidthTraitSecond>) {
 								size_second = UpdateChildSizeRef(child_second, Size(size.width, size.height - size_first.height));
-								Redraw(region_infinite);
+								Redraw(rect_infinite);
 							} else {
 								size_second = UpdateChildSizeRef(child_second, Size(size_ref.width, size.height - size_first.height));
-								UpdateWidthOrRedraw(region_infinite);
+								UpdateWidthOrRedraw(rect_infinite);
 							}
 						} else {
 							UpdateHeight();
@@ -209,7 +209,7 @@ protected:
 							if (size_first.height != child_size.height) {
 								size_first.height = child_size.height;
 								size_second = UpdateChildSizeRef(child_second, Size(size_ref.width, size.height - size_first.height));
-								UpdateWidthOrRedraw(region_infinite);
+								UpdateWidthOrRedraw(rect_infinite);
 							} else {
 								UpdateWidthOrRedraw(GetRegionFirst());
 							}
@@ -233,10 +233,10 @@ protected:
 						if constexpr (IsFixed<HeightTraitFirst>) {
 							if constexpr (IsFixed<WidthTraitFirst>) {
 								size_first = UpdateChildSizeRef(child_first, Size(size.width, size.height - size_second.height));
-								Redraw(region_infinite);
+								Redraw(rect_infinite);
 							} else {
 								size_first = UpdateChildSizeRef(child_first, Size(size_ref.width, size.height - size_second.height));
-								UpdateWidthOrRedraw(region_infinite);
+								UpdateWidthOrRedraw(rect_infinite);
 							}
 						} else {
 							UpdateHeight();
@@ -259,7 +259,7 @@ protected:
 							if (size_second.height != child_size.height) {
 								size_second.height = child_size.height;
 								size_first = UpdateChildSizeRef(child_first, Size(size_ref.width, size.height - size_second.height));
-								UpdateWidthOrRedraw(region_infinite);
+								UpdateWidthOrRedraw(rect_infinite);
 							} else {
 								UpdateWidthOrRedraw(GetRegionSecond());
 							}
@@ -360,10 +360,10 @@ protected:
 						if constexpr (IsFixed<WidthTraitSecond>) {
 							if constexpr (IsFixed<HeightTraitSecond>) {
 								size_second = UpdateChildSizeRef(child_second, Size(size.width - size_first.width, size.height));
-								Redraw(region_infinite);
+								Redraw(rect_infinite);
 							} else {
 								size_second = UpdateChildSizeRef(child_second, Size(size.width - size_first.width, size_ref.height));
-								UpdateHeightOrRedraw(region_infinite);
+								UpdateHeightOrRedraw(rect_infinite);
 							}
 						} else {
 							UpdateWidth();
@@ -386,7 +386,7 @@ protected:
 							if (size_first.width != child_size.width) {
 								size_first.width = child_size.width;
 								size_second = UpdateChildSizeRef(child_second, Size(size.width - size_first.width, size_ref.height));
-								UpdateHeightOrRedraw(region_infinite);
+								UpdateHeightOrRedraw(rect_infinite);
 							} else {
 								UpdateHeightOrRedraw(GetRegionFirst());
 							}
@@ -410,10 +410,10 @@ protected:
 						if constexpr (IsFixed<WidthTraitFirst>) {
 							if constexpr (IsFixed<HeightTraitFirst>) {
 								size_first = UpdateChildSizeRef(child_first, Size(size.width - size_second.width, size.height));
-								Redraw(region_infinite);
+								Redraw(rect_infinite);
 							} else {
 								size_first = UpdateChildSizeRef(child_first, Size(size.width - size_second.width, size_ref.height));
-								UpdateHeightOrRedraw(region_infinite);
+								UpdateHeightOrRedraw(rect_infinite);
 							}
 						} else {
 							UpdateWidth();
@@ -436,7 +436,7 @@ protected:
 							if (size_second.width != child_size.width) {
 								size_second.width = child_size.width;
 								size_first = UpdateChildSizeRef(child_first, Size(size.width - size_second.width, size_ref.height));
-								UpdateHeightOrRedraw(region_infinite);
+								UpdateHeightOrRedraw(rect_infinite);
 							} else {
 								UpdateHeightOrRedraw(GetRegionSecond());
 							}

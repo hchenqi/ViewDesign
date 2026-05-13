@@ -56,7 +56,7 @@ protected:
 	}
 	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override {
 		child_region.size = child_size;
-		Redraw(region_infinite);
+		Redraw(rect_infinite);
 	}
 };
 
@@ -73,7 +73,7 @@ protected:
 	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override {
 		child_region.size = child_size;
 		child_region.point.x = size.width - child_region.size.width;
-		Redraw(region_infinite);
+		Redraw(rect_infinite);
 	}
 };
 
@@ -90,7 +90,7 @@ protected:
 	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override {
 		child_region.size = child_size;
 		child_region.point.y = size.height - child_region.size.height;
-		Redraw(region_infinite);
+		Redraw(rect_infinite);
 	}
 };
 
@@ -107,7 +107,7 @@ protected:
 	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override {
 		child_region.size = child_size;
 		child_region.point = Point(size.width - child_region.size.width, size.height - child_region.size.height);
-		Redraw(region_infinite);
+		Redraw(rect_infinite);
 	}
 };
 
@@ -128,7 +128,7 @@ protected:
 			size.height = child_size.height;
 			SizeUpdated(size);
 		} else {
-			Redraw(region_infinite);
+			Redraw(rect_infinite);
 		}
 	}
 };
@@ -151,7 +151,7 @@ protected:
 			size.height = child_size.height;
 			SizeUpdated(size);
 		} else {
-			Redraw(region_infinite);
+			Redraw(rect_infinite);
 		}
 	}
 };
@@ -173,7 +173,7 @@ protected:
 			size.width = child_size.width;
 			SizeUpdated(size);
 		} else {
-			Redraw(region_infinite);
+			Redraw(rect_infinite);
 		}
 	}
 };
@@ -196,7 +196,7 @@ protected:
 			size.width = child_size.width;
 			SizeUpdated(size);
 		} else {
-			Redraw(region_infinite);
+			Redraw(rect_infinite);
 		}
 	}
 };

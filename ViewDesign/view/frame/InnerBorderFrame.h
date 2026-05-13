@@ -20,7 +20,7 @@ public:
 protected:
 	Border border;
 public:
-	void SetBorder(Border border) { this->border = border; Redraw(region_infinite); }
+	void SetBorder(Border border) { this->border = border; Redraw(rect_infinite); }
 
 	// layout
 protected:

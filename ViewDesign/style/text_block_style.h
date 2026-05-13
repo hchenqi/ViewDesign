@@ -10,34 +10,34 @@
 namespace ViewDesign {
 
 
-enum class TextAlign : uchar {
+enum class TextAlign : uint8 {
 	Leading,
 	Trailing,
 	Center,
 	Justified,
 };
 
-enum class ParagraphAlign : uchar {
+enum class ParagraphAlign : uint8 {
 	Top,
 	Bottom,
 	Center,
 };
 
-enum class FlowDirection : uchar {
+enum class FlowDirection : uint8 {
 	TopToBottom = 0,
 	BottomToTop = 1,
 	LeftToRight = 2,
 	RightToLeft = 3,
 };
 
-enum class ReadDirection : uchar {
+enum class ReadDirection : uint8 {
 	LeftToRight = 0,
 	RightToLeft = 1,
 	TopToBottom = 2,
 	BottomToTop = 3,
 };
 
-enum class WordWrap : uchar {
+enum class WordWrap : uint8 {
 	Wrap = 0,
 	NoWrap = 1,
 	EmergencyBreak = 2,
@@ -45,7 +45,7 @@ enum class WordWrap : uchar {
 	Character = 4,
 };
 
-enum class FontWeight : ushort {
+enum class FontWeight : uint16 {
 	Thin = 100,
 	ExtraLight = 200,
 	UltraLight = 200,
@@ -65,7 +65,7 @@ enum class FontWeight : ushort {
 	UltraBlack = 950,
 };
 
-enum class FontStretch : uchar {
+enum class FontStretch : uint8 {
 	Undefined = 0,
 	Ultra_condensed = 1,
 	Extra_condensed = 2,
@@ -79,7 +79,7 @@ enum class FontStretch : uchar {
 	Ultra_expanded = 9
 };
 
-enum class FontStyle : uchar {
+enum class FontStyle : uint8 {
 	Normal,
 	Oblique,
 	Italic

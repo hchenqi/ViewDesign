@@ -7,6 +7,8 @@ add_library(ViewDesignDirectX STATIC ${LIB_SOURCES})
 add_library(ViewDesign::DirectX ALIAS ViewDesignDirectX)
 set_target_properties(ViewDesignDirectX PROPERTIES FOLDER "Platform")
 
+target_compile_definitions(ViewDesignDirectX PUBLIC NOMINMAX)
+
 target_include_directories(ViewDesignDirectX PUBLIC ${PROJECT_SOURCE_DIR})
 
 target_link_libraries(ViewDesignDirectX PRIVATE d3d11)

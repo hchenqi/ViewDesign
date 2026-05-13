@@ -7,7 +7,7 @@ namespace ViewDesign {
 
 void ImageRepeatFigure::DrawOn(RenderTarget& target, Point point) const {
 	Size image_size = image.GetSize();
-	ImageFigure image_figure(image, region_empty, opacity);
+	ImageFigure image_figure(image, rect_empty, opacity);
 	for (TileIndex tile_index : GetOverlappingTileRange(image_size, region)) {
 		Vector tile_offset = GetTileOffset(image_size, tile_index);
 		Rect tile_region = Rect(point_zero + tile_offset, image_size).Intersect(region);

@@ -8,28 +8,28 @@ namespace ViewDesign {
 
 struct Color {
 public:
-	uchar blue;
-	uchar green;
-	uchar red;
-	uchar alpha;
+	uint8 blue;
+	uint8 green;
+	uint8 red;
+	uint8 alpha;
 
 public:
-	enum Set : uint;
+	enum Set : uint32;
 
 public:
 	constexpr Color() : Color(0x000000, 0x00) {}
-	constexpr Color(uint rgb, uchar alpha = 0xFF) : blue(rgb & 0xFF), green((rgb >> 8) & 0xFF), red((rgb >> 16) & 0xFF), alpha(alpha) {}
+	constexpr Color(uint32 rgb, uint8 alpha = 0xFF) : blue(rgb & 0xFF), green((rgb >> 8) & 0xFF), red((rgb >> 16) & 0xFF), alpha(alpha) {}
 
-	constexpr uint AsUnsigned() const { return blue | (green << 8) | (red << 16) | (alpha << 24); }
+	constexpr uint32 AsUInt32() const { return blue | (green << 8) | (red << 16) | (alpha << 24); }
 
-	constexpr bool operator==(const Color& color) const { return AsUnsigned() == color.AsUnsigned(); }
-	constexpr bool operator!=(const Color& color) const { return AsUnsigned() != color.AsUnsigned(); }
+	constexpr bool operator==(const Color& color) const { return AsUInt32() == color.AsUInt32(); }
+	constexpr bool operator!=(const Color& color) const { return AsUInt32() != color.AsUInt32(); }
 
 	constexpr bool IsOpaque() const { return alpha == 0xFF; }
 	constexpr bool IsVisible() const { return alpha != 0x00; }
 
 public:
-	enum Set : uint {
+	enum Set : uint32 {
 		AliceBlue = 0xF0F8FF,
 		AntiqueWhite = 0xFAEBD7,
 		Aqua = 0x00FFFF,

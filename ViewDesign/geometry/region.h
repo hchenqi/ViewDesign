@@ -15,12 +15,12 @@ private:
 	Handle handle;
 
 public:
-	Region(Rect region = region_empty);
+	Region(Rect region = rect_empty);
 	~Region();
 
 	bool IsEmpty() const;
 	void Set(Rect region);
-	void Clear() { Set(region_empty); }
+	void Clear() { Set(rect_empty); }
 
 	void Translate(Vector vector);
 

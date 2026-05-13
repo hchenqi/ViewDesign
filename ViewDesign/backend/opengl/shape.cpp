@@ -14,7 +14,7 @@ void Line::DrawOn(RenderTarget& target, Point point) const {
 	auto [r, g, b, a] = AsOpenGLColor(color);
 	glColor4f(r, g, b, a);
 
-	glLineWidth(width);
+	glLineWidth(width * target.GetCurrentScale());
 
 	glBegin(GL_LINES);
 	glVertex2f(point.x + begin.x, point.y + begin.y);
@@ -39,7 +39,7 @@ void Rectangle::DrawOn(RenderTarget& target, Point point) const {
 		auto [r, g, b, a] = AsOpenGLColor(border_color);
 		glColor4f(r, g, b, a);
 
-		glLineWidth(border_width);
+		glLineWidth(border_width * target.GetCurrentScale());
 
 		auto [x0, y0, x1, y1] = AsOpenGLRectShrinkBy(Rect(point, size), border_width / 2.0f);
 		glBegin(GL_LINE_STRIP);

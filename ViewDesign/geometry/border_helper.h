@@ -7,7 +7,7 @@
 namespace ViewDesign {
 
 
-enum class BorderPosition : uint {
+enum class BorderPosition : uint32 {
 	None = 0,
 	Left = 10,			// HTLEFT
 	Top = 12,			// HTTOP

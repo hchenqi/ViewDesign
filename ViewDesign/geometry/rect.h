@@ -12,13 +12,13 @@ struct Rect {
 	Point point;
 	Size size;
 
-	explicit constexpr Rect() : point(), size() {}
+	explicit constexpr Rect() = default;
 	explicit constexpr Rect(Point point, Size size) : point(point), size(size) {}
 	explicit constexpr Rect(Interval horizontal, Interval vertical) : point(horizontal.begin, vertical.begin), size(horizontal.length, vertical.length) {}
 	explicit constexpr Rect(float x, float y, float width, float height) : point(x, y), size(width, height) {}
 
-	constexpr bool operator==(const Rect& rect) const { return point == rect.point && size == rect.size; }
-	constexpr bool operator!=(const Rect& rect) const { return point != rect.point || size != rect.size; }
+	constexpr bool operator==(const Rect& other) const { return point == other.point && size == other.size; }
+	constexpr bool operator!=(const Rect& other) const { return point != other.point || size != other.size; }
 
 	constexpr float left() const { return point.x; }
 	constexpr float right() const { return point.x + size.width; }
@@ -39,22 +39,22 @@ struct Rect {
 
 	constexpr bool IsEmpty() const { return size.IsEmpty(); }
 
-	constexpr bool Contains(const Point& point) const { return point >= this->point && point < RightBottom(); }
-	constexpr bool Contains(const Rect& rect) const { return rect.point >= point && rect.RightBottom() <= RightBottom(); }
+	constexpr bool Contains(const Point& point) const { return point >= LeftTop() && point < RightBottom(); }
+	constexpr bool Contains(const Rect& other) const { return other.LeftTop() >= LeftTop() && other.RightBottom() <= RightBottom(); }
 
-	constexpr Rect Union(const Rect& rect) const {
-		if (IsEmpty()) { return rect; } if (rect.IsEmpty()) { return *this; }
-		Point posl1 = point, posl2 = rect.point, posh1 = RightBottom(), posh2 = rect.RightBottom();
-		Point posl = Point(std::min(posl1.x, posl2.x), std::min(posl1.y, posl2.y));
-		Point posh = Point(std::max(posh1.x, posh2.x), std::max(posh1.y, posh2.y));
-		return Rect(posl, Size(posh.x - posl.x, posh.y - posl.y));
+	constexpr Rect Union(const Rect& other) const {
+		if (IsEmpty()) { return other; } if (other.IsEmpty()) { return *this; }
+		Point pl1 = LeftTop(), ph1 = RightBottom(), pl2 = other.LeftTop(), ph2 = other.RightBottom();
+		Point pl = Point(std::min(pl1.x, pl2.x), std::min(pl1.y, pl2.y));
+		Point ph = Point(std::max(ph1.x, ph2.x), std::max(ph1.y, ph2.y));
+		return Rect(pl, Size(ph.x - pl.x, ph.y - pl.y));
 	}
 
-	constexpr Rect Intersect(const Rect& rect) const {
-		Point posl1 = point, posl2 = rect.point, posh1 = RightBottom(), posh2 = rect.RightBottom();
-		Point posl = Point(std::max(posl1.x, posl2.x), std::max(posl1.y, posl2.y));
-		Point posh = Point(std::min(posh1.x, posh2.x), std::min(posh1.y, posh2.y));
-		return posh > posl ? Rect(posl, Size(posh.x - posl.x, posh.y - posl.y)) : Rect();
+	constexpr Rect Intersect(const Rect& other) const {
+		Point pl1 = LeftTop(), ph1 = RightBottom(), pl2 = other.LeftTop(), ph2 = other.RightBottom();
+		Point pl = Point(std::max(pl1.x, pl2.x), std::max(pl1.y, pl2.y));
+		Point ph = Point(std::min(ph1.x, ph2.x), std::min(ph1.y, ph2.y));
+		return ph > pl ? Rect(pl, Size(ph.x - pl.x, ph.y - pl.y)) : Rect(Point(0.0f, 0.0f), Size(0.0f, 0.0f));
 	}
 
 	static Rect Union(const Rect& rect1, const Rect& rect2) { return rect1.Union(rect2); }

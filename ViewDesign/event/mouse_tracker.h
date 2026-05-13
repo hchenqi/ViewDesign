@@ -13,23 +13,23 @@ enum class MouseTrackEvent {
 	LeftDown,
 	LeftUp,
 	MouseMove,
-	LeftClick,			   // down - up (move < 5px is also accepted)
-	LeftDoubleClick,       // down - up - down(<0.5s)
-	LeftTripleClick,       // down - up - down(<0.5s) - up - down(<0.5s)
-	LeftDrag,              // down - move
+	LeftClick,       // down - up (move distance < 5px)
+	LeftDoubleClick, // down - up - down(< 0.5s)
+	LeftTripleClick, // down - up - down(< 0.5s) - up - down(< 0.5s)
+	LeftDrag,        // down - move
 };
 
 
 class MouseTracker {
 private:
-	uint hit_count = 0;
-	static constexpr uint timer_interval = 500;  // 500ms
+	uint32 hit_count = 0;
+	static constexpr uint32 timer_interval = 500; // 0.5s
 	Timer timer = Timer([&]() { hit_count = 0; timer.Stop(); });
 public:
 	bool is_mouse_down = false;
 	Point mouse_down_position;
 private:
-	static constexpr float move_tolerate_range = 5.0f;  // 5px
+	static constexpr float move_tolerate_distance = 5.0f; // 5px
 public:
 	MouseTrackEvent Track(MouseEvent event) {
 		MouseTrackEvent ret;
@@ -40,7 +40,7 @@ public:
 			case 2: ret = MouseTrackEvent::LeftTripleClick; break;
 			case 0: default: ret = MouseTrackEvent::LeftDown; hit_count = 0; break;
 			}
-			if (square_distance(event.point, mouse_down_position) > square(move_tolerate_range)) {
+			if (!PointInCircle(event.point, mouse_down_position, move_tolerate_distance)) {
 				ret = MouseTrackEvent::LeftDown; hit_count = 0;
 			}
 			hit_count++; timer.Set(timer_interval);

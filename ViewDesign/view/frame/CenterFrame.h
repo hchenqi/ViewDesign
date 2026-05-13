@@ -41,7 +41,7 @@ public:
 	CenterFrame(view_ptr<> child) : _CenterFrame_Base(std::move(child)) {}
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override { child_size = UpdateChildSizeRef(child, size = size_ref); return size; }
-	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override { this->child_size = child_size; Redraw(region_infinite); }
+	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override { this->child_size = child_size; Redraw(rect_infinite); }
 };
 
 
@@ -59,7 +59,7 @@ protected:
 		if (size.height != child_size.height) {
 			size.height = child_size.height; SizeUpdated(size);
 		} else {
-			Redraw(region_infinite);
+			Redraw(rect_infinite);
 		}
 	}
 };
@@ -79,7 +79,7 @@ protected:
 		if (size.width != child_size.width) {
 			size.width = child_size.width; SizeUpdated(size);
 		} else {
-			Redraw(region_infinite);
+			Redraw(rect_infinite);
 		}
 	}
 };

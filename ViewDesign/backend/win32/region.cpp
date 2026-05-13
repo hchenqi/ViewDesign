@@ -17,7 +17,7 @@ Region& TempRegion(Rect rect) { region_temp.Set(rect); return region_temp; }
 
 
 Region::Region(Rect region) {
-	RECT rect = AsRECT(region);
+	RECT rect = AsWin32RECT(Round(region));
 	handle = CreateRectRgn(rect.left, rect.top, rect.right, rect.bottom);
 }
 
@@ -30,7 +30,7 @@ bool Region::IsEmpty() const {
 }
 
 void Region::Set(Rect region) {
-	RECT rect = AsRECT(region);
+	RECT rect = AsWin32RECT(Round(region));
 	SetRectRgn((HRGN)handle, rect.left, rect.top, rect.right, rect.bottom);
 }
 
@@ -62,7 +62,7 @@ void Region::Xor(const Rect& region) { Xor(TempRegion(region)); }
 Rect Region::GetBoundingRect() const {
 	RECT rect;
 	GetRgnBox((HRGN)handle, &rect);
-	return AsRect(rect);
+	return AsRectI(rect);
 }
 
 std::pair<Rect, std::vector<Rect>> Region::GetRects() const {
@@ -71,9 +71,9 @@ std::pair<Rect, std::vector<Rect>> Region::GetRects() const {
 	GetRegionData((HRGN)handle, size, (LPRGNDATA)buffer.data());
 	RGNDATA& data = *(LPRGNDATA)buffer.data();
 	static_assert(sizeof(RECT) == sizeof(Rect));
-	Rect bound = AsRect(data.rdh.rcBound);
+	Rect bound = AsRectI(data.rdh.rcBound);
 	std::vector<Rect> regions((Rect*)(buffer.data() + data.rdh.dwSize), (Rect*)(buffer.data() + data.rdh.dwSize) + data.rdh.nCount);
-	for (auto& region : regions) { region = AsRect(*reinterpret_cast<RECT*>(&region)); }
+	for (auto& region : regions) { region = AsRectI(*reinterpret_cast<RECT*>(&region)); }
 	return { bound , regions };
 }
 

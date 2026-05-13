@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ViewDesign/geometry/geometry.h"
+#include "ViewDesign/geometry/sizeu.h"
 #include "ViewDesign/geometry/transform.h"
 #include "ViewDesign/drawing/color.h"
 
@@ -28,6 +28,7 @@ void UnregisterBitmap(owner_ptr<D2DBitmap>& bitmap);
 
 inline D2D1_POINT_2F AsD2DPoint(Point point) { return { point.x, point.y }; }
 inline D2D1_SIZE_F AsD2DSize(Size size) { return { size.width, size.height }; }
+inline D2D1_SIZE_U AsD2DSize(SizeU size) { return { size.width, size.height }; }
 inline D2D1_RECT_F AsD2DRect(Rect rect) { return { rect.left(), rect.top(), rect.right(), rect.bottom() }; }
 inline Point AsPoint(D2D1_POINT_2F point) { return Point(point.x, point.y); }
 inline Size AsSize(D2D1_SIZE_F size) { return Size(size.width, size.height); }
@@ -36,7 +37,7 @@ inline Rect AsRect(D2D1_RECT_F rect) { return Rect(Point(rect.left, rect.top), S
 inline D2D1::Matrix3x2F AsD2DTransform(Transform transform) { return reinterpret_cast<const D2D1::Matrix3x2F&>(transform); }
 inline Transform AsTransform(D2D1::Matrix3x2F matrix) { return reinterpret_cast<const Transform&>(matrix); }
 
-inline D2D1_COLOR_F AsD2DColor(Color color) { return D2D1::ColorF(color.AsUnsigned(), color.alpha / (float)0xFF); }
+inline D2D1_COLOR_F AsD2DColor(Color color) { return D2D1::ColorF(color.AsUInt32(), color.alpha / (float)0xFF); }
 
 
 inline D2DSolidColorBrush& GetD2DSolidColorBrush(Color color) {

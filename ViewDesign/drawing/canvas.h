@@ -47,7 +47,7 @@ public:
 
 	// group
 private:
-	std::vector<std::tuple<uint, Transform, Rect>> group_list;
+	std::vector<std::tuple<size_t, Transform, Rect>> group_list;
 public:
 	const auto& GetGroupList() const { return group_list; }
 public:
@@ -55,10 +55,10 @@ public:
 		if (clip_region.IsEmpty()) { return; }
 		Transform prev_transform = current_transform; Vector prev_offset = offset;
 		current_transform = transform * offset * current_transform; offset = vector_zero;
-		group_list.push_back(std::make_tuple((uint)figure_list.size(), current_transform, clip_region));
+		group_list.push_back(std::make_tuple(figure_list.size(), current_transform, clip_region));
 		func();
 		current_transform = prev_transform; offset = prev_offset;
-		group_list.push_back(std::make_tuple((uint)figure_list.size(), current_transform, region_empty));
+		group_list.push_back(std::make_tuple(figure_list.size(), current_transform, rect_empty));
 	}
 };
 

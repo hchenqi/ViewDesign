@@ -45,7 +45,7 @@ void TextBlock::SetText(const TextBlockStyle& style, const u16string& text) {
 
 	// text layout
 	ComPtr<IDWriteTextLayout> layout_0;
-	hr << GetDWriteFactory().CreateTextLayout(as_wchar_str(text.c_str()), (uint)text.length(), format.Get(), 0, 0, &layout_0);
+	hr << GetDWriteFactory().CreateTextLayout(as_wchar_str(text.c_str()), (uint32)text.length(), format.Get(), 0, 0, &layout_0);
 
 	ComPtr<TextLayout> layout;
 	hr << layout_0.As(&layout);
@@ -54,10 +54,10 @@ void TextBlock::SetText(const TextBlockStyle& style, const u16string& text) {
 	ComPtr<IDWriteFontFallbackBuilder> font_fallback_builder;
 	GetDWriteFactory().CreateFontFallbackBuilder(&font_fallback_builder);
 
-	DWRITE_UNICODE_RANGE range = { 0, (uint)-1 };
+	DWRITE_UNICODE_RANGE range = { 0, (uint32)-1 };
 	std::vector<const WCHAR*> family_list; family_list.reserve(style.font._family_list.size());
 	for (auto& str : style.font._family_list) { family_list.push_back(as_wchar_str(str.c_str())); }
-	font_fallback_builder->AddMapping(&range, 1, family_list.data(), (uint)family_list.size());
+	font_fallback_builder->AddMapping(&range, 1, family_list.data(), (uint32)family_list.size());
 
 	ComPtr<IDWriteFontFallback> system_font_fallback;
 	GetDWriteFactory().GetSystemFontFallback(&system_font_fallback);

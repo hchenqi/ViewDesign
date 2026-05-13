@@ -1,6 +1,5 @@
 #pragma once
 
-#include "ViewDesign/common/type.h"
 #include "ViewDesign/common/uncopyable.h"
 #include "ViewDesign/drawing/pixel_buffer.h"
 #include "ViewDesign/drawing/figure.h"
@@ -18,7 +17,7 @@ protected:
 	PixelBuffer pixel_buffer;
 	mutable Handle texture = nullptr;
 public:
-	Size GetSize() const { auto [width, height] = pixel_buffer.Size(); return Size(width, height); }
+	SizeU GetSize() const { return pixel_buffer.Size(); }
 	Handle GetTexture() const { if (texture == nullptr) { throw std::invalid_argument("Bitmap: texture not created"); } return texture; }
 public:
 	void CreateTexture() const;
@@ -34,10 +33,10 @@ struct BitmapFigure : Figure {
 	Rect region;
 	float opacity;
 
-	BitmapFigure(const Bitmap& bitmap, Rect region, float opacity) : bitmap(bitmap), region(Rect(point_zero, bitmap.GetSize()).Intersect(region)), opacity(opacity) { bitmap.CreateTexture(); }
-	BitmapFigure(const Bitmap& bitmap, float opacity) : BitmapFigure(bitmap, region_infinite, opacity) {}
+	BitmapFigure(const Bitmap& bitmap, Rect region, float opacity) : bitmap(bitmap), region(region.Intersect(RectI(point_i_zero, bitmap.GetSize()))), opacity(opacity) { bitmap.CreateTexture(); }
+	BitmapFigure(const Bitmap& bitmap, float opacity) : BitmapFigure(bitmap, rect_infinite, opacity) {}
 	BitmapFigure(const Bitmap& bitmap, Rect region) : BitmapFigure(bitmap, region, 1.0f) {}
-	BitmapFigure(const Bitmap& bitmap) : BitmapFigure(bitmap, region_infinite, 1.0f) {}
+	BitmapFigure(const Bitmap& bitmap) : BitmapFigure(bitmap, rect_infinite, 1.0f) {}
 
 	virtual void DrawOn(RenderTarget& target, Point point) const override;
 };

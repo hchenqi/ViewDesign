@@ -27,20 +27,20 @@ private:
 	Handle window;
 #endif
 public:
-	void Create(Handle window, Size size);
+	void Create(Handle window, SizeU size);
 	void Destroy();
-	void Resize(Size size);
+	void Resize(SizeU size);
 private:
-	void CreateLayerFramebuffer(Size size);
+	void CreateLayerFramebuffer(SizeU size);
 	void DestroyLayerFramebuffer() { Layer::DestroyFramebuffer(); }
 private:
-	Rect invalid_region;
+	RectI invalid_region = rect_i_empty;
 #if defined(VIEWDESIGN_BACKEND_OPENGL)
-	Rect invalid_region_front_buffer;
+	RectI invalid_region_front_buffer = rect_i_empty;
 #endif
 public:
-	Rect GetInvalidRegion() const { return invalid_region; }
-	void Redraw(Rect redraw_region);
+	RectI GetInvalidRegion() const { return invalid_region; }
+	void Redraw(RectI redraw_region);
 public:
 	void RenderBegin();
 	void RenderEnd(const Canvas& canvas);

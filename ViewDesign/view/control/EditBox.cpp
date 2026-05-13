@@ -164,7 +164,7 @@ void EditBox::CaretBlink() {
 void EditBox::UpdateSelection(TextRange range) {
 	selection_range = range;
 	selection_region_list.clear();
-	Rect selection_region_union = region_empty;
+	Rect selection_region_union = rect_empty;
 	if (!selection_range.empty()) {
 		HitTestRangeInfo selection_info = text_block.HitTestRange(selection_range); selection_region_list.reserve(selection_info.size());
 		for (auto& it : selection_info) {

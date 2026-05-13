@@ -10,23 +10,23 @@ using namespace GLFW;
 
 WindowLayer::WindowLayer() : window(nullptr) {}
 
-void WindowLayer::Create(Handle window, Size size) {
+void WindowLayer::Create(Handle window, SizeU size) {
 	this->window = window;
 	CreateLayerFramebuffer(size);
 }
 
 void WindowLayer::Destroy() {}
 
-void WindowLayer::Resize(Size size) {
+void WindowLayer::Resize(SizeU size) {
 	CreateLayerFramebuffer(size);
 }
 
-void WindowLayer::CreateLayerFramebuffer(Size size) {
+void WindowLayer::CreateLayerFramebuffer(SizeU size) {
 	Layer::SetFramebuffer(size, nullptr);
-	invalid_region = region_empty;
+	invalid_region = rect_i_empty;
 }
 
-void WindowLayer::Redraw(Rect redraw_region) {
+void WindowLayer::Redraw(RectI redraw_region) {
 	invalid_region = invalid_region.Union(redraw_region);
 	invalid_region_front_buffer = invalid_region_front_buffer.Union(redraw_region);
 }
@@ -42,7 +42,7 @@ void WindowLayer::RenderEnd(const Canvas& canvas) {
 	glfwMakeContextCurrent(nullptr);
 
 	invalid_region = invalid_region_front_buffer;
-	invalid_region_front_buffer = region_empty;
+	invalid_region_front_buffer = rect_i_empty;
 }
 
 

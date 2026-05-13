@@ -11,8 +11,8 @@ namespace ViewDesign {
 
 struct KeyEvent {
 	u16pair ch;
-	uchar key;
-	enum : uchar {
+	uint8 key;
+	enum : uint8 {
 		Char,
 		KeyDown,
 		KeyUp,
@@ -24,7 +24,7 @@ struct KeyEvent {
 
 
 struct Key {
-	enum Value : uchar {
+	enum Value : uint8 {
 		Undefined = 0x00,
 
 		LButton = 0x01,
@@ -99,7 +99,7 @@ struct Key {
 
 	constexpr Key(Value value) : value(value) {}
 
-	constexpr operator uchar() const { return static_cast<uchar>(value); }
+	constexpr operator uint8() const { return static_cast<uint8>(value); }
 
 	// 'A' - 'Z'
 	static constexpr Key Char(char ch) {
@@ -119,7 +119,7 @@ struct Key {
 
 	// Numpad 0 - 9
 	static constexpr Key Numpad(int n) {
-		static constexpr uchar NumpadBase = 0x60; // VK_NUMPAD0
+		static constexpr uint8 NumpadBase = 0x60; // VK_NUMPAD0
 		if (n >= 0 && n <= 9) {
 			return static_cast<Value>(NumpadBase + n);
 		}
@@ -128,7 +128,7 @@ struct Key {
 
 	// F1 - F24
 	static constexpr Key F(int n) {
-		static constexpr uchar FBase = 0x70; // VK_F1
+		static constexpr uint8 FBase = 0x70; // VK_F1
 		if (n >= 1 && n <= 24) {
 			return static_cast<Value>(FBase + n - 1);
 		}

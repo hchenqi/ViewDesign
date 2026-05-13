@@ -6,7 +6,7 @@ namespace ViewDesign {
 namespace Win32 {
 
 
-HCURSOR CreateCursorFromPixelBuffer(const PixelBuffer& pixel_buffer, std::pair<uint, uint> hotspot) {
+HCURSOR CreateCursorFromPixelBuffer(const PixelBuffer& pixel_buffer, PointI hotspot) {
 	auto [width, height] = pixel_buffer.Size();
 	auto [x, y] = hotspot;
 
@@ -29,14 +29,14 @@ HCURSOR CreateCursorFromPixelBuffer(const PixelBuffer& pixel_buffer, std::pair<u
 		return nullptr;
 	}
 
-	memcpy(dibBits, pixel_buffer.Pixels().data(), width * height * 4);
+	memcpy(dibBits, pixel_buffer.PixelData(), pixel_buffer.PixelDataLength());
 
 	HBITMAP hMask = CreateBitmap(width, height, 1, 1, nullptr);
 
 	ICONINFO ii = {};
 	ii.fIcon = FALSE;
-	ii.xHotspot = x;
-	ii.yHotspot = y;
+	ii.xHotspot = std::max(x, 0);
+	ii.yHotspot = std::max(x, 0);
 	ii.hbmColor = hColor;
 	ii.hbmMask = hMask;
 

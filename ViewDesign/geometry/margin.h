@@ -18,8 +18,8 @@ struct Margin {
 
 	constexpr Margin operator-() const { return Margin(-left, -top, -right, -bottom); }
 
-	constexpr Margin operator+(const Margin& margin) const {
-		return Margin(left + margin.left, top + margin.top, right + margin.right, bottom + margin.bottom);
+	constexpr Margin operator+(const Margin& other) const {
+		return Margin(left + other.left, top + other.top, right + other.right, bottom + other.bottom);
 	}
 };
 

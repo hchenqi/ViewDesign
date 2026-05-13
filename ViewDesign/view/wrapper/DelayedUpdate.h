@@ -51,7 +51,7 @@ public:
 	void Redraw() {
 		if (!current_child_redraw_region.IsEmpty()) {
 			Frame::OnChildRedraw(Frame::child, current_child_redraw_region);
-			current_child_redraw_region = region_empty;
+			current_child_redraw_region = rect_empty;
 		}
 	}
 

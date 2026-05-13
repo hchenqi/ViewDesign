@@ -10,7 +10,7 @@ namespace ViewDesign {
 namespace GLFW {
 
 
-owner_ptr<GLFWcursor> CreateCursorFromPixelBuffer(const PixelBuffer& pixel_buffer, std::pair<uint, uint> hotspot);
+owner_ptr<GLFWcursor> CreateCursorFromPixelBuffer(const PixelBuffer& pixel_buffer, PointI hotspot);
 
 
 } // namespace GLFW

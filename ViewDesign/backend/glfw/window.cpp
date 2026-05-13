@@ -48,11 +48,11 @@ void WindowSizeCallback(GLFWwindow* glfw_window, int width, int height) {
 }
 
 void FramebufferSizeCallback(GLFWwindow* glfw_window, int width, int height) {
-	GetWindow(glfw_window)->SetSize(Size(width, height));
+	GetWindow(glfw_window)->SetSize(SizeU(width, height));
 }
 
 void WindowPosCallback(GLFWwindow* glfw_window, int xpos, int ypos) {
-	GetWindow(glfw_window)->SetPoint(Point(xpos, ypos));
+	GetWindow(glfw_window)->SetPoint(PointI(xpos, ypos));
 }
 
 void WindowContentScaleCallback(GLFWwindow* glfw_window, float xscale, float yscale) {
@@ -69,7 +69,7 @@ void WindowMaximizeCallback(GLFWwindow* glfw_window, int maximized) {
 }
 
 void WindowRefreshCallback(GLFWwindow* glfw_window) {
-	GetWindow(glfw_window)->Redraw(region_infinite);
+	GetWindow(glfw_window)->Redraw(rect_infinite);
 }
 
 
@@ -206,13 +206,13 @@ Scale GetWindowScale(Handle window) {
 
 void SetWindowTitle(Handle window, const u16string& title) { glfwSetWindowTitle(AsGLFWWindow(window), as_char_str(to_u8string(title).c_str())); }
 
-void SetWindowRegion(Handle window, Rect region) {
+void SetWindowRegion(Handle window, RectI region) {
 	GLFWwindow* glfw_window = AsGLFWWindow(window);
-	glfwSetWindowPos(glfw_window, static_cast<int>(std::lround(region.point.x)), static_cast<int>(std::lround(region.point.y)));
-	glfwSetWindowSize(glfw_window, static_cast<int>(std::lround(region.size.width)), static_cast<int>(std::lround(region.size.height)));
+	glfwSetWindowPos(glfw_window, region.point.x, region.point.y);
+	glfwSetWindowSize(glfw_window, region.size.width, region.size.height);
 }
 
-void SetWindowOpacity(Handle window, uchar opacity) { glfwSetWindowOpacity(AsGLFWWindow(window), opacity / 255.0f); }
+void SetWindowOpacity(Handle window, float opacity) { glfwSetWindowOpacity(AsGLFWWindow(window), opacity); }
 
 void ShowWindow(Handle window) { glfwShowWindow(AsGLFWWindow(window)); }
 void HideWindow(Handle window) { glfwHideWindow(AsGLFWWindow(window)); }
@@ -222,7 +222,7 @@ void RestoreWindow(Handle window) { glfwRestoreWindow(AsGLFWWindow(window)); }
 
 void CloseWindow(Handle window) { glfwSetWindowShouldClose(AsGLFWWindow(window), GLFW_TRUE); }
 
-void RedrawWindowRegion(Handle window, Rect region) {}
+void RedrawWindowRegion(Handle window, RectI region) {}
 
 void SetWindowCapture(Handle window) { glfwSetInputMode(AsGLFWWindow(window), GLFW_CURSOR, GLFW_CURSOR_DISABLED); }
 void ReleaseWindowCapture(Handle window) { glfwSetInputMode(AsGLFWWindow(window), GLFW_CURSOR, GLFW_CURSOR_NORMAL); GetDesktop().LoseCapture(); }
@@ -230,7 +230,7 @@ void SetWindowFocus(Handle window) { glfwFocusWindow(AsGLFWWindow(window)); }
 
 void ImeWindowEnable(Handle window) {}
 void ImeWindowDisable(Handle window) {}
-void ImeWindowSetPosition(Handle window, Point point) {}
+void ImeWindowSetPosition(Handle window, PointI point) {}
 
 
 } // namespace ViewDesign

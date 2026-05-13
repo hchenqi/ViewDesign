@@ -2,47 +2,82 @@
 
 #include "ViewDesign/geometry/geometry.h"
 #include "ViewDesign/geometry/margin.h"
+#include "ViewDesign/geometry/sizeu.h"
+
+#include <cmath>
 
 
 namespace ViewDesign {
 
 
-inline Size Extend(Size size, float length) {
-	float width = size.width + length * 2, height = size.height + length * 2;
-	return Size(width >= 0.0f ? width : 0.0f, height >= 0.0f ? height : 0.0f);
+constexpr float Clamp(float position, Interval interval) {
+	return std::clamp(position, interval.left(), interval.right());
 }
 
-inline Rect Extend(Rect region, float length) {
-	return Rect(region.point - Vector(length, length), Extend(region.size, length));
+constexpr Point Clamp(Point point, Rect region) {
+	return Point(Clamp(point.x, Interval(region.point.x, region.size.width)), Clamp(point.y, Interval(region.point.y, region.size.height)));
 }
 
-inline Size Extend(Size size, Margin margin) {
-	float width = size.width + margin.left + margin.right;
-	float height = size.height + margin.top + margin.bottom;
-	return Size(width >= 0.0f ? width : 0.0f, height >= 0.0f ? height : 0.0f);
+constexpr Interval Clamp(Interval interval1, Interval interval2) {
+	interval1.length = std::clamp(interval1.length, length_zero, interval2.length);
+	interval1.begin = std::clamp(interval1.begin, interval2.begin, interval2.right() - interval1.length);
+	return interval1;
 }
 
-inline Rect Extend(Rect region, Margin margin) {
+constexpr Rect Clamp(Rect rect, Rect region) {
+	return Rect(Clamp(rect.Horizontal(), region.Horizontal()), Clamp(rect.Vertical(), region.Vertical()));
+}
+
+
+constexpr Size Extend(Size size, float length) {
+	return Size(std::max(size.width + length, 0.0f), std::max(size.height + length, 0.0f));
+}
+
+constexpr Rect Extend(Rect region, float length) {
+	return Rect(region.point - Vector(length, length), Extend(region.size, length * 2));
+}
+
+constexpr Size Extend(Size size, Margin margin) {
+	return Size(std::max(size.width + margin.left + margin.right, 0.0f), std::max(size.height + margin.top + margin.bottom, 0.0f));
+}
+
+constexpr Rect Extend(Rect region, Margin margin) {
 	return Rect(region.point - Vector(margin.left, margin.top), Extend(region.size, margin));
 }
 
 
-inline Rect Round(Rect region) {
+inline PointI Round(Point point) {
+	return PointI(roundf(point.x), roundf(point.y));
+}
+
+inline SizeU Round(Size size) {
+	return SizeU(std::max(roundf(size.width), 0.0f), std::max(roundf(size.height), 0.0f));
+}
+
+inline SizeU RoundUp(Size size) {
+	return SizeU(std::max(ceilf(size.width), 0.0f), std::max(ceilf(size.height), 0.0f));
+}
+
+inline RectI Round(Rect region) {
 	float left = roundf(region.left()), top = roundf(region.top()), right = roundf(region.right()), bottom = roundf(region.bottom());
-	return Rect(left, top, right - left, bottom - top);
+	return RectI(PointI(left, top), SizeU(std::max(right - left, 0.0f), std::max(bottom - top, 0.0f)));
 }
 
-inline Rect RoundUp(Rect region) {
+inline RectI RoundUp(Rect region) {
 	float left = floorf(region.left()), top = floorf(region.top()), right = ceilf(region.right()), bottom = ceilf(region.bottom());
-	return Rect(left, top, right - left, bottom - top);
+	return RectI(PointI(left, top), SizeU(std::max(right - left, 0.0f), std::max(bottom - top, 0.0f)));
 }
 
 
-inline float square(float x) { return x * x; };
+constexpr float square(float x) { return x * x; };
 
-inline float square_distance(Point a, Point b) { return square(a.x - b.x) + square(a.y - b.y); }
+constexpr float square_distance(Point a, Point b) { return square(a.x - b.x) + square(a.y - b.y); }
 
-inline bool PointInRoundedRectangle(Point point, Rect rect, float radius) {
+constexpr bool PointInCircle(Point point, Point center, float radius) {
+	return square_distance(point, center) <= square(radius);
+}
+
+constexpr bool PointInRoundedRectangle(Point point, Rect rect, float radius) {
 	if (!rect.Contains(point)) { return false; } if (radius == 0.0f) { return true; }
 	float x1 = rect.left() + radius, x2 = rect.right() - radius;
 	float y1 = rect.top() + radius, y2 = rect.bottom() - radius;

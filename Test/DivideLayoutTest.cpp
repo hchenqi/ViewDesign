@@ -32,10 +32,10 @@ private:
 private:
 	virtual void OnFocusEvent(FocusEvent event) override {
 		switch (event) {
-		case FocusEvent::MouseEnter: show_background = true; View::Redraw(region_infinite); break;
-		case FocusEvent::MouseLeave: show_background = false; View::Redraw(region_infinite); break;
-		case FocusEvent::FocusIn: show_background_focus = true; View::Redraw(region_infinite); break;
-		case FocusEvent::FocusOut: show_background_focus = false; View::Redraw(region_infinite); break;
+		case FocusEvent::MouseEnter: show_background = true; View::Redraw(rect_infinite); break;
+		case FocusEvent::MouseLeave: show_background = false; View::Redraw(rect_infinite); break;
+		case FocusEvent::FocusIn: show_background_focus = true; View::Redraw(rect_infinite); break;
+		case FocusEvent::FocusOut: show_background_focus = false; View::Redraw(rect_infinite); break;
 		}
 	}
 };
@@ -65,10 +65,10 @@ private:
 	}
 	virtual void OnFocusEvent(FocusEvent event) override {
 		switch (event) {
-		case FocusEvent::MouseOver: show_border = true; Redraw(region_infinite); break;
-		case FocusEvent::MouseOut: show_border = false; Redraw(region_infinite); break;
-		case FocusEvent::Focus: show_border_focus = true; Redraw(region_infinite); break;
-		case FocusEvent::Blur: show_border_focus = false; Redraw(region_infinite); break;
+		case FocusEvent::MouseOver: show_border = true; Redraw(rect_infinite); break;
+		case FocusEvent::MouseOut: show_border = false; Redraw(rect_infinite); break;
+		case FocusEvent::Focus: show_border_focus = true; Redraw(rect_infinite); break;
+		case FocusEvent::Blur: show_border_focus = false; Redraw(rect_infinite); break;
 		}
 	}
 };

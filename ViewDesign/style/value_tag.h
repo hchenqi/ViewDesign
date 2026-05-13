@@ -53,14 +53,14 @@ constexpr ValueTag operator""pct(unsigned long long number) { return pct((float)
 */
 
 
-constexpr ValueTag length_min_tag = ValueTag(ValueTag::Type::Pixel, length_min);
-constexpr ValueTag length_max_tag = ValueTag(ValueTag::Type::Pixel, length_max);
+constexpr ValuePixel length_zero_tag = ValuePixel(length_zero);
+constexpr ValuePixel length_infinite_tag = ValuePixel(length_infinite);
 constexpr ValueTag length_auto = ValueTag(ValueTag::Type::Auto, 0.0f);
 
-constexpr ValueTag position_min_tag = ValueTag(ValueTag::Type::Pixel, position_min);
-constexpr ValueTag position_max_tag = ValueTag(ValueTag::Type::Pixel, position_max);
+constexpr ValuePixel position_max_tag = ValuePixel(position_max);
+constexpr ValuePixel position_min_tag = ValuePixel(position_min);
 constexpr ValueTag position_center = ValueTag(ValueTag::Type::Center, 0.0f);
-constexpr ValueTag position_auto = length_auto;
+constexpr ValueTag position_auto = ValueTag(ValueTag::Type::Auto, 0.0f);
 
 
 } // namespace ViewDesign

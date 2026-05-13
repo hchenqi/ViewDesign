@@ -1,8 +1,8 @@
 #pragma once
 
-#include "ViewDesign/common/type.h"
 #include "ViewDesign/common/uncopyable.h"
 #include "ViewDesign/common/unicode.h"
+#include "ViewDesign/geometry/sizeu.h"
 #include "ViewDesign/drawing/figure.h"
 
 #include <stdexcept>
@@ -18,10 +18,10 @@ public:
 	~Image();
 protected:
 	Handle source;
-	Size size;
+	SizeU size;
 	mutable Handle texture = nullptr;
 public:
-	Size GetSize() const { return size; }
+	SizeU GetSize() const { return size; }
 	Handle GetTexture() const { if (texture == nullptr) { throw std::invalid_argument("Image: texture not created"); } return texture; }
 public:
 	void CreateTexture() const;
@@ -34,7 +34,7 @@ struct ImageFigure : Figure {
 	Rect region;
 	float opacity;
 
-	ImageFigure(const Image& image, Rect region = region_infinite, float opacity = 1.0f) : image(image), region(Rect(point_zero, image.GetSize()).Intersect(region)), opacity(opacity) { image.CreateTexture(); }
+	ImageFigure(const Image& image, Rect region = rect_infinite, float opacity = 1.0f) : image(image), region(region.Intersect(RectI(point_i_zero, image.GetSize()))), opacity(opacity) { image.CreateTexture(); }
 
 	virtual void DrawOn(RenderTarget& target, Point point) const override;
 };
@@ -43,9 +43,9 @@ struct ImageFigure : Figure {
 struct ImageRepeatFigure : Figure {
 	const Image& image;
 	Rect region;
-	uchar opacity;
+	float opacity;
 
-	ImageRepeatFigure(const Image& image, Rect region, uchar opacity = 0xFF) : image(image), region(region), opacity(opacity) {}
+	ImageRepeatFigure(const Image& image, Rect region, float opacity = 1.0f) : image(image), region(region), opacity(opacity) {}
 
 	virtual void DrawOn(RenderTarget& target, Point point) const override;
 };

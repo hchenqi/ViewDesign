@@ -28,16 +28,16 @@ public:
 
 	// layout
 private:
+	RectI region;
 	Scale scale;
-	Rect region;
 protected:
+	RectI GetRegion() const { return region; }
 	Scale GetScale() const { return scale; }
-	Rect GetRegion() const { return region; }
 private:
-	std::pair<Size, Rect> GetMinMaxRegion(Size size_ref);
-	void InitializeRegion(Size size_ref);
-	void SetSize(Size size);
-	void SetPoint(Point point) { region.point = point; }
+	std::pair<SizeU, RectI> GetMinMaxRegion(SizeU desktop_size);
+	void InitializeRegion(SizeU desktop_size);
+	void SetSize(SizeU size);
+	void SetPoint(PointI point) { region.point = point; }
 	void SetScale(Scale scale) { this->scale = Scale(scale); }
 protected:
 	void WindowRegionUpdated(Rect region);
@@ -81,7 +81,7 @@ private:
 
 	// event
 private:
-	virtual ref_ptr<ViewBase> HitTest(MouseEvent& event) override { event.point *= scale.Invert(); return ViewFrame::HitTest(event); }
+	virtual ref_ptr<ViewBase> HitTest(MouseEvent& event) override { event.point /= scale; return ViewFrame::HitTest(event); }
 };
 
 

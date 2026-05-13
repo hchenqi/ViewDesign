@@ -11,7 +11,7 @@ namespace OpenGL {
 class Framebuffer : public Texture {
 public:
 	Framebuffer() : Texture(), id(0) {}
-	Framebuffer(Size size) : Texture(size), id(CreateFramebuffer(Texture::GetId())) {}
+	Framebuffer(SizeU size) : Texture(size), id(CreateFramebuffer(Texture::GetId())) {}
 	~Framebuffer() { if (id != 0) { glDeleteFramebuffers(1, &id); id = 0; } }
 
 private:

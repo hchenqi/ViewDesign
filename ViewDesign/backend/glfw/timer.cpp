@@ -6,7 +6,7 @@ namespace ViewDesign {
 using namespace GLFW;
 
 
-void Timer::Set(uint period) {
+void Timer::Set(uint32 period) {
 	if (!IsSet()) {
 		timer = SetTimer(period, *this);
 	} else {

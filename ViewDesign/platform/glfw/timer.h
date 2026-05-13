@@ -8,8 +8,8 @@ namespace ViewDesign {
 namespace GLFW {
 
 
-Handle SetTimer(uint period, Timer& timer); // milliseconds
-void ResetTimer(Handle handle, uint period);
+Handle SetTimer(uint32 period, Timer& timer); // milliseconds
+void ResetTimer(Handle handle, uint32 period);
 void KillTimer(Handle handle);
 
 

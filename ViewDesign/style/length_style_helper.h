@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ViewDesign/style/length_style.h"
-#include "ViewDesign/geometry/clamp.h"
+#include "ViewDesign/geometry/helper.h"
 
 
 namespace ViewDesign {
@@ -44,7 +44,7 @@ public:
 				length_normal = px(length_ref - position_low.value() - position_high.value());
 			}
 		}
-		float length_result = clamp(length_normal.value(), length_min.value(), length_max.value());
+		float length_result = std::clamp(length_normal.value(), length_min.value(), length_max.value());
 		return Interval(CalculatePosition(position_low, position_high, length_result, length_ref), length_result);
 	}
 public:

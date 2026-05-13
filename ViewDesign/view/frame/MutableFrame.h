@@ -38,7 +38,7 @@ public:
 			if constexpr (std::same_as<MutableFrame&, decltype(other)>) {
 				other.RegisterChild(other.child);
 				other.SizeUpdated(other.UpdateChildSizeRef(other.child, other.size_ref));
-				other.Redraw(region_infinite);
+				other.Redraw(rect_infinite);
 			}
 		}(other), ...);
 	}

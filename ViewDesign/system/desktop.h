@@ -1,12 +1,12 @@
 #pragma once
 
-#include "ViewDesign/geometry/geometry.h"
+#include "ViewDesign/geometry/sizeu.h"
 
 
 namespace ViewDesign {
 
 
-Size GetDesktopSize();
+SizeU GetDesktopSize();
 
 
 } // namespace ViewDesign

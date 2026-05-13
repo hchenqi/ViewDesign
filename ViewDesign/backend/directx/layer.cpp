@@ -11,18 +11,17 @@ using namespace DirectX;
 
 namespace {
 
-inline ComPtr<D2DBitmap> CreateEmptyD2DBitmap(Size size) {
-	auto [width, height] = std::make_pair((uint)ceilf(size.width), (uint)ceilf(size.height));
+inline ComPtr<D2DBitmap> CreateEmptyD2DBitmap(SizeU size) {
 	D2D1_BITMAP_PROPERTIES1 bitmap_properties = D2D1::BitmapProperties1(D2D1_BITMAP_OPTIONS_TARGET, D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED));
 	ComPtr<D2DBitmap> bitmap;
-	hr << GetD2DDeviceContext().CreateBitmap(D2D1::SizeU(width, height), nullptr, 0, &bitmap_properties, &bitmap);
+	hr << GetD2DDeviceContext().CreateBitmap(D2D1::SizeU(size.width, size.height), nullptr, 0, &bitmap_properties, &bitmap);
 	return bitmap;
 }
 
 } // namespace
 
 
-void Layer::CreateFramebuffer(Size size) {
+void Layer::CreateFramebuffer(SizeU size) {
 	DestroyFramebuffer();
 	this->size = size;
 	framebuffer = CreateEmptyD2DBitmap(size).Detach();
@@ -33,7 +32,7 @@ void Layer::DestroyFramebuffer() {
 	if (HasFramebuffer()) {
 		UnregisterBitmap(reinterpret_cast<owner_ptr<D2DBitmap>&>(framebuffer));
 		ComPtr<D2DBitmap>().Swap(reinterpret_cast<owner_ptr<D2DBitmap>&>(framebuffer));
-		size = size_empty;
+		size = size_u_empty;
 	}
 }
 

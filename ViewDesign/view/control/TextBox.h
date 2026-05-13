@@ -31,7 +31,7 @@ protected:
 			SizeUpdated(this->region.size);
 		} else {
 			this->region = region;
-			Redraw(region_infinite);
+			Redraw(rect_infinite);
 		}
 	}
 public:
@@ -81,7 +81,7 @@ protected:
 	// drawing
 protected:
 	virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
-		canvas.draw(-region.point, new TextBlockFigure(text_block, style.font._color));
+		canvas.draw(point_zero + (point_zero - region.point), new TextBlockFigure(text_block, style.font._color));
 	}
 };
 

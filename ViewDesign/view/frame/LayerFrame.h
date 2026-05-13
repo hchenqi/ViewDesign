@@ -30,7 +30,7 @@ protected:
 	float opacity;
 public:
 	float GetOpacity() const { return opacity; }
-	void SetOpacity(float opacity) { this->opacity = opacity; Redraw(region_infinite); }
+	void SetOpacity(float opacity) { this->opacity = opacity; Redraw(rect_infinite); }
 
 	// layout
 protected:
@@ -53,7 +53,7 @@ protected:
 	virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
 		draw_region = draw_region.Intersect(Rect(point_zero, size)); if (draw_region.IsEmpty()) { return; }
 		scale = canvas.GetCurrentTransform().GetScale();
-		Size layer_size = size * scale;
+		SizeU layer_size = Round(size * scale);
 		if (layer.GetSize() != layer_size) { layer.DestroyFramebuffer(); }
 		Rect composite_region = draw_region * scale, redraw_region = composite_region;
 		if (!layer.HasFramebuffer()) {
@@ -65,7 +65,7 @@ protected:
 		}
 		if (!redraw_region.IsEmpty()) {
 			Canvas canvas;
-			canvas.Group(scale, region_infinite, [&]() { DrawChild(child, point_zero, canvas, redraw_region * scale.Invert()); });
+			canvas.Group(scale, rect_infinite, [&]() { DrawChild(child, point_zero, canvas, redraw_region / scale); });
 			layer.RenderCanvas(canvas, vector_zero, redraw_region);
 			invalid_region.Sub(redraw_region);
 		}
@@ -94,7 +94,7 @@ protected:
 	float opacity;
 public:
 	float GetOpacity() const { return opacity; }
-	void SetOpacity(float opacity) { this->opacity = opacity; Redraw(region_infinite); }
+	void SetOpacity(float opacity) { this->opacity = opacity; Redraw(rect_infinite); }
 
 	// layout
 protected:
@@ -107,7 +107,7 @@ protected:
 protected:
 	Scale scale;
 	Region invalid_region;
-	Size tile_size;
+	SizeU tile_size = size_u_empty;
 protected:
 	struct TileIndexHash {
 		size_t operator() (const TileIndex& tile_index) const {
@@ -124,7 +124,7 @@ protected:
 	virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
 		draw_region = draw_region.Intersect(Rect(point_zero, size)); if (draw_region.IsEmpty()) { return; }
 		scale = canvas.GetCurrentTransform().GetScale();
-		if (Size tile_size_new = TilingFunc()(tile_size, size * scale); tile_size_new != tile_size) {
+		if (SizeU tile_size_new = TilingFunc()(tile_size, size * scale); tile_size_new != tile_size) {
 			tile_size = tile_size_new;
 			tile_cache.clear();
 		}
@@ -138,7 +138,7 @@ protected:
 		Rect redraw_region = render_region.GetBoundingRect();
 		if (!redraw_region.IsEmpty()) {
 			Canvas canvas;
-			canvas.Group(scale, region_infinite, [&]() { DrawChild(child, point_zero, canvas, redraw_region * scale.Invert()); });
+			canvas.Group(scale, rect_infinite, [&]() { DrawChild(child, point_zero, canvas, redraw_region / scale); });
 			for (TileIndex tile_index : GetOverlappingTileRange(tile_size, redraw_region)) {
 				Layer& layer = tile_cache[tile_index];
 				if (!layer.HasFramebuffer()) { layer.CreateFramebuffer(tile_size); }
@@ -150,9 +150,9 @@ protected:
 		for (TileIndex tile_index : GetOverlappingTileRange(tile_size, composite_region)) {
 			Vector tile_offset = GetTileOffset(tile_size, tile_index);
 			Rect tile_region = Rect(point_zero + tile_offset, tile_size).Intersect(composite_region);
-			canvas.draw(tile_region.point * scale.Invert(), new LayerFigure(tile_cache.at(tile_index), tile_region - tile_offset, tile_region.size * scale.Invert(), opacity));
+			canvas.draw(tile_region.point / scale, new LayerFigure(tile_cache.at(tile_index), tile_region - tile_offset, tile_region.size / scale, opacity));
 #if !defined(NDEBUG)
-			canvas.draw((point_zero + tile_offset) * scale.Invert(), new Rectangle(tile_size * scale.Invert(), 1.0f, Color(Color::Red, 0x7F)));
+			canvas.draw((point_zero + tile_offset) / scale, new Rectangle(tile_size / scale, 1.0f, Color(Color::Red, 0x7F)));
 #endif
 		}
 	}

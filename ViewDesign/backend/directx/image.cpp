@@ -64,10 +64,10 @@ ComPtr<ImageSource> LoadImageFromMemory(void* address, size_t size) {
 	}
 }
 
-inline Size GetImageSize(ImageSource& source) {
-	uint width, height;
+inline SizeU GetImageSize(ImageSource& source) {
+	uint32 width, height;
 	hr << source.GetSize(&width, &height);
-	return Size((float)width, (float)height);
+	return SizeU(width, height);
 }
 
 inline ComPtr<D2DBitmap> CreateD2DBitmapFromWicBitmap(ImageSource& source) {

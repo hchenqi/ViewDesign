@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ViewDesign/geometry/transform.h"
+#include "ViewDesign/geometry/helper.h"
 #include "ViewDesign/platform/glad/framebuffer.h"
 
 #include <vector>
@@ -13,18 +14,18 @@ namespace OpenGL {
 
 struct RenderContext {
 private:
-	Size size;
-	std::vector<Rect> clip_stack;
+	SizeU size;
+	std::vector<RectI> clip_stack;
+	Scale current_scale;
 public:
-	RenderContext(Size size, ref_ptr<Framebuffer> framebuffer) : size(size) {
+	RenderContext(SizeU size, ref_ptr<Framebuffer> framebuffer) : size(size) {
 		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer == nullptr ? 0 : framebuffer->GetId());
 
-		auto [width, height] = std::make_pair((uint)ceilf(size.width), (uint)ceilf(size.height));
-		glViewport(0, 0, width, height);
+		glViewport(0, 0, size.width, size.height);
 
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
-		glOrtho(0, width, height, 0, -1, 1);
+		glOrtho(0, size.width, size.height, 0, -1, 1);
 
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
@@ -33,6 +34,7 @@ public:
 	}
 public:
 	void SetTransform(const Transform& transform) {
+		current_scale = transform.GetScale();
 		const auto& mat32 = transform.matrix;
 		float mat44[16] = {
 			mat32[0][0], mat32[0][1], 0.0f, 0.0f,
@@ -43,14 +45,18 @@ public:
 		glMatrixMode(GL_MODELVIEW);
 		glLoadMatrixf(mat44);
 	}
+	float GetCurrentScale() const {
+		return (current_scale.x + current_scale.y) / 2;
+	}
 private:
-	void SetAxisAlignedClip(const Rect& rect) {
+	void SetAxisAlignedClip(RectI rect) {
 		glScissor(rect.point.x, size.height - rect.point.y - rect.size.height, rect.size.width, rect.size.height);
 	}
 public:
 	void PushAxisAlignedClip(Rect rect) {
-		SetAxisAlignedClip(rect);
-		clip_stack.push_back(rect);
+		RectI rect_i = Round(rect);
+		SetAxisAlignedClip(rect_i);
+		clip_stack.push_back(rect_i);
 	}
 	void PopAxisAlignedClip() {
 		clip_stack.pop_back();
@@ -85,7 +91,7 @@ inline std::tuple<float, float, float, float> AsOpenGLRectShrinkBy(Rect rect, fl
 } // namespace OpenGL
 
 
-inline struct RenderTarget {} render_target;
+struct RenderTarget : OpenGL::RenderContext {};
 
 
 } // namespace ViewDesign

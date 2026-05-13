@@ -13,7 +13,7 @@ using namespace Vulkan;
 
 WindowLayer::WindowLayer() : surface(nullptr) {}
 
-void WindowLayer::Create(Handle window, Size size) {
+void WindowLayer::Create(Handle window, SizeU size) {
 	Destroy();
 	surface = new Surface(InstanceContext::GetInstance().createWin32SurfaceKHR(vk::Win32SurfaceCreateInfoKHR({}, GetHInstance(), AsHWND(window))), size);
 }
@@ -25,13 +25,13 @@ void WindowLayer::Destroy() {
 	}
 }
 
-void WindowLayer::Resize(Size size) {}
+void WindowLayer::Resize(SizeU size) {}
 
-void WindowLayer::CreateLayerFramebuffer(Size size) {
+void WindowLayer::CreateLayerFramebuffer(SizeU size) {
 
 }
 
-void WindowLayer::Redraw(Rect redraw_region) {
+void WindowLayer::Redraw(RectI redraw_region) {
 	invalid_region = invalid_region.Union(redraw_region);
 }
 
@@ -43,7 +43,7 @@ void WindowLayer::RenderEnd(const Canvas& canvas) {
 	static_cast<ref_ptr<Surface>>(surface)->Render([&]() {
 		Layer::RenderCanvas(canvas, vector_zero, invalid_region);
 	});
-	invalid_region = region_empty;
+	invalid_region = rect_empty;
 }
 
 

@@ -6,10 +6,10 @@
 namespace ViewDesign {
 
 
-Size GetDesktopSize() {
+SizeU GetDesktopSize() {
 	int x, y, width, height;
 	glfwGetMonitorWorkarea(glfwGetPrimaryMonitor(), &x, &y, &width, &height);
-	return Size(width, height);
+	return SizeU(width, height);
 }
 
 

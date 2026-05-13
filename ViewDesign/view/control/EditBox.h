@@ -73,7 +73,7 @@ protected:
 	enum class CaretMoveDirection { Left, Right, Up, Down, Home, End };
 protected:
 	size_t caret_position = 0;
-	Rect caret_region = region_empty;
+	Rect caret_region = rect_empty;
 protected:
 	Rect GetCaretRegion(const HitTestPointInfo& info) const;
 	void UpdateCaret(const HitTestPointInfo& info);
@@ -86,13 +86,13 @@ protected:
 
 	// caret state
 protected:
-	static constexpr ushort caret_blink_period = 500;  // 500ms
-	static constexpr ushort caret_blink_expire_time = 20000;  // 20s
-	enum class CaretState : ushort { Hide, Show, BlinkShow, BlinkHide };
+	static constexpr uint16 caret_blink_period = 500;  // 500ms
+	static constexpr uint16 caret_blink_expire_time = 20000;  // 20s
+	enum class CaretState : uint16 { Hide, Show, BlinkShow, BlinkHide };
 protected:
 	Timer caret_timer = Timer(std::bind(&EditBox::CaretBlink, this));
 	CaretState caret_state = CaretState::Hide;
-	ushort caret_blink_time = 0;
+	uint16 caret_blink_time = 0;
 protected:
 	bool IsCaretVisible() const { return caret_state == CaretState::Show || caret_state == CaretState::BlinkShow; }
 protected:

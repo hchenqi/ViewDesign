@@ -22,7 +22,7 @@ protected:
 	void SetBackground(Color background) {
 		if (this->background != background) {
 			this->background = background;
-			Redraw(region_infinite);
+			Redraw(rect_infinite);
 		}
 	}
 

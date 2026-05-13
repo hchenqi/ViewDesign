@@ -14,15 +14,15 @@ template<>
 class FixedFrame<Auto, Auto> : public ViewFrame, public SizeTrait<Auto, Auto> {
 public:
 	FixedFrame(float width, view_ptr<Fixed, Auto> child) : ViewFrame(std::move(child)) {
-		SetChildData<uint>(this->child, fixed_auto);
-		size = Size(width, UpdateChildSizeRef(this->child, Size(width, length_min)).height);
+		SetChildData<uint32>(this->child, fixed_auto);
+		size = Size(width, UpdateChildSizeRef(this->child, Size(width, length_zero)).height);
 	}
 	FixedFrame(float height, view_ptr<Auto, Fixed> child) : ViewFrame(std::move(child)) {
-		SetChildData<uint>(this->child, auto_fixed);
-		size = Size(UpdateChildSizeRef(this->child, Size(length_min, height)).width, height);
+		SetChildData<uint32>(this->child, auto_fixed);
+		size = Size(UpdateChildSizeRef(this->child, Size(length_zero, height)).width, height);
 	}
 	FixedFrame(Size size, view_ptr<Fixed, Fixed> child) : ViewFrame(std::move(child)) {
-		SetChildData<uint>(this->child, fixed_fixed);
+		SetChildData<uint32>(this->child, fixed_fixed);
 		this->size = size; UpdateChildSizeRef(this->child, size);
 	}
 protected:
@@ -35,15 +35,15 @@ protected:
 	Size size;
 public:
 	void SetSize(Size size) {
-		switch (GetChildData<uint>(child)) {
+		switch (GetChildData<uint32>(child)) {
 		case fixed_auto:
 			if (this->size.width != size.width) {
-				this->size = Size(size.width, UpdateChildSizeRef(this->child, Size(size.width, length_min)).height);
+				this->size = Size(size.width, UpdateChildSizeRef(this->child, Size(size.width, length_zero)).height);
 				SizeUpdated(this->size);
 			} break;
 		case auto_fixed:
 			if (this->size.height != size.height) {
-				this->size = Size(UpdateChildSizeRef(this->child, Size(length_min, size.height)).width, size.height);
+				this->size = Size(UpdateChildSizeRef(this->child, Size(length_zero, size.height)).width, size.height);
 				SizeUpdated(this->size);
 			} break;
 		case fixed_fixed:
@@ -58,7 +58,7 @@ public:
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override { return size; }
 	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override {
-		switch (GetChildData<uint>(child)) {
+		switch (GetChildData<uint32>(child)) {
 		case fixed_auto: if (size.height != child_size.height) { size.height = child_size.height; SizeUpdated(size); } break;
 		case auto_fixed: if (size.width != child_size.width) { size.width = child_size.width; SizeUpdated(size); } break;
 		}

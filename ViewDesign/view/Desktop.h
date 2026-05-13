@@ -41,7 +41,7 @@ public:
 
 	// layout
 public:
-	Size GetSize() const;
+	SizeU GetSize() const;
 
 	// drawing
 private:

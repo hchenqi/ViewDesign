@@ -21,7 +21,7 @@ public:
 protected:
 	Border border;
 public:
-	void SetBorder(Border border) { this->border = border; Redraw(region_infinite); }
+	void SetBorder(Border border) { this->border = border; Redraw(rect_infinite); }
 
 	// layout
 protected:
@@ -33,8 +33,8 @@ protected:
 protected:
 	virtual Transform GetChildTransform(ViewBase& child) const override { return GetChildOffset(); }
 protected:
-	virtual Size OnSizeRefUpdate(Size size_ref) override { return size = Extend(child_size = UpdateChildSizeRef(child, Extend(size_ref, -border._width)), border._width); }
-	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override { SizeUpdated(size = Extend(this->child_size = child_size, border._width)); }
+	virtual Size OnSizeRefUpdate(Size size_ref) override { return size = Extend(child_size = UpdateChildSizeRef(child, Extend(size_ref, -border._width * 2)), border._width * 2); }
+	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override { SizeUpdated(size = Extend(this->child_size = child_size, border._width * 2)); }
 
 	// drawing
 protected:

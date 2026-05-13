@@ -16,13 +16,13 @@ namespace {
 
 struct TimerEntry {
 	ref_ptr<Timer> timer;
-	uint period;
+	uint32 period;
 	uint64 due;
 
 	size_t ref_count;
 	std::list<TimerEntry>::iterator index;
 
-	TimerEntry(Timer& timer, uint period, uint64 due) : timer(&timer), period(period), due(due), ref_count(0) {}
+	TimerEntry(Timer& timer, uint32 period, uint64 due) : timer(&timer), period(period), due(due), ref_count(0) {}
 };
 
 inline TimerEntry& AsTimerEntry(Handle handle) { return *static_cast<ref_ptr<TimerEntry>>(handle); }
@@ -48,13 +48,13 @@ inline uint64 GetTime() { return static_cast<uint64>(glfwGetTime() * 1000); }
 } // namespace
 
 
-Handle SetTimer(uint period, Timer& timer) {
+Handle SetTimer(uint32 period, Timer& timer) {
 	TimerEntry& entry = timer_list.emplace_front(timer, period, GetTime() + period); entry.index = timer_list.begin();
 	timer_queue.emplace(entry);
 	return &entry;
 }
 
-void ResetTimer(Handle handle, uint period) {
+void ResetTimer(Handle handle, uint32 period) {
 	TimerEntry& entry = AsTimerEntry(handle);
 	entry.period = period;
 	uint64 due = GetTime() + period;

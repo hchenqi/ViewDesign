@@ -3,6 +3,7 @@
 #include "ViewDesign/system/window.h"
 #include "ViewDesign/system/event_loop.h"
 #include "ViewDesign/common/reversion_wrapper.h"
+#include "ViewDesign/geometry/helper.h"
 
 
 namespace ViewDesign {
@@ -57,7 +58,7 @@ void Desktop::CloseAllWindows() {
 	}
 }
 
-Size ViewDesign::Desktop::GetSize() const {
+SizeU ViewDesign::Desktop::GetSize() const {
 	return GetDesktopSize();
 }
 
@@ -235,7 +236,7 @@ void Desktop::ImeWindowDisable() {
 }
 
 void Desktop::ImeWindowSetPosition(Window& window, Point point) {
-	ViewDesign::ImeWindowSetPosition(window.GetHandle(), point);
+	ViewDesign::ImeWindowSetPosition(window.GetHandle(), Round(point));
 }
 
 void Desktop::ImeSetPosition(ViewBase& view, Point point) {

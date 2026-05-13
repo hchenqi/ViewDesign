@@ -53,7 +53,7 @@ std::reference_wrapper<Cursor> GetCursor(CursorStyle style) {
 	return cursor_cache_shared[static_cast<size_t>(style)];
 }
 
-std::reference_wrapper<Cursor> CreateCursor(const PixelBuffer& pixel_buffer, std::pair<uint, uint> hotspot) {
+std::reference_wrapper<Cursor> CreateCursor(const PixelBuffer& pixel_buffer, PointI hotspot) {
 	static std::vector<Cursor> cursor_cache_custom;
 	return cursor_cache_custom.emplace_back(Cursor::Type::Custom, GLFW::CreateCursorFromPixelBuffer(pixel_buffer, hotspot));
 }

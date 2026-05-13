@@ -1,4 +1,3 @@
-#define NOMINMAX
 #include "ViewDesign/platform/directx/d3d_api.h"
 #include "ViewDesign/platform/directx/dxgi_api.h"
 #include "ViewDesign/platform/directx/dcomp_api.h"

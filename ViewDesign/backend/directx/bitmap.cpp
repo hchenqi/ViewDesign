@@ -14,7 +14,7 @@ inline ComPtr<D2DBitmap> CreateD2DBitmap(const PixelBuffer& pixel_buffer) {
 	auto [width, height] = pixel_buffer.Size();
 	D2D1_BITMAP_PROPERTIES1 bitmap_properties = D2D1::BitmapProperties1(D2D1_BITMAP_OPTIONS_NONE, D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED));
 	ComPtr<D2DBitmap> bitmap;
-	hr << GetD2DDeviceContext().CreateBitmap(D2D1::SizeU(width, height), pixel_buffer.Pixels().data(), (uint)(width * sizeof(Color)), &bitmap_properties, &bitmap);
+	hr << GetD2DDeviceContext().CreateBitmap(D2D1::SizeU(width, height), pixel_buffer.PixelData(), width * sizeof(Color), &bitmap_properties, &bitmap);
 	return bitmap;
 }
 

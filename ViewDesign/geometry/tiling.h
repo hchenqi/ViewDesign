@@ -2,6 +2,9 @@
 
 #include "ViewDesign/common/tile_range.h"
 #include "ViewDesign/geometry/geometry.h"
+#include "ViewDesign/geometry/sizeu.h"
+
+#include <cmath>
 
 
 namespace ViewDesign {
@@ -25,18 +28,18 @@ inline TileRange GetOverlappingTileRange(Size tile_size, Rect region) {
 
 
 struct TilingFuncDefault {
-	Size operator()(Size tile_size_current, Size size_new) {			
-		Size tile_size;
+	SizeU operator()(SizeU tile_size_current, Size size_new) {			
+		SizeU tile_size = size_u_empty;
 
-		if (size_new.width <= 64.0f) { tile_size.width = 64.0f; }
-		else if (size_new.width <= 128.0f) { tile_size.width = 128.0f; }
-		else if (size_new.width <= 256.0f) { tile_size.width = 256.0f; }
-		else { tile_size.width = 512.0f; }
+		if (size_new.width <= 64.0f) { tile_size.width = 64; }
+		else if (size_new.width <= 128.0f) { tile_size.width = 128; }
+		else if (size_new.width <= 256.0f) { tile_size.width = 256; }
+		else { tile_size.width = 512; }
 
-		if (size_new.height <= 64.0f) { tile_size.height = 64.0f; }
-		else if (size_new.height <= 128.0f) { tile_size.height = 128.0f; }
-		else if (size_new.height <= 256.0f) { tile_size.height = 256.0f; }
-		else { tile_size.height = 512.0f; }
+		if (size_new.height <= 64.0f) { tile_size.height = 64; }
+		else if (size_new.height <= 128.0f) { tile_size.height = 128; }
+		else if (size_new.height <= 256.0f) { tile_size.height = 256; }
+		else { tile_size.height = 512; }
 
 		if (tile_size.width < tile_size_current.width) { tile_size.width = tile_size_current.width; }
 		if (tile_size.height < tile_size_current.height) { tile_size.height = tile_size_current.height; }

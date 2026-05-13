@@ -20,9 +20,9 @@ struct MouseEvent {
 			bool xbutton1 : 1;
 			bool xbutton2 : 1;
 		};
-		uchar _key_state;
+		uint8 _key_state;
 	};
-	enum : uchar {
+	enum : uint8 {
 		LeftDown,
 		LeftUp,
 		RightDown,

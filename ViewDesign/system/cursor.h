@@ -13,7 +13,7 @@ class Cursor;
 
 
 std::reference_wrapper<Cursor> GetCursor(CursorStyle style);
-std::reference_wrapper<Cursor> CreateCursor(const PixelBuffer& pixel_buffer, std::pair<uint, uint> hotspot);
+std::reference_wrapper<Cursor> CreateCursor(const PixelBuffer& pixel_buffer, PointI hotspot);
 
 
 #if defined(VIEWDESIGN_BACKEND_WIN32)

@@ -29,8 +29,8 @@ private:
 			constexpr static Color background_color = Color(Color::Orange, 0x40);
 			constexpr static Color background_color_focus = Color(Color::Orange, 0x80);
 		public:
-			void Focus() { background = background_color_focus; Redraw(region_infinite); }
-			void Blur() { background = background_color; Redraw(region_infinite); }
+			void Focus() { background = background_color_focus; Redraw(rect_infinite); }
+			void Blur() { background = background_color; Redraw(rect_infinite); }
 		};
 
 	public:

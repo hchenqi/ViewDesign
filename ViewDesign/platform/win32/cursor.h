@@ -10,7 +10,7 @@ namespace ViewDesign {
 namespace Win32 {
 
 
-HCURSOR CreateCursorFromPixelBuffer(const PixelBuffer& pixel_buffer, std::pair<uint, uint> hotspot);
+HCURSOR CreateCursorFromPixelBuffer(const PixelBuffer& pixel_buffer, PointI hotspot);
 
 
 } // namespace Win32

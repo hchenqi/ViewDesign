@@ -22,8 +22,8 @@ protected:
 	void SetScale(Scale scale) {
 		if (this->scale != scale) {
 			this->scale = scale;
-			SizeUpdated(UpdateChildSizeRef(child, size_ref * scale.Invert()) * scale);
-			Redraw(region_infinite);
+			SizeUpdated(UpdateChildSizeRef(child, size_ref / scale) * scale);
+			Redraw(rect_infinite);
 		}
 	}
 
@@ -33,7 +33,7 @@ protected:
 protected:
 	virtual Transform GetChildTransform(ViewBase& child) const override { return scale; }
 protected:
-	virtual Size OnSizeRefUpdate(Size size_ref) override { return UpdateChildSizeRef(child, (this->size_ref = size_ref) * scale.Invert()) * scale; }
+	virtual Size OnSizeRefUpdate(Size size_ref) override { return UpdateChildSizeRef(child, (this->size_ref = size_ref) / scale) * scale; }
 	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override { SizeUpdated(child_size * scale); }
 
 	// drawing
@@ -42,14 +42,14 @@ protected:
 		Redraw(child_redraw_region * scale);
 	}
 	virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
-		canvas.Group(scale, region_infinite, [&]() {
-			DrawChild(child, point_zero, canvas, draw_region * scale.Invert());
+		canvas.Group(scale, rect_infinite, [&]() {
+			DrawChild(child, point_zero, canvas, draw_region / scale);
 		});
 	}
 
 	// event
 protected:
-	virtual ref_ptr<ViewBase> HitTest(MouseEvent& event) override { event.point *= scale.Invert(); return ViewFrame::HitTest(event); }
+	virtual ref_ptr<ViewBase> HitTest(MouseEvent& event) override { event.point /= scale; return ViewFrame::HitTest(event); }
 };
 
 

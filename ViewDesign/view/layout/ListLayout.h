@@ -18,7 +18,7 @@ protected:
 		view_ptr<> view;
 		Rect region;
 	public:
-		ChildInfo(view_ptr<> view) : view(std::move(view)), region(region_empty) {}
+		ChildInfo(view_ptr<> view) : view(std::move(view)), region(rect_empty) {}
 	};
 
 private:
@@ -166,10 +166,10 @@ protected:
 	// drawing
 protected:
 	void RedrawChild(std::vector<ChildInfo>::const_iterator it) {
-		Redraw(Rect(Point(0, it->region.top()), Size(length_max, it->region.height())));
+		Redraw(Rect(Point(0, it->region.top()), Size(length_infinite, it->region.height())));
 	}
 	void RedrawChild(std::vector<ChildInfo>::const_iterator first, std::vector<ChildInfo>::const_iterator last) {
-		Redraw(Rect(Point(0, first->region.top()), Size(length_max, last->region.bottom() - first->region.top())));
+		Redraw(Rect(Point(0, first->region.top()), Size(length_infinite, last->region.bottom() - first->region.top())));
 	}
 protected:
 	virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
@@ -201,7 +201,7 @@ public:
 	ListLayoutVertical(float gap, auto... child) requires (is_compatible_unique_ptr<decltype(child), child_type> && ...) : _ListLayoutVertical_Base(gap, std::move(child)...) {
 		if constexpr (IsAuto<WidthTrait>) {
 			for (auto& child : child_list) {
-				child.region.size = UpdateChildSizeRef(child.view, Size(width_ref, length_min));
+				child.region.size = UpdateChildSizeRef(child.view, Size(width_ref, length_zero));
 			}
 			size.width = CalculateMaxWidth();
 			UpdateOffsetHeight(child_list.begin(), child_list.end());
@@ -215,7 +215,7 @@ public:
 public:
 	void InsertChild(size_t index, child_type child) {
 		auto it = _ListLayout_Base::InsertChild(index, std::move(child));
-		it->region.size = UpdateChildSizeRef(it->view, Size(width_ref, length_min));
+		it->region.size = UpdateChildSizeRef(it->view, Size(width_ref, length_zero));
 		UpdateWidthHeight(CalculateMaxWidthAdd(it->region.size.width), UpdateOffset(it, it + 1));
 	}
 	void AppendChild(child_type child) { InsertChild(-1, std::move(child)); }
@@ -223,7 +223,7 @@ public:
 		auto [it_begin, it_end] = _ListLayout_Base::InsertChild(begin, std::move(list));
 		float width = 0.0f;
 		for (auto it = it_begin; it < it_end; ++it) {
-			it->region.size = UpdateChildSizeRef(it->view, Size(width_ref, length_min));
+			it->region.size = UpdateChildSizeRef(it->view, Size(width_ref, length_zero));
 			if constexpr (!IsFixed<WidthTrait>) {
 				width = std::max(width, it->region.size.width);
 			}
@@ -301,7 +301,7 @@ protected:
 				float y = 0.0f;
 				for (auto& child : child_list) {
 					child.region.point.y = y;
-					child.region.size = UpdateChildSizeRef(child.view, Size(width_ref, length_min));
+					child.region.size = UpdateChildSizeRef(child.view, Size(width_ref, length_zero));
 					y += child.region.size.height + gap;
 				}
 				size = Size(CalculateMaxWidth(), child_list.empty() ? y : y - gap);
@@ -454,10 +454,10 @@ protected:
 	// drawing
 protected:
 	void RedrawChild(std::vector<ChildInfo>::const_iterator it) {
-		Redraw(Rect(Point(it->region.left(), 0), Size(it->region.width(), length_max)));
+		Redraw(Rect(Point(it->region.left(), 0), Size(it->region.width(), length_infinite)));
 	}
 	void RedrawChild(std::vector<ChildInfo>::const_iterator first, std::vector<ChildInfo>::const_iterator last) {
-		Redraw(Rect(Point(first->region.left(), 0), Size(last->region.right() - first->region.left(), length_max)));
+		Redraw(Rect(Point(first->region.left(), 0), Size(last->region.right() - first->region.left(), length_infinite)));
 	}
 protected:
 	virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
@@ -489,7 +489,7 @@ public:
 	ListLayoutHorizontal(float gap, auto... child) requires (is_compatible_unique_ptr<decltype(child), child_type> && ...) : _ListLayoutHorizontal_Base(gap, std::move(child)...) {
 		if constexpr (IsAuto<HeightTrait>) {
 			for (auto& child : child_list) {
-				child.region.size = UpdateChildSizeRef(child.view, Size(length_min, height_ref));
+				child.region.size = UpdateChildSizeRef(child.view, Size(length_zero, height_ref));
 			}
 			size.height = CalculateMaxHeight();
 			UpdateOffsetWidth(child_list.begin(), child_list.end());
@@ -503,7 +503,7 @@ public:
 public:
 	void InsertChild(size_t index, child_type child) {
 		auto it = _ListLayout_Base::InsertChild(index, std::move(child));
-		it->region.size = UpdateChildSizeRef(it->view, Size(length_min, height_ref));
+		it->region.size = UpdateChildSizeRef(it->view, Size(length_zero, height_ref));
 		UpdateHeightWidth(CalculateMaxHeightAdd(it->region.size.height), UpdateOffset(it, it + 1));
 	}
 	void AppendChild(child_type child) { InsertChild(-1, std::move(child)); }
@@ -511,7 +511,7 @@ public:
 		auto [it_begin, it_end] = _ListLayout_Base::InsertChild(begin, std::move(list));
 		float height = 0.0f;
 		for (auto it = it_begin; it < it_end; ++it) {
-			it->region.size = UpdateChildSizeRef(it->view, Size(length_min, height_ref));
+			it->region.size = UpdateChildSizeRef(it->view, Size(length_zero, height_ref));
 			if constexpr (!IsFixed<HeightTrait>) {
 				height = std::max(height, it->region.size.height);
 			}
@@ -589,7 +589,7 @@ protected:
 				float x = 0.0f;
 				for (auto& child : child_list) {
 					child.region.point.x = x;
-					child.region.size = UpdateChildSizeRef(child.view, Size(length_min, height_ref));
+					child.region.size = UpdateChildSizeRef(child.view, Size(length_zero, height_ref));
 					x += child.region.size.width + gap;
 				}
 				size = Size(child_list.empty() ? x : x - gap, CalculateMaxHeight());

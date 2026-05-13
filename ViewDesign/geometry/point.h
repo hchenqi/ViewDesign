@@ -8,16 +8,15 @@ struct Point {
 	float x;
 	float y;
 
-	explicit constexpr Point() : x(), y() {}
+	explicit constexpr Point() = default;
 	explicit constexpr Point(float x, float y) : x(x), y(y) {}
 
-	constexpr bool operator==(const Point& point) const { return x == point.x && y == point.y; }
-	constexpr bool operator!=(const Point& point) const { return x != point.x || y != point.y; }
+	constexpr bool operator==(const Point& other) const { return x == other.x && y == other.y; }
 
-	constexpr bool operator>(const Point& point) const { return x > point.x && y > point.y; }
-	constexpr bool operator<(const Point& point) const { return x < point.x && y < point.y; }
-	constexpr bool operator>=(const Point& point) const { return x >= point.x && y >= point.y; }
-	constexpr bool operator<=(const Point& point) const { return x <= point.x && y <= point.y; }
+	constexpr bool operator>(const Point& other) const { return x > other.x && y > other.y; }
+	constexpr bool operator<(const Point& other) const { return x < other.x && y < other.y; }
+	constexpr bool operator>=(const Point& other) const { return x >= other.x && y >= other.y; }
+	constexpr bool operator<=(const Point& other) const { return x <= other.x && y <= other.y; }
 };
 
 

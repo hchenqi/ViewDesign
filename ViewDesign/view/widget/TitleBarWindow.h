@@ -182,7 +182,7 @@ protected:
 			new StackLayoutMultiple(
 				create<HitThrough<CenterFrame<Fixed, Fixed>>>(
 					new MaxFrame(
-						Size(style._max_title_length, length_max),
+						Size(style._max_title_length, length_infinite),
 						std::move(title)
 					)
 				),

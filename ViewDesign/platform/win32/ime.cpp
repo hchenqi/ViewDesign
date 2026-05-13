@@ -22,14 +22,14 @@ void ImeDisable(HWND hwnd) {
 	ImmAssociateContextEx(hwnd, nullptr, 0);
 }
 
-void ImeSetPosition(HWND hwnd, Point point) {
+void ImeSetPosition(HWND hwnd, PointI point) {
 	HIMC imc = ImmGetContext(hwnd);
-	CANDIDATEFORM cf = { 0, CFS_CANDIDATEPOS, { (int)point.x, (int)point.y }, {} };
+	CANDIDATEFORM cf = { 0, CFS_CANDIDATEPOS, { point.x, point.y }, {} };
 	ImmSetCandidateWindow(imc, &cf);
 	ImmReleaseContext(hwnd, imc);
 }
 
-void ImeUpdateString(HWND hwnd, uint type) {
+void ImeUpdateString(HWND hwnd, uint32 type) {
 	HIMC imc = ImmGetContext(hwnd);
 	if (type & GCS_COMPSTR) {
 		LONG size = ImmGetCompositionStringW(imc, GCS_COMPSTR, nullptr, 0);

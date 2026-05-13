@@ -3,11 +3,13 @@
 
 namespace ViewDesign {
 
+using namespace Win32;
 
-Size GetDesktopSize() {
+
+SizeU GetDesktopSize() {
 	RECT rect;
 	SystemParametersInfoW(SPI_GETWORKAREA, 0, &rect, 0);
-	return Win32::AsRect(rect).size;
+	return AsRectI(rect).size;
 }
 
 
