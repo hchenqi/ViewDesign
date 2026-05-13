@@ -30,7 +30,7 @@ TextBlock::HitTestPointInfo TextBlock::HitTestPoint(Point point) const {
 	return AsTextLayoutPlaceholder(layout)->HitTestPoint(point);
 }
 
-TextBlock::HitTestPointInfo TextBlock::HitTestPosition(size_t position) const {
+TextBlock::HitTestPointInfo TextBlock::HitTestPosition(TextRange position) const {
 	return AsTextLayoutPlaceholder(layout)->HitTestPosition(position);
 }
 

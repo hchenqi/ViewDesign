@@ -36,6 +36,10 @@ struct TextLayoutPlaceholder {
 		return Rect(Point(symbol_index * (symbol_size.width + symbol_gap), row_index * (symbol_size.height + row_gap)), symbol_size);
 	}
 
+	Rect GetSymbolRect(size_t index) const {
+		return GetSymbolRect(index / symbol_number, index % symbol_number);
+	}
+
 	Rect GetSymbolRangeRect(size_t row_index, size_t symbol_index_begin, size_t symbol_index_end) const {
 		return Rect(Point(symbol_index_begin * (symbol_size.width + symbol_gap), row_index * (symbol_size.height + row_gap)), Size((symbol_size.width + symbol_gap) * (symbol_index_end - symbol_index_begin + 1) - symbol_gap, symbol_size.height));
 	}
@@ -55,16 +59,14 @@ struct TextLayoutPlaceholder {
 		return std::make_pair(TextRange(row_index * symbol_number + symbol_index, length == 0 ? 0 : point.x >= GetSymbolRect(row_index, symbol_index).Center().x ? 1 : 0), GetSymbolRect(row_index, symbol_index));
 	}
 
-	TextBlock::HitTestPointInfo HitTestPosition(size_t position) const {
-		if (length == 0) {
-			return std::make_pair(TextRange(0, 0), GetSymbolRect(0, 0));
+	TextBlock::HitTestPointInfo HitTestPosition(TextRange position) const {
+		if (position.begin() >= length) {
+			position = length == 0 ? TextRange(0, 0) : TextRange(length - 1, 1);
+		}
+		if (position.length() == 0) {
+			return std::make_pair(TextRange(position.end(), 0), GetSymbolRect(position.end()));
 		} else {
-			if (position >= length) {
-				position = length - 1;
-				return std::make_pair(TextRange(position, 1), GetSymbolRect(position / symbol_number, position % symbol_number));
-			} else {
-				return std::make_pair(TextRange(position, 0), GetSymbolRect(position / symbol_number, position % symbol_number));
-			}
+			return std::make_pair(TextRange(position.end() - 1, 1), GetSymbolRect(position.end() - 1));
 		}
 	}
 
@@ -79,18 +81,18 @@ struct TextLayoutPlaceholder {
 		if (row_index_begin == row_index_end) {
 			result.emplace_back(std::make_pair(TextRange(symbol_index_begin, symbol_index_end - symbol_index_begin + 1), GetSymbolRangeRect(row_index_begin, symbol_index_begin, symbol_index_end)));
 		} else {
-			result.emplace_back(std::make_pair(TextRange(symbol_index_begin, (row_index_begin + 1) * symbol_number - symbol_index_begin), GetSymbolRangeRect(row_index_begin, symbol_index_begin, (row_index_begin + 1) * symbol_number - 1)));
+			result.emplace_back(std::make_pair(TextRange(symbol_index_begin, symbol_number - symbol_index_begin), GetSymbolRangeRect(row_index_begin, symbol_index_begin, symbol_number - 1)));
 			for (size_t row_index = row_index_begin + 1; row_index <= row_index_end - 1; ++row_index) {
-				result.emplace_back(std::make_pair(TextRange(row_index * symbol_number, symbol_number), GetSymbolRangeRect(row_index, row_index * symbol_number, (row_index + 1) * symbol_number - 1)));
+				result.emplace_back(std::make_pair(TextRange(row_index * symbol_number, symbol_number), GetSymbolRangeRect(row_index, 0, symbol_number - 1)));
 			}
-			result.emplace_back(std::make_pair(TextRange(row_index_end * symbol_number, symbol_index_end - row_index_end * symbol_number + 1), GetSymbolRangeRect(row_index_end, row_index_end * symbol_number, symbol_index_end - row_index_end * symbol_number)));
+			result.emplace_back(std::make_pair(TextRange(row_index_end * symbol_number, symbol_index_end + 1), GetSymbolRangeRect(row_index_end, 0, symbol_index_end)));
 		}
 		return result;
 	}
 
 	void DrawOn(RenderTarget& target, Point point, Color font_color) {
-		for (size_t i = 0; i < length; ++i) {
-			Rect rect = Extend(GetSymbolRect(i / symbol_number, i % symbol_number), -1.0f);
+		for (size_t index = 0; index < length; ++index) {
+			Rect rect = Extend(GetSymbolRect(index), -1.0f);
 			Rectangle rectangle(rect.size, font_color);
 			rectangle.DrawOn(target, point + (rect.point - point_zero));
 		}

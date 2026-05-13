@@ -53,7 +53,7 @@ protected:
 protected:
 	mutable WordIterator word_iterator;
 protected:
-	size_t GetCharacterLength(size_t position) const;
+	TextRange GetCharacterRange(size_t position) const;
 	TextRange GetWordRange(size_t position) const;
 	TextRange GetParagraphRange(size_t position) const;
 	TextRange GetEntireRange() const { return TextRange(0, text.length()); }
@@ -72,16 +72,16 @@ protected:
 protected:
 	enum class CaretMoveDirection { Left, Right, Up, Down, Home, End };
 protected:
-	size_t caret_position = 0;
+	TextRange caret_position = text_range_empty;
 	Rect caret_region = rect_empty;
 protected:
 	Rect GetCaretRegion(const HitTestPointInfo& info) const;
 	void UpdateCaret(const HitTestPointInfo& info);
-	void UpdateCaret(size_t position) { UpdateCaret(text_block.HitTestPosition(position)); }
+	void UpdateCaret(TextRange position) { UpdateCaret(text_block.HitTestPosition(position)); }
 protected:
 	void SetCaret(const HitTestPointInfo& info);
 	void SetCaret(Point point) { SetCaret(text_block.HitTestPoint(point)); }
-	void SetCaret(size_t position) { SetCaret(text_block.HitTestPosition(position)); }
+	void SetCaret(TextRange position) { SetCaret(text_block.HitTestPosition(position)); }
 	void MoveCaret(CaretMoveDirection direction);
 
 	// caret state
@@ -105,9 +105,9 @@ protected:
 	enum class SelectionMode { Character, Word, Paragraph };
 protected:
 	SelectionMode selection_mode = SelectionMode::Character;
-	TextRange selection_initial_range;
+	TextRange selection_initial_range = text_range_empty;
 protected:
-	TextRange selection_range;
+	TextRange selection_range = text_range_empty;
 	std::vector<Rect> selection_region_list;
 	Rect selection_region_union;
 protected:
@@ -121,7 +121,7 @@ protected:
 protected:
 	void DoSelect(const HitTestPointInfo& info);
 	void DoSelect(Point current_point) { DoSelect(text_block.HitTestPoint(current_point)); }
-	void DoSelect(size_t current_position) { DoSelect(text_block.HitTestPosition(current_position)); }
+	void DoSelect(TextRange current_position) { DoSelect(text_block.HitTestPosition(current_position)); }
 
 	// keyboard input
 protected:
@@ -132,7 +132,7 @@ protected:
 
 	// ime input
 protected:
-	TextRange ime_composition_range;
+	TextRange ime_composition_range = text_range_empty;
 	std::vector<Rect> ime_composition_region_list;
 protected:
 	bool HasImeComposition() { return !ime_composition_range.empty(); }

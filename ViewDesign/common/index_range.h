@@ -10,7 +10,6 @@ struct IndexRange {
 	size_t _begin;
 	size_t _length;
 
-	explicit constexpr IndexRange() : _begin(), _length() {}
 	explicit constexpr IndexRange(size_t begin, size_t length) : _begin(begin), _length(length) {}
 
 	constexpr bool operator==(const IndexRange& range) const { return _begin == range._begin && _length == range._length; }
@@ -27,7 +26,7 @@ struct IndexRange {
 
 	constexpr IndexRange Intersect(const IndexRange& range) const {
 		size_t begin_max = std::max(begin(), range.begin()), end_min = std::min(end(), range.end());
-		return end_min > begin_max ? IndexRange(begin_max, end_min - begin_max) : IndexRange();
+		return end_min > begin_max ? IndexRange(begin_max, end_min - begin_max) : IndexRange(0, 0);
 	}
 
 	constexpr IndexRange Union(const IndexRange& range) const {
@@ -37,7 +36,7 @@ struct IndexRange {
 	}
 };
 
-constexpr IndexRange index_range_empty = IndexRange();
+constexpr IndexRange index_range_empty = IndexRange(0, 0);
 
 
 } // namespace ViewDesign

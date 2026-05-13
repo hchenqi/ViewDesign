@@ -101,10 +101,15 @@ TextBlock::HitTestPointInfo TextBlock::HitTestPoint(Point point) const {
 	return std::make_pair(TextRange(metrics.textPosition, isTrailingHit ? metrics.length : 0), Rect(metrics.left, metrics.top, metrics.width, metrics.height));
 }
 
-TextBlock::HitTestPointInfo TextBlock::HitTestPosition(size_t text_position) const {
+TextBlock::HitTestPointInfo TextBlock::HitTestPosition(TextRange position) const {
 	FLOAT x, y; DWRITE_HIT_TEST_METRICS metrics;
-	AsTextLayout(layout)->HitTestTextPosition((UINT32)text_position, false, &x, &y, &metrics);
-	return std::make_pair(TextRange(metrics.textPosition, 0), Rect(metrics.left, metrics.top, metrics.width, metrics.height));
+	if (position.length() == 0) {
+		AsTextLayout(layout)->HitTestTextPosition((UINT32)position.end(), false, &x, &y, &metrics);
+		return std::make_pair(TextRange(metrics.textPosition, 0), Rect(metrics.left, metrics.top, metrics.width, metrics.height));
+	} else {
+		AsTextLayout(layout)->HitTestTextPosition((UINT32)(position.end() - 1), true, &x, &y, &metrics);
+		return std::make_pair(TextRange(metrics.textPosition, metrics.length), Rect(metrics.left, metrics.top, metrics.width, metrics.height));
+	}
 }
 
 TextBlock::HitTestRangeInfo TextBlock::HitTestRange(TextRange range) const {

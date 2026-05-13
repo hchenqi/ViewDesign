@@ -87,7 +87,7 @@ private:
 		EditView() : EditBox(Style(), u"Type something here...") {}
 	public:
 		void Edit() {
-			SetCaret(-1);
+			SetCaret(TextRange(-1, 0));
 			SetFocus();
 			CaretStartBlinking();
 		}

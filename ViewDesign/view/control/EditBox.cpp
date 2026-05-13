@@ -9,11 +9,19 @@ namespace ViewDesign {
 
 namespace {
 
-constexpr size_t GetCharacterLength(u16char ch) {
+constexpr size_t GetNextCharacterLength(u16char ch) {
 	switch (GetU16UnitType(ch)) {
 	case U16UnitType::Single: return 1;
 	case U16UnitType::SurrogateHigh: return 2;
 	default: throw std::invalid_argument("not begin of a UTF-16 code point");
+	}
+}
+
+constexpr size_t GetPrevCharacterLength(u16char ch) {
+	switch (GetU16UnitType(ch)) {
+	case U16UnitType::Single: return 1;
+	case U16UnitType::SurrogateLow: return 2;
+	default: throw std::invalid_argument("not end of a UTF-16 code point");
 	}
 }
 
@@ -25,8 +33,13 @@ EditBox::EditBox(Style style, u16string text) : Base(style, text), style(style) 
 	word_iterator.SetText(this->text);
 }
 
-size_t EditBox::GetCharacterLength(size_t position) const {
-	return ViewDesign::GetCharacterLength(text[position]);
+TextRange EditBox::GetCharacterRange(size_t position) const {
+	switch (GetU16UnitType(text[position])) {
+	case U16UnitType::Single: return TextRange(position, 1);
+	case U16UnitType::SurrogateHigh: if (position + 1 < text.length()) { return TextRange(position, 2); } break;
+	case U16UnitType::SurrogateLow: if (position > 0) { return TextRange(position - 1, 2); } break;
+	}
+	throw std::invalid_argument("invalid UTF-16 code point");
 }
 
 TextRange EditBox::GetWordRange(size_t position) const {
@@ -79,12 +92,12 @@ Rect EditBox::GetCaretRegion(const HitTestPointInfo& info) const {
 	if (range.length() == 0) {
 		return Rect(region.point, Size(style.edit._caret_width, region.size.height));
 	} else {
-		return Rect(Point(region.point.x + region.size.width, region.point.y), Size(style.edit._caret_width, region.size.height));
+		return Rect(Point(region.point.x + region.size.width, region.point.y) - Vector(style.edit._caret_width, 0), Size(style.edit._caret_width, region.size.height));
 	}
 }
 
 void EditBox::UpdateCaret(const HitTestPointInfo& info) {
-	caret_position = info.first.end();
+	caret_position = info.first;
 	Redraw(std::exchange(caret_region, GetCaretRegion(info)).Union(caret_region));
 }
 
@@ -92,7 +105,7 @@ void EditBox::SetCaret(const HitTestPointInfo& info) {
 	UpdateCaret(info);
 	caret_state = CaretState::Show;
 	ClearSelection();
-	selection_initial_range = TextRange(caret_position, 0);
+	selection_initial_range = TextRange(caret_position.end(), 0);
 	selection_mode = SelectionMode::Character;
 }
 
@@ -100,18 +113,20 @@ void EditBox::MoveCaret(CaretMoveDirection direction) {
 	switch (direction) {
 	case CaretMoveDirection::Left:
 		if (HasSelection()) {
-			SetCaret(selection_range.begin());
+			SetCaret(TextRange(selection_range.begin(), 0));
 		} else {
-			if (caret_position > 0) {
-				SetCaret(caret_position - 1);
+			if (caret_position.end() > 0) {
+				SetCaret(TextRange(caret_position.end() - GetPrevCharacterLength(text[caret_position.end() - 1]), 0));
 			}
 		}
 		break;
 	case CaretMoveDirection::Right:
 		if (HasSelection()) {
-			SetCaret(selection_range.end());
+			SetCaret(TextRange(selection_range.end() - 1, 1));
 		} else {
-			SetCaret(caret_position + GetCharacterLength(caret_position));
+			if (caret_position.end() < text.length()) {
+				SetCaret(TextRange(caret_position.end(), GetNextCharacterLength(text[caret_position.end()])));
+			}
 		}
 		break;
 	case CaretMoveDirection::Up:
@@ -180,25 +195,25 @@ void EditBox::SelectWord() {
 	UpdateSelection(GetWordRange(selection_initial_range.begin()));
 	selection_mode = SelectionMode::Word;
 	selection_initial_range = selection_range;
-	UpdateCaret(selection_range.end());
+	UpdateCaret(TextRange(selection_range.end() - 1, 1));
 }
 
 void EditBox::SelectParagraph() {
 	UpdateSelection(GetParagraphRange(selection_initial_range.begin()));
 	selection_mode = SelectionMode::Paragraph;
 	selection_initial_range = selection_range;
-	UpdateCaret(selection_range.end());
+	UpdateCaret(TextRange(selection_range.end() - 1, 1));
 }
 
 void EditBox::DoSelect(const HitTestPointInfo& info) {
-	TextRange current_range;
+	TextRange current_range = text_range_empty;
 	switch (selection_mode) {
 	case SelectionMode::Character: current_range = TextRange(info.first.end(), 0); break;
 	case SelectionMode::Word: current_range = GetWordRange(info.first.begin()); break;
 	case SelectionMode::Paragraph: current_range = GetParagraphRange(info.first.begin()); break;
 	}
 	size_t begin = std::min(current_range.begin(), selection_initial_range.begin()), end = std::max(current_range.end(), selection_initial_range.end());
-	UpdateCaret(begin < selection_initial_range.begin() ? begin : end);
+	UpdateCaret(TextRange(begin, begin < selection_initial_range.begin() ? 0 : end - begin));
 	UpdateSelection(TextRange(begin, end - begin));
 }
 
@@ -206,10 +221,10 @@ void EditBox::Insert(u16char ch) {
 	if (IsEditDisabled()) { return; }
 	if (HasSelection()) {
 		TextBox::Replace(selection_range, ch);
-		SetCaret(selection_range.begin() + 1);
+		SetCaret(TextRange(selection_range.begin(), 1));
 	} else {
-		TextBox::Insert(caret_position, ch);
-		SetCaret(caret_position + 1);
+		TextBox::Insert(caret_position.end(), ch);
+		SetCaret(TextRange(caret_position.end(), 1));
 	}
 }
 
@@ -217,10 +232,10 @@ void EditBox::Insert(u16pair ch) {
 	if (IsEditDisabled()) { return; }
 	if (HasSelection()) {
 		TextBox::Replace(selection_range, ch);
-		SetCaret(selection_range.begin() + ch.length());
+		SetCaret(TextRange(selection_range.begin(), ch.length()));
 	} else {
-		TextBox::Insert(caret_position, ch);
-		SetCaret(caret_position + ch.length());
+		TextBox::Insert(caret_position.end(), ch);
+		SetCaret(TextRange(caret_position.end(), ch.length()));
 	}
 }
 
@@ -228,10 +243,10 @@ void EditBox::Insert(const u16string& str) {
 	if (IsEditDisabled()) { return; }
 	if (HasSelection()) {
 		TextBox::Replace(selection_range, str);
-		SetCaret(selection_range.begin() + str.length());
+		SetCaret(TextRange(selection_range.begin(), str.length()));
 	} else {
-		TextBox::Insert(caret_position, str);
-		SetCaret(caret_position + str.length());
+		TextBox::Insert(caret_position.end(), str);
+		SetCaret(TextRange(caret_position.end(), str.length()));
 	}
 }
 
@@ -239,16 +254,18 @@ void EditBox::Delete(bool is_backspace) {
 	if (IsEditDisabled()) { return; }
 	if (HasSelection()) {
 		TextBox::Erase(selection_range);
-		SetCaret(selection_range.begin());
+		SetCaret(TextRange(selection_range.begin(), 0));
 	} else {
 		if (is_backspace) {
-			if (caret_position == 0) { return; }
-			size_t caret_position_old = caret_position;
-			SetCaret(caret_position - 1);
-			TextBox::Erase(TextRange(caret_position, caret_position_old - caret_position));
+			if (caret_position.end() > 0) {
+				size_t length = GetPrevCharacterLength(text[caret_position.end() - 1]);
+				TextBox::Erase(TextRange(caret_position.end() - length, length));
+				SetCaret(caret_position.end() - length > 0 ? TextRange(caret_position.end() - length - 1, 1) : TextRange(0, 0));
+			}
 		} else {
-			if (caret_position >= text.length()) { return; }
-			TextBox::Erase(TextRange(caret_position, GetCharacterLength(caret_position)));
+			if (caret_position.end() < text.length()) {
+				TextBox::Erase(TextRange(caret_position.end(), GetNextCharacterLength(text[caret_position.end()])));
+			}
 		}
 	}
 }
@@ -270,7 +287,7 @@ void EditBox::OnImeBegin() {
 		UpdateImeComposition(selection_range);
 		ime.SetPosition(*this, selection_region_list.front().RightBottom());
 	} else {
-		UpdateImeComposition(TextRange(caret_position, 0));
+		UpdateImeComposition(TextRange(caret_position.end(), 0));
 		ime.SetPosition(*this, caret_region.RightBottom());
 	}
 }
@@ -280,11 +297,13 @@ void EditBox::OnImeString() {
 	u16string str = ime.GetString();
 	TextBox::Replace(ime_composition_range, str);
 	UpdateImeComposition(TextRange(ime_composition_range.begin(), str.length()));
-	SetCaret(ime_composition_range.begin() + ime.GetCursorPosition());
+	SetCaret(TextRange(ime_composition_range.begin(), ime.GetCursorPosition()));
 }
 
 void EditBox::OnImeEnd() {
-	if (caret_position != ime_composition_range.end()) { SetCaret(ime_composition_range.end()); }
+	if (caret_position.end() != ime_composition_range.end()) {
+		SetCaret(TextRange(ime_composition_range.end() - 1, 1));
+	}
 	ClearImeComposition();
 }
 

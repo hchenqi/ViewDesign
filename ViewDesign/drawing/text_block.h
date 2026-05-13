@@ -27,7 +27,7 @@ public:
 	using HitTestRangeInfo = std::vector<std::pair<TextRange, Rect>>;
 public:
 	HitTestPointInfo HitTestPoint(Point point) const;
-	HitTestPointInfo HitTestPosition(size_t position) const;
+	HitTestPointInfo HitTestPosition(TextRange position) const;
 	HitTestRangeInfo HitTestRange(TextRange range) const;
 };
 
