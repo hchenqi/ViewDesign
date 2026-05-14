@@ -2,14 +2,12 @@
 
 #include "ViewDesign/common/uncopyable.h"
 #include "ViewDesign/geometry/sizeu.h"
-#include "ViewDesign/drawing/figure.h"
+#include "ViewDesign/drawing/canvas.h"
 
 #include <stdexcept>
 
 
 namespace ViewDesign {
-
-class Canvas;
 
 
 class Layer : Uncopyable {

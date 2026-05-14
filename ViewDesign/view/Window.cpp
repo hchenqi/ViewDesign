@@ -5,13 +5,11 @@
 namespace ViewDesign {
 
 
-Window::Window(const u16string& title, view_ptr<> child) : ViewFrame(std::move(child)), handle(CreateWindow(*this, title)), region(rect_i_empty), scale(GetWindowScale(handle)) {}
+Window::Window(const u16string& title, view_ptr<> child) : ViewFrame(std::move(child)), layer(CreateWindow(*this, title)), point(point_i_zero), scale(GetWindowScale(GetHandle())) {}
 
-Window::~Window() { desktop.Get().ReleaseWindow(*this); layer.Destroy(); DestroyWindow(handle); handle = nullptr; }
+Window::~Window() { desktop.Get().ReleaseWindow(*this); DestroyWindow(layer.DestroyWindow()); }
 
-void Window::SetTitle(const u16string& title) {
-	SetWindowTitle(handle, title);
-}
+void Window::SetTitle(const u16string& title) { SetWindowTitle(GetHandle(), title); }
 
 std::pair<SizeU, RectI> Window::GetMinMaxRegion(SizeU desktop_size) {
 	auto [size_min, size_max] = CalculateMinMaxSize(desktop_size / scale);
@@ -19,58 +17,46 @@ std::pair<SizeU, RectI> Window::GetMinMaxRegion(SizeU desktop_size) {
 }
 
 void Window::InitializeRegion(SizeU desktop_size) {
-	region = Round(OnWindowSizeRefUpdate(desktop_size / scale) * scale);
-	SetWindowRegion(handle, region);
-	RecreateLayer();
+	RectI region = Round(OnWindowSizeRefUpdate(desktop_size / scale) * scale);
+	SetWindowRegion(GetHandle(), region);
+	if (GetSize() != region.size) { layer.Resize(region.size); }
+	point = region.point;
 }
 
 void Window::SetSize(SizeU size) {
-	if (region.size != size) {
-		region.size = size;
+	if (GetSize() != size) {
+		layer.Resize(size);
 		UpdateChildSizeRef(child, size / scale);
-		ResizeLayer();
 	}
 }
 
-void Window::WindowRegionUpdated(Rect region) {
+void Window::WindowRegionUpdated(Rect rect) {
 	if (!HasParent()) { return; }
-	RectI region_new = Round(region * scale);
-	if (this->region.size != region_new.size) {
-		this->region.size = region_new.size;
-		ResizeLayer();
-	}
-	SetWindowRegion(handle, region_new);
+	RectI region = Round(rect * scale);
+	SetWindowRegion(GetHandle(), region);
+	if (GetSize() != region.size) { layer.Resize(region.size); }
+	point = region.point;
 }
 
-void Window::Show() { ShowWindow(handle); }
-void Window::Hide() { HideWindow(handle); }
-void Window::Minimize() { MinimizeWindow(handle); }
-void Window::Maximize() { MaximizeWindow(handle); }
-void Window::Restore() { RestoreWindow(handle); }
-void Window::Close() { CloseWindow(handle); }
+void Window::Show() { ShowWindow(GetHandle()); }
+void Window::Hide() { HideWindow(GetHandle()); }
+void Window::Minimize() { MinimizeWindow(GetHandle()); }
+void Window::Maximize() { MaximizeWindow(GetHandle()); }
+void Window::Restore() { RestoreWindow(GetHandle()); }
+void Window::Close() { CloseWindow(GetHandle()); }
 
-void Window::ResizeLayer() {
-	layer.Resize(region.size);
-	Redraw(rect_infinite);
-}
-
-void Window::RecreateLayer() {
-	layer.Create(handle, region.size);
-	Redraw(rect_infinite);
-}
-
-void Window::Redraw(Rect redraw_region) {
-	RectI redraw_region_i = RoundUp((redraw_region * scale).Intersect(Rect(point_zero, region.size)));
-	layer.Redraw(redraw_region_i);
-	RedrawWindowRegion(handle, redraw_region_i);
+void Window::Redraw(Rect rect) {
+	RectI redraw_region = RoundUp(rect * scale).Intersect(RectI(point_i_zero, GetSize()));
+	layer.Redraw(redraw_region);
+	RedrawWindowRegion(GetHandle(), redraw_region);
 }
 
 void Window::OnDraw() {
-	Rect draw_region = layer.GetInvalidRegion(); if (draw_region.IsEmpty()) { return; }
-	layer.RenderBegin();
-	Canvas canvas;
-	canvas.Group(scale, rect_infinite, [&]() { ViewFrame::OnDraw(canvas, draw_region / scale); });
-	layer.RenderEnd(canvas);
+	layer.Render([&](Rect draw_region) {
+		Canvas canvas;
+		canvas.Group(scale, rect_infinite, [&]() { ViewFrame::OnDraw(canvas, draw_region / scale); });
+		return canvas;
+	});
 }
 
 

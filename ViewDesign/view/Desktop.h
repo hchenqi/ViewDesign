@@ -43,10 +43,6 @@ public:
 public:
 	SizeU GetSize() const;
 
-	// drawing
-private:
-	void RecreateWindowLayer();
-
 	// context
 private:
 	void ReleaseView(ViewBase& view);

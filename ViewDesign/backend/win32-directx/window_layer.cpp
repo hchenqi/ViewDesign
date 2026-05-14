@@ -4,17 +4,11 @@
 #include "ViewDesign/platform/directx/d3d_api.h"
 #include "ViewDesign/platform/directx/dxgi_api.h"
 #include "ViewDesign/platform/directx/dcomp_api.h"
-#include "ViewDesign/platform/directx/d2d_api.h"
-#include "ViewDesign/platform/directx/helper.h"
+#include "ViewDesign/platform/directx/canvas.h"
 #include "ViewDesign/platform/directx/resource.h"
-#include "ViewDesign/view/Desktop.h"
 
 
 namespace ViewDesign {
-
-struct DesktopPrivateAccess : Desktop {
-	using Desktop::RecreateWindowLayer;
-};
 
 using namespace Win32;
 using namespace DirectX;
@@ -25,21 +19,7 @@ namespace {
 using SwapChain = DXGISwapChain;
 using CompositionTarget = DCompositionTarget;
 
-inline ComPtr<D2DBitmap> CreateD2DBitmapFromDxgiSurface(IDXGISurface& dxgi_surface) {
-	D2D1_BITMAP_PROPERTIES1 bitmap_properties = D2D1::BitmapProperties1(D2D1_BITMAP_OPTIONS_TARGET | D2D1_BITMAP_OPTIONS_CANNOT_DRAW, D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED));
-	ComPtr<D2DBitmap> bitmap;
-	hr << GetD2DDeviceContext().CreateBitmapFromDxgiSurface(&dxgi_surface, &bitmap_properties, &bitmap);
-	return bitmap;
-}
-
-} // namespace
-
-
-WindowLayer::WindowLayer() : swap_chain(nullptr), composition_target(nullptr) {}
-
-void WindowLayer::Create(Handle window, SizeU size) {
-	Destroy();
-
+inline ComPtr<SwapChain> CreateSwapChainForComposition(SizeU size) {
 	ComPtr<SwapChain> swap_chain;
 	DXGI_SWAP_CHAIN_DESC1 swap_chain_desc = { 0 };
 	swap_chain_desc.Width = size.width;
@@ -55,60 +35,87 @@ void WindowLayer::Create(Handle window, SizeU size) {
 	swap_chain_desc.Flags = 0;
 	swap_chain_desc.AlphaMode = DXGI_ALPHA_MODE_PREMULTIPLIED;
 	hr << GetDXGIFactory().CreateSwapChainForComposition(&GetD3DDevice(), &swap_chain_desc, nullptr, &swap_chain);
+	return swap_chain;
+}
 
-	this->swap_chain = swap_chain.Detach();
+inline ComPtr<D2DBitmap> CreateBitmapFromDxgiSurface(IDXGISurface& dxgi_surface) {
+	D2D1_BITMAP_PROPERTIES1 bitmap_properties = D2D1::BitmapProperties1(D2D1_BITMAP_OPTIONS_TARGET | D2D1_BITMAP_OPTIONS_CANNOT_DRAW, D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED));
+	ComPtr<D2DBitmap> bitmap;
+	hr << GetD2DDeviceContext().CreateBitmapFromDxgiSurface(&dxgi_surface, &bitmap_properties, &bitmap);
+	return bitmap;
+}
 
-	CreateLayerFramebuffer(size);
+inline ComPtr<D2DBitmap> CreateBitmapFromSwapChain(SwapChain& swap_chain) {
+	ComPtr<IDXGISurface> dxgi_surface;
+	hr << swap_chain.GetBuffer(0, IID_PPV_ARGS(&dxgi_surface));
+	return CreateBitmapFromDxgiSurface(dxgi_surface);
+}
 
+inline ComPtr<IDCompositionTarget> CreateCompositionTarget(SwapChain& swap_chain, HWND hwnd) {
 	DCompositionDevice& composition_device = GetDCompositionDevice();
 
 	ComPtr<IDCompositionVisual> composition_visual;
 	hr << composition_device.CreateVisual(&composition_visual);
-	composition_visual->SetContent(static_cast<ref_ptr<SwapChain>>(this->swap_chain));
+	composition_visual->SetContent(&swap_chain);
 
 	ComPtr<IDCompositionTarget> composition_target;
-	hr << composition_device.CreateTargetForHwnd(AsHWND(window), false, &composition_target);
+	hr << composition_device.CreateTargetForHwnd(hwnd, false, &composition_target);
 	composition_target->SetRoot(composition_visual.Get());
 
-	this->composition_target = composition_target.Detach();
-
 	composition_device.Commit();
+
+	return composition_target;
+}
+
+} // namespace
+
+
+void WindowLayer::Resize(SizeU size) {
+	this->size = size;
+	if (swap_chain == nullptr) {
+		swap_chain = CreateSwapChainForComposition(size).Detach();
+		bitmap = CreateBitmapFromSwapChain(*static_cast<ref_ptr<SwapChain>>(swap_chain)).Detach(); RegisterBitmap(reinterpret_cast<owner_ptr<D2DBitmap>&>(bitmap));
+		composition_target = CreateCompositionTarget(*static_cast<ref_ptr<SwapChain>>(swap_chain), AsHWND(window)).Detach();
+	} else {
+		try {
+			ComPtr<D2DBitmap>().Swap(reinterpret_cast<owner_ptr<D2DBitmap>&>(bitmap)).Reset();
+			hr << static_cast<ref_ptr<SwapChain>>(swap_chain)->ResizeBuffers(0, size.width, size.height, DXGI_FORMAT_UNKNOWN, 0);
+			bitmap = CreateBitmapFromSwapChain(*static_cast<ref_ptr<SwapChain>>(swap_chain)).Detach();
+		} catch (std::runtime_error&) {
+			RecreateResource();
+		}
+	}
+	invalid_region = RectI(point_i_zero, size);
 }
 
 void WindowLayer::Destroy() {
 	ComPtr<CompositionTarget>().Swap(reinterpret_cast<owner_ptr<CompositionTarget>&>(composition_target)).Reset();
-	DestroyLayerFramebuffer();
+	ComPtr<D2DBitmap>().Swap(reinterpret_cast<owner_ptr<D2DBitmap>&>(bitmap)).Reset(); UnregisterBitmap(reinterpret_cast<owner_ptr<D2DBitmap>&>(bitmap));
 	ComPtr<SwapChain>().Swap(reinterpret_cast<owner_ptr<SwapChain>&>(swap_chain)).Reset();
 }
 
-void WindowLayer::Resize(SizeU size) {
-	DestroyLayerFramebuffer();
-	hr << static_cast<ref_ptr<SwapChain>>(swap_chain)->ResizeBuffers(0, size.width, size.height, DXGI_FORMAT_UNKNOWN, 0);
-	CreateLayerFramebuffer(size);
-}
-
-void WindowLayer::CreateLayerFramebuffer(SizeU size) {
-	ComPtr<IDXGISurface> dxgi_surface;
-	hr << static_cast<ref_ptr<SwapChain>>(swap_chain)->GetBuffer(0, IID_PPV_ARGS(&dxgi_surface));
-	Layer::SetFramebuffer(size, CreateD2DBitmapFromDxgiSurface(dxgi_surface).Detach());
-	invalid_region = rect_i_empty;
-}
-
-void WindowLayer::Redraw(RectI redraw_region) {
-	invalid_region = invalid_region.Union(redraw_region);
-}
-
 void WindowLayer::RenderBegin() {
-	GetD2DDeviceContext().BeginDraw();
+	if (bitmap == nullptr) {
+		Destroy();
+		Resize(size);
+	}
+	if (!invalid_region.IsEmpty()) {
+		D2DDeviceContext& device_context = GetD2DDeviceContext();
+		device_context.BeginDraw();
+	}
 }
 
 void WindowLayer::RenderEnd(const Canvas& canvas) {
-	Layer::RenderCanvas(canvas, vector_zero, invalid_region);
+	D2DDeviceContext& device_context = GetD2DDeviceContext();
+	device_context.SetTarget(static_cast<ref_ptr<D2DBitmap>>(bitmap));
+	DirectX::RenderCanvas(static_cast<RenderTarget&>(device_context), canvas, vector_zero, invalid_region);
+	device_context.SetTarget(nullptr);
+
 	try {
-		hr << GetD2DDeviceContext().EndDraw();
+		hr << device_context.EndDraw();
 	} catch (std::runtime_error&) {
 		RecreateResource();
-		static_cast<DesktopPrivateAccess&>(desktop.Get()).RecreateWindowLayer();
+		return;
 	}
 
 	RECT dirty_rect = AsWin32RECT(invalid_region);

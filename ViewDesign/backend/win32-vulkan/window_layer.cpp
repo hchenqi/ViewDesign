@@ -11,9 +11,7 @@ using namespace Win32;
 using namespace Vulkan;
 
 
-WindowLayer::WindowLayer() : surface(nullptr) {}
-
-void WindowLayer::Create(Handle window, SizeU size) {
+void WindowLayer::Resize(SizeU size) {
 	Destroy();
 	surface = new Surface(InstanceContext::GetInstance().createWin32SurfaceKHR(vk::Win32SurfaceCreateInfoKHR({}, GetHInstance(), AsHWND(window))), size);
 }
@@ -23,16 +21,6 @@ void WindowLayer::Destroy() {
 		delete static_cast<owner_ptr<Surface>>(surface);
 		surface = nullptr;
 	}
-}
-
-void WindowLayer::Resize(SizeU size) {}
-
-void WindowLayer::CreateLayerFramebuffer(SizeU size) {
-
-}
-
-void WindowLayer::Redraw(RectI redraw_region) {
-	invalid_region = invalid_region.Union(redraw_region);
 }
 
 void WindowLayer::RenderBegin() {

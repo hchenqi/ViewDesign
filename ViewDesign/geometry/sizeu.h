@@ -15,6 +15,13 @@ struct PointI {
 
 	explicit constexpr PointI(int32 x, int32 y) : x(x), y(y) {}
 
+	constexpr bool operator==(const PointI& other) const { return x == other.x && y == other.y; }
+
+	constexpr bool operator>(const PointI& other) const { return x > other.x && y > other.y; }
+	constexpr bool operator<(const PointI& other) const { return x < other.x && y < other.y; }
+	constexpr bool operator>=(const PointI& other) const { return x >= other.x && y >= other.y; }
+	constexpr bool operator<=(const PointI& other) const { return x <= other.x && y <= other.y; }
+
 	constexpr operator Point() const { return Point(x, y); }
 };
 
@@ -55,6 +62,13 @@ struct RectI {
 		PointI pl = PointI(std::min(pl1.x, pl2.x), std::min(pl1.y, pl2.y));
 		PointI ph = PointI(std::max(ph1.x, ph2.x), std::max(ph1.y, ph2.y));
 		return RectI(pl, SizeU(ph.x - pl.x, ph.y - pl.y));
+	}
+
+	constexpr RectI Intersect(const RectI& other) const {
+		PointI pl1 = LeftTop(), ph1 = RightBottom(), pl2 = other.LeftTop(), ph2 = other.RightBottom();
+		PointI pl = PointI(std::max(pl1.x, pl2.x), std::max(pl1.y, pl2.y));
+		PointI ph = PointI(std::min(ph1.x, ph2.x), std::min(ph1.y, ph2.y));
+		return ph > pl ? RectI(pl, SizeU(ph.x - pl.x, ph.y - pl.y)) : RectI(PointI(0, 0), SizeU(0, 0));
 	}
 
 	constexpr operator Rect() const { return Rect(point, size); }

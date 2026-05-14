@@ -1,7 +1,5 @@
 #include "ViewDesign/drawing/layer.h"
-#include "ViewDesign/drawing/canvas.h"
-#include "ViewDesign/platform/directx/d2d_api.h"
-#include "ViewDesign/platform/directx/helper.h"
+#include "ViewDesign/platform/directx/canvas.h"
 
 
 namespace ViewDesign {
@@ -39,26 +37,7 @@ void Layer::DestroyFramebuffer() {
 void Layer::RenderCanvas(const Canvas& canvas, Vector offset, Rect clip_region) {
 	D2DDeviceContext& device_context = GetD2DDeviceContext();
 	device_context.SetTarget(static_cast<ref_ptr<D2DBitmap>>(GetFramebuffer()));
-	device_context.PushAxisAlignedClip(AsD2DRect(clip_region), D2D1_ANTIALIAS_MODE_PER_PRIMITIVE);
-	device_context.Clear(AsD2DColor(color_transparent));
-	device_context.SetTransform(AsD2DTransform(offset));
-	auto& figure_list = canvas.GetFigureList(); auto& group_list = canvas.GetGroupList();
-	for (size_t figure_index = 0, group_index = 0; group_index < group_list.size(); ++group_index) {
-		auto& [group_figure_index, group_transform, group_clip_region] = group_list[group_index];
-		for (; figure_index < group_figure_index; ++figure_index) {
-			auto& [point, figure] = figure_list[figure_index];
-			figure->DrawOn(static_cast<RenderTarget&>(device_context), point);
-		}
-		if (!group_clip_region.IsEmpty()) {
-			device_context.SetTransform(AsD2DTransform(group_transform * offset));
-			device_context.PushAxisAlignedClip(AsD2DRect(group_clip_region), D2D1_ANTIALIAS_MODE_PER_PRIMITIVE);
-		} else {
-			device_context.PopAxisAlignedClip();
-			device_context.SetTransform(AsD2DTransform(group_transform * offset));
-		}
-	}
-	device_context.SetTransform(AsD2DTransform(Transform::Identity()));
-	device_context.PopAxisAlignedClip();
+	DirectX::RenderCanvas(static_cast<RenderTarget&>(device_context), canvas, offset, clip_region);
 	device_context.SetTarget(nullptr);
 }
 

@@ -61,12 +61,6 @@ SizeU ViewDesign::Desktop::GetSize() const {
 	return GetDesktopSize();
 }
 
-void Desktop::RecreateWindowLayer() {
-	for (auto& window : window_list) {
-		window->RecreateLayer();
-	}
-}
-
 void Desktop::ReleaseView(ViewBase& view) {
 	if (&view == &desktop.Get()) { return; }
 	if (view_track_map.contains(&view)) { PopTrack(view_track_map[&view]); PushTrack({}); }

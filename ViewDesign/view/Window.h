@@ -17,10 +17,11 @@ public:
 	Window(const u16string& title, view_ptr<> child);
 	~Window();
 
+	// layer
 private:
-	Handle handle;
+	WindowLayer layer;
 public:
-	Handle GetHandle() const { return handle; }
+	Handle GetHandle() const { return layer.GetWindow(); }
 
 	// style
 public:
@@ -28,16 +29,17 @@ public:
 
 	// layout
 private:
-	RectI region;
+	PointI point;
 	Scale scale;
 protected:
-	RectI GetRegion() const { return region; }
+	SizeU GetSize() const { return layer.GetSize(); }
+	RectI GetRegion() const { return RectI(point, GetSize()); }
 	Scale GetScale() const { return scale; }
 private:
 	std::pair<SizeU, RectI> GetMinMaxRegion(SizeU desktop_size);
 	void InitializeRegion(SizeU desktop_size);
 	void SetSize(SizeU size);
-	void SetPoint(PointI point) { region.point = point; }
+	void SetPoint(PointI point) { this->point = point; }
 	void SetScale(Scale scale) { this->scale = Scale(scale); }
 protected:
 	void WindowRegionUpdated(Rect region);
@@ -68,11 +70,6 @@ public:
 	void Close();
 
 	// drawing
-private:
-	WindowLayer layer;
-private:
-	void ResizeLayer();
-	void RecreateLayer();
 protected:
 	void Redraw(Rect redraw_region);
 private:
