@@ -36,8 +36,20 @@ public:
 protected:
 	Size size;
 protected:
-	virtual Size OnSizeRefUpdate(Size size_ref) override { return size = UpdateChildSizeRef(child, size_ref); }
-	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override { SizeUpdated(size = child_size); }
+	virtual Size OnSizeRefUpdate(Size size_ref) override {
+		if (Size child_size = UpdateChildSizeRef(child, size_ref); size != child_size) {
+			size = child_size;
+			layer.DestroyFramebuffer();
+		}
+		return size;
+	}
+	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override {
+		if (size != child_size) {
+			size = child_size;
+			layer.DestroyFramebuffer();
+			SizeUpdated(size);
+		}
+	}
 
 	// drawing
 protected:
@@ -100,8 +112,22 @@ public:
 protected:
 	Size size;
 protected:
-	virtual Size OnSizeRefUpdate(Size size_ref) override { return size = UpdateChildSizeRef(child, size_ref); }
-	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override { SizeUpdated(size = child_size); }
+	virtual Size OnSizeRefUpdate(Size size_ref) override {
+		if (Size child_size = UpdateChildSizeRef(child, size_ref); size != child_size) {
+			size = child_size;
+			tile_cache.clear();
+			tile_size = TilingFunc()(tile_size, size * scale);
+		}
+		return size;
+	}
+	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override {
+		if (size != child_size) {
+			size = child_size;
+			tile_cache.clear();
+			tile_size = TilingFunc()(tile_size, size * scale);
+			SizeUpdated(size);
+		}
+	}
 
 	// drawing
 protected:
@@ -123,15 +149,15 @@ protected:
 	}
 	virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
 		draw_region = draw_region.Intersect(Rect(point_zero, size)); if (draw_region.IsEmpty()) { return; }
-		scale = canvas.GetCurrentTransform().GetScale();
-		if (SizeU tile_size_new = TilingFunc()(tile_size, size * scale); tile_size_new != tile_size) {
-			tile_size = tile_size_new;
+		if (Scale scale_new = canvas.GetCurrentTransform().GetScale(); scale != scale_new) {
+			scale = scale_new;
 			tile_cache.clear();
+			tile_size = TilingFunc()(tile_size, size * scale);
 		}
 		Rect composite_region = draw_region * scale;
 		for (TileIndex tile_index : GetOverlappingTileRange(tile_size, composite_region)) {
 			if (!tile_cache.contains(tile_index)) {
-				invalid_region.Union(GetTileRegion(tile_size, tile_index).Intersect(composite_region));
+				invalid_region.Union(GetTileRegion(tile_size, tile_index));
 			}
 		}
 		Region render_region(composite_region); render_region.Intersect(invalid_region);

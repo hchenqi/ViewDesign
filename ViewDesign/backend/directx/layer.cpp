@@ -57,6 +57,7 @@ void Layer::RenderCanvas(const Canvas& canvas, Vector offset, Rect clip_region) 
 			device_context.SetTransform(AsD2DTransform(group_transform * offset));
 		}
 	}
+	device_context.SetTransform(AsD2DTransform(Transform::Identity()));
 	device_context.PopAxisAlignedClip();
 	device_context.SetTarget(nullptr);
 }

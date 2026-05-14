@@ -121,9 +121,9 @@ void Test() {
 	desktop.AddWindow(
 		new TitleBarWindow(
 			MainWindowStyle(),
-			new ScaleView(
-				new LayerFrame(
-					new ScrollFrame(
+			new ScrollFrame(
+				new LayerFrameTiled(
+					new ScaleView(
 						new InnerBorderFrame(
 							Border(1.0f, 0.0f, Color::Black),
 							new PaddingFrame(
