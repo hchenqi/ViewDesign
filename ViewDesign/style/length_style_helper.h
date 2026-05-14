@@ -1,7 +1,6 @@
 #pragma once
 
 #include "ViewDesign/style/length_style.h"
-#include "ViewDesign/geometry/helper.h"
 
 
 namespace ViewDesign {

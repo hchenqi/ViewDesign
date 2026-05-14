@@ -2,9 +2,6 @@
 
 #include "ViewDesign/geometry/geometry.h"
 #include "ViewDesign/geometry/margin.h"
-#include "ViewDesign/geometry/sizeu.h"
-
-#include <cmath>
 
 
 namespace ViewDesign {
@@ -43,29 +40,6 @@ constexpr Size Extend(Size size, Margin margin) {
 
 constexpr Rect Extend(Rect region, Margin margin) {
 	return Rect(region.point - Vector(margin.left, margin.top), Extend(region.size, margin));
-}
-
-
-inline PointI Round(Point point) {
-	return PointI(roundf(point.x), roundf(point.y));
-}
-
-inline SizeU Round(Size size) {
-	return SizeU(std::max(roundf(size.width), 0.0f), std::max(roundf(size.height), 0.0f));
-}
-
-inline SizeU RoundUp(Size size) {
-	return SizeU(std::max(ceilf(size.width), 0.0f), std::max(ceilf(size.height), 0.0f));
-}
-
-inline RectI Round(Rect region) {
-	float left = roundf(region.left()), top = roundf(region.top()), right = roundf(region.right()), bottom = roundf(region.bottom());
-	return RectI(PointI(left, top), SizeU(std::max(right - left, 0.0f), std::max(bottom - top, 0.0f)));
-}
-
-inline RectI RoundUp(Rect region) {
-	float left = floorf(region.left()), top = floorf(region.top()), right = ceilf(region.right()), bottom = ceilf(region.bottom());
-	return RectI(PointI(left, top), SizeU(std::max(right - left, 0.0f), std::max(bottom - top, 0.0f)));
 }
 
 

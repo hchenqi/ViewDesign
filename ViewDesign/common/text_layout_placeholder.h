@@ -1,8 +1,10 @@
 #pragma once
 
-#include "ViewDesign/geometry/helper.h"
 #include "ViewDesign/drawing/text_block.h"
 #include "ViewDesign/drawing/shape.h"
+#include "ViewDesign/geometry/helper.h"
+
+#include <cmath>
 
 
 namespace ViewDesign {

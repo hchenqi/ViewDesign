@@ -3,7 +3,6 @@
 #include "ViewDesign/view/ViewFrame.h"
 #include "ViewDesign/drawing/layer.h"
 #include "ViewDesign/geometry/region.h"
-#include "ViewDesign/geometry/helper.h"
 #include "ViewDesign/geometry/tiling.h"
 
 #if !defined(NDEBUG)

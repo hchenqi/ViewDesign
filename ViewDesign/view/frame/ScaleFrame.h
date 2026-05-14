@@ -1,7 +1,6 @@
 #pragma once
 
 #include "ViewDesign/view/ViewFrame.h"
-#include "ViewDesign/geometry/helper.h"
 
 
 namespace ViewDesign {

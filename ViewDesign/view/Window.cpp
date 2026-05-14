@@ -1,6 +1,5 @@
 #include "ViewDesign/view/Desktop.h"
 #include "ViewDesign/system/window.h"
-#include "ViewDesign/geometry/helper.h"
 
 
 namespace ViewDesign {

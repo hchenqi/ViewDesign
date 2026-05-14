@@ -3,7 +3,6 @@
 #include "ViewDesign/system/window.h"
 #include "ViewDesign/system/event_loop.h"
 #include "ViewDesign/common/reversion_wrapper.h"
-#include "ViewDesign/geometry/helper.h"
 
 
 namespace ViewDesign {

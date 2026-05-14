@@ -2,6 +2,7 @@
 #include "ViewDesign/geometry/helper.h"
 
 #include <stdexcept>
+#include <cmath>
 
 
 namespace ViewDesign {

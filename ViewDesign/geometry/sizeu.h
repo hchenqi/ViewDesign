@@ -3,6 +3,8 @@
 #include "ViewDesign/common/type.h"
 #include "ViewDesign/geometry/rect.h"
 
+#include <cmath>
+
 
 namespace ViewDesign {
 
@@ -16,7 +18,6 @@ struct PointI {
 	constexpr operator Point() const { return Point(x, y); }
 };
 
-
 struct SizeU {
 	uint32 width;
 	uint32 height;
@@ -29,7 +30,6 @@ struct SizeU {
 
 	constexpr operator Size() const { return Size(width, height); }
 };
-
 
 struct RectI {
 	PointI point;
@@ -60,10 +60,32 @@ struct RectI {
 	constexpr operator Rect() const { return Rect(point, size); }
 };
 
-
 constexpr PointI point_i_zero = PointI(0, 0);
 constexpr SizeU size_u_empty = SizeU(0, 0);
 constexpr RectI rect_i_empty = RectI(point_i_zero, size_u_empty);
+
+
+inline PointI Round(Point point) {
+	return PointI(roundf(point.x), roundf(point.y));
+}
+
+inline SizeU Round(Size size) {
+	return SizeU(std::max(roundf(size.width), 0.0f), std::max(roundf(size.height), 0.0f));
+}
+
+inline SizeU RoundUp(Size size) {
+	return SizeU(std::max(ceilf(size.width), 0.0f), std::max(ceilf(size.height), 0.0f));
+}
+
+inline RectI Round(Rect region) {
+	float left = roundf(region.left()), top = roundf(region.top()), right = roundf(region.right()), bottom = roundf(region.bottom());
+	return RectI(PointI(left, top), SizeU(std::max(right - left, 0.0f), std::max(bottom - top, 0.0f)));
+}
+
+inline RectI RoundUp(Rect region) {
+	float left = floorf(region.left()), top = floorf(region.top()), right = ceilf(region.right()), bottom = ceilf(region.bottom());
+	return RectI(PointI(left, top), SizeU(std::max(right - left, 0.0f), std::max(bottom - top, 0.0f)));
+}
 
 
 } // namespace ViewDesign

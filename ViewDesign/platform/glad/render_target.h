@@ -1,7 +1,6 @@
 #pragma once
 
 #include "ViewDesign/geometry/transform.h"
-#include "ViewDesign/geometry/helper.h"
 #include "ViewDesign/platform/glad/framebuffer.h"
 
 #include <vector>

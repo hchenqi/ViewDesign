@@ -4,8 +4,6 @@
 #include "ViewDesign/geometry/geometry.h"
 #include "ViewDesign/geometry/sizeu.h"
 
-#include <cmath>
-
 
 namespace ViewDesign {
 

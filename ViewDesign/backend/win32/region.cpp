@@ -1,5 +1,4 @@
 #include "ViewDesign/geometry/region.h"
-#include "ViewDesign/geometry/helper.h"
 #include "ViewDesign/platform/win32/geometry_helper.h"
 
 
