@@ -23,7 +23,9 @@ void Bitmap::DestroyTexture() const {
 
 
 void BitmapFigure::DrawOn(RenderTarget& target, Point point) const {
+	static_cast<ref_ptr<Texture>>(bitmap.GetTexture())->TransitionImageLayout(target, vk::ImageLayout::eShaderReadOnlyOptimal);
 
+	// sample texture with shader
 }
 
 

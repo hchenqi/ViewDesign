@@ -1,7 +1,8 @@
 #pragma once
 
-#include "ViewDesign/geometry/size.h"
+#include "ViewDesign/geometry/sizeu.h"
 #include "ViewDesign/platform/vulkan/device.h"
+#include "ViewDesign/platform/vulkan/render_pass.h"
 
 
 namespace ViewDesign {
@@ -21,7 +22,10 @@ private:
 private:
 	std::vector<vk::raii::ImageView>   image_view_list;
 	std::vector<vk::raii::Framebuffer> framebuffer_list;
+	uint32_t                           image_index = 0;
 
+private:
+	static constexpr uint32_t frame_in_flight_count = 2;
 private:
 	struct FrameInFlight {
 		vk::raii::CommandBuffer command_buffer;
@@ -30,16 +34,11 @@ private:
 		vk::raii::Fence         fence;
 	};
 private:
-	static constexpr uint32_t frame_in_flight_count = 2;
-private:
 	std::vector<FrameInFlight> frame_in_flight_list;
 	uint32_t                   frame_in_flight_index = 0;
 
-private:
-	static constexpr vk::ClearValue clear_value = vk::ClearValue(vk::ClearColorValue(std::array<float, 4>{ 0.0f, 0.0f, 0.0f, 0.0f }));
-
 public:
-	Surface(vk::raii::SurfaceKHR surface, Size size) : surface(std::move(surface)) { Initialize(size); }
+	Surface(vk::raii::SurfaceKHR surface, SizeU size) : surface(std::move(surface)) { Initialize(size); }
 
 private:
 	inline static vk::SurfaceFormatKHR SelectSurfaceFormat(const std::vector<vk::SurfaceFormatKHR>& surface_format_list) {
@@ -50,7 +49,6 @@ private:
 		}
 		return surface_format_list[0];
 	}
-
 	inline static vk::PresentModeKHR SelectPresentMode(const std::vector<vk::PresentModeKHR>& present_mode_list) {
 		for (const auto& present_mode : present_mode_list) {
 			if (present_mode == vk::PresentModeKHR::eMailbox) {
@@ -59,23 +57,21 @@ private:
 		}
 		return vk::PresentModeKHR::eFifo;
 	}
-
-	inline static vk::Extent2D ClampSizeToExtent(const vk::SurfaceCapabilitiesKHR& surface_capabilities, Size size) {
+	inline static vk::Extent2D ClampSizeToMinMaxExtent(SizeU size, const vk::SurfaceCapabilitiesKHR& surface_capabilities) {
 		return vk::Extent2D(
-			std::clamp((uint32_t)size.width, surface_capabilities.minImageExtent.width, surface_capabilities.maxImageExtent.width),
-			std::clamp((uint32_t)size.height, surface_capabilities.minImageExtent.height, surface_capabilities.maxImageExtent.height)
+			std::clamp(size.width, surface_capabilities.minImageExtent.width, surface_capabilities.maxImageExtent.width),
+			std::clamp(size.height, surface_capabilities.minImageExtent.height, surface_capabilities.maxImageExtent.height)
 		);
 	}
-
 private:
-	void Initialize(Size size) {
+	void Initialize(SizeU size) {
 		DeviceContext& device_context = DeviceContext::Get(surface);
 		vk::raii::PhysicalDevice& physical_device = device_context.physical_device;
 		vk::raii::Device& device = device_context.device;
 
 		vk::SurfaceCapabilitiesKHR surface_capabilities = physical_device.getSurfaceCapabilitiesKHR(surface);
 
-		extent = surface_capabilities.currentExtent == vk::Extent2D(UINT32_MAX, UINT32_MAX) ? ClampSizeToExtent(surface_capabilities, size) : surface_capabilities.currentExtent;
+		extent = surface_capabilities.currentExtent == vk::Extent2D(UINT32_MAX, UINT32_MAX) ? ClampSizeToMinMaxExtent(size, surface_capabilities) : surface_capabilities.currentExtent;
 
 		uint32_t image_count = std::clamp(image_count_default, surface_capabilities.minImageCount, surface_capabilities.maxImageCount);
 		vk::SurfaceFormatKHR surface_format = SelectSurfaceFormat(physical_device.getSurfaceFormatsKHR(surface));
@@ -116,31 +112,28 @@ public:
 		FrameInFlight& frame_in_flight = frame_in_flight_list[frame_in_flight_index];
 		vk::raii::CommandBuffer& command_buffer = frame_in_flight.command_buffer;
 
-		command_buffer.reset();
-		device_context.SetCurrentCommandBuffer(&command_buffer);
-	}
-
-	void Render(auto f){
-		DeviceContext& device_context = DeviceContext::Get();
-		FrameInFlight& frame_in_flight = frame_in_flight_list[frame_in_flight_index];
-		vk::raii::CommandBuffer& command_buffer = frame_in_flight.command_buffer;
-
 		auto wait_result = device_context.device.waitForFences(*frame_in_flight.fence, vk::True, UINT64_MAX);
 		device_context.device.resetFences(*frame_in_flight.fence);
 
 		auto [acquire_result, image_index] = swapchain.acquireNextImage(UINT64_MAX, *frame_in_flight.semaphore_image_available);
 		if (acquire_result == vk::Result::eErrorOutOfDateKHR) {
-			// recreate
+			throw std::runtime_error("Vulkan: recreate surface");
 		}
+		this->image_index = image_index;
 
-		command_buffer.begin(vk::CommandBufferBeginInfo{});
-		command_buffer.beginRenderPass(vk::RenderPassBeginInfo(render_pass, framebuffer_list[image_index], vk::Rect2D({ 0, 0 }, extent), clear_value), vk::SubpassContents::eInline);
+		command_buffer.reset();
+		command_buffer.begin(vk::CommandBufferBeginInfo(vk::CommandBufferUsageFlagBits::eOneTimeSubmit));
+		device_context.SetCurrentCommandBuffer(&command_buffer);
+	}
 
-		f();
+	void Render(Rect clip_region, auto func) {
+		DeviceContext& device_context = DeviceContext::Get();
+		FrameInFlight& frame_in_flight = frame_in_flight_list[frame_in_flight_index];
+		vk::raii::CommandBuffer& command_buffer = frame_in_flight.command_buffer;
 
-		command_buffer.endRenderPass();
+		Vulkan::Render(command_buffer, render_pass, framebuffer_list[image_index], clip_region, std::forward<decltype(func)>(func));
+
 		command_buffer.end();
-
 		device_context.SetCurrentCommandBuffer(nullptr);
 
 		vk::PipelineStageFlags stage = vk::PipelineStageFlagBits::eColorAttachmentOutput;

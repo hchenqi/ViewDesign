@@ -11,24 +11,24 @@ namespace Vulkan {
 
 
 class Texture {
-private:
+protected:
 	static constexpr vk::Format format = vk::Format::eR8G8B8A8Srgb;
 
-private:
-	vk::Extent2D                extent;
-	vk::raii::Image             image = nullptr;
-	vk::ImageLayout             image_layout = vk::ImageLayout::eUndefined;
-	vk::raii::ImageView         image_view = nullptr;
-	vk::raii::DeviceMemory      device_memory = nullptr;
+protected:
+	vk::Extent2D           extent;
+	vk::raii::Image        image = nullptr;
+	vk::ImageLayout        image_layout = vk::ImageLayout::eUndefined;
+	vk::raii::ImageView    image_view = nullptr;
+	vk::raii::DeviceMemory device_memory = nullptr;
 
 public:
 	Texture(const PixelBuffer& pixel_buffer) {
-		CreateImageView(pixel_buffer.Size(), vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eTransferSrc);
+		CreateImageView(pixel_buffer.Size(), vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled);
 		CopyPixelBuffer(pixel_buffer.PixelDataLength(), pixel_buffer.PixelData());
 	}
 
 	Texture(SizeU size) {
-		CreateImageView(size, vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eTransferSrc | vk::ImageUsageFlagBits::eColorAttachment);
+		CreateImageView(size, vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eColorAttachment);
 		Clear();
 	}
 
@@ -43,22 +43,19 @@ private:
 
 public:
 	void TransitionImageLayout(vk::raii::CommandBuffer& command_buffer, vk::ImageLayout image_layout_new) {
-		if (image_layout == image_layout_new) {
-			return;
-		}
+		if (image_layout == image_layout_new) { return; }
 		static auto GetAccessAndStage = [](vk::ImageLayout layout) -> std::pair<vk::AccessFlags, vk::PipelineStageFlags> {
 			switch (layout) {
-			case vk::ImageLayout::eUndefined:                return { {},                                          vk::PipelineStageFlagBits::eTopOfPipe };
-			case vk::ImageLayout::eTransferSrcOptimal:       return { vk::AccessFlagBits::eTransferRead,           vk::PipelineStageFlagBits::eTransfer };
-			case vk::ImageLayout::eTransferDstOptimal:       return { vk::AccessFlagBits::eTransferWrite,          vk::PipelineStageFlagBits::eTransfer };
-			case vk::ImageLayout::eShaderReadOnlyOptimal:    return { vk::AccessFlagBits::eShaderRead,             vk::PipelineStageFlagBits::eFragmentShader };
-			case vk::ImageLayout::eColorAttachmentOptimal:   return { vk::AccessFlagBits::eColorAttachmentWrite,   vk::PipelineStageFlagBits::eColorAttachmentOutput };
-			case vk::ImageLayout::ePresentSrcKHR:            return { {},                                          vk::PipelineStageFlagBits::eBottomOfPipe };
+			case vk::ImageLayout::eUndefined:              return { {},                                        vk::PipelineStageFlagBits::eTopOfPipe };
+			case vk::ImageLayout::eTransferSrcOptimal:     return { vk::AccessFlagBits::eTransferRead,         vk::PipelineStageFlagBits::eTransfer };
+			case vk::ImageLayout::eTransferDstOptimal:     return { vk::AccessFlagBits::eTransferWrite,        vk::PipelineStageFlagBits::eTransfer };
+			case vk::ImageLayout::eShaderReadOnlyOptimal:  return { vk::AccessFlagBits::eShaderRead,           vk::PipelineStageFlagBits::eFragmentShader };
+			case vk::ImageLayout::eColorAttachmentOptimal: return { vk::AccessFlagBits::eColorAttachmentWrite, vk::PipelineStageFlagBits::eColorAttachmentOutput };
+			case vk::ImageLayout::ePresentSrcKHR:          return { {},                                        vk::PipelineStageFlagBits::eBottomOfPipe };
 			default: throw std::runtime_error("Vulkan: unhandled image layout transition");
 			}
 		};
-		auto [src_access, src_stage] = GetAccessAndStage(image_layout);
-		auto [dst_access, dst_stage] = GetAccessAndStage(image_layout_new);
+		auto [src_access, src_stage] = GetAccessAndStage(image_layout); auto [dst_access, dst_stage] = GetAccessAndStage(image_layout_new);
 		command_buffer.pipelineBarrier(src_stage, dst_stage, {}, {}, {}, vk::ImageMemoryBarrier(src_access, dst_access, image_layout, image_layout_new, vk::QueueFamilyIgnored, vk::QueueFamilyIgnored, image, { vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1 }));
 		image_layout = image_layout_new;
 	}
@@ -89,26 +86,16 @@ private:
 		std::memcpy(mapped, buffer, buffer_size_bytes);
 		staging_memory.unmapMemory();
 
-		command_buffer.begin(vk::CommandBufferBeginInfo(vk::CommandBufferUsageFlagBits::eOneTimeSubmit));
-
 		TransitionImageLayout(command_buffer, vk::ImageLayout::eTransferDstOptimal);
 		command_buffer.copyBufferToImage(staging_buffer, image, vk::ImageLayout::eTransferDstOptimal, vk::BufferImageCopy(0, 0, 0, { vk::ImageAspectFlagBits::eColor, 0, 0, 1 }, { 0, 0, 0 }, vk::Extent3D(extent, 1)));
-		TransitionImageLayout(command_buffer, vk::ImageLayout::eShaderReadOnlyOptimal);
-
-		command_buffer.end();
 	}
 
 	void Clear() {
 		DeviceContext& device_context = DeviceContext::Get();
 		vk::raii::CommandBuffer& command_buffer = device_context.GetCurrentCommandBuffer();
 
-		command_buffer.begin(vk::CommandBufferBeginInfo(vk::CommandBufferUsageFlagBits::eOneTimeSubmit));
-
 		TransitionImageLayout(command_buffer, vk::ImageLayout::eTransferDstOptimal);
 		command_buffer.clearColorImage(image, vk::ImageLayout::eTransferDstOptimal, vk::ClearColorValue(std::array<float, 4>{0.0f, 0.0f, 0.0f, 0.0f}), vk::ImageSubresourceRange(vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1));
-		TransitionImageLayout(command_buffer, vk::ImageLayout::eShaderReadOnlyOptimal);
-
-		command_buffer.end();
 	}
 };
 
