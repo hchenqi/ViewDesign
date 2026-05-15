@@ -4,6 +4,8 @@ if(NOT Vulkan_FOUND)
     return()
 endif()
 
+add_subdirectory(shaders)
+
 file(GLOB_RECURSE LIB_SOURCES *.h *.cpp)
 add_library(ViewDesignVulkan STATIC ${LIB_SOURCES})
 add_library(ViewDesign::Vulkan ALIAS ViewDesignVulkan)
