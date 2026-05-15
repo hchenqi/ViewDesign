@@ -84,11 +84,11 @@ private:
 			present_mode, vk::True
 		));
 
-		vk::AttachmentDescription color_attachment({}, surface_format.format, vk::SampleCountFlagBits::e1, vk::AttachmentLoadOp::eClear, vk::AttachmentStoreOp::eStore, vk::AttachmentLoadOp::eDontCare, vk::AttachmentStoreOp::eDontCare, vk::ImageLayout::eUndefined, vk::ImageLayout::ePresentSrcKHR);
-		vk::AttachmentReference color_attachment_reference(0, vk::ImageLayout::eColorAttachmentOptimal);
-		vk::SubpassDescription subpass({}, vk::PipelineBindPoint::eGraphics, {}, color_attachment_reference);
-		vk::SubpassDependency subpass_dependency(vk::SubpassExternal, 0, vk::PipelineStageFlagBits::eColorAttachmentOutput, vk::PipelineStageFlagBits::eColorAttachmentOutput, {}, vk::AccessFlagBits::eColorAttachmentWrite);
-		render_pass = device.createRenderPass(vk::RenderPassCreateInfo({}, color_attachment, subpass, subpass_dependency));
+		vk::AttachmentDescription attachment({}, surface_format.format, vk::SampleCountFlagBits::e1, vk::AttachmentLoadOp::eClear, vk::AttachmentStoreOp::eStore, vk::AttachmentLoadOp::eDontCare, vk::AttachmentStoreOp::eDontCare, vk::ImageLayout::eUndefined, vk::ImageLayout::ePresentSrcKHR);
+		vk::AttachmentReference attachment_reference(0, vk::ImageLayout::eColorAttachmentOptimal);
+		vk::SubpassDescription subpass({}, vk::PipelineBindPoint::eGraphics, {}, attachment_reference);
+		vk::SubpassDependency subpass_dependency(vk::SubpassExternal, 0, vk::PipelineStageFlagBits::eColorAttachmentOutput, vk::PipelineStageFlagBits::eColorAttachmentOutput, {}, vk::AccessFlagBits::eColorAttachmentWrite, vk::DependencyFlagBits::eByRegion);
+		render_pass = device.createRenderPass(vk::RenderPassCreateInfo({}, attachment, subpass, subpass_dependency));
 
 		for (const auto& image : swapchain.getImages()) {
 			image_view_list.emplace_back(device.createImageView(vk::ImageViewCreateInfo({}, image, vk::ImageViewType::e2D, surface_format.format, {}, vk::ImageSubresourceRange(vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1))));

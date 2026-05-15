@@ -23,16 +23,14 @@ public:
 		DeviceContext& device_context = DeviceContext::Get();
 		vk::raii::Device& device = device_context.device;
 
-		vk::AttachmentDescription color_attachment({}, format, vk::SampleCountFlagBits::e1, vk::AttachmentLoadOp::eLoad, vk::AttachmentStoreOp::eStore, vk::AttachmentLoadOp::eDontCare, vk::AttachmentStoreOp::eDontCare, image_layout, image_layout_final);
-		vk::AttachmentReference color_attachment_reference(0, vk::ImageLayout::eColorAttachmentOptimal);
-		vk::SubpassDescription subpass({}, vk::PipelineBindPoint::eGraphics, {}, color_attachment_reference);
-		//vk::SubpassDependency subpass_dependency(vk::SubpassExternal, 0, vk::PipelineStageFlagBits::eColorAttachmentOutput, vk::PipelineStageFlagBits::eColorAttachmentOutput, {}, vk::AccessFlagBits::eColorAttachmentWrite);
+		vk::AttachmentDescription attachment({}, format, sample_count_flag_bits, vk::AttachmentLoadOp::eClear, vk::AttachmentStoreOp::eStore, vk::AttachmentLoadOp::eDontCare, vk::AttachmentStoreOp::eDontCare, image_layout, image_layout_final);
+		vk::AttachmentReference attachment_reference(0, vk::ImageLayout::eColorAttachmentOptimal);
+		vk::SubpassDescription subpass({}, vk::PipelineBindPoint::eGraphics, {}, attachment_reference);
 		std::array<vk::SubpassDependency, 2> subpass_dependency_list = {
 			vk::SubpassDependency(vk::SubpassExternal, 0, vk::PipelineStageFlagBits::eFragmentShader, vk::PipelineStageFlagBits::eColorAttachmentOutput, vk::AccessFlagBits::eShaderRead, vk::AccessFlagBits::eColorAttachmentWrite, vk::DependencyFlagBits::eByRegion),
 			vk::SubpassDependency(0, vk::SubpassExternal, vk::PipelineStageFlagBits::eColorAttachmentOutput, vk::PipelineStageFlagBits::eFragmentShader, vk::AccessFlagBits::eColorAttachmentWrite, vk::AccessFlagBits::eShaderRead, vk::DependencyFlagBits::eByRegion),
 		};
-		render_pass = device.createRenderPass(vk::RenderPassCreateInfo({}, color_attachment, subpass, subpass_dependency_list));
-
+		render_pass = device.createRenderPass(vk::RenderPassCreateInfo({}, attachment, subpass, subpass_dependency_list));
 		framebuffer = device.createFramebuffer(vk::FramebufferCreateInfo({}, render_pass, *image_view, extent.width, extent.height, 1));
 	}
 

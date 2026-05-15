@@ -13,6 +13,7 @@ namespace Vulkan {
 class Texture {
 protected:
 	static constexpr vk::Format format = vk::Format::eR8G8B8A8Srgb;
+	static constexpr vk::SampleCountFlagBits sample_count_flag_bits = vk::SampleCountFlagBits::e1;
 
 protected:
 	vk::Extent2D           extent;
@@ -51,12 +52,11 @@ public:
 			case vk::ImageLayout::eTransferDstOptimal:     return { vk::AccessFlagBits::eTransferWrite,        vk::PipelineStageFlagBits::eTransfer };
 			case vk::ImageLayout::eShaderReadOnlyOptimal:  return { vk::AccessFlagBits::eShaderRead,           vk::PipelineStageFlagBits::eFragmentShader };
 			case vk::ImageLayout::eColorAttachmentOptimal: return { vk::AccessFlagBits::eColorAttachmentWrite, vk::PipelineStageFlagBits::eColorAttachmentOutput };
-			case vk::ImageLayout::ePresentSrcKHR:          return { {},                                        vk::PipelineStageFlagBits::eBottomOfPipe };
 			default: throw std::runtime_error("Vulkan: unhandled image layout transition");
 			}
 		};
 		auto [src_access, src_stage] = GetAccessAndStage(image_layout); auto [dst_access, dst_stage] = GetAccessAndStage(image_layout_new);
-		command_buffer.pipelineBarrier(src_stage, dst_stage, {}, {}, {}, vk::ImageMemoryBarrier(src_access, dst_access, image_layout, image_layout_new, vk::QueueFamilyIgnored, vk::QueueFamilyIgnored, image, { vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1 }));
+		command_buffer.pipelineBarrier(src_stage, dst_stage, {}, {}, {}, vk::ImageMemoryBarrier(src_access, dst_access, image_layout, image_layout_new, vk::QueueFamilyIgnored, vk::QueueFamilyIgnored, image, vk::ImageSubresourceRange(vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1)));
 		image_layout = image_layout_new;
 	}
 
@@ -65,9 +65,9 @@ private:
 		DeviceContext& device_context = DeviceContext::Get();
 
 		extent = vk::Extent2D(size.width, size.height);
-		image = device_context.device.createImage(vk::ImageCreateInfo({}, vk::ImageType::e2D, format, vk::Extent3D(extent, 1), 1, 1, vk::SampleCountFlagBits::e1, vk::ImageTiling::eOptimal, image_usage_flags, vk::SharingMode::eExclusive));
+		image = device_context.device.createImage(vk::ImageCreateInfo({}, vk::ImageType::e2D, format, vk::Extent3D(extent, 1), 1, 1, sample_count_flag_bits, vk::ImageTiling::eOptimal, image_usage_flags, vk::SharingMode::eExclusive));
 		image_layout = vk::ImageLayout::eUndefined;
-		image_view = device_context.device.createImageView(vk::ImageViewCreateInfo({}, image, vk::ImageViewType::e2D, format, {}, { vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1 }));
+		image_view = device_context.device.createImageView(vk::ImageViewCreateInfo({}, image, vk::ImageViewType::e2D, format, {}, vk::ImageSubresourceRange(vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1)));
 
 		vk::MemoryRequirements memory_requirements = image.getMemoryRequirements();
 		device_memory = device_context.device.allocateMemory(vk::MemoryAllocateInfo(memory_requirements.size, FindMemoryType(device_context.physical_device, memory_requirements.memoryTypeBits, vk::MemoryPropertyFlagBits::eDeviceLocal)));
@@ -87,7 +87,7 @@ private:
 		staging_memory.unmapMemory();
 
 		TransitionImageLayout(command_buffer, vk::ImageLayout::eTransferDstOptimal);
-		command_buffer.copyBufferToImage(staging_buffer, image, vk::ImageLayout::eTransferDstOptimal, vk::BufferImageCopy(0, 0, 0, { vk::ImageAspectFlagBits::eColor, 0, 0, 1 }, { 0, 0, 0 }, vk::Extent3D(extent, 1)));
+		command_buffer.copyBufferToImage(staging_buffer, image, vk::ImageLayout::eTransferDstOptimal, vk::BufferImageCopy(0, 0, 0, vk::ImageSubresourceLayers(vk::ImageAspectFlagBits::eColor, 0, 0, 1), vk::Offset3D(0, 0, 0), vk::Extent3D(extent, 1)));
 	}
 
 	void Clear() {
