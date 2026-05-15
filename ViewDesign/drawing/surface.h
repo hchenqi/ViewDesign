@@ -11,10 +11,10 @@
 namespace ViewDesign {
 
 
-class WindowLayer : Uncopyable {
+class Surface : Uncopyable {
 public:
-	WindowLayer(Handle window) : window(window) {}
-	~WindowLayer() { assert(window == nullptr); } // DestroyWindow() should be called and the window handle should be manually destroyed before destruction
+	Surface(Handle window) : window(window) {}
+	~Surface() { assert(window == nullptr); } // DestroyWindow() should be called and the window handle should be manually destroyed before destruction
 
 private:
 	Handle window;

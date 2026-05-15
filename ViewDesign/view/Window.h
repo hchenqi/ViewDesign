@@ -2,7 +2,7 @@
 
 #include "ViewDesign/view/ViewFrame.h"
 #include "ViewDesign/geometry/scale.h"
-#include "ViewDesign/drawing/window_layer.h"
+#include "ViewDesign/drawing/surface.h"
 
 
 namespace ViewDesign {
@@ -17,11 +17,11 @@ public:
 	Window(const u16string& title, view_ptr<> child);
 	~Window();
 
-	// layer
+	// surface
 private:
-	WindowLayer layer;
+	Surface surface;
 public:
-	Handle GetHandle() const { return layer.GetWindow(); }
+	Handle GetHandle() const { return surface.GetWindow(); }
 
 	// style
 public:
@@ -32,7 +32,7 @@ private:
 	PointI point;
 	Scale scale;
 protected:
-	SizeU GetSize() const { return layer.GetSize(); }
+	SizeU GetSize() const { return surface.GetSize(); }
 	RectI GetRegion() const { return RectI(point, GetSize()); }
 	Scale GetScale() const { return scale; }
 private:

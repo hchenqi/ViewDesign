@@ -1,4 +1,4 @@
-#include "ViewDesign/drawing/window_layer.h"
+#include "ViewDesign/drawing/surface.h"
 #include "ViewDesign/platform/glad/canvas.h"
 #include "ViewDesign/platform/glfw/window.h"
 
@@ -9,20 +9,20 @@ using namespace GLFW;
 using namespace OpenGL;
 
 
-void WindowLayer::Resize(SizeU size) {
+void Surface::Resize(SizeU size) {
 	this->size = size;
 	invalid_region = invalid_region_front_buffer = RectI(point_i_zero, size);
 }
 
-void WindowLayer::Destroy() {}
+void Surface::Destroy() {}
 
-void WindowLayer::RenderBegin() {
+void Surface::RenderBegin() {
 	if (!invalid_region.IsEmpty()) {
 		glfwMakeContextCurrent(AsGLFWWindow(window));
 	}
 }
 
-void WindowLayer::RenderEnd(const Canvas& canvas) {
+void Surface::RenderEnd(const Canvas& canvas) {
 	RenderContext context(size, nullptr);
 	OpenGL::RenderCanvas(static_cast<RenderTarget&>(context), canvas, vector_zero, invalid_region);
 

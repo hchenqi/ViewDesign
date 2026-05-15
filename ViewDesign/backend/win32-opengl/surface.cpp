@@ -1,4 +1,4 @@
-#include "ViewDesign/drawing/window_layer.h"
+#include "ViewDesign/drawing/surface.h"
 #include "ViewDesign/platform/win32/window.h"
 #include "ViewDesign/platform/win32/opengl_context.h"
 #include "ViewDesign/platform/glad/canvas.h"
@@ -12,7 +12,7 @@ using namespace Win32;
 using namespace OpenGL;
 
 
-void WindowLayer::Resize(SizeU size) {
+void Surface::Resize(SizeU size) {
 	this->size = size;
 
 	if (hglrc == nullptr) {
@@ -38,18 +38,18 @@ void WindowLayer::Resize(SizeU size) {
 	invalid_region = invalid_region_front_buffer = RectI(point_i_zero, size);
 }
 
-void WindowLayer::Destroy() {
+void Surface::Destroy() {
 	if (hglrc != nullptr) { wglDeleteContext((HGLRC)hglrc); hglrc = nullptr; }
 	if (hdc != nullptr) { ReleaseDC(AsHWND(window), (HDC)hdc); hdc = nullptr; }
 }
 
-void WindowLayer::RenderBegin() {
+void Surface::RenderBegin() {
 	if (!invalid_region.IsEmpty()) {
 		wglMakeCurrent((HDC)hdc, (HGLRC)hglrc);
 	}
 }
 
-void WindowLayer::RenderEnd(const Canvas& canvas) {
+void Surface::RenderEnd(const Canvas& canvas) {
 	RenderContext context(size, nullptr);
 	OpenGL::RenderCanvas(static_cast<RenderTarget&>(context), canvas, vector_zero, invalid_region);
 

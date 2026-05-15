@@ -1,4 +1,4 @@
-#include "ViewDesign/drawing/window_layer.h"
+#include "ViewDesign/drawing/surface.h"
 #include "ViewDesign/platform/win32/window.h"
 #include "ViewDesign/platform/win32/geometry_helper.h"
 #include "ViewDesign/platform/directx/d3d_api.h"
@@ -70,7 +70,7 @@ inline ComPtr<IDCompositionTarget> CreateCompositionTarget(SwapChain& swap_chain
 } // namespace
 
 
-void WindowLayer::Resize(SizeU size) {
+void Surface::Resize(SizeU size) {
 	this->size = size;
 	if (swap_chain == nullptr) {
 		swap_chain = CreateSwapChainForComposition(size).Detach();
@@ -88,13 +88,13 @@ void WindowLayer::Resize(SizeU size) {
 	invalid_region = RectI(point_i_zero, size);
 }
 
-void WindowLayer::Destroy() {
+void Surface::Destroy() {
 	ComPtr<CompositionTarget>().Swap(reinterpret_cast<owner_ptr<CompositionTarget>&>(composition_target)).Reset();
 	ComPtr<D2DBitmap>().Swap(reinterpret_cast<owner_ptr<D2DBitmap>&>(bitmap)).Reset(); UnregisterBitmap(reinterpret_cast<owner_ptr<D2DBitmap>&>(bitmap));
 	ComPtr<SwapChain>().Swap(reinterpret_cast<owner_ptr<SwapChain>&>(swap_chain)).Reset();
 }
 
-void WindowLayer::RenderBegin() {
+void Surface::RenderBegin() {
 	if (bitmap == nullptr) {
 		Destroy();
 		Resize(size);
@@ -105,7 +105,7 @@ void WindowLayer::RenderBegin() {
 	}
 }
 
-void WindowLayer::RenderEnd(const Canvas& canvas) {
+void Surface::RenderEnd(const Canvas& canvas) {
 	D2DDeviceContext& device_context = GetD2DDeviceContext();
 	device_context.SetTarget(static_cast<ref_ptr<D2DBitmap>>(bitmap));
 	DirectX::RenderCanvas(static_cast<RenderTarget&>(device_context), canvas, vector_zero, invalid_region);
