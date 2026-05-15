@@ -1,6 +1,5 @@
 #include "ViewDesign/drawing/layer.h"
 #include "ViewDesign/platform/vulkan/framebuffer.h"
-#include "ViewDesign/platform/vulkan/canvas.h"
 
 
 namespace ViewDesign {
@@ -22,7 +21,7 @@ void Layer::DestroyFramebuffer() {
 }
 
 void Layer::RenderCanvas(const Canvas& canvas, Vector offset, Rect clip_region) {
-	static_cast<ref_ptr<Framebuffer>>(GetFramebuffer())->Render(clip_region, [&](RenderTarget& target) { Vulkan::RenderCanvas(target, canvas, offset, clip_region); });
+	static_cast<ref_ptr<Framebuffer>>(GetFramebuffer())->Render(clip_region, [&](RenderTarget& target) { ViewDesign::RenderCanvas(target, canvas, offset, clip_region); });
 }
 
 

@@ -63,4 +63,29 @@ public:
 };
 
 
+template<class RenderTarget>
+inline void RenderCanvas(RenderTarget& target, const Canvas& canvas, Vector offset, Rect clip_region) {
+	target.PushClip(clip_region);
+	target.Clear();
+	target.SetTransform(offset);
+	auto& figure_list = canvas.GetFigureList(); auto& group_list = canvas.GetGroupList();
+	for (size_t figure_index = 0, group_index = 0; group_index < group_list.size(); ++group_index) {
+		auto& [group_figure_index, group_transform, group_clip_region] = group_list[group_index];
+		for (; figure_index < group_figure_index; ++figure_index) {
+			auto& [point, figure] = figure_list[figure_index];
+			figure->DrawOn(target, point);
+		}
+		if (!group_clip_region.IsEmpty()) {
+			target.SetTransform(group_transform * offset);
+			target.PushClip(group_clip_region);
+		} else {
+			target.PopClip();
+			target.SetTransform(group_transform * offset);
+		}
+	}
+	target.SetTransform(Transform::Identity());
+	target.PopClip();
+}
+
+
 } // namespace ViewDesign

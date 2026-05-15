@@ -34,5 +34,11 @@ Point operator*(Point point, const Transform& transform);
 
 inline Point& operator*=(Point& point, const Transform& transform) { return point = point * transform; }
 
+inline Rect GetBoundingRectAfterTransform(Rect rect, const Transform& transform) {
+	Point a = rect.LeftTop() * transform, b = rect.RightTop() * transform, c = rect.LeftBottom() * transform, d = rect.RightBottom() * transform;
+	float x_min = std::min({ a.x, b.x, c.x, d.x }), x_max = std::max({ a.x, b.x, c.x, d.x }), y_min = std::min({ a.y, b.y, c.y, d.y }), y_max = std::max({ a.y, b.y, c.y, d.y });
+	return Rect(Point(x_min, y_min), Size(x_max - x_min, y_max - y_min));
+}
+
 
 } // namespace ViewDesign

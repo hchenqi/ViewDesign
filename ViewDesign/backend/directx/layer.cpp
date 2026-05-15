@@ -1,5 +1,6 @@
 #include "ViewDesign/drawing/layer.h"
-#include "ViewDesign/platform/directx/canvas.h"
+#include "ViewDesign/platform/directx/render_target.h"
+#include "ViewDesign/platform/directx/helper.h"
 
 
 namespace ViewDesign {
@@ -37,7 +38,7 @@ void Layer::DestroyFramebuffer() {
 void Layer::RenderCanvas(const Canvas& canvas, Vector offset, Rect clip_region) {
 	D2DDeviceContext& device_context = GetD2DDeviceContext();
 	device_context.SetTarget(static_cast<ref_ptr<D2DBitmap>>(GetFramebuffer()));
-	DirectX::RenderCanvas(static_cast<RenderTarget&>(device_context), canvas, offset, clip_region);
+	ViewDesign::RenderCanvas(static_cast<RenderTarget&>(device_context), canvas, offset, clip_region);
 	device_context.SetTarget(nullptr);
 }
 

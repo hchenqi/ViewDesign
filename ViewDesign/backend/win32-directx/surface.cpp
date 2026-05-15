@@ -4,7 +4,8 @@
 #include "ViewDesign/platform/directx/d3d_api.h"
 #include "ViewDesign/platform/directx/dxgi_api.h"
 #include "ViewDesign/platform/directx/dcomp_api.h"
-#include "ViewDesign/platform/directx/canvas.h"
+#include "ViewDesign/platform/directx/render_target.h"
+#include "ViewDesign/platform/directx/helper.h"
 #include "ViewDesign/platform/directx/resource.h"
 
 
@@ -108,7 +109,7 @@ void Surface::RenderBegin() {
 void Surface::RenderEnd(const Canvas& canvas) {
 	D2DDeviceContext& device_context = GetD2DDeviceContext();
 	device_context.SetTarget(static_cast<ref_ptr<D2DBitmap>>(bitmap));
-	DirectX::RenderCanvas(static_cast<RenderTarget&>(device_context), canvas, vector_zero, invalid_region);
+	ViewDesign::RenderCanvas(static_cast<RenderTarget&>(device_context), canvas, vector_zero, invalid_region);
 	device_context.SetTarget(nullptr);
 
 	try {

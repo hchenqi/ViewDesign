@@ -2,7 +2,6 @@
 #include "ViewDesign/platform/win32/window.h"
 #define VK_USE_PLATFORM_WIN32_KHR
 #include "ViewDesign/platform/vulkan/surface.h"
-#include "ViewDesign/platform/vulkan/canvas.h"
 
 
 namespace ViewDesign {
@@ -29,7 +28,7 @@ void Surface::RenderBegin() {
 }
 
 void Surface::RenderEnd(const Canvas& canvas) {
-	static_cast<ref_ptr<VulkanSurface>>(surface)->Render(invalid_region, [&](RenderTarget& target) { Vulkan::RenderCanvas(target, canvas, vector_zero, invalid_region);	});
+	static_cast<ref_ptr<VulkanSurface>>(surface)->Render(invalid_region, [&](RenderTarget& target) { ViewDesign::RenderCanvas(target, canvas, vector_zero, invalid_region);	});
 }
 
 

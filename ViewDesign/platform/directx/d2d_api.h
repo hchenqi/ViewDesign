@@ -49,8 +49,4 @@ inline D2DSolidColorBrush& GetD2DSolidColorBrush(Color color) {
 
 } // namespace DirectX
 
-
-struct RenderTarget : DirectX::D2DDeviceContext {};
-
-
 } // namespace ViewDesign

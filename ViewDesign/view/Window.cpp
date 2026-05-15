@@ -27,6 +27,7 @@ void Window::SetSize(SizeU size) {
 	if (GetSize() != size) {
 		surface.Resize(size);
 		UpdateChildSizeRef(child, size / scale);
+		Redraw(rect_infinite);
 	}
 }
 

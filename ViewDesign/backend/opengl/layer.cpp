@@ -1,5 +1,5 @@
 #include "ViewDesign/drawing/layer.h"
-#include "ViewDesign/platform/glad/canvas.h"
+#include "ViewDesign/platform/glad/render_target.h"
 
 
 namespace ViewDesign {
@@ -22,7 +22,7 @@ void Layer::DestroyFramebuffer() {
 
 void Layer::RenderCanvas(const Canvas& canvas, Vector offset, Rect clip_region) {
 	RenderContext context(size, static_cast<ref_ptr<Framebuffer>>(framebuffer));
-	OpenGL::RenderCanvas(static_cast<RenderTarget&>(context), canvas, offset, clip_region);
+	ViewDesign::RenderCanvas(static_cast<RenderTarget&>(context), canvas, offset, clip_region);
 }
 
 

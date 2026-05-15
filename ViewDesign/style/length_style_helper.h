@@ -15,9 +15,6 @@ public:
 		return { CalculateSize(width._min, height._min, size_ref), CalculateSize(width._max, height._max, size_ref) };
 	}
 public:
-	static constexpr Rect MakeRectFromInterval(Interval horizontal, Interval vertical) {
-		return Rect(horizontal.begin, vertical.begin, horizontal.length, vertical.length);
-	}
 	static constexpr bool IsPositionAuto(ValueTag position) { return position.IsAuto() || position.IsCenter(); }
 	static constexpr float CalculatePosition(ValueTag position_low, ValueTag position_high, float length, float length_ref) {
 		if (IsPositionAuto(position_low)) {
@@ -48,10 +45,7 @@ public:
 	}
 public:
 	static constexpr Rect CalculateRegion(LengthStyle width, LengthStyle height, PositionStyle position, Size size_ref) {
-		return MakeRectFromInterval(
-			CalculateLength(width, position._left, position._right, size_ref.width),
-			CalculateLength(height, position._top, position._bottom, size_ref.height)
-		);
+		return Rect(CalculateLength(width, position._left, position._right, size_ref.width), CalculateLength(height, position._top, position._bottom, size_ref.height));
 	}
 };
 

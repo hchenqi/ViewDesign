@@ -1,5 +1,5 @@
 #include "ViewDesign/drawing/surface.h"
-#include "ViewDesign/platform/glad/canvas.h"
+#include "ViewDesign/platform/glad/render_target.h"
 #include "ViewDesign/platform/glfw/window.h"
 
 
@@ -24,7 +24,7 @@ void Surface::RenderBegin() {
 
 void Surface::RenderEnd(const Canvas& canvas) {
 	RenderContext context(size, nullptr);
-	OpenGL::RenderCanvas(static_cast<RenderTarget&>(context), canvas, vector_zero, invalid_region);
+	ViewDesign::RenderCanvas(static_cast<RenderTarget&>(context), canvas, vector_zero, invalid_region);
 
 	glfwSwapBuffers(AsGLFWWindow(window));
 	glfwMakeContextCurrent(nullptr);

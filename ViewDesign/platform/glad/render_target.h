@@ -16,6 +16,8 @@ private:
 	SizeU size;
 	std::vector<RectI> clip_stack;
 	Scale current_scale;
+	Transform current_transform;
+
 public:
 	RenderContext(SizeU size, ref_ptr<Framebuffer> framebuffer) : size(size) {
 		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer == nullptr ? 0 : framebuffer->GetId());
@@ -31,9 +33,11 @@ public:
 
 		glEnable(GL_SCISSOR_TEST);
 	}
+
 public:
 	void SetTransform(const Transform& transform) {
 		current_scale = transform.GetScale();
+		current_transform = transform;
 		const auto& mat32 = transform.matrix;
 		float mat44[16] = {
 			mat32[0][0], mat32[0][1], 0.0f, 0.0f,
@@ -44,23 +48,28 @@ public:
 		glMatrixMode(GL_MODELVIEW);
 		glLoadMatrixf(mat44);
 	}
+public:
 	float GetCurrentScale() const {
 		return (current_scale.x + current_scale.y) / 2;
 	}
+
 private:
-	void SetAxisAlignedClip(RectI rect) {
+	void SetClip(RectI rect) {
 		glScissor(rect.point.x, size.height - rect.point.y - rect.size.height, rect.size.width, rect.size.height);
 	}
 public:
-	void PushAxisAlignedClip(Rect rect) {
-		RectI rect_i = Round(rect);
-		SetAxisAlignedClip(rect_i);
+	void PushClip(Rect rect) {
+		RectI rect_i = Round(GetBoundingRectAfterTransform(rect, current_transform));
+		SetClip(rect_i);
 		clip_stack.push_back(rect_i);
 	}
-	void PopAxisAlignedClip() {
+	void PopClip() {
 		clip_stack.pop_back();
-		SetAxisAlignedClip(clip_stack.back());
+		if (!clip_stack.empty()) {
+			SetClip(clip_stack.back());
+		}
 	}
+
 public:
 	void Clear() {
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
