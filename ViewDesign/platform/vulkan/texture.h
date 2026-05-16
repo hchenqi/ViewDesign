@@ -33,15 +33,6 @@ public:
 		Clear();
 	}
 
-private:
-	static uint32_t FindMemoryType(const vk::raii::PhysicalDevice& physical_device, uint32_t type_filter, vk::MemoryPropertyFlags required_properties) {
-		vk::PhysicalDeviceMemoryProperties memory_properties = physical_device.getMemoryProperties();
-		for (uint32_t i = 0; i < memory_properties.memoryTypeCount; ++i) {
-			if ((type_filter & (1u << i)) && (memory_properties.memoryTypes[i].propertyFlags & required_properties) == required_properties) { return i; }
-		}
-		throw std::runtime_error("Vulkan: no suitable memory type");
-	}
-
 public:
 	void TransitionImageLayout(vk::raii::CommandBuffer& command_buffer, vk::ImageLayout image_layout_new) {
 		if (image_layout == image_layout_new) { return; }
@@ -70,7 +61,7 @@ private:
 		image_view = device_context.device.createImageView(vk::ImageViewCreateInfo({}, image, vk::ImageViewType::e2D, format, {}, vk::ImageSubresourceRange(vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1)));
 
 		vk::MemoryRequirements memory_requirements = image.getMemoryRequirements();
-		device_memory = device_context.device.allocateMemory(vk::MemoryAllocateInfo(memory_requirements.size, FindMemoryType(device_context.physical_device, memory_requirements.memoryTypeBits, vk::MemoryPropertyFlagBits::eDeviceLocal)));
+		device_memory = device_context.device.allocateMemory(vk::MemoryAllocateInfo(memory_requirements.size, device_context.FindMemoryType(memory_requirements.memoryTypeBits, vk::MemoryPropertyFlagBits::eDeviceLocal)));
 		image.bindMemory(device_memory, 0);
 	}
 
@@ -80,7 +71,7 @@ private:
 
 		vk::raii::Buffer staging_buffer = device_context.device.createBuffer(vk::BufferCreateInfo({}, buffer_size_bytes, vk::BufferUsageFlagBits::eTransferSrc, vk::SharingMode::eExclusive));
 		vk::MemoryRequirements staging_memory_requirements = staging_buffer.getMemoryRequirements();
-		vk::raii::DeviceMemory staging_memory = device_context.device.allocateMemory(vk::MemoryAllocateInfo(staging_memory_requirements.size, FindMemoryType(device_context.physical_device, staging_memory_requirements.memoryTypeBits, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent)));
+		vk::raii::DeviceMemory staging_memory = device_context.device.allocateMemory(vk::MemoryAllocateInfo(staging_memory_requirements.size, device_context.FindMemoryType(staging_memory_requirements.memoryTypeBits, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent)));
 		staging_buffer.bindMemory(staging_memory, 0);
 		void* mapped = staging_memory.mapMemory(0, buffer_size_bytes);
 		std::memcpy(mapped, buffer, buffer_size_bytes);

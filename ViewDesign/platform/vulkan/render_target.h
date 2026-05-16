@@ -1,43 +1,119 @@
 #pragma once
 
 #include "ViewDesign/geometry/transform.h"
+#include "ViewDesign/drawing/helper.h"
 #include "ViewDesign/platform/vulkan/geometry_helper.h"
-
-#include <vector>
-
-#include <vulkan/vulkan_raii.hpp>
+#include "ViewDesign/platform/vulkan/pipeline.h"
+#include "ViewDesign/platform/vulkan/shader_module.h"
+#include "ViewDesign/platform/vulkan/shaders/flat.vert.spv.h"
+#include "ViewDesign/platform/vulkan/shaders/flat.frag.spv.h"
 
 
 namespace ViewDesign {
 
+namespace Vulkan {
 
-struct RenderTarget : public vk::raii::CommandBuffer {
+
+struct FlatPipeline {
+	struct Context {
+		struct {
+			float size[2];
+			float transform[6];
+		} vertex;
+
+		struct {
+			float color[4];
+		} fragment;
+	};
+
+	struct VertexInput {
+		float vertex[2];
+	};
+
+	static DeviceContext::PipelineInfo Create(vk::RenderPass render_pass) {
+		vk::raii::Device& device = DeviceContext::Get().device;
+
+		std::array<vk::PipelineShaderStageCreateInfo, 2> stage_list = {
+			vk::PipelineShaderStageCreateInfo({}, vk::ShaderStageFlagBits::eVertex, GetShaderModule<Shaders::flat_vert>(), "main"),
+			vk::PipelineShaderStageCreateInfo({}, vk::ShaderStageFlagBits::eFragment, GetShaderModule<Shaders::flat_frag>(), "main"),
+		};
+
+		vk::VertexInputBindingDescription binding(0, sizeof(VertexInput), vk::VertexInputRate::eVertex);
+		vk::VertexInputAttributeDescription attribute(0, 0, vk::Format::eR32G32Sfloat, 0);
+		vk::PipelineVertexInputStateCreateInfo vertex_input({}, 1, &binding, 1, &attribute);
+
+		vk::PipelineInputAssemblyStateCreateInfo input_assembly({}, vk::PrimitiveTopology::eTriangleList);
+
+		vk::PipelineViewportStateCreateInfo viewport_state({}, 1, {}, 1, {});
+
+		vk::PipelineRasterizationStateCreateInfo rasterizer({}, {}, {}, vk::PolygonMode::eFill, vk::CullModeFlagBits::eNone, {}, {}, {}, {}, {}, 1.0f);
+
+		vk::PipelineMultisampleStateCreateInfo multisampling({}, vk::SampleCountFlagBits::e1);
+
+		vk::PipelineColorBlendAttachmentState blend_attachment(VK_TRUE, vk::BlendFactor::eOne, vk::BlendFactor::eOneMinusSrcAlpha, vk::BlendOp::eAdd, vk::BlendFactor::eOne, vk::BlendFactor::eOneMinusSrcAlpha, vk::BlendOp::eAdd, vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG | vk::ColorComponentFlagBits::eB | vk::ColorComponentFlagBits::eA);
+		vk::PipelineColorBlendStateCreateInfo color_blending({}, {}, {}, 1, &blend_attachment);
+
+		std::array<vk::DynamicState, 2> dynamic_state_list = { vk::DynamicState::eViewport, vk::DynamicState::eScissor };
+		vk::PipelineDynamicStateCreateInfo dynamic_state({}, dynamic_state_list);
+
+		std::array<vk::PushConstantRange, 2> range_list = {
+			vk::PushConstantRange(vk::ShaderStageFlagBits::eVertex, offsetof(Context, vertex), sizeof(Context::vertex)),
+			vk::PushConstantRange(vk::ShaderStageFlagBits::eFragment, offsetof(Context, fragment), sizeof(Context::fragment)),
+		};
+		vk::PipelineLayoutCreateInfo layout_info({}, {}, range_list);
+		vk::raii::PipelineLayout layout = device.createPipelineLayout(layout_info);
+
+		vk::raii::Pipeline pipeline = device.createGraphicsPipeline(nullptr, vk::GraphicsPipelineCreateInfo(
+			{},
+			stage_list,
+			&vertex_input,
+			&input_assembly,
+			{},
+			&viewport_state,
+			&rasterizer,
+			&multisampling,
+			{},
+			&color_blending,
+			&dynamic_state,
+			layout,
+			render_pass
+		));
+
+		return std::make_pair(std::move(layout), std::move(pipeline));
+	}
+};
+
+
+struct RenderContext : public vk::raii::CommandBuffer {
 private:
+	DeviceContext::PipelineInfo& flat_pipeline;
+	vk::Extent2D extent;
 	Transform current_transform;
 	std::vector<RectI> clip_stack;
 
 public:
-	RenderTarget(CommandBuffer&& command_buffer) : CommandBuffer(std::move(command_buffer)) {}
+	RenderContext(CommandBuffer&& command_buffer, vk::RenderPass render_pass, vk::Extent2D extent) : CommandBuffer(std::move(command_buffer)), flat_pipeline(GetPipelineInfo<FlatPipeline>(render_pass)), extent(extent) {
+		setViewport(0, vk::Viewport(0.0f, 0.0f, extent.width, extent.height, 0.0f, 1.0f));
+
+		float context_size[] = { (float)extent.width, (float)extent.height };
+		pushConstants<float>(flat_pipeline.first, vk::ShaderStageFlagBits::eVertex, offsetof(FlatPipeline::Context, vertex.size), context_size);
+	}
 
 public:
 	void SetTransform(const Transform& transform) {
 		current_transform = transform;
-		const auto& mat32 = transform.matrix;
-		float mat44[16] = {
-			mat32[0][0], mat32[0][1], 0.0f, 0.0f,
-			mat32[1][0], mat32[1][1], 0.0f, 0.0f,
-			0.0f,        0.0f,        1.0f, 0.0f,
-			mat32[2][0], mat32[2][1], 0.0f, 1.0f,
-		};
+		pushConstants<float>(flat_pipeline.first, vk::ShaderStageFlagBits::eVertex, offsetof(FlatPipeline::Context, vertex.transform), reinterpret_cast<const float(&)[6]>(current_transform.matrix));
+	}
 
-		// load
+	void SetColor(Color color) {
+		auto [r, g, b, a] = AsTupleNormalizedPremultiplied(color);
+		float context_color[] = { r, g, b, a };
+		pushConstants<float>(flat_pipeline.first, vk::ShaderStageFlagBits::eFragment, offsetof(FlatPipeline::Context, fragment.color), context_color);
 	}
 
 private:
 	void SetClip(RectI rect) {
-		// initialize pipeline
-
-		setScissor(0, Vulkan::AsVulkanRect2D(rect));
+		setScissor(0, AsVulkanRect2D(rect));
 	}
 public:
 	void PushClip(Rect clip_region) {
@@ -54,7 +130,23 @@ public:
 
 public:
 	void Clear() {}
+
+private:
+	ref_ptr<DeviceContext::PipelineInfo> current_pipeline = nullptr;
+public:
+	void BindFlatPipeline() {
+		if (current_pipeline != &flat_pipeline) {
+			bindPipeline(vk::PipelineBindPoint::eGraphics, flat_pipeline.second);
+			current_pipeline = &flat_pipeline;
+		}
+	}
 };
+
+
+} // namespace Vulkan
+
+
+struct RenderTarget : Vulkan::RenderContext {};
 
 
 } // namespace ViewDesign

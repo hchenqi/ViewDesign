@@ -131,7 +131,7 @@ public:
 		FrameInFlight& frame_in_flight = frame_in_flight_list[frame_in_flight_index];
 		vk::raii::CommandBuffer& command_buffer = frame_in_flight.command_buffer;
 
-		Vulkan::Render(command_buffer, render_pass, framebuffer_list[image_index], clip_region, std::forward<decltype(func)>(func));
+		Vulkan::Render(command_buffer, render_pass, framebuffer_list[image_index], extent, clip_region, std::forward<decltype(func)>(func));
 
 		command_buffer.end();
 		device_context.SetCurrentCommandBuffer(nullptr);

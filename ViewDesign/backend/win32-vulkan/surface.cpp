@@ -12,6 +12,7 @@ using VulkanSurface = Vulkan::Surface;
 
 void Surface::Resize(SizeU size) {
 	Destroy();
+	this->size = size;
 	surface = new VulkanSurface(Vulkan::InstanceContext::GetInstance().createWin32SurfaceKHR(vk::Win32SurfaceCreateInfoKHR({}, GetHInstance(), AsHWND(window))), size);
 	invalid_region = RectI(point_i_zero, size);
 }

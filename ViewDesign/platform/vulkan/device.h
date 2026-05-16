@@ -2,6 +2,8 @@
 
 #include "ViewDesign/platform/vulkan/instance.h"
 
+#include <vector>
+
 
 namespace ViewDesign {
 
@@ -29,6 +31,13 @@ private:
 		command_pool = device.createCommandPool(vk::CommandPoolCreateInfo({}, queue_family_index));
 	}
 
+	~DeviceContext() {
+		if (vertex_memory != nullptr) {
+			vertex_memory.unmapMemory();
+			vertex_memory_mapped = nullptr;
+		}
+	}
+
 private:
 	static std::pair<vk::raii::PhysicalDevice, uint32_t> FindSuitablePhysicalDevice(const vk::raii::PhysicalDevices& physical_device_list, const vk::raii::SurfaceKHR& surface) {
 		for (const auto& physical_device : physical_device_list) {
@@ -41,12 +50,6 @@ private:
 		}
 		throw std::runtime_error("Vulkan: failed to find a suitable device");
 	}
-
-private:
-	ref_ptr<vk::raii::CommandBuffer> current_command_buffer = nullptr;
-public:
-	void SetCurrentCommandBuffer(ref_ptr<vk::raii::CommandBuffer> command_buffer) { current_command_buffer = command_buffer; }
-	vk::raii::CommandBuffer& GetCurrentCommandBuffer() { if (current_command_buffer == nullptr) { throw std::invalid_argument("Vulkan: current command buffer not set"); } return *current_command_buffer; }
 
 private:
 	inline static ref_ptr<DeviceContext> ref = nullptr;
@@ -68,6 +71,82 @@ public:
 		}
 		return *ref;
 	}
+
+private:
+	std::vector<vk::raii::ShaderModule> shader_module_list;
+public:
+	size_t LoadShaderModule(const auto& code) {
+		shader_module_list.emplace_back(device.createShaderModule(vk::ShaderModuleCreateInfo({}, code)));
+		return shader_module_list.size() - 1;
+	}
+	vk::raii::ShaderModule& GetShaderModule(size_t shader_module_index) {
+		return shader_module_list[shader_module_index];
+	}
+
+public:
+	using PipelineInfo = std::pair<vk::raii::PipelineLayout, vk::raii::Pipeline>;
+private:
+	std::vector<PipelineInfo> pipeline_list;
+public:
+	template<class Pipeline>
+	size_t CreatePipeline(vk::RenderPass render_pass) {
+		pipeline_list.emplace_back(Pipeline::Create(render_pass));
+		return pipeline_list.size() - 1;
+	}
+	PipelineInfo& GetPipelineInfo(size_t pipeline_index) {
+		return pipeline_list[pipeline_index];
+	}
+
+public:
+	uint32_t FindMemoryType(uint32_t type_filter, vk::MemoryPropertyFlags required_properties) {
+		vk::PhysicalDeviceMemoryProperties memory_properties = physical_device.getMemoryProperties();
+		for (uint32_t i = 0; i < memory_properties.memoryTypeCount; ++i) {
+			if ((type_filter & (1u << i)) && (memory_properties.memoryTypes[i].propertyFlags & required_properties) == required_properties) { return i; }
+		}
+		throw std::runtime_error("Vulkan: no suitable memory type");
+	}
+
+private:
+	static constexpr size_t vertex_buffer_size = sizeof(float) * 1024;
+private:
+	vk::raii::Buffer vertex_buffer = nullptr;
+	vk::raii::DeviceMemory vertex_memory = nullptr;
+	void* vertex_memory_mapped = nullptr;
+private:
+	void CreateVertexBuffer() {
+		vertex_buffer = device.createBuffer(vk::BufferCreateInfo({}, vertex_buffer_size, vk::BufferUsageFlagBits::eVertexBuffer));
+
+		vk::MemoryRequirements vertex_memory_requirements = vertex_buffer.getMemoryRequirements();
+		vertex_memory = device.allocateMemory(vk::MemoryAllocateInfo(vertex_memory_requirements.size, FindMemoryType(vertex_memory_requirements.memoryTypeBits, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent)));
+		vertex_buffer.bindMemory(vertex_memory, 0);
+
+		vertex_memory_mapped = vertex_memory.mapMemory(0, vk::WholeSize);
+	}
+public:
+	vk::raii::Buffer& GetVertexBuffer() {
+		if (vertex_buffer == nullptr) {
+			CreateVertexBuffer();
+		}
+		return vertex_buffer;
+	}
+	void CopyVertexBufferMemory(const void* data, size_t size) {
+		if (size >= vertex_buffer_size) {
+			throw std::invalid_argument("data size exceeding vertex buffer size");
+		}
+		if (vertex_buffer == nullptr) {
+			CreateVertexBuffer();
+		}
+		memcpy(vertex_memory_mapped, data, size);
+	}
+	void CopyVertexBufferMemory(const auto& data) {
+		CopyVertexBufferMemory(data, sizeof(data));
+	}
+
+private:
+	ref_ptr<vk::raii::CommandBuffer> current_command_buffer = nullptr;
+public:
+	void SetCurrentCommandBuffer(ref_ptr<vk::raii::CommandBuffer> command_buffer) { current_command_buffer = command_buffer; }
+	vk::raii::CommandBuffer& GetCurrentCommandBuffer() { if (current_command_buffer == nullptr) { throw std::invalid_argument("Vulkan: current command buffer not set"); } return *current_command_buffer; }
 };
 
 
