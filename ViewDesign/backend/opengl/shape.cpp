@@ -1,4 +1,5 @@
 #include "ViewDesign/drawing/shape.h"
+#include "ViewDesign/geometry/helper.h"
 #include "ViewDesign/platform/glad/render_target.h"
 
 
@@ -11,7 +12,7 @@ using namespace OpenGL;
 
 
 void Line::DrawOn(RenderTarget& target, Point point) const {
-	auto [r, g, b, a] = AsOpenGLColor(color);
+	auto [r, g, b, a] = AsTupleNormalizedPremultiplied(color);
 	glColor4f(r, g, b, a);
 
 	glLineWidth(width * target.GetCurrentScale());
@@ -24,10 +25,10 @@ void Line::DrawOn(RenderTarget& target, Point point) const {
 
 void Rectangle::DrawOn(RenderTarget& target, Point point) const {
 	if (fill_color.IsVisible()) {
-		auto [r, g, b, a] = AsOpenGLColor(fill_color);
+		auto [r, g, b, a] = AsTupleNormalizedPremultiplied(fill_color);
 		glColor4f(r, g, b, a);
 
-		auto [x0, y0, x1, y1] = AsOpenGLRect(Rect(point, size));
+		auto [x0, y0, x1, y1] = AsTuple(Rect(point, size));
 		glBegin(GL_POLYGON);
 		glVertex2f(x0, y0);
 		glVertex2f(x1, y0);
@@ -36,12 +37,12 @@ void Rectangle::DrawOn(RenderTarget& target, Point point) const {
 		glEnd();
 	}
 	if (border_width > 0.0f && border_color.IsVisible()) {
-		auto [r, g, b, a] = AsOpenGLColor(border_color);
+		auto [r, g, b, a] = AsTupleNormalizedPremultiplied(border_color);
 		glColor4f(r, g, b, a);
 
 		glLineWidth(border_width * target.GetCurrentScale());
 
-		auto [x0, y0, x1, y1] = AsOpenGLRectShrinkBy(Rect(point, size), border_width / 2.0f);
+		auto [x0, y0, x1, y1] = AsTuple(Extend(Rect(point, size), -Margin(border_width / 2.0f)));
 		glBegin(GL_LINE_STRIP);
 		glVertex2f(x0, y0);
 		glVertex2f(x1, y0);

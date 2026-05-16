@@ -78,24 +78,6 @@ public:
 };
 
 
-inline std::tuple<float, float, float, float> AsOpenGLColor(Color color) {
-	float alpha = color.alpha / 255.0f;
-	return { color.red * alpha / 255.0f, color.green * alpha / 255.0f, color.blue * alpha / 255.0f, alpha };
-}
-
-inline std::tuple<float, float, float, float> AsOpenGLRect(Rect rect) {
-	return { rect.left(), rect.top(), rect.right(), rect.bottom() };
-}
-
-inline std::tuple<float, float, float, float> AsOpenGLRectRatio(Size size, Rect rect) {
-	return { rect.left() / size.width, rect.top() / size.height, rect.right() / size.width, rect.bottom() / size.height };
-}
-
-inline std::tuple<float, float, float, float> AsOpenGLRectShrinkBy(Rect rect, float length) {
-	return { rect.left() + length, rect.top() + length, rect.right() - length, rect.bottom() - length };
-}
-
-
 } // namespace OpenGL
 
 

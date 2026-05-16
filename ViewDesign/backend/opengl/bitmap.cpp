@@ -22,8 +22,8 @@ void Bitmap::DestroyTexture() const {
 
 
 void BitmapFigure::DrawOn(RenderTarget& target, Point point) const {
-	auto [dstX0, dstY0, dstX1, dstY1] = AsOpenGLRect(Rect(point, region.size));
-	auto [srcU0, srcV0, srcU1, srcV1] = AsOpenGLRectRatio(bitmap.GetSize(), region);
+	auto [dstX0, dstY0, dstX1, dstY1] = AsTuple(Rect(point, region.size));
+	auto [srcU0, srcV0, srcU1, srcV1] = AsTupleNormalized(bitmap.GetSize(), region);
 
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, static_cast<ref_ptr<Texture>>(bitmap.GetTexture())->GetId());

@@ -27,8 +27,8 @@ void Layer::RenderCanvas(const Canvas& canvas, Vector offset, Rect clip_region) 
 
 
 void LayerFigure::DrawOn(RenderTarget& target, Point point) const {
-	auto [dstX0, dstY0, dstX1, dstY1] = AsOpenGLRect(Rect(point, size));
-	auto [srcU0, srcV0, srcU1, srcV1] = AsOpenGLRectRatio(layer.GetSize(), region);
+	auto [dstX0, dstY0, dstX1, dstY1] = AsTuple(Rect(point, size));
+	auto [srcU0, srcV0, srcU1, srcV1] = AsTupleNormalized(layer.GetSize(), region);
 
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, static_cast<ref_ptr<Framebuffer>>(layer.GetFramebuffer())->Texture::GetId());

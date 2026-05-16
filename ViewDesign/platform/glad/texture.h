@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ViewDesign/drawing/pixel_buffer.h"
+#include "ViewDesign/drawing/helper.h"
 
 #include <glad/glad.h>
 
@@ -25,10 +26,7 @@ public:
 private:
 	static PixelBuffer ConvertPixelBuffer(PixelBuffer pixel_buffer) {
 		for (auto& color : pixel_buffer.Pixels()) {
-			uint8 alpha = color.alpha;
-			color.blue = (color.blue * alpha + 0x7F) / 0xFF;
-			color.green = (color.green * alpha + 0x7F) / 0xFF;
-			color.red = (color.red * alpha + 0x7F) / 0xFF;
+			color = AsPremultiplied(color);
 		}
 		return pixel_buffer;
 	}
