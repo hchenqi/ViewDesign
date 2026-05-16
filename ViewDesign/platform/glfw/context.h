@@ -40,8 +40,8 @@ private:
 private:
 	inline static owner_ptr<GLFWwindow> helper_window = nullptr;
 public:
-	inline static bool Initialized() { return helper_window != nullptr; }
-	inline static ref_ptr<GLFWwindow> GetHelperWindow() {
+	static bool Initialized() { return helper_window != nullptr; }
+	static ref_ptr<GLFWwindow> GetHelperWindow() {
 		if (!Initialized()) {
 			throw std::runtime_error("GLFW: helper window not created");
 		}

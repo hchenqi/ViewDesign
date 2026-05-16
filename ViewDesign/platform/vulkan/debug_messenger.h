@@ -30,7 +30,7 @@ private:
 		return vk::False;
 	}
 public:
-	inline static void Initialize() {
+	static void Initialize() {
 		static DebugMessengerContext context;
 	}
 };

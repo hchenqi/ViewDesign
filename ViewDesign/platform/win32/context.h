@@ -34,8 +34,8 @@ public:
 protected:
 	inline static HWND helper_window = nullptr;
 public:
-	inline static bool Initialized() { return helper_window != nullptr; }
-	inline static HWND GetHelperWindow() { if (!Initialized()) { throw std::invalid_argument("Win32: context not initialized"); } return helper_window; }
+	static bool Initialized() { return helper_window != nullptr; }
+	static HWND GetHelperWindow() { if (!Initialized()) { throw std::invalid_argument("Win32: context not initialized"); } return helper_window; }
 };
 
 

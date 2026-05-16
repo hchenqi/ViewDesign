@@ -23,7 +23,7 @@ public:
 	GLuint GetId() const { return id; }
 
 private:
-	inline static PixelBuffer ConvertPixelBuffer(PixelBuffer pixel_buffer) {
+	static PixelBuffer ConvertPixelBuffer(PixelBuffer pixel_buffer) {
 		for (auto& color : pixel_buffer.Pixels()) {
 			uint8 alpha = color.alpha;
 			color.blue = (color.blue * alpha + 0x7F) / 0xFF;
@@ -33,7 +33,7 @@ private:
 		return pixel_buffer;
 	}
 private:
-	inline static GLuint CreateTexture(const PixelBuffer& pixel_buffer) {
+	static GLuint CreateTexture(const PixelBuffer& pixel_buffer) {
 		auto [width, height] = pixel_buffer.Size();
 		GLuint texture = 0;
 		glGenTextures(1, &texture);
@@ -46,7 +46,7 @@ private:
 		glBindTexture(GL_TEXTURE_2D, 0);
 		return texture;
 	}
-	inline static GLuint CreateTexture(SizeU size) {
+	static GLuint CreateTexture(SizeU size) {
 		GLuint texture = 0;
 		glGenTextures(1, &texture);
 		if (texture == 0) {

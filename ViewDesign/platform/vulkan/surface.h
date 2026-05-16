@@ -41,7 +41,7 @@ public:
 	Surface(vk::raii::SurfaceKHR surface, SizeU size) : surface(std::move(surface)) { Initialize(size); }
 
 private:
-	inline static vk::SurfaceFormatKHR SelectSurfaceFormat(const std::vector<vk::SurfaceFormatKHR>& surface_format_list) {
+	static vk::SurfaceFormatKHR SelectSurfaceFormat(const std::vector<vk::SurfaceFormatKHR>& surface_format_list) {
 		for (const auto& surface_format : surface_format_list) {
 			if (surface_format.format == vk::Format::eB8G8R8A8Srgb && surface_format.colorSpace == vk::ColorSpaceKHR::eSrgbNonlinear) {
 				return surface_format;
@@ -49,7 +49,7 @@ private:
 		}
 		return surface_format_list[0];
 	}
-	inline static vk::PresentModeKHR SelectPresentMode(const std::vector<vk::PresentModeKHR>& present_mode_list) {
+	static vk::PresentModeKHR SelectPresentMode(const std::vector<vk::PresentModeKHR>& present_mode_list) {
 		for (const auto& present_mode : present_mode_list) {
 			if (present_mode == vk::PresentModeKHR::eMailbox) {
 				return present_mode;
@@ -57,7 +57,7 @@ private:
 		}
 		return vk::PresentModeKHR::eFifo;
 	}
-	inline static vk::Extent2D ClampSizeToMinMaxExtent(SizeU size, const vk::SurfaceCapabilitiesKHR& surface_capabilities) {
+	static vk::Extent2D ClampSizeToMinMaxExtent(SizeU size, const vk::SurfaceCapabilitiesKHR& surface_capabilities) {
 		return vk::Extent2D(
 			std::clamp(size.width, surface_capabilities.minImageExtent.width, surface_capabilities.maxImageExtent.width),
 			std::clamp(size.height, surface_capabilities.minImageExtent.height, surface_capabilities.maxImageExtent.height)

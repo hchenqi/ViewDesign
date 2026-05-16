@@ -34,7 +34,7 @@ public:
 	}
 
 private:
-	inline static uint32_t FindMemoryType(const vk::raii::PhysicalDevice& physical_device, uint32_t type_filter, vk::MemoryPropertyFlags required_properties) {
+	static uint32_t FindMemoryType(const vk::raii::PhysicalDevice& physical_device, uint32_t type_filter, vk::MemoryPropertyFlags required_properties) {
 		vk::PhysicalDeviceMemoryProperties memory_properties = physical_device.getMemoryProperties();
 		for (uint32_t i = 0; i < memory_properties.memoryTypeCount; ++i) {
 			if ((type_filter & (1u << i)) && (memory_properties.memoryTypes[i].propertyFlags & required_properties) == required_properties) { return i; }

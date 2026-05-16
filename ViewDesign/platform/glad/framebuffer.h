@@ -20,7 +20,7 @@ public:
 	GLuint GetId() const { return id; }
 
 private:
-	inline static GLuint CreateFramebuffer(GLuint texture) {
+	static GLuint CreateFramebuffer(GLuint texture) {
 		GLuint framebuffer;
 		glGenFramebuffers(1, &framebuffer);
 		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);

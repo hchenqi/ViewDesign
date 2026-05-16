@@ -23,7 +23,7 @@ private:
 private:
 	inline static ref_ptr<InstanceContext> ref = nullptr;
 public:
-	inline static vk::raii::Instance& Initialize(const std::vector<const char*>& layers, const std::vector<const char*>& extensions) {
+	static vk::raii::Instance& Initialize(const std::vector<const char*>& layers, const std::vector<const char*>& extensions) {
 		static InstanceContext context(layers, extensions);
 		if (ref == nullptr) {
 			ref = &context;
@@ -32,7 +32,7 @@ public:
 		}
 		return ref->instance;
 	}
-	inline static vk::raii::Instance& GetInstance() {
+	static vk::raii::Instance& GetInstance() {
 		if (ref == nullptr) {
 			throw std::invalid_argument("Vulkan: instance context not initialized");
 		}

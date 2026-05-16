@@ -51,7 +51,7 @@ public:
 private:
 	inline static ref_ptr<DeviceContext> ref = nullptr;
 public:
-	inline static DeviceContext& Get(const vk::raii::SurfaceKHR& surface) {
+	static DeviceContext& Get(const vk::raii::SurfaceKHR& surface) {
 		static DeviceContext context(surface);
 		if (ref == nullptr) {
 			ref = &context;
@@ -62,7 +62,7 @@ public:
 		}
 		return *ref;
 	}
-	inline static DeviceContext& Get() {
+	static DeviceContext& Get() {
 		if (ref == nullptr) {
 			throw std::invalid_argument("Vulkan: device not created");
 		}
