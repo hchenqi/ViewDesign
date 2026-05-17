@@ -2,7 +2,7 @@
 
 #include "ViewDesign/drawing/pixel_buffer.h"
 #include "ViewDesign/geometry/size.h"
-#include "ViewDesign/platform/vulkan/device.h"
+#include "ViewDesign/platform/vulkan/frame_in_flight.h"
 
 
 namespace ViewDesign {
@@ -12,7 +12,7 @@ namespace Vulkan {
 
 class Texture {
 protected:
-	static constexpr vk::Format format = vk::Format::eR8G8B8A8Srgb;
+	static constexpr vk::Format format = vk::Format::eR8G8B8A8Unorm;
 	static constexpr vk::SampleCountFlagBits sample_count_flag_bits = vk::SampleCountFlagBits::e1;
 
 protected:
@@ -67,7 +67,7 @@ private:
 
 	void CopyPixelBuffer(size_t buffer_size_bytes, const void* buffer) {
 		DeviceContext& device_context = DeviceContext::Get();
-		vk::raii::CommandBuffer& command_buffer = device_context.GetCurrentCommandBuffer();
+		vk::raii::CommandBuffer& command_buffer = FrameInFlight::GetCurrent().command_buffer;
 
 		vk::raii::Buffer staging_buffer = device_context.device.createBuffer(vk::BufferCreateInfo({}, buffer_size_bytes, vk::BufferUsageFlagBits::eTransferSrc, vk::SharingMode::eExclusive));
 		vk::MemoryRequirements staging_memory_requirements = staging_buffer.getMemoryRequirements();
@@ -82,8 +82,7 @@ private:
 	}
 
 	void Clear() {
-		DeviceContext& device_context = DeviceContext::Get();
-		vk::raii::CommandBuffer& command_buffer = device_context.GetCurrentCommandBuffer();
+		vk::raii::CommandBuffer& command_buffer = FrameInFlight::GetCurrent().command_buffer;
 
 		TransitionImageLayout(command_buffer, vk::ImageLayout::eTransferDstOptimal);
 		command_buffer.clearColorImage(image, vk::ImageLayout::eTransferDstOptimal, vk::ClearColorValue(std::array<float, 4>{0.0f, 0.0f, 0.0f, 0.0f}), vk::ImageSubresourceRange(vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1));

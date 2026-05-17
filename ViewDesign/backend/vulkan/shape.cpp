@@ -25,9 +25,9 @@ void Rectangle::DrawOn(RenderTarget& target, Point point) const {
 			x0, y1,
 			x1, y0,
 		};
-		DeviceContext::Get().CopyVertexBufferMemory(vertices);
-		target.bindVertexBuffers(0, *DeviceContext::Get().GetVertexBuffer(), { 0 });
-		target.draw(6, 1, 0, 0);
+		auto [vertex_buffer, offset] = target.PushVertices(vertices);
+		target.CommandBuffer().bindVertexBuffers(0, vertex_buffer, { offset });
+		target.CommandBuffer().draw(6, 1, 0, 0);
 	}
 }
 

@@ -2,6 +2,7 @@
 
 #include "ViewDesign/geometry/transform.h"
 #include "ViewDesign/drawing/helper.h"
+#include "ViewDesign/platform/vulkan/frame_in_flight.h"
 #include "ViewDesign/platform/vulkan/geometry_helper.h"
 #include "ViewDesign/platform/vulkan/pipeline.h"
 #include "ViewDesign/platform/vulkan/shader_module.h"
@@ -84,36 +85,40 @@ struct FlatPipeline {
 };
 
 
-struct RenderContext : public vk::raii::CommandBuffer {
+struct RenderContext {
 private:
+	FrameInFlight& frame_in_flight;
 	DeviceContext::PipelineInfo& flat_pipeline;
 	vk::Extent2D extent;
 	Transform current_transform;
 	std::vector<RectI> clip_stack;
 
 public:
-	RenderContext(CommandBuffer&& command_buffer, vk::RenderPass render_pass, vk::Extent2D extent) : CommandBuffer(std::move(command_buffer)), flat_pipeline(GetPipelineInfo<FlatPipeline>(render_pass)), extent(extent) {
-		setViewport(0, vk::Viewport(0.0f, 0.0f, extent.width, extent.height, 0.0f, 1.0f));
+	RenderContext(FrameInFlight& frame_in_flight, vk::RenderPass render_pass, vk::Extent2D extent) : frame_in_flight(frame_in_flight), flat_pipeline(GetPipelineInfo<FlatPipeline>(render_pass)), extent(extent) {
+		CommandBuffer().setViewport(0, vk::Viewport(0.0f, 0.0f, extent.width, extent.height, 0.0f, 1.0f));
 
 		float context_size[] = { (float)extent.width, (float)extent.height };
-		pushConstants<float>(flat_pipeline.first, vk::ShaderStageFlagBits::eVertex, offsetof(FlatPipeline::Context, vertex.size), context_size);
+		CommandBuffer().pushConstants<float>(flat_pipeline.first, vk::ShaderStageFlagBits::eVertex, offsetof(FlatPipeline::Context, vertex.size), context_size);
 	}
+
+public:
+	vk::raii::CommandBuffer& CommandBuffer() { return frame_in_flight.command_buffer; }
 
 public:
 	void SetTransform(const Transform& transform) {
 		current_transform = transform;
-		pushConstants<float>(flat_pipeline.first, vk::ShaderStageFlagBits::eVertex, offsetof(FlatPipeline::Context, vertex.transform), reinterpret_cast<const float(&)[6]>(current_transform.matrix));
+		CommandBuffer().pushConstants<float>(flat_pipeline.first, vk::ShaderStageFlagBits::eVertex, offsetof(FlatPipeline::Context, vertex.transform), reinterpret_cast<const float(&)[6]>(current_transform.matrix));
 	}
 
 	void SetColor(Color color) {
 		auto [r, g, b, a] = AsTupleNormalizedPremultiplied(color);
 		float context_color[] = { r, g, b, a };
-		pushConstants<float>(flat_pipeline.first, vk::ShaderStageFlagBits::eFragment, offsetof(FlatPipeline::Context, fragment.color), context_color);
+		CommandBuffer().pushConstants<float>(flat_pipeline.first, vk::ShaderStageFlagBits::eFragment, offsetof(FlatPipeline::Context, fragment.color), context_color);
 	}
 
 private:
 	void SetClip(RectI rect) {
-		setScissor(0, AsVulkanRect2D(rect));
+		CommandBuffer().setScissor(0, AsVulkanRect2D(rect));
 	}
 public:
 	void PushClip(Rect clip_region) {
@@ -136,10 +141,14 @@ private:
 public:
 	void BindFlatPipeline() {
 		if (current_pipeline != &flat_pipeline) {
-			bindPipeline(vk::PipelineBindPoint::eGraphics, flat_pipeline.second);
+			CommandBuffer().bindPipeline(vk::PipelineBindPoint::eGraphics, flat_pipeline.second);
 			current_pipeline = &flat_pipeline;
 		}
 	}
+
+public:
+	std::pair<vk::Buffer, size_t> PushVertices(const void* data, size_t size) { return frame_in_flight.PushVertices(data, size); }
+	std::pair<vk::Buffer, size_t> PushVertices(const auto& data) { return PushVertices(data, sizeof(data)); }
 };
 
 

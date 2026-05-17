@@ -36,9 +36,7 @@ public:
 
 public:
 	void Render(Rect clip_region, auto func) {
-		DeviceContext& device_context = DeviceContext::Get();
-		vk::raii::CommandBuffer& command_buffer = device_context.GetCurrentCommandBuffer();
-		Vulkan::Render(command_buffer, render_pass, framebuffer, extent, clip_region, std::forward<decltype(func)>(func));
+		Vulkan::Render(render_pass, framebuffer, extent, clip_region, std::forward<decltype(func)>(func));
 		image_layout = image_layout_final;
 	}
 };

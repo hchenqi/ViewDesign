@@ -26,7 +26,7 @@ void Layer::RenderCanvas(const Canvas& canvas, Vector offset, Rect clip_region) 
 
 
 void LayerFigure::DrawOn(RenderTarget& target, Point point) const {
-	static_cast<ref_ptr<Framebuffer>>(layer.GetFramebuffer())->Texture::TransitionImageLayout(target, vk::ImageLayout::eShaderReadOnlyOptimal);
+	static_cast<ref_ptr<Framebuffer>>(layer.GetFramebuffer())->Texture::TransitionImageLayout(target.CommandBuffer(), vk::ImageLayout::eShaderReadOnlyOptimal);
 
 
 }

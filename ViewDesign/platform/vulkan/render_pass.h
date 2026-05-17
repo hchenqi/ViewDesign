@@ -8,16 +8,16 @@ namespace ViewDesign {
 namespace Vulkan {
 
 
-inline void Render(vk::raii::CommandBuffer& command_buffer, vk::RenderPass render_pass, vk::raii::Framebuffer& framebuffer, vk::Extent2D extent, Rect clip_region, auto func) {
+inline void Render(vk::RenderPass render_pass, vk::raii::Framebuffer& framebuffer, vk::Extent2D extent, Rect clip_region, auto func) {
 	static constexpr vk::ClearValue clear_value = vk::ClearValue(vk::ClearColorValue(std::array<float, 4>{ 0.0f, 0.0f, 0.0f, 0.0f }));
 
-	command_buffer.beginRenderPass(vk::RenderPassBeginInfo(render_pass, framebuffer, AsVulkanRect2D(RoundUp(clip_region)), clear_value), vk::SubpassContents::eInline);
+	FrameInFlight& frame_in_flight = FrameInFlight::GetCurrent();
+	frame_in_flight.command_buffer.beginRenderPass(vk::RenderPassBeginInfo(render_pass, framebuffer, AsVulkanRect2D(RoundUp(clip_region)), clear_value), vk::SubpassContents::eInline);
 
-	RenderContext context(std::move(command_buffer), render_pass, extent);
+	RenderContext context(frame_in_flight, render_pass, extent);
 	func(static_cast<RenderTarget&>(context));
-	command_buffer = std::move(context);
 
-	command_buffer.endRenderPass();
+	frame_in_flight.command_buffer.endRenderPass();
 }
 
 

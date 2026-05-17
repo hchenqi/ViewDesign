@@ -1,8 +1,8 @@
 #pragma once
 
 #include "ViewDesign/geometry/sizeu.h"
-#include "ViewDesign/platform/vulkan/device.h"
 #include "ViewDesign/platform/vulkan/render_pass.h"
+#include "ViewDesign/platform/vulkan/frame_in_flight.h"
 
 
 namespace ViewDesign {
@@ -27,13 +27,6 @@ private:
 private:
 	static constexpr uint32_t frame_in_flight_count = 2;
 private:
-	struct FrameInFlight {
-		vk::raii::CommandBuffer command_buffer;
-		vk::raii::Semaphore     semaphore_image_available;
-		vk::raii::Semaphore     semaphore_render_finished;
-		vk::raii::Fence         fence;
-	};
-private:
 	std::vector<FrameInFlight> frame_in_flight_list;
 	uint32_t                   frame_in_flight_index = 0;
 
@@ -43,7 +36,7 @@ public:
 private:
 	static vk::SurfaceFormatKHR SelectSurfaceFormat(const std::vector<vk::SurfaceFormatKHR>& surface_format_list) {
 		for (const auto& surface_format : surface_format_list) {
-			if (surface_format.format == vk::Format::eB8G8R8A8Srgb && surface_format.colorSpace == vk::ColorSpaceKHR::eSrgbNonlinear) {
+			if (surface_format.format == vk::Format::eB8G8R8A8Unorm && surface_format.colorSpace == vk::ColorSpaceKHR::eSrgbNonlinear) {
 				return surface_format;
 			}
 		}
@@ -123,7 +116,7 @@ public:
 
 		command_buffer.reset();
 		command_buffer.begin(vk::CommandBufferBeginInfo(vk::CommandBufferUsageFlagBits::eOneTimeSubmit));
-		device_context.SetCurrentCommandBuffer(&command_buffer);
+		FrameInFlight::SetCurrent(&frame_in_flight);
 	}
 
 	void Render(Rect clip_region, auto func) {
@@ -131,14 +124,16 @@ public:
 		FrameInFlight& frame_in_flight = frame_in_flight_list[frame_in_flight_index];
 		vk::raii::CommandBuffer& command_buffer = frame_in_flight.command_buffer;
 
-		Vulkan::Render(command_buffer, render_pass, framebuffer_list[image_index], extent, clip_region, std::forward<decltype(func)>(func));
+		Vulkan::Render(render_pass, framebuffer_list[image_index], extent, clip_region, std::forward<decltype(func)>(func));
 
 		command_buffer.end();
-		device_context.SetCurrentCommandBuffer(nullptr);
+		FrameInFlight::ResetCurrent();
 
 		vk::PipelineStageFlags stage = vk::PipelineStageFlagBits::eColorAttachmentOutput;
 		device_context.queue.submit(vk::SubmitInfo(*frame_in_flight.semaphore_image_available, stage, *frame_in_flight.command_buffer, *frame_in_flight.semaphore_render_finished), frame_in_flight.fence);
 		auto present_result = device_context.queue.presentKHR(vk::PresentInfoKHR(*frame_in_flight.semaphore_render_finished, *swapchain, image_index));
+
+		VertexBufferPool::Get().Recycle(std::move(frame_in_flight.vertex_buffer_list));
 
 		frame_in_flight_index = (frame_in_flight_index + 1) % frame_in_flight_list.size();
 	}
