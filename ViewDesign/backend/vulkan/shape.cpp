@@ -7,39 +7,23 @@ namespace ViewDesign {
 using namespace Vulkan;
 
 
-namespace {
-
-template<size_t size>
-inline void DrawVertices(RenderTarget& target, std::array<Point, size> vertices) {
-	auto [vertex_buffer, offset] = target.PushVertices(vertices.data(), sizeof(vertices));
-	target.CommandBuffer().bindVertexBuffers(0, vertex_buffer, { offset });
-	target.CommandBuffer().draw(vertices.size(), 1, 0, 0);
-}
-
-} // namespace
-
-
 void Line::DrawOn(RenderTarget& target, Point point) const {
 	if (begin == end) {
 		return Rectangle(Size(width, width), color).DrawOn(target, point + begin - Vector(width, width) / 2.0f);
 	}
-
 	target.BindPipeline<FlatPipeline>();
-
 	target.SetColor(color);
 	Point begin = point + this->begin, end = point + this->end;
 	Vector offset = Normal(Normalize(end - begin)) * (width / 2.0f);
-	DrawVertices(target, GetVertices(Quad{ begin - offset, begin + offset, end + offset, end - offset }));
+	target.DrawVertices(GetVertices(Quad{ begin - offset, begin + offset, end + offset, end - offset }));
 }
 
 void Rectangle::DrawOn(RenderTarget& target, Point point) const {
 	target.BindPipeline<FlatPipeline>();
-
 	if (fill_color.IsVisible()) {
 		target.SetColor(fill_color);
-		DrawVertices(target, GetVertices(AsQuad(Rect(point, size))));
+		target.DrawVertices(GetVertices(AsQuad(Rect(point, size))));
 	}
-
 	if (border_width > 0.0f && border_color.IsVisible()) {
 		target.SetColor(border_color);
 		auto outer = AsQuad(Rect(point, size)), inner = AsQuad(Extend(Rect(point, size), -Margin(border_width)));
@@ -49,7 +33,7 @@ void Rectangle::DrawOn(RenderTarget& target, Point point) const {
 			Quad{ outer[2], outer[3], inner[3], inner[2] },
 			Quad{ outer[3], outer[0], inner[0], inner[3] },
 		};
-		DrawVertices(target, GetVertices(quad_list));
+		target.DrawVertices(GetVertices(quad_list));
 	}
 }
 

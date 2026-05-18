@@ -2,6 +2,8 @@
 
 #include "ViewDesign/platform/vulkan/device.h"
 
+#include <vector>
+
 
 namespace ViewDesign {
 

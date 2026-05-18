@@ -2,8 +2,6 @@
 
 #include "ViewDesign/platform/vulkan/instance.h"
 
-#include <vector>
-
 
 namespace ViewDesign {
 

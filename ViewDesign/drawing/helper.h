@@ -24,12 +24,17 @@ constexpr std::tuple<float, float, float, float> AsTupleNormalizedPremultiplied(
 }
 
 
+constexpr Rect Normalize(Size size, Rect rect) {
+	if (size.IsEmpty()) { throw std::invalid_argument("normalizing rect with empty size"); }
+	return rect / Scale(size.width, size.height);
+}
+
 constexpr std::tuple<float, float, float, float> AsTuple(Rect rect) {
 	return { rect.left(), rect.top(), rect.right(), rect.bottom() };
 }
 
 constexpr std::tuple<float, float, float, float> AsTupleNormalized(Size size, Rect rect) {
-	return { rect.left() / size.width, rect.top() / size.height, rect.right() / size.width, rect.bottom() / size.height };
+	return AsTuple(Normalize(size, rect));
 }
 
 
@@ -56,6 +61,15 @@ constexpr std::array<Point, size * 6> GetVertices(std::array<Quad, size> quad_li
 		vertices[i * 6 + 5] = quad_list[i][3];
 	}
 	return vertices;
+}
+
+template<class T1, class T2, size_t N>
+constexpr std::array<std::pair<T1, T2>, N> Zip(const std::array<T1, N>& a, const std::array<T2, N>& b) {
+    std::array<std::pair<T1, T2>, N> result;
+	for (size_t i = 0; i < N; ++i) {
+		result[i] = std::make_pair(a[i], b[i]);
+	}
+	return result;
 }
 
 

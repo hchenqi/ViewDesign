@@ -1,5 +1,4 @@
 #include "ViewDesign/drawing/bitmap.h"
-#include "ViewDesign/platform/vulkan/texture.h"
 #include "ViewDesign/platform/vulkan/render_target.h"
 
 
@@ -23,9 +22,12 @@ void Bitmap::DestroyTexture() const {
 
 
 void BitmapFigure::DrawOn(RenderTarget& target, Point point) const {
-	static_cast<ref_ptr<Texture>>(bitmap.GetTexture())->TransitionImageLayout(target.CommandBuffer(), vk::ImageLayout::eShaderReadOnlyOptimal);
-
-	// sample texture with shader
+	Texture& texture = *static_cast<ref_ptr<Texture>>(bitmap.GetTexture());
+	texture.TransitionImageLayout(target.CommandBuffer(), vk::ImageLayout::eShaderReadOnlyOptimal);
+	target.BindPipeline<CompositePipeline>();
+	target.SetOpacity(opacity);
+	target.CommandBuffer().bindDescriptorSets(vk::PipelineBindPoint::eGraphics, GetPipelineLayout<CompositePipeline::Layout>(), 0, *texture.descriptor_set, {});
+	target.DrawVertices(Zip(GetVertices(AsQuad(Rect(point, region.size))), GetVertices(AsQuad(Normalize(bitmap.GetSize(), region)))));
 }
 
 

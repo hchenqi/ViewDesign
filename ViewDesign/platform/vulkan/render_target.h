@@ -4,6 +4,7 @@
 #include "ViewDesign/drawing/helper.h"
 #include "ViewDesign/platform/vulkan/frame_in_flight.h"
 #include "ViewDesign/platform/vulkan/geometry_helper.h"
+#include "ViewDesign/platform/vulkan/texture.h"
 #include "ViewDesign/platform/vulkan/pipeline.h"
 #include "ViewDesign/platform/vulkan/shader_module.h"
 #include "ViewDesign/platform/vulkan/shaders/flat.vert.spv.h"
@@ -90,13 +91,6 @@ public:
 	using FragmentShader = Shaders::composite_frag;
 
 	struct Layout {
-		struct DescriptorSetLayout {
-			static vk::raii::DescriptorSetLayout Create() {
-				vk::DescriptorSetLayoutBinding binding(0, vk::DescriptorType::eCombinedImageSampler, 1, vk::ShaderStageFlagBits::eFragment, nullptr);
-				return DeviceContext::Get().device.createDescriptorSetLayout(vk::DescriptorSetLayoutCreateInfo({}, binding));
-			}
-		};
-
 		struct Context : PipelineLayoutCommon::Context {
 			struct {
 				float opacity;
@@ -108,7 +102,7 @@ public:
 				vk::PushConstantRange(vk::ShaderStageFlagBits::eVertex, offsetof(Context, vertex), sizeof(Context::vertex)),
 				vk::PushConstantRange(vk::ShaderStageFlagBits::eFragment, offsetof(Context, fragment), sizeof(Context::fragment)),
 			};
-			return DeviceContext::Get().device.createPipelineLayout(vk::PipelineLayoutCreateInfo({}, *GetDescriptorSetLayout<DescriptorSetLayout>(), range_list));
+			return DeviceContext::Get().device.createPipelineLayout(vk::PipelineLayoutCreateInfo({}, *GetDescriptorSetLayout<Texture::DescriptorSetLayout>(), range_list));
 		}
 	};
 
@@ -216,7 +210,14 @@ public:
 	}
 
 public:
-	std::pair<vk::Buffer, size_t> PushVertices(const void* data, size_t size) { return frame_in_flight.PushVertices(data, size); }
+	std::pair<vk::Buffer, size_t> PushVertices(const void* data, size_t size) {
+		return frame_in_flight.PushVertices(data, size);
+	}
+	void DrawVertices(auto vertices) {
+		auto [vertex_buffer, offset] = PushVertices(vertices.data(), sizeof(vertices));
+		CommandBuffer().bindVertexBuffers(0, vertex_buffer, { offset });
+		CommandBuffer().draw(vertices.size(), 1, 0, 0);
+	}
 };
 
 

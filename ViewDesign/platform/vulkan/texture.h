@@ -2,6 +2,8 @@
 
 #include "ViewDesign/drawing/pixel_buffer.h"
 #include "ViewDesign/geometry/size.h"
+#include "ViewDesign/platform/vulkan/sampler.h"
+#include "ViewDesign/platform/vulkan/descriptor_pool.h"
 #include "ViewDesign/platform/vulkan/frame_in_flight.h"
 
 
@@ -11,16 +13,31 @@ namespace Vulkan {
 
 
 class Texture {
-protected:
+public:
 	static constexpr vk::Format format = vk::Format::eR8G8B8A8Unorm;
 	static constexpr vk::SampleCountFlagBits sample_count_flag_bits = vk::SampleCountFlagBits::e1;
 
-protected:
+public:
 	vk::Extent2D           extent;
 	vk::raii::Image        image = nullptr;
 	vk::ImageLayout        image_layout = vk::ImageLayout::eUndefined;
 	vk::raii::ImageView    image_view = nullptr;
 	vk::raii::DeviceMemory device_memory = nullptr;
+
+public:
+	struct Sampler {
+		static vk::raii::Sampler Create() {
+			return DeviceContext::Get().device.createSampler(vk::SamplerCreateInfo({}, vk::Filter::eLinear, vk::Filter::eLinear));
+		}
+	};
+	struct DescriptorSetLayout {
+		static vk::raii::DescriptorSetLayout Create() {
+			vk::DescriptorSetLayoutBinding binding(0, vk::DescriptorType::eCombinedImageSampler, 1, vk::ShaderStageFlagBits::eFragment, nullptr);
+			return DeviceContext::Get().device.createDescriptorSetLayout(vk::DescriptorSetLayoutCreateInfo({}, binding));
+		}
+	};
+public:
+	vk::raii::DescriptorSet descriptor_set = nullptr;
 
 public:
 	Texture(const PixelBuffer& pixel_buffer) {
@@ -63,6 +80,10 @@ private:
 		vk::MemoryRequirements memory_requirements = image.getMemoryRequirements();
 		device_memory = device_context.device.allocateMemory(vk::MemoryAllocateInfo(memory_requirements.size, device_context.FindMemoryType(memory_requirements.memoryTypeBits, vk::MemoryPropertyFlagBits::eDeviceLocal)));
 		image.bindMemory(device_memory, 0);
+
+		descriptor_set = DescriptorPoolSet::Get().AllocateOne<DescriptorSetLayout>();
+		vk::DescriptorImageInfo image_info(GetSampler<Sampler>(), image_view, vk::ImageLayout::eShaderReadOnlyOptimal);
+		DeviceContext::Get().device.updateDescriptorSets(vk::WriteDescriptorSet(descriptor_set, 0, 1, vk::DescriptorType::eCombinedImageSampler, image_info), {});
 	}
 
 	void CopyPixelBuffer(size_t buffer_size_bytes, const void* buffer) {
@@ -78,14 +99,14 @@ private:
 		staging_memory.unmapMemory();
 
 		TransitionImageLayout(command_buffer, vk::ImageLayout::eTransferDstOptimal);
-		command_buffer.copyBufferToImage(staging_buffer, image, vk::ImageLayout::eTransferDstOptimal, vk::BufferImageCopy(0, 0, 0, vk::ImageSubresourceLayers(vk::ImageAspectFlagBits::eColor, 0, 0, 1), vk::Offset3D(0, 0, 0), vk::Extent3D(extent, 1)));
+		command_buffer.copyBufferToImage(staging_buffer, image, image_layout, vk::BufferImageCopy(0, 0, 0, vk::ImageSubresourceLayers(vk::ImageAspectFlagBits::eColor, 0, 0, 1), vk::Offset3D(0, 0, 0), vk::Extent3D(extent, 1)));
 	}
 
 	void Clear() {
 		vk::raii::CommandBuffer& command_buffer = FrameInFlight::GetCurrent().command_buffer;
 
 		TransitionImageLayout(command_buffer, vk::ImageLayout::eTransferDstOptimal);
-		command_buffer.clearColorImage(image, vk::ImageLayout::eTransferDstOptimal, vk::ClearColorValue(std::array<float, 4>{0.0f, 0.0f, 0.0f, 0.0f}), vk::ImageSubresourceRange(vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1));
+		command_buffer.clearColorImage(image, image_layout, vk::ClearColorValue(std::array<float, 4>{0.0f, 0.0f, 0.0f, 0.0f}), vk::ImageSubresourceRange(vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1));
 	}
 };
 
