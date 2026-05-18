@@ -1,5 +1,4 @@
 #include "ViewDesign/drawing/shape.h"
-#include "ViewDesign/drawing/helper.h"
 #include "ViewDesign/platform/vulkan/render_target.h"
 
 
@@ -8,26 +7,49 @@ namespace ViewDesign {
 using namespace Vulkan;
 
 
-void Line::DrawOn(RenderTarget& target, Point point) const {}
+namespace {
+
+template<size_t size>
+inline void DrawVertices(RenderTarget& target, std::array<Point, size> vertices) {
+	auto [vertex_buffer, offset] = target.PushVertices(vertices.data(), sizeof(vertices));
+	target.CommandBuffer().bindVertexBuffers(0, vertex_buffer, { offset });
+	target.CommandBuffer().draw(vertices.size(), 1, 0, 0);
+}
+
+} // namespace
+
+
+void Line::DrawOn(RenderTarget& target, Point point) const {
+	if (begin == end) {
+		return Rectangle(Size(width, width), color).DrawOn(target, point + begin - Vector(width, width) / 2.0f);
+	}
+
+	target.BindPipeline<FlatPipeline>();
+
+	target.SetColor(color);
+	Point begin = point + this->begin, end = point + this->end;
+	Vector offset = Normal(Normalize(end - begin)) * (width / 2.0f);
+	DrawVertices(target, GetVertices(Quad{ begin - offset, begin + offset, end + offset, end - offset }));
+}
 
 void Rectangle::DrawOn(RenderTarget& target, Point point) const {
-	target.BindFlatPipeline();
+	target.BindPipeline<FlatPipeline>();
 
 	if (fill_color.IsVisible()) {
 		target.SetColor(fill_color);
+		DrawVertices(target, GetVertices(AsQuad(Rect(point, size))));
+	}
 
-		auto [x0, y0, x1, y1] = AsTuple(Rect(point, size));
-		float vertices[] = {
-			x0, y0,
-			x1, y0,
-			x0, y1,
-			x1, y1,
-			x0, y1,
-			x1, y0,
+	if (border_width > 0.0f && border_color.IsVisible()) {
+		target.SetColor(border_color);
+		auto outer = AsQuad(Rect(point, size)), inner = AsQuad(Extend(Rect(point, size), -Margin(border_width)));
+		std::array quad_list = {
+			Quad{ outer[0], outer[1], inner[1], inner[0] },
+			Quad{ outer[1], outer[2], inner[2], inner[1] },
+			Quad{ outer[2], outer[3], inner[3], inner[2] },
+			Quad{ outer[3], outer[0], inner[0], inner[3] },
 		};
-		auto [vertex_buffer, offset] = target.PushVertices(vertices);
-		target.CommandBuffer().bindVertexBuffers(0, vertex_buffer, { offset });
-		target.CommandBuffer().draw(6, 1, 0, 0);
+		DrawVertices(target, GetVertices(quad_list));
 	}
 }
 

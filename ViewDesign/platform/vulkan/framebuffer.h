@@ -26,7 +26,7 @@ public:
 		vk::AttachmentDescription attachment({}, format, sample_count_flag_bits, vk::AttachmentLoadOp::eClear, vk::AttachmentStoreOp::eStore, vk::AttachmentLoadOp::eDontCare, vk::AttachmentStoreOp::eDontCare, image_layout, image_layout_final);
 		vk::AttachmentReference attachment_reference(0, vk::ImageLayout::eColorAttachmentOptimal);
 		vk::SubpassDescription subpass({}, vk::PipelineBindPoint::eGraphics, {}, attachment_reference);
-		std::array<vk::SubpassDependency, 2> subpass_dependency_list = {
+		std::array subpass_dependency_list = {
 			vk::SubpassDependency(vk::SubpassExternal, 0, vk::PipelineStageFlagBits::eFragmentShader, vk::PipelineStageFlagBits::eColorAttachmentOutput, vk::AccessFlagBits::eShaderRead, vk::AccessFlagBits::eColorAttachmentWrite, vk::DependencyFlagBits::eByRegion),
 			vk::SubpassDependency(0, vk::SubpassExternal, vk::PipelineStageFlagBits::eColorAttachmentOutput, vk::PipelineStageFlagBits::eFragmentShader, vk::AccessFlagBits::eColorAttachmentWrite, vk::AccessFlagBits::eShaderRead, vk::DependencyFlagBits::eByRegion),
 		};

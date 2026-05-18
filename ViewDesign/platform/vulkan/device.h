@@ -65,31 +65,6 @@ public:
 		return *ref;
 	}
 
-private:
-	std::vector<vk::raii::ShaderModule> shader_module_list;
-public:
-	size_t LoadShaderModule(const auto& code) {
-		shader_module_list.emplace_back(device.createShaderModule(vk::ShaderModuleCreateInfo({}, code)));
-		return shader_module_list.size() - 1;
-	}
-	vk::raii::ShaderModule& GetShaderModule(size_t shader_module_index) {
-		return shader_module_list[shader_module_index];
-	}
-
-public:
-	using PipelineInfo = std::pair<vk::raii::PipelineLayout, vk::raii::Pipeline>;
-private:
-	std::vector<PipelineInfo> pipeline_list;
-public:
-	template<class Pipeline>
-	size_t CreatePipeline(vk::RenderPass render_pass) {
-		pipeline_list.emplace_back(Pipeline::Create(render_pass));
-		return pipeline_list.size() - 1;
-	}
-	PipelineInfo& GetPipelineInfo(size_t pipeline_index) {
-		return pipeline_list[pipeline_index];
-	}
-
 public:
 	uint32_t FindMemoryType(uint32_t type_filter, vk::MemoryPropertyFlags required_properties) {
 		vk::PhysicalDeviceMemoryProperties memory_properties = physical_device.getMemoryProperties();
