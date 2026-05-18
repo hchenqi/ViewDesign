@@ -26,7 +26,7 @@ private:
 		device = physical_device.createDevice(vk::DeviceCreateInfo({}, queue_create_info, {}, extensions));
 
 		queue = device.getQueue(queue_family_index, 0);
-		command_pool = device.createCommandPool(vk::CommandPoolCreateInfo({}, queue_family_index));
+		command_pool = device.createCommandPool(vk::CommandPoolCreateInfo(vk::CommandPoolCreateFlagBits::eResetCommandBuffer, queue_family_index));
 	}
 
 private:

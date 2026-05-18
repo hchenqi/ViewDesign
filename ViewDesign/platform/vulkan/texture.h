@@ -14,15 +14,15 @@ namespace Vulkan {
 
 class Texture {
 public:
-	static constexpr vk::Format format = vk::Format::eR8G8B8A8Unorm;
+	static constexpr vk::Format format = vk::Format::eB8G8R8A8Unorm;
 	static constexpr vk::SampleCountFlagBits sample_count_flag_bits = vk::SampleCountFlagBits::e1;
 
 public:
 	vk::Extent2D           extent;
 	vk::raii::Image        image = nullptr;
 	vk::ImageLayout        image_layout = vk::ImageLayout::eUndefined;
-	vk::raii::ImageView    image_view = nullptr;
 	vk::raii::DeviceMemory device_memory = nullptr;
+	vk::raii::ImageView    image_view = nullptr;
 
 public:
 	struct Sampler {
@@ -75,31 +75,28 @@ private:
 		extent = vk::Extent2D(size.width, size.height);
 		image = device_context.device.createImage(vk::ImageCreateInfo({}, vk::ImageType::e2D, format, vk::Extent3D(extent, 1), 1, 1, sample_count_flag_bits, vk::ImageTiling::eOptimal, image_usage_flags, vk::SharingMode::eExclusive));
 		image_layout = vk::ImageLayout::eUndefined;
-		image_view = device_context.device.createImageView(vk::ImageViewCreateInfo({}, image, vk::ImageViewType::e2D, format, {}, vk::ImageSubresourceRange(vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1)));
 
 		vk::MemoryRequirements memory_requirements = image.getMemoryRequirements();
 		device_memory = device_context.device.allocateMemory(vk::MemoryAllocateInfo(memory_requirements.size, device_context.FindMemoryType(memory_requirements.memoryTypeBits, vk::MemoryPropertyFlagBits::eDeviceLocal)));
 		image.bindMemory(device_memory, 0);
 
+		image_view = device_context.device.createImageView(vk::ImageViewCreateInfo({}, image, vk::ImageViewType::e2D, format, {}, vk::ImageSubresourceRange(vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1)));
+
 		descriptor_set = DescriptorPoolSet::Get().AllocateOne<DescriptorSetLayout>();
 		vk::DescriptorImageInfo image_info(GetSampler<Sampler>(), image_view, vk::ImageLayout::eShaderReadOnlyOptimal);
-		DeviceContext::Get().device.updateDescriptorSets(vk::WriteDescriptorSet(descriptor_set, 0, 1, vk::DescriptorType::eCombinedImageSampler, image_info), {});
+		DeviceContext::Get().device.updateDescriptorSets(vk::WriteDescriptorSet(descriptor_set, 0, 0, vk::DescriptorType::eCombinedImageSampler, image_info), {});
 	}
 
-	void CopyPixelBuffer(size_t buffer_size_bytes, const void* buffer) {
+	void CopyPixelBuffer(size_t size, const void* data) {
 		DeviceContext& device_context = DeviceContext::Get();
-		vk::raii::CommandBuffer& command_buffer = FrameInFlight::GetCurrent().command_buffer;
+		FrameInFlight& frame_in_flight = FrameInFlight::GetCurrent();
+		vk::raii::CommandBuffer& command_buffer = frame_in_flight.command_buffer;
 
-		vk::raii::Buffer staging_buffer = device_context.device.createBuffer(vk::BufferCreateInfo({}, buffer_size_bytes, vk::BufferUsageFlagBits::eTransferSrc, vk::SharingMode::eExclusive));
-		vk::MemoryRequirements staging_memory_requirements = staging_buffer.getMemoryRequirements();
-		vk::raii::DeviceMemory staging_memory = device_context.device.allocateMemory(vk::MemoryAllocateInfo(staging_memory_requirements.size, device_context.FindMemoryType(staging_memory_requirements.memoryTypeBits, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent)));
-		staging_buffer.bindMemory(staging_memory, 0);
-		void* mapped = staging_memory.mapMemory(0, buffer_size_bytes);
-		std::memcpy(mapped, buffer, buffer_size_bytes);
-		staging_memory.unmapMemory();
+		StagingBuffer& staging_buffer = frame_in_flight.AppendStagingBuffer(size, data);
 
 		TransitionImageLayout(command_buffer, vk::ImageLayout::eTransferDstOptimal);
-		command_buffer.copyBufferToImage(staging_buffer, image, image_layout, vk::BufferImageCopy(0, 0, 0, vk::ImageSubresourceLayers(vk::ImageAspectFlagBits::eColor, 0, 0, 1), vk::Offset3D(0, 0, 0), vk::Extent3D(extent, 1)));
+		command_buffer.copyBufferToImage(staging_buffer.buffer, image, image_layout, vk::BufferImageCopy(0, 0, 0, vk::ImageSubresourceLayers(vk::ImageAspectFlagBits::eColor, 0, 0, 1), vk::Offset3D(0, 0, 0), vk::Extent3D(extent, 1)));
+		TransitionImageLayout(command_buffer, vk::ImageLayout::eShaderReadOnlyOptimal);
 	}
 
 	void Clear() {
@@ -107,6 +104,7 @@ private:
 
 		TransitionImageLayout(command_buffer, vk::ImageLayout::eTransferDstOptimal);
 		command_buffer.clearColorImage(image, image_layout, vk::ClearColorValue(std::array<float, 4>{0.0f, 0.0f, 0.0f, 0.0f}), vk::ImageSubresourceRange(vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1));
+		TransitionImageLayout(command_buffer, vk::ImageLayout::eShaderReadOnlyOptimal);
 	}
 };
 

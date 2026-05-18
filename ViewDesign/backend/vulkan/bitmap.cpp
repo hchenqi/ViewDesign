@@ -22,11 +22,9 @@ void Bitmap::DestroyTexture() const {
 
 
 void BitmapFigure::DrawOn(RenderTarget& target, Point point) const {
-	Texture& texture = *static_cast<ref_ptr<Texture>>(bitmap.GetTexture());
-	texture.TransitionImageLayout(target.CommandBuffer(), vk::ImageLayout::eShaderReadOnlyOptimal);
 	target.BindPipeline<CompositePipeline>();
 	target.SetOpacity(opacity);
-	target.CommandBuffer().bindDescriptorSets(vk::PipelineBindPoint::eGraphics, GetPipelineLayout<CompositePipeline::Layout>(), 0, *texture.descriptor_set, {});
+	target.CommandBuffer().bindDescriptorSets(vk::PipelineBindPoint::eGraphics, GetPipelineLayout<CompositePipeline::Layout>(), 0, *static_cast<ref_ptr<Texture>>(bitmap.GetTexture())->descriptor_set, {});
 	target.DrawVertices(Zip(GetVertices(AsQuad(Rect(point, region.size))), GetVertices(AsQuad(Normalize(bitmap.GetSize(), region)))));
 }
 

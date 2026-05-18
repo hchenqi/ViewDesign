@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ViewDesign/platform/vulkan/vertex_buffer.h"
+#include "ViewDesign/platform/vulkan/staging_buffer.h"
 
 
 namespace ViewDesign {
@@ -12,7 +13,6 @@ struct FrameInFlight {
 public:
 	vk::raii::CommandBuffer   command_buffer;
 	vk::raii::Semaphore       semaphore_image_available;
-	vk::raii::Semaphore       semaphore_render_finished;
 	vk::raii::Fence           fence;
 
 public:
@@ -31,6 +31,13 @@ public:
 		memcpy(static_cast<std::byte*>(vertex_buffer_list.back().mapped) + offset, data, size);
 		vertex_buffer_current_offset += size;
 		return std::make_pair(*vertex_buffer_list.back().buffer, offset);
+	}
+
+public:
+	std::vector<StagingBuffer> staging_buffer_list;
+public:
+	StagingBuffer& AppendStagingBuffer(size_t size, const void* data) {
+		return staging_buffer_list.emplace_back(size, data);
 	}
 
 private:

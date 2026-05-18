@@ -22,6 +22,7 @@ private:
 private:
 	std::vector<vk::raii::ImageView>   image_view_list;
 	std::vector<vk::raii::Framebuffer> framebuffer_list;
+	std::vector<vk::raii::Semaphore>   semaphore_render_finished_list;
 	uint32_t                           image_index = 0;
 
 private:
@@ -86,13 +87,13 @@ private:
 		for (const auto& image : swapchain.getImages()) {
 			image_view_list.emplace_back(device.createImageView(vk::ImageViewCreateInfo({}, image, vk::ImageViewType::e2D, surface_format.format, {}, vk::ImageSubresourceRange(vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1))));
 			framebuffer_list.emplace_back(device.createFramebuffer(vk::FramebufferCreateInfo({}, render_pass, *image_view_list.back(), extent.width, extent.height, 1)));
+			semaphore_render_finished_list.emplace_back(device.createSemaphore({}));
 		}
 
 		std::vector<vk::raii::CommandBuffer> command_buffer_list = device.allocateCommandBuffers(vk::CommandBufferAllocateInfo(device_context.command_pool, vk::CommandBufferLevel::ePrimary, frame_in_flight_count));
 		for (size_t i = 0; i < command_buffer_list.size(); ++i) {
 			frame_in_flight_list.emplace_back(
 				std::move(command_buffer_list[i]),
-				device.createSemaphore({}),
 				device.createSemaphore({}),
 				device.createFence(vk::FenceCreateInfo(vk::FenceCreateFlagBits::eSignaled))
 			);
@@ -107,6 +108,9 @@ public:
 
 		auto wait_result = device_context.device.waitForFences(*frame_in_flight.fence, vk::True, UINT64_MAX);
 		device_context.device.resetFences(*frame_in_flight.fence);
+
+		VertexBufferPool::Get().Recycle(std::move(frame_in_flight.vertex_buffer_list));
+		frame_in_flight.staging_buffer_list.clear();
 
 		auto [acquire_result, image_index] = swapchain.acquireNextImage(UINT64_MAX, *frame_in_flight.semaphore_image_available);
 		if (acquire_result == vk::Result::eErrorOutOfDateKHR) {
@@ -130,10 +134,8 @@ public:
 		FrameInFlight::ResetCurrent();
 
 		vk::PipelineStageFlags stage = vk::PipelineStageFlagBits::eColorAttachmentOutput;
-		device_context.queue.submit(vk::SubmitInfo(*frame_in_flight.semaphore_image_available, stage, *frame_in_flight.command_buffer, *frame_in_flight.semaphore_render_finished), frame_in_flight.fence);
-		auto present_result = device_context.queue.presentKHR(vk::PresentInfoKHR(*frame_in_flight.semaphore_render_finished, *swapchain, image_index));
-
-		VertexBufferPool::Get().Recycle(std::move(frame_in_flight.vertex_buffer_list));
+		device_context.queue.submit(vk::SubmitInfo(*frame_in_flight.semaphore_image_available, stage, *frame_in_flight.command_buffer, *semaphore_render_finished_list[image_index]), frame_in_flight.fence);
+		auto present_result = device_context.queue.presentKHR(vk::PresentInfoKHR(*semaphore_render_finished_list[image_index], *swapchain, image_index));
 
 		frame_in_flight_index = (frame_in_flight_index + 1) % frame_in_flight_list.size();
 	}

@@ -143,11 +143,12 @@ public:
 
 class RenderContext {
 public:
-	RenderContext(FrameInFlight& frame_in_flight, vk::RenderPass render_pass, vk::Extent2D extent) : frame_in_flight(frame_in_flight), render_pass(render_pass), size(extent.width, extent.height) {
+	RenderContext(FrameInFlight& frame_in_flight, vk::RenderPass render_pass, vk::Extent2D extent) : frame_in_flight(frame_in_flight), render_pass(render_pass) {
 		CommandBuffer().setViewport(0, vk::Viewport(0.0f, 0.0f, extent.width, extent.height, 0.0f, 1.0f));
 
-		float context_size[] = { (float)extent.width, (float)extent.height };
-		CommandBuffer().pushConstants<float>(GetPipelineLayout<PipelineLayoutCommon>(), vk::ShaderStageFlagBits::eVertex, offsetof(PipelineLayoutCommon::Context, vertex.size), context_size);
+		SetSize(extent);
+
+		clip_stack.emplace_back(point_i_zero, AsSizeU(extent));
 	}
 
 private:
@@ -158,9 +159,12 @@ public:
 
 	// context
 private:
-	Size size;
 	Transform transform;
 public:
+	void SetSize(vk::Extent2D extent) {
+		float size[] = { (float)extent.width, (float)extent.height };
+		CommandBuffer().pushConstants<float>(GetPipelineLayout<PipelineLayoutCommon>(), vk::ShaderStageFlagBits::eVertex, offsetof(PipelineLayoutCommon::Context, vertex.size), size);
+	}
 	void SetTransform(const Transform& transform) {
 		this->transform = transform;
 		CommandBuffer().pushConstants<float>(GetPipelineLayout<PipelineLayoutCommon>(), vk::ShaderStageFlagBits::eVertex, offsetof(PipelineLayoutCommon::Context, vertex.transform), reinterpret_cast<const float(&)[6]>(this->transform.matrix));
@@ -175,15 +179,13 @@ private:
 	}
 public:
 	void PushClip(Rect clip_region) {
-		RectI rect = Round(GetBoundingRectAfterTransform(clip_region, transform));
+		RectI rect = clip_stack.back().Intersect(Round(GetBoundingRectAfterTransform(clip_region, transform)));
 		SetClip(rect);
-		clip_stack.push_back(rect);
+		clip_stack.emplace_back(rect);
 	}
 	void PopClip() {
 		clip_stack.pop_back();
-		if (!clip_stack.empty()) {
-			SetClip(clip_stack.back());
-		}
+		SetClip(clip_stack.back());
 	}
 
 	// pipeline

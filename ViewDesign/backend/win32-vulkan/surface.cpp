@@ -19,6 +19,7 @@ void Surface::Resize(SizeU size) {
 
 void Surface::Destroy() {
 	if (surface != nullptr) {
+		Vulkan::DeviceContext::Get().device.waitIdle();
 		delete static_cast<owner_ptr<VulkanSurface>>(surface);
 		surface = nullptr;
 	}
