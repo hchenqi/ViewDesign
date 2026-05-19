@@ -15,6 +15,7 @@ void Bitmap::CreateTexture() const {
 
 void Bitmap::DestroyTexture() const {
 	if (texture != nullptr) {
+		DeviceContext::Get().device.waitIdle();
 		delete static_cast<owner_ptr<Texture>>(texture);
 		texture = nullptr;
 	}

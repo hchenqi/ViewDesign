@@ -22,8 +22,9 @@ private:
 
 		float queue_priority = 1.0f;
 		vk::DeviceQueueCreateInfo queue_create_info({}, queue_family_index, 1, &queue_priority);
-		std::vector<const char*> extensions = { vk::KHRSwapchainExtensionName };
-		device = physical_device.createDevice(vk::DeviceCreateInfo({}, queue_create_info, {}, extensions));
+		std::vector<const char*> extensions = { vk::KHRSwapchainExtensionName, vk::KHRDynamicRenderingExtensionName };
+		vk::PhysicalDeviceDynamicRenderingFeatures dynamic_rendering(vk::True);
+		device = physical_device.createDevice(vk::DeviceCreateInfo({}, queue_create_info, {}, extensions, {}, &dynamic_rendering));
 
 		queue = device.getQueue(queue_family_index, 0);
 		command_pool = device.createCommandPool(vk::CommandPoolCreateInfo(vk::CommandPoolCreateFlagBits::eResetCommandBuffer, queue_family_index));

@@ -18,8 +18,8 @@ inline vk::raii::PipelineLayout& GetPipelineLayout() {
 
 
 template<class Pipeline>
-inline vk::raii::Pipeline& GetPipeline(vk::RenderPass render_pass) {
-	static size_t index = Registry<vk::raii::Pipeline>::Get().PutItem(Pipeline::Create(render_pass));
+inline vk::raii::Pipeline& GetPipeline() {
+	static size_t index = Registry<vk::raii::Pipeline>::Get().PutItem(Pipeline::Create());
 	return Registry<vk::raii::Pipeline>::Get().GetItem(index);
 }
 

@@ -13,8 +13,8 @@ namespace ViewDesign {
 
 class PixelBuffer {
 public:
-	PixelBuffer(SizeU size) : size(size), pixels(size.width* size.height) {}
-	PixelBuffer() : PixelBuffer(size_u_empty) {}
+	explicit PixelBuffer(SizeU size) : size(size), pixels(size.width * size.height) {}
+	explicit PixelBuffer() : PixelBuffer(size_u_empty) {}
 private:
 	SizeU size;
 	std::vector<Color> pixels;

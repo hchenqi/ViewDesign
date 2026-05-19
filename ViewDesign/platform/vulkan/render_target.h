@@ -59,7 +59,7 @@ public:
 	};
 
 public:
-	static vk::raii::Pipeline Create(vk::RenderPass render_pass) {
+	static vk::raii::Pipeline Create() {
 		std::array stage_list = {
 			vk::PipelineShaderStageCreateInfo({}, vk::ShaderStageFlagBits::eVertex, GetShaderModule<VertexShader>(), "main"),
 			vk::PipelineShaderStageCreateInfo({}, vk::ShaderStageFlagBits::eFragment, GetShaderModule<FragmentShader>(), "main"),
@@ -80,7 +80,10 @@ public:
 		std::array dynamic_state_list = { vk::DynamicState::eViewport, vk::DynamicState::eScissor };
 		vk::PipelineDynamicStateCreateInfo dynamic_state({}, dynamic_state_list);
 
-		return DeviceContext::Get().device.createGraphicsPipeline(nullptr, vk::GraphicsPipelineCreateInfo({}, stage_list, &vertex_input, &input_assembly, {}, &viewport_state, &rasterizer, &multisampling, {}, &color_blending, &dynamic_state, GetPipelineLayout<Layout>(), render_pass));
+		vk::Format color_attachment_format = FrameInFlight::GetSurfaceFormat();
+		vk::PipelineRenderingCreateInfo rendering_info(0, color_attachment_format);
+	
+		return DeviceContext::Get().device.createGraphicsPipeline(nullptr, vk::GraphicsPipelineCreateInfo({}, stage_list, &vertex_input, &input_assembly, {}, &viewport_state, &rasterizer, &multisampling, {}, &color_blending, &dynamic_state, GetPipelineLayout<Layout>(), {}, {}, {}, {}, &rendering_info));
 	}
 };
 
@@ -112,7 +115,7 @@ public:
 	};
 
 public:
-	static vk::raii::Pipeline Create(vk::RenderPass render_pass) {
+	static vk::raii::Pipeline Create() {
 		std::array stage_list = {
 			vk::PipelineShaderStageCreateInfo({}, vk::ShaderStageFlagBits::eVertex, GetShaderModule<VertexShader>(), "main"),
 			vk::PipelineShaderStageCreateInfo({}, vk::ShaderStageFlagBits::eFragment, GetShaderModule<FragmentShader>(), "main"),
@@ -136,14 +139,17 @@ public:
 		std::array dynamic_state_list = { vk::DynamicState::eViewport, vk::DynamicState::eScissor };
 		vk::PipelineDynamicStateCreateInfo dynamic_state({}, dynamic_state_list);
 
-		return DeviceContext::Get().device.createGraphicsPipeline(nullptr, vk::GraphicsPipelineCreateInfo({}, stage_list, &vertex_input, &input_assembly, {}, &viewport_state, &rasterizer, &multisampling, {}, &color_blending, &dynamic_state, GetPipelineLayout<Layout>(), render_pass));
+		vk::Format color_attachment_format = FrameInFlight::GetSurfaceFormat();
+		vk::PipelineRenderingCreateInfo rendering_info(0, color_attachment_format);
+
+		return DeviceContext::Get().device.createGraphicsPipeline(nullptr, vk::GraphicsPipelineCreateInfo({}, stage_list, &vertex_input, &input_assembly, {}, &viewport_state, &rasterizer, &multisampling, {}, &color_blending, &dynamic_state, GetPipelineLayout<Layout>(), {}, {}, {}, {}, &rendering_info));
 	}
 };
 
 
 class RenderContext {
 public:
-	RenderContext(FrameInFlight& frame_in_flight, vk::RenderPass render_pass, vk::Extent2D extent) : frame_in_flight(frame_in_flight), render_pass(render_pass) {
+	RenderContext(FrameInFlight& frame_in_flight, vk::Extent2D extent) : frame_in_flight(frame_in_flight) {
 		CommandBuffer().setViewport(0, vk::Viewport(0.0f, 0.0f, extent.width, extent.height, 0.0f, 1.0f));
 
 		SetSize(extent);
@@ -153,7 +159,6 @@ public:
 
 private:
 	FrameInFlight& frame_in_flight;
-	vk::RenderPass render_pass;
 public:
 	vk::raii::CommandBuffer& CommandBuffer() { return frame_in_flight.command_buffer; }
 
@@ -194,7 +199,7 @@ private:
 public:
 	template<class Pipeline>
 	void BindPipeline() {
-		vk::raii::Pipeline& pipeline = GetPipeline<Pipeline>(render_pass);
+		vk::raii::Pipeline& pipeline = GetPipeline<Pipeline>();
 		if (current_pipeline != &pipeline) {
 			CommandBuffer().bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline);
 			current_pipeline = &pipeline;
