@@ -18,7 +18,6 @@ struct Rect {
 	explicit constexpr Rect(float x, float y, float width, float height) : point(x, y), size(width, height) {}
 
 	constexpr bool operator==(const Rect& other) const { return point == other.point && size == other.size; }
-	constexpr bool operator!=(const Rect& other) const { return point != other.point || size != other.size; }
 
 	constexpr float left() const { return point.x; }
 	constexpr float right() const { return point.x + size.width; }

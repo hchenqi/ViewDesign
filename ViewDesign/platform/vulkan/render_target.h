@@ -82,7 +82,7 @@ public:
 
 		vk::Format color_attachment_format = FrameInFlight::GetSurfaceFormat();
 		vk::PipelineRenderingCreateInfo rendering_info(0, color_attachment_format);
-	
+
 		return DeviceContext::Get().device.createGraphicsPipeline(nullptr, vk::GraphicsPipelineCreateInfo({}, stage_list, &vertex_input, &input_assembly, {}, &viewport_state, &rasterizer, &multisampling, {}, &color_blending, &dynamic_state, GetPipelineLayout<Layout>(), {}, {}, {}, {}, &rendering_info));
 	}
 };
@@ -149,12 +149,13 @@ public:
 
 class RenderContext {
 public:
-	RenderContext(FrameInFlight& frame_in_flight, vk::Extent2D extent) : frame_in_flight(frame_in_flight) {
-		CommandBuffer().setViewport(0, vk::Viewport(0.0f, 0.0f, extent.width, extent.height, 0.0f, 1.0f));
+	RenderContext(FrameInFlight& frame_in_flight, vk::Extent2D extent) : frame_in_flight(frame_in_flight), size((float)extent.width, (float)extent.height) {
+		CommandBuffer().setViewport(0, vk::Viewport(0.0f, 0.0f, size.width, size.height, 0.0f, 1.0f));
 
-		SetSize(extent);
+		UpdateSize<PipelineLayoutCommon>();
 
 		clip_stack.emplace_back(point_i_zero, AsSizeU(extent));
+		SetClip(clip_stack.back());
 	}
 
 private:
@@ -164,15 +165,21 @@ public:
 
 	// context
 private:
+	Size size;
 	Transform transform;
-public:
-	void SetSize(vk::Extent2D extent) {
-		float size[] = { (float)extent.width, (float)extent.height };
-		CommandBuffer().pushConstants<float>(GetPipelineLayout<PipelineLayoutCommon>(), vk::ShaderStageFlagBits::eVertex, offsetof(PipelineLayoutCommon::Context, vertex.size), size);
+private:
+	template<class PipelineLayout>
+	void UpdateSize() {
+		CommandBuffer().pushConstants<float>(GetPipelineLayout<PipelineLayout>(), vk::ShaderStageFlagBits::eVertex, offsetof(typename PipelineLayout::Context, vertex.size), std::array<float, 2>{ size.width, size.height });
 	}
+	template<class PipelineLayout>
+	void UpdateTransform() {
+		CommandBuffer().pushConstants<float>(GetPipelineLayout<PipelineLayout>(), vk::ShaderStageFlagBits::eVertex, offsetof(typename PipelineLayout::Context, vertex.transform), reinterpret_cast<const float(&)[6]>(this->transform.matrix));
+	}
+public:
 	void SetTransform(const Transform& transform) {
 		this->transform = transform;
-		CommandBuffer().pushConstants<float>(GetPipelineLayout<PipelineLayoutCommon>(), vk::ShaderStageFlagBits::eVertex, offsetof(PipelineLayoutCommon::Context, vertex.transform), reinterpret_cast<const float(&)[6]>(this->transform.matrix));
+		UpdateTransform<PipelineLayoutCommon>();
 	}
 
 	// clip
@@ -185,12 +192,17 @@ private:
 public:
 	void PushClip(Rect clip_region) {
 		RectI rect = clip_stack.back().Intersect(Round(GetBoundingRectAfterTransform(clip_region, transform)));
-		SetClip(rect);
+		if (rect != clip_stack.back()) {
+			SetClip(rect);
+		}
 		clip_stack.emplace_back(rect);
 	}
 	void PopClip() {
+		RectI rect = clip_stack.back();
 		clip_stack.pop_back();
-		SetClip(clip_stack.back());
+		if (clip_stack.back() != rect) {
+			SetClip(clip_stack.back());
+		}
 	}
 
 	// pipeline
@@ -202,19 +214,20 @@ public:
 		vk::raii::Pipeline& pipeline = GetPipeline<Pipeline>();
 		if (current_pipeline != &pipeline) {
 			CommandBuffer().bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline);
+			UpdateSize<typename Pipeline::Layout>();
+			UpdateTransform<typename Pipeline::Layout>();
 			current_pipeline = &pipeline;
 		}
 	}
 public:
-	void Clear() {}
 	void SetColor(Color color) {
-		auto [r, g, b, a] = AsTupleNormalizedPremultiplied(color);
-		float context_color[] = { r, g, b, a };
-		CommandBuffer().pushConstants<float>(GetPipelineLayout<FlatPipeline::Layout>(), vk::ShaderStageFlagBits::eFragment, offsetof(FlatPipeline::Layout::Context, fragment.color), context_color);
+		CommandBuffer().pushConstants<float>(GetPipelineLayout<FlatPipeline::Layout>(), vk::ShaderStageFlagBits::eFragment, offsetof(FlatPipeline::Layout::Context, fragment.color), AsArray(AsTupleNormalizedPremultiplied(color)));
 	}
 	void SetOpacity(float opacity) {
 		CommandBuffer().pushConstants<float>(GetPipelineLayout<CompositePipeline::Layout>(), vk::ShaderStageFlagBits::eFragment, offsetof(CompositePipeline::Layout::Context, fragment.opacity), opacity);
 	}
+public:
+	void Clear() {}
 
 public:
 	std::pair<vk::Buffer, size_t> PushVertices(const void* data, size_t size) {

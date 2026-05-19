@@ -11,6 +11,12 @@
 namespace ViewDesign {
 
 
+template<class T, class... Ts> requires (std::same_as<T, Ts> && ...)
+constexpr auto AsArray(const std::tuple<T, Ts...>& tuple) {
+	return std::apply([](const auto&... elems) { return std::array<T, sizeof...(Ts) + 1>{ elems... }; }, tuple);
+}
+
+
 constexpr Color AsPremultiplied(Color color) {
 	color.blue = (color.blue * color.alpha + 0x7F) / 0xFF;
 	color.green = (color.green * color.alpha + 0x7F) / 0xFF;
@@ -65,7 +71,7 @@ constexpr std::array<Point, size * 6> GetVertices(std::array<Quad, size> quad_li
 
 template<class T1, class T2, size_t N>
 constexpr std::array<std::pair<T1, T2>, N> Zip(const std::array<T1, N>& a, const std::array<T2, N>& b) {
-    std::array<std::pair<T1, T2>, N> result;
+	std::array<std::pair<T1, T2>, N> result;
 	for (size_t i = 0; i < N; ++i) {
 		result[i] = std::make_pair(a[i], b[i]);
 	}

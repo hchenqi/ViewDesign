@@ -44,6 +44,8 @@ struct RectI {
 
 	explicit constexpr RectI(PointI point, SizeU size) : point(point), size(size) {}
 
+	constexpr bool operator==(const RectI& other) const { return point == other.point && size == other.size; }
+
 	constexpr int32 left() const { return point.x; }
 	constexpr int32 right() const { return point.x + size.width; }
 	constexpr int32 top() const { return point.y; }
