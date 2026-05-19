@@ -61,8 +61,8 @@ public:
 public:
 	static vk::raii::Pipeline Create() {
 		std::array stage_list = {
-			vk::PipelineShaderStageCreateInfo({}, vk::ShaderStageFlagBits::eVertex, GetShaderModule<VertexShader>(), "main"),
-			vk::PipelineShaderStageCreateInfo({}, vk::ShaderStageFlagBits::eFragment, GetShaderModule<FragmentShader>(), "main"),
+			vk::PipelineShaderStageCreateInfo({}, vk::ShaderStageFlagBits::eVertex, *GetShaderModule<VertexShader>(), "main"),
+			vk::PipelineShaderStageCreateInfo({}, vk::ShaderStageFlagBits::eFragment, *GetShaderModule<FragmentShader>(), "main"),
 		};
 
 		vk::VertexInputBindingDescription binding(0, sizeof(Input), vk::VertexInputRate::eVertex);
@@ -83,7 +83,7 @@ public:
 		vk::Format color_attachment_format = FrameInFlight::GetSurfaceFormat();
 		vk::PipelineRenderingCreateInfo rendering_info(0, color_attachment_format);
 
-		return DeviceContext::Get().device.createGraphicsPipeline(nullptr, vk::GraphicsPipelineCreateInfo({}, stage_list, &vertex_input, &input_assembly, {}, &viewport_state, &rasterizer, &multisampling, {}, &color_blending, &dynamic_state, GetPipelineLayout<Layout>(), {}, {}, {}, {}, &rendering_info));
+		return DeviceContext::Get().device.createGraphicsPipeline(nullptr, vk::GraphicsPipelineCreateInfo({}, stage_list, &vertex_input, &input_assembly, {}, &viewport_state, &rasterizer, &multisampling, {}, &color_blending, &dynamic_state, *GetPipelineLayout<Layout>(), {}, {}, {}, {}, &rendering_info));
 	}
 };
 
@@ -117,8 +117,8 @@ public:
 public:
 	static vk::raii::Pipeline Create() {
 		std::array stage_list = {
-			vk::PipelineShaderStageCreateInfo({}, vk::ShaderStageFlagBits::eVertex, GetShaderModule<VertexShader>(), "main"),
-			vk::PipelineShaderStageCreateInfo({}, vk::ShaderStageFlagBits::eFragment, GetShaderModule<FragmentShader>(), "main"),
+			vk::PipelineShaderStageCreateInfo({}, vk::ShaderStageFlagBits::eVertex, *GetShaderModule<VertexShader>(), "main"),
+			vk::PipelineShaderStageCreateInfo({}, vk::ShaderStageFlagBits::eFragment, *GetShaderModule<FragmentShader>(), "main"),
 		};
 
 		vk::VertexInputBindingDescription binding(0, sizeof(Input), vk::VertexInputRate::eVertex);
@@ -142,7 +142,7 @@ public:
 		vk::Format color_attachment_format = FrameInFlight::GetSurfaceFormat();
 		vk::PipelineRenderingCreateInfo rendering_info(0, color_attachment_format);
 
-		return DeviceContext::Get().device.createGraphicsPipeline(nullptr, vk::GraphicsPipelineCreateInfo({}, stage_list, &vertex_input, &input_assembly, {}, &viewport_state, &rasterizer, &multisampling, {}, &color_blending, &dynamic_state, GetPipelineLayout<Layout>(), {}, {}, {}, {}, &rendering_info));
+		return DeviceContext::Get().device.createGraphicsPipeline(nullptr, vk::GraphicsPipelineCreateInfo({}, stage_list, &vertex_input, &input_assembly, {}, &viewport_state, &rasterizer, &multisampling, {}, &color_blending, &dynamic_state, *GetPipelineLayout<Layout>(), {}, {}, {}, {}, &rendering_info));
 	}
 };
 
@@ -170,11 +170,11 @@ private:
 private:
 	template<class PipelineLayout>
 	void UpdateSize() {
-		CommandBuffer().pushConstants<float>(GetPipelineLayout<PipelineLayout>(), vk::ShaderStageFlagBits::eVertex, offsetof(typename PipelineLayout::Context, vertex.size), std::array<float, 2>{ size.width, size.height });
+		CommandBuffer().pushConstants<float>(*GetPipelineLayout<PipelineLayout>(), vk::ShaderStageFlagBits::eVertex, offsetof(typename PipelineLayout::Context, vertex.size), std::array<float, 2>{ size.width, size.height });
 	}
 	template<class PipelineLayout>
 	void UpdateTransform() {
-		CommandBuffer().pushConstants<float>(GetPipelineLayout<PipelineLayout>(), vk::ShaderStageFlagBits::eVertex, offsetof(typename PipelineLayout::Context, vertex.transform), reinterpret_cast<const float(&)[6]>(this->transform.matrix));
+		CommandBuffer().pushConstants<float>(*GetPipelineLayout<PipelineLayout>(), vk::ShaderStageFlagBits::eVertex, offsetof(typename PipelineLayout::Context, vertex.transform), reinterpret_cast<const float(&)[6]>(this->transform.matrix));
 	}
 public:
 	void SetTransform(const Transform& transform) {
@@ -213,7 +213,7 @@ public:
 	void BindPipeline() {
 		vk::raii::Pipeline& pipeline = GetPipeline<Pipeline>();
 		if (current_pipeline != &pipeline) {
-			CommandBuffer().bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline);
+			CommandBuffer().bindPipeline(vk::PipelineBindPoint::eGraphics, *pipeline);
 			UpdateSize<typename Pipeline::Layout>();
 			UpdateTransform<typename Pipeline::Layout>();
 			current_pipeline = &pipeline;
@@ -221,10 +221,10 @@ public:
 	}
 public:
 	void SetColor(Color color) {
-		CommandBuffer().pushConstants<float>(GetPipelineLayout<FlatPipeline::Layout>(), vk::ShaderStageFlagBits::eFragment, offsetof(FlatPipeline::Layout::Context, fragment.color), AsArray(AsTupleNormalizedPremultiplied(color)));
+		CommandBuffer().pushConstants<float>(*GetPipelineLayout<FlatPipeline::Layout>(), vk::ShaderStageFlagBits::eFragment, offsetof(FlatPipeline::Layout::Context, fragment.color), AsArray(AsTupleNormalizedPremultiplied(color)));
 	}
 	void SetOpacity(float opacity) {
-		CommandBuffer().pushConstants<float>(GetPipelineLayout<CompositePipeline::Layout>(), vk::ShaderStageFlagBits::eFragment, offsetof(CompositePipeline::Layout::Context, fragment.opacity), opacity);
+		CommandBuffer().pushConstants<float>(*GetPipelineLayout<CompositePipeline::Layout>(), vk::ShaderStageFlagBits::eFragment, offsetof(CompositePipeline::Layout::Context, fragment.opacity), opacity);
 	}
 public:
 	void Clear() {}

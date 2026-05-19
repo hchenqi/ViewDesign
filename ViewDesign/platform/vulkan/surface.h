@@ -67,16 +67,16 @@ private:
 		vk::raii::PhysicalDevice& physical_device = device_context.physical_device;
 		vk::raii::Device& device = device_context.device;
 
-		vk::SurfaceCapabilitiesKHR surface_capabilities = physical_device.getSurfaceCapabilitiesKHR(surface);
+		vk::SurfaceCapabilitiesKHR surface_capabilities = physical_device.getSurfaceCapabilitiesKHR(*surface);
 
 		extent = surface_capabilities.currentExtent == vk::Extent2D(UINT32_MAX, UINT32_MAX) ? ClampSizeToMinMaxExtent(size, surface_capabilities) : surface_capabilities.currentExtent;
 
 		uint32_t image_count = std::clamp(image_count_default, surface_capabilities.minImageCount, surface_capabilities.maxImageCount);
-		surface_format = SelectSurfaceFormat(physical_device.getSurfaceFormatsKHR(surface));
-		vk::PresentModeKHR present_mode = SelectPresentMode(physical_device.getSurfacePresentModesKHR(surface));
+		surface_format = SelectSurfaceFormat(physical_device.getSurfaceFormatsKHR(*surface));
+		vk::PresentModeKHR present_mode = SelectPresentMode(physical_device.getSurfacePresentModesKHR(*surface));
 
 		swapchain = device.createSwapchainKHR(vk::SwapchainCreateInfoKHR(
-			{}, surface, image_count, surface_format.format, surface_format.colorSpace, extent, 1,
+			{}, *surface, image_count, surface_format.format, surface_format.colorSpace, extent, 1,
 			vk::ImageUsageFlagBits::eColorAttachment, vk::SharingMode::eExclusive,
 			{}, surface_capabilities.currentTransform, vk::CompositeAlphaFlagBitsKHR::eOpaque,
 			present_mode, vk::True
@@ -91,7 +91,7 @@ private:
 			);
 		}
 
-		for (auto& command_buffer : device.allocateCommandBuffers(vk::CommandBufferAllocateInfo(device_context.command_pool, vk::CommandBufferLevel::ePrimary, frame_in_flight_count))) {
+		for (auto& command_buffer : device.allocateCommandBuffers(vk::CommandBufferAllocateInfo(*device_context.command_pool, vk::CommandBufferLevel::ePrimary, frame_in_flight_count))) {
 			frame_in_flight_list.emplace_back(
 				std::move(command_buffer),
 				device.createSemaphore({}),
@@ -135,7 +135,7 @@ public:
 		command_buffer.end();
 
 		vk::PipelineStageFlags stage = vk::PipelineStageFlagBits::eColorAttachmentOutput;
-		device_context.queue.submit(vk::SubmitInfo(*frame_in_flight.semaphore_image_available, stage, *frame_in_flight.command_buffer, *semaphore_render_finished), frame_in_flight.fence);
+		device_context.queue.submit(vk::SubmitInfo(*frame_in_flight.semaphore_image_available, stage, *frame_in_flight.command_buffer, *semaphore_render_finished), *frame_in_flight.fence);
 		auto present_result = device_context.queue.presentKHR(vk::PresentInfoKHR(*semaphore_render_finished, *swapchain, image_index));
 
 		frame_in_flight_index = (frame_in_flight_index + 1) % frame_in_flight_list.size();

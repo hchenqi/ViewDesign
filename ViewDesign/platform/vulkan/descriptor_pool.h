@@ -32,7 +32,7 @@ public:
 public:
 	template<class DescriptorSetLayout>
 	vk::raii::DescriptorSet AllocateOne() {
-		return std::move(DeviceContext::Get().device.allocateDescriptorSets(vk::DescriptorSetAllocateInfo(pool, *GetDescriptorSetLayout<DescriptorSetLayout>())).back());
+		return std::move(DeviceContext::Get().device.allocateDescriptorSets(vk::DescriptorSetAllocateInfo(*pool, *GetDescriptorSetLayout<DescriptorSetLayout>())).back());
 	}
 };
 

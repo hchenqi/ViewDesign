@@ -35,7 +35,7 @@ private:
 		for (const auto& physical_device : physical_device_list) {
 			std::vector<vk::QueueFamilyProperties> queue_family_properties_list = physical_device.getQueueFamilyProperties();
 			for (size_t i = 0; i < queue_family_properties_list.size(); ++i) {
-				if ((queue_family_properties_list[i].queueFlags & vk::QueueFlagBits::eGraphics) && physical_device.getSurfaceSupportKHR(i, surface)) {
+				if ((queue_family_properties_list[i].queueFlags & vk::QueueFlagBits::eGraphics) && physical_device.getSurfaceSupportKHR(i, *surface)) {
 					return std::make_pair(physical_device, (uint32_t)i);
 				}
 			}
@@ -51,7 +51,7 @@ public:
 		if (ref == nullptr) {
 			ref = &context;
 		} else {
-			if (!ref->physical_device.getSurfaceSupportKHR(ref->queue_family_index, surface)) {
+			if (!ref->physical_device.getSurfaceSupportKHR(ref->queue_family_index, *surface)) {
 				throw std::runtime_error("Vulkan: surface not supported by current device");
 			}
 		}

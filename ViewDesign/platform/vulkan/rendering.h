@@ -15,7 +15,7 @@ inline void Render(vk::Image image, vk::ImageLayout& image_layout, vk::raii::Ima
 	vk::raii::CommandBuffer& command_buffer = frame_in_flight.command_buffer;
 
 	TransitionImageLayout(command_buffer, image, image_layout, vk::ImageLayout::eColorAttachmentOptimal);
-	vk::RenderingAttachmentInfo attachment_info(image_view, vk::ImageLayout::eColorAttachmentOptimal, vk::ResolveModeFlagBits::eNone, {}, vk::ImageLayout::eUndefined, vk::AttachmentLoadOp::eClear, vk::AttachmentStoreOp::eStore, clear_value);
+	vk::RenderingAttachmentInfo attachment_info(*image_view, vk::ImageLayout::eColorAttachmentOptimal, vk::ResolveModeFlagBits::eNone, {}, vk::ImageLayout::eUndefined, vk::AttachmentLoadOp::eClear, vk::AttachmentStoreOp::eStore, clear_value);
 	command_buffer.beginRendering(vk::RenderingInfo({}, AsVulkanRect2D(clip_region), 1, 0, attachment_info));
 
 	RenderContext context(frame_in_flight, extent);

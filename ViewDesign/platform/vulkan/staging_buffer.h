@@ -21,7 +21,7 @@ public:
 
 		vk::MemoryRequirements staging_memory_requirements = buffer.getMemoryRequirements();
 		memory = device_context.device.allocateMemory(vk::MemoryAllocateInfo(staging_memory_requirements.size, device_context.FindMemoryType(staging_memory_requirements.memoryTypeBits, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent)));
-		buffer.bindMemory(memory, 0);
+		buffer.bindMemory(*memory, 0);
 
 		void* mapped = memory.mapMemory(0, size);
 		std::memcpy(mapped, data, size);

@@ -27,17 +27,17 @@ public:
 
 		vk::MemoryRequirements vertex_memory_requirements = buffer.getMemoryRequirements();
 		memory = device_context.device.allocateMemory(vk::MemoryAllocateInfo(vertex_memory_requirements.size, device_context.FindMemoryType(vertex_memory_requirements.memoryTypeBits, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent)));
-		buffer.bindMemory(memory, 0);
+		buffer.bindMemory(*memory, 0);
 
 		mapped = memory.mapMemory(0, vk::WholeSize);
 	}
 
-	VertexBuffer(VertexBuffer&& other) = default;
+	VertexBuffer(VertexBuffer&& other) : buffer(std::move(other.buffer)), memory(std::move(other.memory)), mapped(other.mapped) { other.mapped = nullptr; }
 
-	VertexBuffer& operator=(VertexBuffer&& other) = default;
+	VertexBuffer& operator=(VertexBuffer&& other) { buffer = std::move(other.buffer); memory = std::move(other.memory); mapped = other.mapped; other.mapped = nullptr; return *this; }
 
 	~VertexBuffer() {
-		if (memory != nullptr) {
+		if (mapped != nullptr) {
 			memory.unmapMemory();
 		}
 	}

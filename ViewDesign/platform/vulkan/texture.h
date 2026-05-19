@@ -58,13 +58,13 @@ private:
 
 		vk::MemoryRequirements memory_requirements = image.getMemoryRequirements();
 		device_memory = device_context.device.allocateMemory(vk::MemoryAllocateInfo(memory_requirements.size, device_context.FindMemoryType(memory_requirements.memoryTypeBits, vk::MemoryPropertyFlagBits::eDeviceLocal)));
-		image.bindMemory(device_memory, 0);
+		image.bindMemory(*device_memory, 0);
 
-		image_view = device_context.device.createImageView(vk::ImageViewCreateInfo({}, image, vk::ImageViewType::e2D, format, {}, vk::ImageSubresourceRange(vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1)));
+		image_view = device_context.device.createImageView(vk::ImageViewCreateInfo({}, *image, vk::ImageViewType::e2D, format, {}, vk::ImageSubresourceRange(vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1)));
 
 		descriptor_set = DescriptorPoolSet::Get().AllocateOne<DescriptorSetLayout>();
-		vk::DescriptorImageInfo image_info(GetSampler<Sampler>(), image_view, vk::ImageLayout::eShaderReadOnlyOptimal);
-		DeviceContext::Get().device.updateDescriptorSets(vk::WriteDescriptorSet(descriptor_set, 0, 0, vk::DescriptorType::eCombinedImageSampler, image_info), {});
+		vk::DescriptorImageInfo image_info(*GetSampler<Sampler>(), *image_view, vk::ImageLayout::eShaderReadOnlyOptimal);
+		DeviceContext::Get().device.updateDescriptorSets(vk::WriteDescriptorSet(*descriptor_set, 0, 0, vk::DescriptorType::eCombinedImageSampler, image_info), {});
 	}
 
 	void CopyPixelBuffer(size_t size, const void* data) {
@@ -74,17 +74,17 @@ private:
 
 		StagingBuffer& staging_buffer = frame_in_flight.AppendStagingBuffer(size, data);
 
-		TransitionImageLayout(command_buffer, image, image_layout, vk::ImageLayout::eTransferDstOptimal);
-		command_buffer.copyBufferToImage(staging_buffer.buffer, image, image_layout, vk::BufferImageCopy(0, 0, 0, vk::ImageSubresourceLayers(vk::ImageAspectFlagBits::eColor, 0, 0, 1), vk::Offset3D(0, 0, 0), vk::Extent3D(extent, 1)));
-		TransitionImageLayout(command_buffer, image, image_layout, vk::ImageLayout::eShaderReadOnlyOptimal);
+		TransitionImageLayout(command_buffer, *image, image_layout, vk::ImageLayout::eTransferDstOptimal);
+		command_buffer.copyBufferToImage(*staging_buffer.buffer, *image, image_layout, vk::BufferImageCopy(0, 0, 0, vk::ImageSubresourceLayers(vk::ImageAspectFlagBits::eColor, 0, 0, 1), vk::Offset3D(0, 0, 0), vk::Extent3D(extent, 1)));
+		TransitionImageLayout(command_buffer, *image, image_layout, vk::ImageLayout::eShaderReadOnlyOptimal);
 	}
 
 	void Clear() {
 		vk::raii::CommandBuffer& command_buffer = FrameInFlight::GetCurrent().command_buffer;
 
-		TransitionImageLayout(command_buffer, image, image_layout, vk::ImageLayout::eTransferDstOptimal);
-		command_buffer.clearColorImage(image, image_layout, vk::ClearColorValue(std::array<float, 4>{0.0f, 0.0f, 0.0f, 0.0f}), vk::ImageSubresourceRange(vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1));
-		TransitionImageLayout(command_buffer, image, image_layout, vk::ImageLayout::eShaderReadOnlyOptimal);
+		TransitionImageLayout(command_buffer, *image, image_layout, vk::ImageLayout::eTransferDstOptimal);
+		command_buffer.clearColorImage(*image, image_layout, vk::ClearColorValue(std::array<float, 4>{0.0f, 0.0f, 0.0f, 0.0f}), vk::ImageSubresourceRange(vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1));
+		TransitionImageLayout(command_buffer, *image, image_layout, vk::ImageLayout::eShaderReadOnlyOptimal);
 	}
 };
 

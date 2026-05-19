@@ -15,7 +15,7 @@ public:
 
 public:
 	void Render(RectI clip_region, auto func) {
-		Vulkan::Render(image, image_layout, image_view, vk::ImageLayout::eShaderReadOnlyOptimal, extent, clip_region, std::forward<decltype(func)>(func));
+		Vulkan::Render(*image, image_layout, image_view, vk::ImageLayout::eShaderReadOnlyOptimal, extent, clip_region, std::forward<decltype(func)>(func));
 	}
 };
 
