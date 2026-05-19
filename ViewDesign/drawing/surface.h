@@ -35,8 +35,12 @@ private:
 	Handle hdc = nullptr;
 	Handle hglrc = nullptr;
 #endif
-#if defined(VIEWDESIGN_BACKEND_WIN32_VULKAN)
+#if defined(VIEWDESIGN_BACKEND_VULKAN)
 	Handle surface = nullptr;
+#endif
+#if defined(VIEWDESIGN_BACKEND_OPENGL)
+	RectI invalid_region_front_buffer = rect_i_empty;
+	RectI invalid_region_back_buffer = rect_i_empty;
 #endif
 public:
 	void Resize(SizeU size);
@@ -44,16 +48,8 @@ public:
 
 private:
 	RectI invalid_region = rect_i_empty;
-#if defined(VIEWDESIGN_BACKEND_OPENGL)
-	RectI invalid_region_front_buffer = rect_i_empty;
-#endif
 public:
-	void Redraw(RectI redraw_region) {
-		invalid_region = invalid_region.Union(redraw_region);
-#if defined(VIEWDESIGN_BACKEND_OPENGL)
-		invalid_region_front_buffer = invalid_region_front_buffer.Union(redraw_region);
-#endif
-	}
+	void Redraw(RectI redraw_region) { invalid_region = invalid_region.Union(redraw_region); }
 private:
 	void RenderBegin();
 	void RenderEnd(const Canvas& canvas);

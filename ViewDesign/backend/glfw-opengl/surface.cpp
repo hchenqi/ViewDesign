@@ -11,12 +11,14 @@ using namespace OpenGL;
 
 void Surface::Resize(SizeU size) {
 	this->size = size;
-	invalid_region = invalid_region_front_buffer = RectI(point_i_zero, size);
+	invalid_region = invalid_region_front_buffer = invalid_region_back_buffer = RectI(point_i_zero, size);
 }
 
 void Surface::Destroy() {}
 
 void Surface::RenderBegin() {
+	invalid_region_front_buffer = invalid_region_front_buffer.Union(invalid_region);
+	invalid_region = invalid_region_back_buffer = invalid_region_back_buffer.Union(invalid_region);
 	if (!invalid_region.IsEmpty()) {
 		glfwMakeContextCurrent(AsGLFWWindow(window));
 	}
@@ -29,8 +31,8 @@ void Surface::RenderEnd(const Canvas& canvas) {
 	glfwSwapBuffers(AsGLFWWindow(window));
 	glfwMakeContextCurrent(nullptr);
 
-	invalid_region = invalid_region_front_buffer;
-	invalid_region_front_buffer = rect_i_empty;
+	invalid_region_back_buffer = invalid_region_front_buffer;
+	invalid_region = invalid_region_front_buffer = rect_i_empty;
 }
 
 
