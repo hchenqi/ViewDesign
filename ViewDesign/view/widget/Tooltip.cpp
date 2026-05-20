@@ -105,13 +105,13 @@ private:
 			animation_step = 0;
 			timer.Set(animation_interval);
 			region.point = GetCursorPosition() / GetScale() + Vector(0, 10.0f);
-			SetOpacity(0);
+			SetOpacity(0.0f);
 			ShowSelf();
 			break;
 		case State::Showing:
 			if (animation_step < animation_step_max) {
 				animation_step++;
-				SetOpacity(0xFF * animation_step / animation_step_max);
+				SetOpacity((float)animation_step / animation_step_max);
 			} else {
 				state = State::Shown;
 				timer.Set(show_time);
@@ -125,7 +125,7 @@ private:
 		case State::Hiding:
 			if (animation_step > 0) {
 				animation_step--;
-				SetOpacity(0xFF * animation_step / animation_step_max);
+				SetOpacity((float)animation_step / animation_step_max);
 			} else {
 				timer.Stop();
 				state = State::Hidden;

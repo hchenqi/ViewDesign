@@ -58,6 +58,9 @@ struct RectI {
 
 	constexpr bool IsEmpty() const { return size.IsEmpty(); }
 
+	constexpr bool Contains(const PointI& point) const { return point >= LeftTop() && point < RightBottom(); }
+	constexpr bool Contains(const RectI& other) const { return other.LeftTop() >= LeftTop() && other.RightBottom() <= RightBottom(); }
+
 	constexpr RectI Union(const RectI& other) const {
 		if (IsEmpty()) { return other; } if (other.IsEmpty()) { return *this; }
 		PointI pl1 = LeftTop(), ph1 = RightBottom(), pl2 = other.LeftTop(), ph2 = other.RightBottom();
@@ -100,6 +103,11 @@ inline RectI Round(Rect region) {
 
 inline RectI RoundUp(Rect region) {
 	float left = floorf(region.left()), top = floorf(region.top()), right = ceilf(region.right()), bottom = ceilf(region.bottom());
+	return RectI(PointI(left, top), SizeU(std::max(right - left, 0.0f), std::max(bottom - top, 0.0f)));
+}
+
+inline RectI RoundDown(Rect region) {
+	float left = ceilf(region.left()), top = ceilf(region.top()), right = floorf(region.right()), bottom = floorf(region.bottom());
 	return RectI(PointI(left, top), SizeU(std::max(right - left, 0.0f), std::max(bottom - top, 0.0f)));
 }
 

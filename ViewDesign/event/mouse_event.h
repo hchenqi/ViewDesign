@@ -9,7 +9,7 @@ namespace ViewDesign {
 
 struct MouseEvent {
 	Point point;
-	short wheel_delta;
+	short wheel_delta = 0;
 	union {
 		struct {
 			bool left : 1;
@@ -20,7 +20,7 @@ struct MouseEvent {
 			bool xbutton1 : 1;
 			bool xbutton2 : 1;
 		};
-		uint8 _key_state;
+		uint8 _key_state = 0;
 	};
 	enum : uint8 {
 		LeftDown,

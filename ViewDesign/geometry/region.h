@@ -1,8 +1,7 @@
 #pragma once
 
-#include "ViewDesign/common/type.h"
 #include "ViewDesign/common/uncopyable.h"
-#include "ViewDesign/geometry/geometry.h"
+#include "ViewDesign/geometry/sizeu.h"
 
 #include <vector>
 
@@ -15,27 +14,25 @@ private:
 	Handle handle;
 
 public:
-	Region(Rect region = rect_empty);
+	Region(RectI region = rect_i_empty);
 	~Region();
 
 	bool IsEmpty() const;
-	void Set(Rect region);
-	void Clear() { Set(rect_empty); }
+	void Set(RectI region);
+	void Clear() { Set(rect_i_empty); }
 
-	void Translate(Vector vector);
-
-	void Union(const Rect& region);
-	void Intersect(const Rect& region);
-	void Sub(const Rect& region);
-	void Xor(const Rect& region);
+	void Union(const RectI& region);
+	void Intersect(const RectI& region);
+	void Sub(const RectI& region);
+	void Xor(const RectI& region);
 
 	void Union(const Region& region);
 	void Intersect(const Region& region);
 	void Sub(const Region& region);
 	void Xor(const Region& region);
 
-	Rect GetBoundingRect() const;
-	std::pair<Rect, std::vector<Rect>> GetRects() const;
+	RectI GetBoundingRect() const;
+	std::pair<RectI, std::vector<RectI>> GetRects() const;
 };
 
 

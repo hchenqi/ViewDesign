@@ -58,7 +58,7 @@ protected:
 protected:
 	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override {
 		child_redraw_region = child_redraw_region.Intersect(Rect(point_zero, size));
-		if (layer.HasFramebuffer()) { invalid_region.Union(child_redraw_region * scale); }
+		if (layer.HasFramebuffer()) { invalid_region.Union(RoundUp(child_redraw_region * scale)); }
 		Redraw(child_redraw_region);
 	}
 	virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
@@ -69,16 +69,16 @@ protected:
 		Rect composite_region = draw_region * scale, redraw_region = composite_region;
 		if (!layer.HasFramebuffer()) {
 			layer.CreateFramebuffer(layer_size);
-			invalid_region.Set(Rect(point_zero, layer_size));
+			invalid_region.Set(RectI(point_i_zero, layer_size));
 		} else {
-			Region render_region(redraw_region); render_region.Intersect(invalid_region);
+			Region render_region(RoundUp(redraw_region)); render_region.Intersect(invalid_region);
 			redraw_region = render_region.GetBoundingRect();
 		}
 		if (!redraw_region.IsEmpty()) {
 			Canvas canvas;
 			canvas.Group(scale, rect_infinite, [&]() { DrawChild(child, point_zero, canvas, redraw_region / scale); });
 			layer.RenderCanvas(canvas, vector_zero, redraw_region);
-			invalid_region.Sub(redraw_region);
+			invalid_region.Sub(RoundDown(redraw_region));
 		}
 		canvas.draw(draw_region.point, new LayerFigure(layer, composite_region, draw_region.size, opacity));
 	}
@@ -143,7 +143,7 @@ protected:
 protected:
 	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override {
 		child_redraw_region = child_redraw_region.Intersect(Rect(point_zero, size));
-		invalid_region.Union(child_redraw_region * scale);
+		invalid_region.Union(RoundUp(child_redraw_region * scale));
 		Redraw(child_redraw_region);
 	}
 	virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
@@ -156,10 +156,10 @@ protected:
 		Rect composite_region = draw_region * scale;
 		for (TileIndex tile_index : GetOverlappingTileRange(tile_size, composite_region)) {
 			if (!tile_cache.contains(tile_index)) {
-				invalid_region.Union(GetTileRegion(tile_size, tile_index));
+				invalid_region.Union(RoundUp(GetTileRegion(tile_size, tile_index)));
 			}
 		}
-		Region render_region(composite_region); render_region.Intersect(invalid_region);
+		Region render_region(RoundUp(composite_region)); render_region.Intersect(invalid_region);
 		Rect redraw_region = render_region.GetBoundingRect();
 		if (!redraw_region.IsEmpty()) {
 			Canvas canvas;
@@ -170,7 +170,7 @@ protected:
 				Vector tile_offset = GetTileOffset(tile_size, tile_index);
 				layer.RenderCanvas(canvas, -tile_offset, redraw_region - tile_offset);
 			}
-			invalid_region.Sub(redraw_region);
+			invalid_region.Sub(RoundDown(redraw_region));
 		}
 		for (TileIndex tile_index : GetOverlappingTileRange(tile_size, composite_region)) {
 			Vector tile_offset = GetTileOffset(tile_size, tile_index);

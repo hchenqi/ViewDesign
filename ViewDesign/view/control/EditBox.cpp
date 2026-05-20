@@ -122,10 +122,10 @@ void EditBox::MoveCaret(CaretMoveDirection direction) {
 		break;
 	case CaretMoveDirection::Right:
 		if (HasSelection()) {
-			SetCaret(TextRange(selection_range.end() - 1, 1));
+			SetCaret(TextRange(selection_range.end(), 0));
 		} else {
 			if (caret_position.end() < text.length()) {
-				SetCaret(TextRange(caret_position.end(), GetNextCharacterLength(text[caret_position.end()])));
+				SetCaret(TextRange(caret_position.end() + GetNextCharacterLength(text[caret_position.end()]), 0));
 			}
 		}
 		break;
@@ -221,10 +221,10 @@ void EditBox::Insert(u16char ch) {
 	if (IsEditDisabled()) { return; }
 	if (HasSelection()) {
 		TextBox::Replace(selection_range, ch);
-		SetCaret(TextRange(selection_range.begin(), 1));
+		SetCaret(TextRange(selection_range.begin() + 1, 0));
 	} else {
 		TextBox::Insert(caret_position.end(), ch);
-		SetCaret(TextRange(caret_position.end(), 1));
+		SetCaret(TextRange(caret_position.end() + 1, 0));
 	}
 }
 
@@ -232,10 +232,10 @@ void EditBox::Insert(u16pair ch) {
 	if (IsEditDisabled()) { return; }
 	if (HasSelection()) {
 		TextBox::Replace(selection_range, ch);
-		SetCaret(TextRange(selection_range.begin(), ch.length()));
+		SetCaret(TextRange(selection_range.begin() + ch.length(), 0));
 	} else {
 		TextBox::Insert(caret_position.end(), ch);
-		SetCaret(TextRange(caret_position.end(), ch.length()));
+		SetCaret(TextRange(caret_position.end() + ch.length(), 0));
 	}
 }
 
@@ -243,10 +243,10 @@ void EditBox::Insert(const u16string& str) {
 	if (IsEditDisabled()) { return; }
 	if (HasSelection()) {
 		TextBox::Replace(selection_range, str);
-		SetCaret(TextRange(selection_range.begin(), str.length()));
+		SetCaret(TextRange(selection_range.begin() + str.length(), 0));
 	} else {
 		TextBox::Insert(caret_position.end(), str);
-		SetCaret(TextRange(caret_position.end(), str.length()));
+		SetCaret(TextRange(caret_position.end() + str.length(), 0));
 	}
 }
 
@@ -260,7 +260,7 @@ void EditBox::Delete(bool is_backspace) {
 			if (caret_position.end() > 0) {
 				size_t length = GetPrevCharacterLength(text[caret_position.end() - 1]);
 				TextBox::Erase(TextRange(caret_position.end() - length, length));
-				SetCaret(caret_position.end() - length > 0 ? TextRange(caret_position.end() - length - 1, 1) : TextRange(0, 0));
+				SetCaret(TextRange(caret_position.end() - length, 0));
 			}
 		} else {
 			if (caret_position.end() < text.length()) {

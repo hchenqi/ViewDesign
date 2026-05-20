@@ -160,7 +160,7 @@ protected:
 template<class WidthTrait>
 class ClipFrame<WidthTrait, Fixed, Top> : public _ClipFrame_Base, public SizeTrait<WidthTrait, Fixed> {
 public:
-	ClipFrame(view_ptr<WidthTrait, Relative> child) : _ClipFrame_Base(std::move(child)) {}
+	ClipFrame(view_ptr<WidthTrait, Relative> child) : _ClipFrame_Base(std::move(child)) { child_region.point = point_zero; }
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override {
 		child_region.size = UpdateChildSizeRef(child, size = size_ref);
