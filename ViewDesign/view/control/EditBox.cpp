@@ -28,7 +28,7 @@ constexpr size_t GetPrevCharacterLength(u16char ch) {
 } // namespace
 
 
-EditBox::EditBox(Style style, u16string text) : Base(style, text), style(style) {
+EditBox::EditBox(Style style, u16string text) : Base(style, std::move(text)), style(style) {
 	style.edit._disabled ? ime.Disable(*this) : ime.Enable(*this);
 	word_iterator.SetText(this->text);
 }

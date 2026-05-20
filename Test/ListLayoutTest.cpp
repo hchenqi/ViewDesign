@@ -1,26 +1,18 @@
-#include "ViewDesign/view/widget/TitleBarWindow.h"
+#include "ViewDesign/view/widget/DefaultWindow.h"
 #include "ViewDesign/view/frame/ScrollFrame.h"
-#include "ViewDesign/view/frame/ClipFrame.h"
+#include "ViewDesign/view/frame/LayerFrame.h"
 #include "ViewDesign/view/frame/ScaleFrame.h"
 #include "ViewDesign/view/frame/InnerBorderFrame.h"
-#include "ViewDesign/view/frame/LayerFrame.h"
+#include "ViewDesign/view/frame/PaddingFrame.h"
 #include "ViewDesign/view/layout/ListLayout.h"
-#include "ViewDesign/view/layout/SplitLayout.h"
-#include "ViewDesign/view/layout/StackLayout.h"
 #include "ViewDesign/view/control/EditBox.h"
 #include "ViewDesign/view/wrapper/HitTestHelper.h"
 
-#include "TextBoxHelper.h"
+#include "trait_name.h"
+#include "text_box_helper.h"
 
 
 using namespace ViewDesign;
-
-
-struct MainWindowStyle : TitleBarWindow::Style {
-	MainWindowStyle() {
-		title.text.assign(u"ListLayoutTest");
-	}
-};
 
 
 template<class WidthTrait, class HeightTrait>
@@ -119,8 +111,8 @@ private:
 template<template<class Trait> class ListLayout, class Trait>
 void Test() {
 	desktop.AddWindow(
-		new TitleBarWindow(
-			MainWindowStyle(),
+		new DefaultWindow(
+			Name<ListLayout<Trait>>::text, DefaultWindow::Style(),
 			new ScrollFrame(
 				new LayerFrameTiled(
 					new ScaleView(

@@ -12,7 +12,7 @@ public:
 	using Style = TextBlockStyle;
 
 public:
-	TextBox(Style style, u16string text) : style(style), text(text) { text_block.SetText(style, text); }
+	TextBox(Style style, u16string text) : style(style), text(std::move(text)) { text_block.SetText(style, this->text); }
 	~TextBox() {}
 
 	// text

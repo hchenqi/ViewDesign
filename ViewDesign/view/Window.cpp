@@ -5,7 +5,9 @@
 namespace ViewDesign {
 
 
-Window::Window(const u16string& title, view_ptr<> child) : ViewFrame(std::move(child)), surface(CreateWindow(*this, title)), point(point_i_zero), scale(GetWindowScale(GetHandle())) {}
+Window::Window(Handle window, view_ptr<> child) : ViewFrame(std::move(child)), surface(window), point(point_i_zero), scale(GetWindowScale(GetHandle())) { AttachWindow(GetHandle(), *this); }
+
+Window::Window(const u16string& title, view_ptr<> child) : Window(CreateWindow(title), std::move(child)) {}
 
 Window::~Window() { desktop.Get().ReleaseWindow(*this); DestroyWindow(surface.DestroyWindow()); }
 

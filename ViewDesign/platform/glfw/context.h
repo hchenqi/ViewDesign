@@ -49,7 +49,6 @@ public:
 	}
 private:
 	void InitializeWindowHint() {
-		glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
 		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 		glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
 	}

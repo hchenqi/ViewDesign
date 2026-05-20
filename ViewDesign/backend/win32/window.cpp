@@ -8,6 +8,7 @@
 
 #include <windows.h>
 #include <windowsx.h>
+
 #if defined(VIEWDESIGN_BACKEND_WIN32_OPENGL) || defined(VIEWDESIGN_BACKEND_WIN32_VULKAN)
 #include <dwmapi.h>
 #endif
@@ -173,11 +174,7 @@ WindowIrrelevantMessages:
 	case WM_CREATE: break;
 	case WM_DESTROY: if (GetDesktop().window_list.empty()) { PostQuitMessage(0); } break;
 	case WM_KILLFOCUS: GetDesktop().LoseFocus(); break;
-	case WM_NCCALCSIZE: break;
-	case WM_NCHITTEST: return HTCLIENT;
-	case WM_NCPAINT: break;
-	case WM_NCACTIVATE: return true;
-	default: return DefWindowProc(hwnd, msg, wparam, lparam);
+	default: return DefWindowProcW(hwnd, msg, wparam, lparam);
 	}
 	return 0;
 }
@@ -186,17 +183,16 @@ const u16char wnd_class_name[] = u"ViewDesignWindow";
 WNDCLASSEXW wnd_class = [] {
 	WNDCLASSEXW wcex = {};
 	wcex.cbSize = sizeof(WNDCLASSEXW);
-	wcex.lpfnWndProc = WndProc;
+	wcex.lpfnWndProc = DefWindowProcW;
 	wcex.hInstance = GetHInstance();
 	wcex.lpszClassName = as_wchar_str(wnd_class_name);
-	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
 	return wcex;
 }();
 
 } // namespace
 
 
-Handle CreateWindow(Window& window, const u16string& title) {
+Handle CreateWindow(const u16string& title) {
 	static ATOM wnd_class_atom = RegisterClassExW(&wnd_class);
 	if (wnd_class_atom == 0) {
 		throw std::runtime_error("Win32: register class error");
@@ -209,18 +205,27 @@ Handle CreateWindow(Window& window, const u16string& title) {
 		NULL,
 #endif
 		as_wchar_str(wnd_class_name), as_wchar_str(title.c_str()),
-		WS_POPUP | WS_THICKFRAME | WS_MAXIMIZEBOX | WS_HSCROLL | WS_VSCROLL,
+		WS_OVERLAPPEDWINDOW,
 		0, 0, 0, 0, NULL, NULL, GetHInstance(), NULL
 	);
 	if (hwnd == NULL) {
 		throw std::runtime_error("Win32: create window error");
 	}
 #if defined(VIEWDESIGN_BACKEND_WIN32_OPENGL) || defined(VIEWDESIGN_BACKEND_WIN32_VULKAN)
-	MARGINS m = { -1 };
-	DwmExtendFrameIntoClientArea(hwnd, &m);
+	HRGN region = CreateRectRgn(0, 0, -1, -1);
+	DWM_BLURBEHIND bb = {};
+	bb.dwFlags = DWM_BB_ENABLE | DWM_BB_BLURREGION;
+	bb.hRgnBlur = region;
+	bb.fEnable = TRUE;
+	DwmEnableBlurBehindWindow(hwnd, &bb);
+	DeleteObject(region);
 #endif
-	SetWindowLongPtrW(hwnd, GWLP_USERDATA, (LONG_PTR)&window);
 	return hwnd;
+}
+
+void AttachWindow(Handle window, Window& view) {
+	SetWindowLongPtrW(AsHWND(window), GWLP_USERDATA, (LONG_PTR)&view);
+	SetWindowLongPtrW(AsHWND(window), GWLP_WNDPROC, (LONG_PTR)WndProc);
 }
 
 void DestroyWindow(Handle window) { DestroyWindow(AsHWND(window)); }
@@ -229,7 +234,7 @@ Scale GetWindowScale(Handle window) { return GetDpiForWindow(AsHWND(window)) / d
 
 void SetWindowTitle(Handle window, const u16string& title) { SetWindowTextW(AsHWND(window), as_wchar_str(title.c_str())); }
 void SetWindowRegion(Handle window, RectI region) { MoveWindow(AsHWND(window), region.point.x, region.point.y, region.size.width, region.size.height, false); }
-void SetWindowOpacity(Handle window, float opacity) { SetWndStyle(AsHWND(window), WS_EX_LAYERED); SetLayeredWindowAttributes(AsHWND(window), 0, opacity * 0xFF, LWA_ALPHA); }
+void SetWindowOpacity(Handle window, float opacity) { SetWndExStyle(AsHWND(window), WS_EX_LAYERED); SetLayeredWindowAttributes(AsHWND(window), 0, opacity * 0xFF, LWA_ALPHA); }
 void SetWindowCursor(Handle window, std::reference_wrapper<Cursor> cursor) { SetCursor(cursor); }
 
 void ShowWindow(Handle window) { ShowWindow(AsHWND(window), SW_SHOWNOACTIVATE); }

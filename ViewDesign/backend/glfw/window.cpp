@@ -165,12 +165,16 @@ void CharModsCallback(GLFWwindow* glfw_window, unsigned int codepoint, int mods)
 } // namespace
 
 
-Handle CreateWindow(Window& window, const u16string& title) {
+Handle CreateWindow(const u16string& title) {
 	GLFWwindow* glfw_window = glfwCreateWindow(1, 1, as_char_str(to_u8string(title).c_str()), nullptr, nullptr);
-	if (glfw_window == nullptr) {
-		throw std::runtime_error("GLFW: create window error");
-	}
-	glfwSetWindowUserPointer(glfw_window, &window);
+	if (glfw_window == nullptr) { throw std::runtime_error("GLFW: create window error"); }
+	return glfw_window;
+}
+
+void AttachWindow(Handle window, Window& view) {
+	GLFWwindow* glfw_window = AsGLFWWindow(window);
+
+	glfwSetWindowUserPointer(glfw_window, &view);
 
 	glfwSetWindowCloseCallback(glfw_window, WindowCloseCallback);
 
@@ -192,8 +196,6 @@ Handle CreateWindow(Window& window, const u16string& title) {
 	glfwSetKeyCallback(glfw_window, KeyCallback);
 	glfwSetCharCallback(glfw_window, CharCallback);
 	glfwSetCharModsCallback(glfw_window, CharModsCallback);
-
-	return glfw_window;
 }
 
 void DestroyWindow(Handle window) {

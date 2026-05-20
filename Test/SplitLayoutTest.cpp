@@ -1,27 +1,21 @@
-#include "ViewDesign/view/widget/TitleBarWindow.h"
+#include "ViewDesign/view/widget/DefaultWindow.h"
 #include "ViewDesign/view/frame/CenterFrame.h"
 #include "ViewDesign/view/frame/BorderFrame.h"
 #include "ViewDesign/view/layout/SplitLayout.h"
 #include "ViewDesign/view/control/EditBox.h"
 
-#include "TextBoxHelper.h"
+#include "trait_name.h"
+#include "text_box_helper.h"
 
 
 using namespace ViewDesign;
 
 
-struct MainWindowStyle : TitleBarWindow::Style {
-	MainWindowStyle() {
-		title.text.assign(u"SplitLayoutTest");
-	}
-};
-
-
 template<template<class WidthTraitFirst, class HeightTraitFirst, class WidthTraitSecond, class HeightTraitSecond> class SplitLayout, class WidthTraitFirst, class HeightTraitFirst, class WidthTraitSecond, class HeightTraitSecond>
 void Test() {
 	desktop.AddWindow(
-		new TitleBarWindow(
-			MainWindowStyle(),
+		new DefaultWindow(
+			Name<SplitLayout<WidthTraitFirst, HeightTraitFirst, WidthTraitSecond, HeightTraitSecond>>::text, DefaultWindow::Style(),
 			new CenterFrame<Fixed, Fixed>(
 				new BorderFrame(
 					Border(2.0f, Color::Yellow),

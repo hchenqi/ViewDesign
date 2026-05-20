@@ -1,16 +1,12 @@
+#include "ViewDesign/view/widget/DefaultWindow.h"
+#include "ViewDesign/view/widget/UndecoratedWindow.h"
 #include "ViewDesign/view/widget/TitleBarWindow.h"
 #include "ViewDesign/view/frame/CenterFrame.h"
+#include "ViewDesign/view/frame/ClipFrame.h"
 #include "ViewDesign/view/control/TextBox.h"
 
 
 using namespace ViewDesign;
-
-
-struct MainWindowStyle : TitleBarWindow::Style {
-	MainWindowStyle() {
-		title.text.assign(u"TextBoxTest");
-	}
-};
 
 
 struct TextBoxStyle : TextBox::Style {
@@ -20,13 +16,56 @@ struct TextBoxStyle : TextBox::Style {
 	}
 };
 
+static const u16string title = u"TextBoxTest";
+static const u16string text = u"Hello World!\n你好，世界！";
+
 
 void App() {
 	desktop.AddWindow(
-		new TitleBarWindow(
-			MainWindowStyle(),
+		new DefaultWindow(
+			title, DefaultWindow::Style(),
 			new CenterFrame<Fixed, Fixed>(
-				new TextBox(TextBoxStyle(), u"Hello World!\n你好，世界！")
+				new TextBox(TextBoxStyle(), text)
+			)
+		)
+	);
+	desktop.EventLoop();
+
+	desktop.AddWindow(
+		new DefaultWindow(
+			title, DefaultWindow::Style(),
+			new ClipFrame<Fixed, Fixed, TopLeft>(
+				new TextBox(TextBoxStyle(), text)
+			)
+		)
+	);
+	desktop.EventLoop();
+
+	desktop.AddWindow(
+		new DefaultWindow(
+			title, DefaultWindow::Style(),
+			new ClipFrame<Fixed, Fixed, BottomRight>(
+				new TextBox(TextBoxStyle(), text)
+			)
+		)
+	);
+	desktop.EventLoop();
+
+	desktop.AddWindow(
+		new UndecoratedWindow(
+			title, UndecoratedWindow::Style(),
+			new CenterFrame<Fixed, Fixed>(
+				new TextBox(TextBoxStyle(), text)
+			)
+		)
+	);
+	desktop.EventLoop();
+
+	desktop.AddWindow(
+		new TitleBarWindow(
+			title, TitleBarWindow::Style(),
+			new CenterFrame<Fixed, Fixed>(
+				new TextBox(TextBoxStyle(), text)
 			)
 		)
 	);

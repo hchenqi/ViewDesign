@@ -14,6 +14,7 @@ private:
 	friend struct WindowPrivateAccess;
 
 public:
+	Window(Handle window, view_ptr<> child);
 	Window(const u16string& title, view_ptr<> child);
 	~Window();
 

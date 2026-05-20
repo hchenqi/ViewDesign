@@ -1,6 +1,7 @@
-#include "ViewDesign/view/widget/TitleBarWindow.h"
+#include "ViewDesign/view/widget/DefaultWindow.h"
 #include "ViewDesign/view/frame/BorderFrame.h"
 #include "ViewDesign/view/layout/OverlapLayout.h"
+#include "ViewDesign/view/control/Placeholder.h"
 #include "ViewDesign/view/wrapper/Background.h"
 #include "ViewDesign/view/wrapper/HitTestHelper.h"
 #include "ViewDesign/event/mouse_tracker.h"
@@ -8,14 +9,6 @@
 
 
 using namespace ViewDesign;
-
-
-struct MainWindowStyle : TitleBarWindow::Style {
-	MainWindowStyle() {
-		title.text.assign(u"OverlapLayoutTest");
-		background_color = color_transparent;
-	}
-};
 
 
 class MainView : public OverlapLayout {
@@ -104,9 +97,9 @@ private:
 
 void App() {
 	desktop.AddWindow(
-		new TitleBarWindow(
-			MainWindowStyle(),
-			new MainView
+		new DefaultWindow(
+			u"OverlapLayoutTest", DefaultWindow::Style(),
+			new MainView()
 		)
 	);
 	desktop.EventLoop();

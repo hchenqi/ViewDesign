@@ -1,6 +1,5 @@
 #pragma once
 
-#include "ViewDesign/view/Desktop.h"
 #include "ViewDesign/view/frame/MutableFrame.h"
 #include "ViewDesign/view/frame/PaddingFrame.h"
 #include "ViewDesign/view/frame/BorderFrame.h"
@@ -18,7 +17,7 @@
 #include "ViewDesign/view/wrapper/Cursor.h"
 #include "ViewDesign/view/wrapper/HitTestHelper.h"
 #include "ViewDesign/view/widget/Tooltip.h"
-#include "ViewDesign/style/length_style_helper.h"
+#include "ViewDesign/view/widget/UndecoratedWindow.h"
 #include "ViewDesign/event/mouse_tracker.h"
 #include "ViewDesign/messaging/context.h"
 #include "ViewDesign/geometry/border_helper.h"
@@ -32,9 +31,9 @@
 namespace ViewDesign {
 
 
-class TitleBarWindow : public Window, ContextProvider {
+class TitleBarWindow : public UndecoratedWindow, ContextProvider {
 public:
-	using child_type = view_ptr<Fixed, Fixed>;
+	using child_type = UndecoratedWindow::child_type;
 	using menu_type = view_ptr<Auto, Fixed>;
 
 public:
@@ -51,28 +50,22 @@ public:
 			constexpr BarStyle& background_color(Color background_color) { _background_color = background_color; return *this; }
 			constexpr BarStyle& foreground_color(Color foreground_color) { _foreground_color = foreground_color; return *this; }
 		}bar;
-
-		u16string text;
 	};
 
-	struct Style {
-		LengthStyle width;
-		LengthStyle height;
-		PositionStyle position;
+	struct FrameStyle {
 		Padding padding;
 		Border border;
 		Color background_color;
+	};
+
+	struct Style : UndecoratedWindow::Style, FrameStyle {
 		TitleBarStyle title;
 
 		Style() {
-			width.normal(px(800)).min(px(200)).max(pct(100));
-			height.normal(px(500)).min(px(200)).max(pct(100));
-			position.setHorizontalCenter().setVerticalCenter();
 			padding = Padding(2.0f);
 			border.width(2.0f).radius(2.0f).color(Color::CadetBlue);
 			background_color = Color::White;
 			title.bar.background_color(Color::CadetBlue);
-			title.text.assign(u"TitleBarWindow");
 			title.font.color(Color::White);
 			title.paragraph.line_spacing(pct(100));
 		}
@@ -101,7 +94,7 @@ protected:
 	public:
 		class Title : public TextBox {
 		public:
-			Title(const TitleBarStyle& style) : TextBox(style, style.text) {}
+			Title(const TitleBarStyle& style, const u16string& text) : TextBox(style, text) {}
 		};
 
 	protected:
@@ -216,8 +209,8 @@ protected:
 	};
 
 public:
-	TitleBarWindow(Style style, child_type child, menu_type menu = new Placeholder<Auto, Fixed>(0.0f)) : Window(
-		style.title.text,
+	TitleBarWindow(const u16string& title, const Style& style, child_type child, menu_type menu = new Placeholder<Auto, Fixed>(0.0f)) : UndecoratedWindow(
+		title, style,
 		outer_frame = new MutableFrame(
 			new PaddingFrame(
 				style.padding,
@@ -228,7 +221,7 @@ public:
 							new TitleBar(
 								style.title.bar,
 								std::move(menu),
-								title = new TitleBar::Title(style.title)
+								title_text_box = new TitleBar::Title(style.title, title)
 							),
 							new BackgroundFrame(
 								style.background_color,
@@ -239,29 +232,14 @@ public:
 				)
 			)
 		)
-	), ContextProvider(AsViewBase()), style(style) {}
+	), ContextProvider(AsViewBase()) {}
 
-	// style
-protected:
-	Style style;
 protected:
 	ref_ptr<ResizeBorder> border;
-	ref_ptr<TitleBar::Title> title;
+	ref_ptr<TitleBar::Title> title_text_box;
 public:
-	void SetTitle(u16string str) { title->Assign(str); Window::SetTitle(str); }
+	void SetTitle(const u16string& str) { title_text_box->Assign(str); Window::SetTitle(str); }
 
-	// layout
-protected:
-	virtual std::pair<Size, Size> CalculateMinMaxSize(Size size_ref) override {
-		return LengthStyleHelper::CalculateMinMaxSize(style.width, style.height, size_ref);
-	}
-	virtual Rect OnWindowSizeRefUpdate(Size size_ref) override {
-		Rect region = LengthStyleHelper::CalculateRegion(style.width, style.height, style.position, size_ref);
-		UpdateChildSizeRef(child, region.size);
-		return region;
-	}
-
-	// state
 protected:
 	ref_ptr<MutableFrame<Fixed, Fixed>> outer_frame;
 	ref_ptr<MutableFrame<Fixed, Fixed>> inner_frame;

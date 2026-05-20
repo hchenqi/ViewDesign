@@ -9,7 +9,8 @@ namespace ViewDesign {
 class Window;
 
 
-Handle CreateWindow(Window& window, const u16string& title);
+Handle CreateWindow(const u16string& title);
+void AttachWindow(Handle window, Window& view);
 void DestroyWindow(Handle window);
 
 Scale GetWindowScale(Handle window);

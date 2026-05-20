@@ -1,4 +1,4 @@
-#include "ViewDesign/view/widget/TitleBarWindow.h"
+#include "ViewDesign/view/widget/DefaultWindow.h"
 #include "ViewDesign/view/frame/BorderFrame.h"
 #include "ViewDesign/view/layout/DivideLayout.h"
 #include "ViewDesign/view/control/Placeholder.h"
@@ -6,13 +6,6 @@
 
 
 using namespace ViewDesign;
-
-
-struct MainWindowStyle : TitleBarWindow::Style {
-	MainWindowStyle() {
-		title.text.assign(u"DivideLayoutTest");
-	}
-};
 
 
 template<class View>
@@ -76,8 +69,8 @@ private:
 
 void App() {
 	desktop.AddWindow(
-		new TitleBarWindow(
-			MainWindowStyle(),
+		new DefaultWindow(
+			u"DivideLayoutTest", DefaultWindow::Style(),
 			new Background<DivideLayout<Vertical>>(
 				create<Background<DivideLayout<Horizontal>>>(
 					create<Block>(),
