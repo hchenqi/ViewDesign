@@ -61,7 +61,6 @@ public:
 				throw std::runtime_error("GLFW: failed to create helper window");
 			}
 		}
-		glfwMakeContextCurrent(helper_window);
 	}
 };
 

@@ -37,18 +37,16 @@ protected:
 	RectI GetRegion() const { return RectI(point, GetSize()); }
 	Scale GetScale() const { return scale; }
 private:
-	std::pair<SizeU, RectI> GetMinMaxRegion(SizeU desktop_size);
-	void InitializeRegion(SizeU desktop_size);
-	void SetSize(SizeU size);
+	void SetSize(SizeU size) { if (GetSize() != size) { surface.Resize(size); UpdateChildSizeRef(child, size / scale); Redraw(rect_infinite); } }
 	void SetPoint(PointI point) { this->point = point; }
 	void SetScale(Scale scale) { this->scale = Scale(scale); }
 protected:
-	void WindowRegionUpdated(Rect region);
+	void RegionUpdated(Rect region);
 private:
 	virtual Transform GetChildTransform(ViewBase& child) const override { return scale; }
 protected:
 	virtual std::pair<Size, Size> CalculateMinMaxSize(Size size_ref) { return { size_empty, size_ref }; }
-	virtual Rect OnWindowSizeRefUpdate(Size size_ref) { UpdateChildSizeRef(child, size_ref); return Rect(point_zero, size_ref); }
+	virtual Rect OnWindowSizeRefUpdate(Size size_ref) { return Rect(point_zero, UpdateChildSizeRef(child, size_ref)); }
 	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override {}
 
 	// state

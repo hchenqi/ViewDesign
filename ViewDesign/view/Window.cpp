@@ -6,40 +6,11 @@ namespace ViewDesign {
 
 
 Window::Window(Handle window, view_ptr<> child) : ViewFrame(std::move(child)), surface(window), point(point_i_zero), scale(GetWindowScale(GetHandle())) { AttachWindow(GetHandle(), *this); }
-
 Window::Window(const u16string& title, view_ptr<> child) : Window(CreateWindow(title), std::move(child)) {}
-
 Window::~Window() { desktop.Get().ReleaseWindow(*this); DestroyWindow(surface.DestroyWindow()); }
 
 void Window::SetTitle(const u16string& title) { SetWindowTitle(GetHandle(), title); }
-
-std::pair<SizeU, RectI> Window::GetMinMaxRegion(SizeU desktop_size) {
-	auto [size_min, size_max] = CalculateMinMaxSize(desktop_size / scale);
-	return { Round(size_min * scale), RectI(point_i_zero, Round(size_max * scale)) };
-}
-
-void Window::InitializeRegion(SizeU desktop_size) {
-	RectI region = Round(OnWindowSizeRefUpdate(desktop_size / scale) * scale);
-	SetWindowRegion(GetHandle(), region);
-	if (GetSize() != region.size) { surface.Resize(region.size); }
-	point = region.point;
-}
-
-void Window::SetSize(SizeU size) {
-	if (GetSize() != size) {
-		surface.Resize(size);
-		UpdateChildSizeRef(child, size / scale);
-		Redraw(rect_infinite);
-	}
-}
-
-void Window::WindowRegionUpdated(Rect rect) {
-	if (!HasParent()) { return; }
-	RectI region = Round(rect * scale);
-	SetWindowRegion(GetHandle(), region);
-	if (GetSize() != region.size) { surface.Resize(region.size); }
-	point = region.point;
-}
+void Window::RegionUpdated(Rect rect) { SetWindowRegion(GetHandle(), Round(rect * scale)); }
 
 void Window::Show() { ShowWindow(GetHandle()); }
 void Window::Hide() { HideWindow(GetHandle()); }

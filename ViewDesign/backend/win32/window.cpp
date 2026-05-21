@@ -24,7 +24,6 @@ struct WindowPrivateAccess : Window {
 	using Window::SetScale;
 	using Window::SetSize;
 	using Window::SetPoint;
-	using Window::GetMinMaxRegion;
 	using Window::State;
 	using Window::SetState;
 	using Window::OnDraw;
@@ -32,6 +31,7 @@ struct WindowPrivateAccess : Window {
 
 struct DesktopPrivateAccess : Desktop {
 	using Desktop::window_list;
+	using Desktop::GetWindowMinMaxRegion;
 	using Desktop::LoseTrack;
 	using Desktop::LoseCapture;
 	using Desktop::LoseFocus;
@@ -117,8 +117,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 		switch (msg) {
 			// layout
 		case WM_GETMINMAXINFO: {
+			auto [size_min, region_max] = GetDesktop().GetWindowMinMaxRegion(*window);
 			MINMAXINFO* min_max_info = reinterpret_cast<MINMAXINFO*>(lparam);
-			auto [size_min, region_max] = window->GetMinMaxRegion(GetDesktopSize());
 			min_max_info->ptMaxPosition = { region_max.point.x, region_max.point.y };
 			min_max_info->ptMaxSize = { (LONG)region_max.size.width, (LONG)region_max.size.height };
 			min_max_info->ptMinTrackSize = { (LONG)size_min.width, (LONG)size_min.height };

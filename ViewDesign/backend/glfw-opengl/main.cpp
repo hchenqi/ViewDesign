@@ -7,6 +7,7 @@ void App();
 int main() {
 	ViewDesign::GLFW::Context context;
 	context.CreateHelperWindow();
+	glfwMakeContextCurrent(context.GetHelperWindow());
 	gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 	App();
 	return 0;

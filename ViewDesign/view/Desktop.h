@@ -42,6 +42,16 @@ public:
 	// layout
 public:
 	SizeU GetSize() const;
+private:
+	std::pair<SizeU, RectI> GetWindowMinMaxRegion(Window& window) {
+		VerifyChild(window);
+		auto [size_min, size_max] = window.CalculateMinMaxSize(GetSize() / window.scale);
+		return { Round(size_min * window.scale), RectI(point_i_zero, Round(size_max * window.scale)) };
+	}
+	void UpdateWindowSizeRef(Window& window) {
+		VerifyChild(window);
+		window.RegionUpdated(window.OnWindowSizeRefUpdate(GetSize() / window.scale));
+	}
 
 	// context
 private:

@@ -19,7 +19,7 @@ Desktop& Desktop::Get() {
 
 Window& Desktop::AddWindow(std::unique_ptr<Window> window) {
 	RegisterChild(*window);
-	window->InitializeRegion(GetSize());
+	UpdateWindowSizeRef(*window);
 	window->Show();
 	return *window_list.emplace_back(std::move(window));
 }

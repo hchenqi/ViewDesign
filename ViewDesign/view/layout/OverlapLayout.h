@@ -20,7 +20,7 @@ public:
 	protected:
 		OverlapLayout& GetParent() const { return static_cast<OverlapLayout&>(ViewBase::GetParent()); }
 	private:
-		Rect region;
+		Rect region = rect_empty;
 	public:
 		void BringForward() { GetParent().BringForward(*this); }
 		void BringToFront() { GetParent().BringToFront(*this); }
@@ -55,8 +55,8 @@ protected:
 public:
 	void AddWindow(window_ptr window) {
 		RegisterChild(*window);
-		UpdateWindowSizeRef(*window, size);
-		Redraw(window_list.emplace_back(std::move(window))->region);
+		UpdateWindowSizeRef(*window);
+		window_list.emplace_back(std::move(window));
 	}
 	void AddWindow(owner_ptr<Window> window) { AddWindow(window_ptr(window)); }
 	window_ptr RemoveWindow(Window& window) {
@@ -106,7 +106,7 @@ private:
 	using ViewBase::UpdateChildSizeRef;
 	using ViewBase::OnChildSizeUpdate;
 protected:
-	void UpdateWindowSizeRef(Window& window, Size size_ref) { VerifyChild(window); window.region = window.OnWindowSizeRefUpdate(size_ref); }
+	void UpdateWindowSizeRef(Window& window) { VerifyChild(window); window.RegionUpdated(window.OnWindowSizeRefUpdate(size)); }
 protected:
 	virtual Transform GetChildTransform(ViewBase& child) const override {
 		return AsWindow(child).region.point - point_zero;
@@ -115,7 +115,7 @@ protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override {
 		size = size_ref;
 		for (auto& window : window_list) {
-			UpdateWindowSizeRef(*window, size);
+			UpdateWindowSizeRef(*window);
 		}
 		return size;
 	}

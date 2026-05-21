@@ -71,7 +71,7 @@ private:
 
 		extent = surface_capabilities.currentExtent == vk::Extent2D(UINT32_MAX, UINT32_MAX) ? ClampSizeToMinMaxExtent(size, surface_capabilities) : surface_capabilities.currentExtent;
 
-		uint32_t image_count = std::clamp(image_count_default, surface_capabilities.minImageCount, surface_capabilities.maxImageCount);
+		uint32_t image_count = std::clamp(image_count_default, surface_capabilities.minImageCount, surface_capabilities.maxImageCount == 0 ? UINT32_MAX : surface_capabilities.maxImageCount);
 		surface_format = SelectSurfaceFormat(physical_device.getSurfaceFormatsKHR(*surface));
 		vk::PresentModeKHR present_mode = SelectPresentMode(physical_device.getSurfacePresentModesKHR(*surface));
 
