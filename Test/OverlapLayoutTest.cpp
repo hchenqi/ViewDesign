@@ -98,7 +98,8 @@ private:
 void App() {
 	desktop.AddWindow(
 		new DefaultWindow(
-			u"OverlapLayoutTest", DefaultWindow::Style(),
+			DefaultWindow::Style(),
+			u"OverlapLayoutTest",
 			new MainView()
 		)
 	);

@@ -209,8 +209,8 @@ protected:
 	};
 
 public:
-	TitleBarWindow(const u16string& title, const Style& style, child_type child, menu_type menu = new Placeholder<Auto, Fixed>(0.0f)) : UndecoratedWindow(
-		title, style,
+	TitleBarWindow(const Style& style, const u16string& title, child_type child, menu_type menu = new Placeholder<Auto, Fixed>(0.0f)) : UndecoratedWindow(
+		style, title,
 		outer_frame = new MutableFrame(
 			new PaddingFrame(
 				style.padding,

@@ -14,7 +14,7 @@ public:
 	using Style = DefaultWindow::Style;
 
 public:
-	UndecoratedWindow(const u16string& title, const Style& style, child_type child);
+	UndecoratedWindow(const Style& style, const u16string& title, child_type child);
 };
 
 

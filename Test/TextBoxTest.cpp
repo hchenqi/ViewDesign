@@ -23,7 +23,8 @@ static const u16string text = u"Hello World!\n你好，世界！";
 void App() {
 	desktop.AddWindow(
 		new DefaultWindow(
-			title, DefaultWindow::Style(),
+			DefaultWindow::Style(),
+			title,
 			new CenterFrame<Fixed, Fixed>(
 				new TextBox(TextBoxStyle(), text)
 			)
@@ -33,7 +34,8 @@ void App() {
 
 	desktop.AddWindow(
 		new DefaultWindow(
-			title, DefaultWindow::Style(),
+			DefaultWindow::Style(),
+			title,
 			new ClipFrame<Fixed, Fixed, TopLeft>(
 				new TextBox(TextBoxStyle(), text)
 			)
@@ -43,7 +45,8 @@ void App() {
 
 	desktop.AddWindow(
 		new DefaultWindow(
-			title, DefaultWindow::Style(),
+			DefaultWindow::Style(),
+			title,
 			new ClipFrame<Fixed, Fixed, BottomRight>(
 				new TextBox(TextBoxStyle(), text)
 			)
@@ -53,7 +56,8 @@ void App() {
 
 	desktop.AddWindow(
 		new UndecoratedWindow(
-			title, UndecoratedWindow::Style(),
+			UndecoratedWindow::Style(),
+			title,
 			new CenterFrame<Fixed, Fixed>(
 				new TextBox(TextBoxStyle(), text)
 			)
@@ -63,7 +67,8 @@ void App() {
 
 	desktop.AddWindow(
 		new TitleBarWindow(
-			title, TitleBarWindow::Style(),
+			TitleBarWindow::Style(),
+			title,
 			new CenterFrame<Fixed, Fixed>(
 				new TextBox(TextBoxStyle(), text)
 			)

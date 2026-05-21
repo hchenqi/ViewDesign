@@ -15,7 +15,8 @@ template<template<class WidthTraitFirst, class HeightTraitFirst, class WidthTrai
 void Test() {
 	desktop.AddWindow(
 		new DefaultWindow(
-			Name<SplitLayout<WidthTraitFirst, HeightTraitFirst, WidthTraitSecond, HeightTraitSecond>>::text, DefaultWindow::Style(),
+			DefaultWindow::Style(),
+			Name<SplitLayout<WidthTraitFirst, HeightTraitFirst, WidthTraitSecond, HeightTraitSecond>>::text,
 			new CenterFrame<Fixed, Fixed>(
 				new BorderFrame(
 					Border(2.0f, Color::Yellow),

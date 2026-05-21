@@ -1,9 +1,7 @@
 #include "ViewDesign/view/Desktop.h"
-#include "ViewDesign/view/frame/LayerFrame.h"
 #include "ViewDesign/view/frame/MutableFrame.h"
+#include "ViewDesign/view/frame/LayerFrame.h"
 #include "ViewDesign/view/control/Placeholder.h"
-#include "ViewDesign/view/wrapper/Background.h"
-#include "ViewDesign/view/wrapper/Cursor.h"
 #include "ViewDesign/drawing/bitmap.h"
 
 #if defined(VIEWDESIGN_BACKEND_WIN32)

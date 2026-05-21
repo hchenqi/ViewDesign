@@ -112,7 +112,8 @@ template<template<class Trait> class ListLayout, class Trait>
 void Test() {
 	desktop.AddWindow(
 		new DefaultWindow(
-			Name<ListLayout<Trait>>::text, DefaultWindow::Style(),
+			DefaultWindow::Style(),
+			Name<ListLayout<Trait>>::text,
 			new ScrollFrame(
 				new LayerFrameTiled(
 					new ScaleView(

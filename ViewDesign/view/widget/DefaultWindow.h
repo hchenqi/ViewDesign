@@ -25,7 +25,7 @@ public:
 	};
 
 public:
-	DefaultWindow(const u16string& title, const Style& style, child_type child) : Window(title, std::move(child)), style(style) {}
+	DefaultWindow(const Style& style, const u16string& title, child_type child) : Window(title, std::move(child)), style(style) {}
 
 	// style
 protected:

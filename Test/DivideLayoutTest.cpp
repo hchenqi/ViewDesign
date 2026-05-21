@@ -70,7 +70,8 @@ private:
 void App() {
 	desktop.AddWindow(
 		new DefaultWindow(
-			u"DivideLayoutTest", DefaultWindow::Style(),
+			DefaultWindow::Style(),
+			u"DivideLayoutTest",
 			new Background<DivideLayout<Vertical>>(
 				create<Background<DivideLayout<Horizontal>>>(
 					create<Block>(),

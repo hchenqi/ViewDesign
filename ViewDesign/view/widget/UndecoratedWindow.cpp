@@ -11,7 +11,7 @@
 namespace ViewDesign {
 
 
-UndecoratedWindow::UndecoratedWindow(const u16string& title, const Style& style, child_type child) : DefaultWindow(title, style, std::move(child)) {
+UndecoratedWindow::UndecoratedWindow(const Style& style, const u16string& title, child_type child) : DefaultWindow(style, title, std::move(child)) {
 #if defined(VIEWDESIGN_BACKEND_WIN32)
 	Win32::SetWndUndecorated(Win32::AsHWND(GetHandle()));
 #endif
