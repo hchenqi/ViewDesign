@@ -9,4 +9,5 @@ add_subdirectory(ViewDesign)
 
 if(CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
     add_subdirectory(Test)
+    add_subdirectory(Example)
 endif()

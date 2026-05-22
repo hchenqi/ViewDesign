@@ -4,21 +4,21 @@ A C++ GUI library
 
 ## Introduction
 
-*ViewDesign* is a general-purpose, object-oriented, highly modular, minimal and flexible cross-platform C++ GUI library with multi-backend support. It features static layout compatibility check through C++ templating which is particularly helpful for designing complex UI components with minimal run-time overhead. It also provides an easily extensible component library for intuitive and explicit UI building.
+*ViewDesign* is a general-purpose, object-oriented, highly modular, minimal and flexible cross-platform C++ GUI library with multi-backend support. It also provides an easily extensible component library for intuitive and explicit UI building, featuring static layout compatibility check through C++ templating which is particularly helpful for designing complex UI components with minimal run-time overhead.
 
 ### Highlight
 
 - written in modern C++, object-oriented, without any markup language
 - a single static library built with CMake, lightweight, modular and extensible
 - cross-platform with multi-backend support
-- clear and efficient logic for layout computation and rendering
+- clear and efficient logic for layout calculation and rendering
 - fit for both 'immediate-mode' and 'retained-mode' GUI programming
 - conceptual separation of components as `control`, `frame` and `layout`
 - static check of layout compatibility between components by size traits
 
 ### Example
 
-The program below displays "Hello World!" at the center of the main window: (an extract from [Test/TextBoxTest.cpp](Test/TextBoxTest.cpp))
+The program below displays "Hello World!" at the center of the main window: ([Example/HelloWorld.cpp](Example/HelloWorld.cpp))
 
 ```cpp
 #include "ViewDesign/view/widget/DefaultWindow.h"
@@ -47,11 +47,13 @@ void App() {
 }
 ```
 
-![Screenshot 1](docs/screenshot-1.png)
+![Screenshot HelloWorld-1](docs/HelloWorld-1.png)
 
-We first include headers of components, then we define text style for `TextBox`, and finally in the entrypoint `void App()`, we create and combine the components, add main window `DefaultWindow` and enter event loop. `CenterFrame<Fixed, Fixed>` places `TextBox` at the center of the main window.
+![Screen recording HelloWorld-1](docs/HelloWorld-1.gif)
 
-If we replace `CenterFrame<Fixed, Fixed>` with `ClipFrame<Fixed, Fixed, TopLeft>`, the `TextBox` will appear at the top-left corner of the window.
+We first include headers of components, then we define text style for `TextBox`, and finally in the entrypoint `void App()`, we create and combine the components, add main window `DefaultWindow` and enter event loop.
+
+`CenterFrame<Fixed, Fixed>` always places `TextBox` at the center when it is being resized. If we change it with `ClipFrame<Fixed, Fixed, TopLeft>`, the `TextBox` will appear at the top-left corner.
 
 ```cpp
 // #include "ViewDesign/view/frame/ClipFrame.h"
@@ -67,7 +69,7 @@ If we replace `CenterFrame<Fixed, Fixed>` with `ClipFrame<Fixed, Fixed, TopLeft>
 	);
 ```
 
-![Screenshot 2](docs/screenshot-2.png)
+![Screenshot HelloWorld-2](docs/HelloWorld-2.png)
 
 Similarly, `ClipFrame<Fixed, Fixed, TopRight>`, `ClipFrame<Fixed, Fixed, BottomLeft>` and `ClipFrame<Fixed, Fixed, BottomRight>` place their child views at top-right, bottom-left and bottom-right corners respectively.
 
@@ -83,12 +85,11 @@ Similarly, `ClipFrame<Fixed, Fixed, TopRight>`, `ClipFrame<Fixed, Fixed, BottomL
 	);
 ```
 
-The size of a `TextBox` depends on both the layout box provided by its parent view and its text content, therefore, it has `Relative` size traits. We must explicitly choose where to place `TextBox` in the `DefaultWindow` since its size might not exactly be the size of the `DefaultWindow`. `CenterFrame<Fixed, Fixed>` can be used as such an adaptor, which itself has `Fixed` traits and accepts a child view with `Relative` traits, by always placing the child view at its center when it is being resized or when the child view resizes on its own.
+The size of a `TextBox` depends on both the layout box provided by its parent view and its text content, therefore, it has `Relative` size traits. We must explicitly choose where to place `TextBox` in the `DefaultWindow` since its size might not exactly be the size of the `DefaultWindow`. `CenterFrame<Fixed, Fixed>` can be used as such an adaptor, which itself has `Fixed` traits and accepts a child view with `Relative` traits by placing the child view at the center.
 
 More detailed explanation and examples of size traits can be found in the next sections.
 
-`create<>` is just a shorter alias of `std::make_unique<>`. We can also use the even shorter `new` here to create the components, because a raw pointer returned by `new` will be immediately captured as a `unique_ptr` internally in the parent view constructors.
-
+`create<>` is just a shorter alias of `std::make_unique<>`. We can also use the even shorter `new` here to create the components, and it will not be unsafe because the raw pointer returned by `new` will be immediately captured as a `unique_ptr` internally in the parent view constructors.
 ```cpp
 	desktop.AddWindow(
 		new DefaultWindow(
@@ -101,7 +102,41 @@ More detailed explanation and examples of size traits can be found in the next s
 	);
 ```
 
+Another benefit of using `new` is that it well supports template parameter deduction guide for specific parent views without having to explicitly provide the template arguments, while with `create<>` the parent view's template arguments must be given (see [Example/Background.cpp](Example/Background.cpp)).
+
 UTF-16 strings are used across this project. Prefix `u` is for declaring UTF-16 string literals.
+
+The simplest program below displays nothing but the main window: ([Example/Placeholder.cpp](Example/Placeholder.cpp))
+
+```cpp
+#include "ViewDesign/view/widget/DefaultWindow.h"
+#include "ViewDesign/view/control/Placeholder.h"
+
+using namespace ViewDesign;
+
+void App() {
+	desktop.AddWindow(
+		create<DefaultWindow>(
+			DefaultWindow::Style(),
+			u"Placeholder",
+			create<Placeholder<Fixed, Fixed>>()
+		)
+	);
+	desktop.EventLoop();
+}
+```
+
+![Screenshot Placeholder](docs/Placeholder.png)
+
+The `Placeholder<Fixed, Fixed>` is necessary here because `DefaultWindow` always expects a child view with `Fixed` traits to be given.
+
+More examples can be found in sub-folder [Example](Example).
+
+### Principle
+
+*ViewDesign* is aimed to be modular and transparent. There is no hidden logic or global context, and it is easy to inspect and modify any part of the library code. The files of the library are well structured and effortless to navigate. Each file is kept small and independent for a single component. The largest file is ~600 lines of code and most files are kept within ~100 lines. There is no single all-in-one header and each component header is to be included individually on demand.
+
+The example section above demonstrates the component library of *ViewDesign* with size traits. The core library (excluding components in subfolders of [ViewDesign/view](ViewDesign/view)), however, does not enforce size traits or any development paradigm. It can be integrated with any C++ design principle and any third-party component library to fit custom development needs. The existing components provided along with the core library are such examples that can be directly used, inherited, or taken as models of developing custom components in a similar way.
 
 ### Build
 
@@ -112,9 +147,9 @@ UTF-16 strings are used across this project. Prefix `u` is for declaring UTF-16 
 - `GLFW-OpenGL` (Windows, Linux)
 - `GLFW-Vulkan` (Windows, Linux)
 
-> Backends other than `Win32-DirectX` are not yet natively equipped with text rendering capabilities.
+> Backends other than `Win32-DirectX` are not yet natively equipped with text rendering capabilities. Texts are presented as placeholders.
 
-[Building ViewDesign](docs/build.md) provides more detailed instructions on configuring and building *ViewDesign* on different platforms.
+On Windows, *ViewDesign* can be built directly by Visual Studio as a CMake project. [Building ViewDesign](docs/build.md) provides more detailed instructions on configuring and building *ViewDesign* on different platforms.
 
 ### Comparison
 
@@ -278,6 +313,8 @@ Converters between `std::u8string` and `std::u16string` are provided. `reinterpr
 
 #### Transform
 
+#### SizeU
+
 ### Drawing
 
 #### Layer
@@ -303,6 +340,10 @@ Converters between `std::u8string` and `std::u16string` are provided. `reinterpr
 #### FocusEvent
 
 ### System
+
+#### Window
+
+#### Event Loop
 
 #### Cursor
 
@@ -404,9 +445,13 @@ Converters between `std::u8string` and `std::u16string` are provided. `reinterpr
 
 #### Widget
 
-##### Tooltip
+##### DefaultWindow
+
+##### UndecoratedWindow
 
 ##### TitleBarWindow
+
+##### Tooltip
 
 ## Known Issues
 

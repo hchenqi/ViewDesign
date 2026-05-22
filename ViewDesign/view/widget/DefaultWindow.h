@@ -37,9 +37,7 @@ protected:
 		return LengthStyleHelper::CalculateMinMaxSize(style.width, style.height, size_ref);
 	}
 	virtual Rect OnWindowSizeRefUpdate(Size size_ref) override {
-		Rect region = LengthStyleHelper::CalculateRegion(style.width, style.height, style.position, size_ref);
-		UpdateChildSizeRef(child, region.size);
-		return region;
+		return LengthStyleHelper::CalculateRegion(style.width, style.height, style.position, size_ref);
 	}
 };
 

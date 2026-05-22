@@ -11,7 +11,7 @@ The configuring and building of this library follow CMake routines. Possible bas
 
 *ViewDesign* source files can be downloaded and directly included in a CMake project with `add_subdirectory(path_to_ViewDesign_root)` and `target_link_libraries(AppName PRIVATE ViewDesign)`. The environment variable `VIEWDESIGN_BACKEND` needs to be specified as one of the supported backends.
 
-### Compiler
+## Compiler
 
 The following compilers can be used to build *ViewDesign*:
 
@@ -35,11 +35,18 @@ The following compilers can be used to build *ViewDesign*:
 
 > Mingw-w64 might use an older version of Windows SDK that doesn't include the header `icu.h`. In this case, ICU can be installed independently.
 
+> Mingw might not find the entry point defined in the library at link time, in this case, add this command while building:
+> ```cmake
+> if(MINGW)
+>     target_link_options(${TEST_NAME} PRIVATE -Wl,--whole-archive $<TARGET_LINKER_FILE:ViewDesign> -Wl,--no-whole-archive)
+> endif()
+> ```
+
 *Linux Target*
 
 - G++: (Ubuntu) `sudo apt install g++`
 
-### Backend
+## Backend
 
 The following backends can be selected for building *ViewDesign*:
 - `Win32-DirectX` (Windows)
@@ -52,19 +59,19 @@ Additional platform packages might be required for a backend. These packages can
 
 > Backend / Platform:
 > 
-> Every backend has its implementation of the interfaces. For each build there's only one backend to be chosen at configure time.
+> Every backend has its implementation of a set of interfaces like windowing (Win32 / GLFW) and rendering (DirectX / OpenGL / Vulkan). For each set of interfaces there might be multiple backends available but only one backend is to be chosen at configure time.
 >
-> Every platform provides helper functions under its own namespace for a backend to use. A platforms that is visible in the current environment will be included. Multiple platforms can be available at the same time.
+> Platform here does not strictly mean the operating system, but rather packages that are available. A platform provides helper functions under its own namespace for backends and other platform-specific modules to use. All platforms that are visible in the current development environment will be eagerly included, though they might not be actually used.
 
-### Platform
+## Platform
 
 The following platform packages will be searched and included automatically.
 
-#### Win32 SDK (Already included in the compiler tool chain targeting Windows)
+### Win32 SDK (Already included in the compiler tool chain targeting Windows)
 
-#### OpenGL (Already available on major operating systems)
+### OpenGL (Already available on major operating systems)
 
-#### ICU (International Components for Unicode, https://icu.unicode.org/)
+### ICU (International Components for Unicode, https://icu.unicode.org/)
 
 > ICU is built with C++17 by default, which doesn't include some functions related with `std::u16string`, causing linker errors. It can be built and installed from [its source](https://github.com/unicode-org/icu/releases) with C++ standard specified as C++23:
 > (current directory at `icu/source`)
@@ -74,7 +81,7 @@ The following platform packages will be searched and included automatically.
 >   - Run `msbuild allinone/allinone.sln /p:OverrideLanguageStandard=stdcpp23 /p:Configuration=Release /p:Platform=x64` (within Developer Command Prompt from Visual Studio)
 >   - Set `ICU_ROOT` environment variable to `icu/` for cmake `find_package(ICU)` to be able to locate the built files
 
-#### GLFW (https://www.glfw.org/)
+### GLFW (https://www.glfw.org/)
 
 > GLFW installed by `sudo apt install libglfw3-dev` (Ubuntu) might be in a lower version which doesn't include some definitions. It can be built and installed from [its source](https://github.com/glfw/glfw/releases) with CMake:
 > (current directory at `glfw/`)
@@ -86,8 +93,8 @@ The following platform packages will be searched and included automatically.
 
 > On Linux, GLFW- backends currently don't work well with Wayland. Set environment variables with `export XDG_SESSION_TYPE=x11` or `export WAYLAND_DISPLAY=` before running the program to let GLFW choose x11 instead of Wayland.
 
-#### glad (https://glad.dav1d.de/)
+### glad (https://glad.dav1d.de/)
 
-> glad can be installed with vcpkg manifest (Ubuntu)
+> glad can be installed with vcpkg manifest
 
-#### Vulkan (https://vulkan.lunarg.com/)
+### Vulkan (https://vulkan.lunarg.com/)
