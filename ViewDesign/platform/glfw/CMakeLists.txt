@@ -5,13 +5,13 @@ if(NOT glfw3_FOUND)
 endif()
 
 file(GLOB_RECURSE LIB_SOURCES *.h *.cpp)
-add_library(ViewDesignGLFW STATIC ${LIB_SOURCES})
-add_library(ViewDesign::GLFW ALIAS ViewDesignGLFW)
-set_target_properties(ViewDesignGLFW PROPERTIES FOLDER "Platform")
+add_library(ViewDesignPlatformGLFW STATIC ${LIB_SOURCES})
+add_library(ViewDesign::Platform::GLFW ALIAS ViewDesignPlatformGLFW)
+set_target_properties(ViewDesignPlatformGLFW PROPERTIES FOLDER "ViewDesign/Platform")
 
-target_include_directories(ViewDesignGLFW PUBLIC ${PROJECT_SOURCE_DIR})
+target_include_directories(ViewDesignPlatformGLFW PUBLIC ${PROJECT_SOURCE_DIR})
 
-target_link_libraries(ViewDesignGLFW PUBLIC glfw)
+target_link_libraries(ViewDesignPlatformGLFW PUBLIC glfw)
 
-target_link_libraries(ViewDesign PUBLIC ViewDesign::GLFW)
+target_link_libraries(ViewDesign PUBLIC ViewDesign::Platform::GLFW)
 target_compile_definitions(ViewDesign PUBLIC VIEWDESIGN_PLATFORM_GLFW)
