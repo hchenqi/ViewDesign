@@ -37,6 +37,7 @@ public:
 	Window& GetWindow(ViewBase& view);
 	Window& GetWindowPoint(ViewBase& view, Point& point);
 public:
+	bool WindowListEmpty() { return window_list.empty(); }
 	void CloseAllWindows();
 
 	// layout
@@ -125,6 +126,7 @@ public:
 	Window& GetWindow(ViewBase& view) { return Get().GetWindow(view); }
 	Window& GetWindowPoint(ViewBase& view, Point& point) { return Get().GetWindowPoint(view, point); }
 public:
+	bool WindowListEmpty() { return Get().WindowListEmpty(); }
 	void CloseAllWindows() { return Get().CloseAllWindows(); }
 
 	// layout

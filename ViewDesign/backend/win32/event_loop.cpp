@@ -6,10 +6,6 @@
 
 namespace ViewDesign {
 
-struct DesktopPrivateAccess : Desktop {
-	using Desktop::window_list;
-};
-
 
 void EventLoop() {
 	MSG msg;
@@ -18,7 +14,7 @@ void EventLoop() {
 		TranslateMessage(&msg);
 		DispatchMessageW(&msg);
 
-		if (static_cast<DesktopPrivateAccess&>(desktop.Get()).window_list.empty()) {
+		if (desktop.WindowListEmpty()) {
 			break;
 		}
 	}
