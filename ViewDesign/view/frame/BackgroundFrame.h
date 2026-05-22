@@ -26,10 +26,17 @@ protected:
 		}
 	}
 
+	// layout
+protected:
+	Size size;
+protected:
+	virtual Size OnSizeRefUpdate(Size size_ref) override { return size = UpdateChildSizeRef(child, size_ref); }
+	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override { SizeUpdated(size = child_size); }
+
 	// drawing
 protected:
 	virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
-		canvas.draw(draw_region.point, new Rectangle(draw_region.size, background));
+		canvas.draw(point_zero, new Rectangle(size, background));
 		ViewFrame::OnDraw(canvas, draw_region);
 	}
 };

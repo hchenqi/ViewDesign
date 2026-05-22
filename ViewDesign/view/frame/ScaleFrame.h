@@ -13,6 +13,7 @@ public:
 
 public:
 	ScaleFrame(Scale scale, child_type child) : ViewFrame(std::move(child)), scale(scale) {}
+	ScaleFrame(child_type child) : ScaleFrame(1.0f, std::move(child)) {}
 
 	// style
 protected:
@@ -47,13 +48,24 @@ protected:
 	}
 
 	// event
-protected:
-	virtual ref_ptr<ViewBase> HitTest(MouseEvent& event) override { event.point /= scale; return ViewFrame::HitTest(event); }
+private:
+	virtual ref_ptr<ViewBase> HitTest(MouseEvent& event) override {
+		if (event.ctrl && event.type == MouseEvent::WheelVertical) { return this; }
+		event.point /= scale;
+		return ViewFrame::HitTest(event);
+	}
+private:
+	virtual void OnMouseEvent(MouseEvent event) override {
+		SetScale(scale * Scale(powf(1.1f, event.wheel_delta / 120.0f)));
+	}
 };
 
 
 template<class T>
 ScaleFrame(Scale, T) -> ScaleFrame<extract_width_trait<T>, extract_height_trait<T>>;
+
+template<class T>
+ScaleFrame(T) -> ScaleFrame<extract_width_trait<T>, extract_height_trait<T>>;
 
 
 } // namespace ViewDesign

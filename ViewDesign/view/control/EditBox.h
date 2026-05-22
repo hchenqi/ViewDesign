@@ -12,7 +12,7 @@
 namespace ViewDesign {
 
 
-class EditBox : public CustomizedCursor<TextBox, CursorStyle::Text> {
+class EditBox : public CustomizedCursor<CursorStyle::Text, TextBox> {
 protected:
 	struct EditBoxStyle {
 		struct EditStyle {
@@ -37,7 +37,7 @@ public:
 	struct Style : TextBox::Style, EditBoxStyle {};
 
 public:
-	EditBox(Style style, u16string text = u"");
+	EditBox(const Style& style, u16string text = u"");
 	~EditBox() {}
 
 	// style
@@ -148,6 +148,14 @@ protected:
 	void Cut();
 	void Copy();
 	void Paste();
+
+	// control
+public:
+	void Edit(size_t position = -1) {
+		SetCaret(TextRange(position, 0));
+		SetFocus();
+		CaretStartBlinking();
+	}
 
 	// event
 protected:

@@ -9,7 +9,11 @@ void App() {
 		new DefaultWindow(
 			DefaultWindow::Style(),
 			u"Background",
-			new BackgroundFrame( // or use: create<BackgroundFrame<Fixed, Fixed>>. create<BackgroundFrame> doesn't work here because BackgroundFrame is a template
+			// create<BackgroundFrame> doesn't work here directly, because BackgroundFrame is a class template
+			// the template arguments must be explicitly given, as create<BackgroundFrame<Fixed, Fixed>>
+			// with new we don't need to provide the template arguments thanks to template argument deduction guide
+			// template argument deduction guide doesn't work everywhere and in certain cases we still need to explicitly provide the arguments
+			new BackgroundFrame(
 				Color::LightPink,
 				new Placeholder<Fixed, Fixed>()
 			)

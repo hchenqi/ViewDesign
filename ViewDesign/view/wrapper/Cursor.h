@@ -6,7 +6,7 @@
 namespace ViewDesign {
 
 
-template<class View, CursorStyle cursor = CursorStyle::Arrow> requires std::derived_from<View, ViewBase>
+template<CursorStyle cursor, class View> requires std::derived_from<View, ViewBase>
 class CustomizedCursor : public View {
 protected:
 	using Base = CustomizedCursor;

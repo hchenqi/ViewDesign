@@ -72,7 +72,7 @@ public:
 	};
 
 protected:
-	class ResizeBorder : public CustomizedCursor<HitSelfFallback<BorderFrame<Fixed, Fixed>>, CursorStyle::NoChange> {
+	class ResizeBorder : public CustomizedCursor<CursorStyle::NoChange, HitSelfFallback<BorderFrame<Fixed, Fixed>>> {
 	public:
 		using Base::Base;
 	protected:
@@ -90,7 +90,7 @@ protected:
 		}
 	};
 
-	class TitleBar : public HitSelfFallback<SolidColorBackground<FixedFrame<Fixed, Auto>>>, Context, ContextProvider {
+	class TitleBar : public HitSelfFallback<DefaultBackground<FixedFrame<Fixed, Auto>>>, Context, ContextProvider {
 	public:
 		class Title : public TextBox {
 		public:

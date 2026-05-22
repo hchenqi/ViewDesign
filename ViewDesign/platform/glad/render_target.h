@@ -12,12 +12,6 @@ namespace OpenGL {
 
 
 struct RenderContext {
-private:
-	SizeU size;
-	std::vector<RectI> clip_stack;
-	Scale current_scale;
-	Transform current_transform;
-
 public:
 	RenderContext(SizeU size, ref_ptr<Framebuffer> framebuffer) : size(size) {
 		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer == nullptr ? 0 : framebuffer->GetId());
@@ -32,8 +26,16 @@ public:
 		glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
 		glEnable(GL_SCISSOR_TEST);
+
+		clip_stack.emplace_back(point_i_zero, size);
+		SetClip(clip_stack.back());
 	}
 
+	// context
+private:
+	SizeU size;
+	Scale current_scale;
+	Transform current_transform;
 public:
 	void SetTransform(const Transform& transform) {
 		current_scale = transform.GetScale();
@@ -53,19 +55,25 @@ public:
 		return (current_scale.x + current_scale.y) / 2;
 	}
 
+	// clip
+private:
+	std::vector<RectI> clip_stack;
 private:
 	void SetClip(RectI rect) {
 		glScissor(rect.point.x, size.height - rect.point.y - rect.size.height, rect.size.width, rect.size.height);
 	}
 public:
-	void PushClip(Rect rect) {
-		RectI rect_i = Round(GetBoundingRectAfterTransform(rect, current_transform));
-		SetClip(rect_i);
-		clip_stack.push_back(rect_i);
+	void PushClip(Rect clip_region) {
+		RectI rect = clip_stack.back().Intersect(Round(GetBoundingRectAfterTransform(clip_region, current_transform)));
+		if (rect != clip_stack.back()) {
+			SetClip(rect);
+		}
+		clip_stack.emplace_back(rect);
 	}
 	void PopClip() {
+		RectI rect = clip_stack.back();
 		clip_stack.pop_back();
-		if (!clip_stack.empty()) {
+		if (clip_stack.back() != rect) {
 			SetClip(clip_stack.back());
 		}
 	}

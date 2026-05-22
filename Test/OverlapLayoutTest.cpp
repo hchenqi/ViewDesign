@@ -15,7 +15,7 @@ class MainView : public OverlapLayout {
 private:
 	class Window : public HitSelf<OverlapLayout::Window> {
 	private:
-		class View : public SolidColorBackground<Placeholder<Fixed, Fixed>> {
+		class View : public DefaultBackground<Placeholder<Fixed, Fixed>> {
 		public:
 			View() { background = background_color; }
 		private:

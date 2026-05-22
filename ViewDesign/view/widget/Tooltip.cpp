@@ -31,7 +31,7 @@ private:
 				Border(1.5f, 0x767676),
 				new PaddingFrame(
 					Padding(5.0f, 2.0f),
-					text_box = new SolidColorBackground<TextBox, 0xF1F2F7>(TextStyle(), u"")
+					text_box = new SolidColorBackground<0xF1F2F7, TextBox>(TextStyle(), u"")
 				)
 			)
 		)

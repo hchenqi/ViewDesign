@@ -1,17 +1,10 @@
+#include "ViewDesign/view/widget/DefaultWindow.h"
 #include "ViewDesign/view/widget/UndecoratedWindow.h"
 #include "ViewDesign/view/control/Placeholder.h"
-#include "ViewDesign/view/wrapper/Background.h"
-
-#include "ViewDesign/view/widget/DefaultWindow.h"
-#include "ViewDesign/view/control/Placeholder.h"
-
-#include "ViewDesign/view/widget/DefaultWindow.h"
+#include "ViewDesign/view/frame/ClipFrame.h"
 #include "ViewDesign/view/frame/CenterFrame.h"
 #include "ViewDesign/view/control/TextBox.h"
-
-#include "ViewDesign/view/widget/DefaultWindow.h"
-#include "ViewDesign/view/frame/ClipFrame.h"
-#include "ViewDesign/view/control/TextBox.h"
+#include "ViewDesign/view/wrapper/Background.h"
 
 
 using namespace ViewDesign;
@@ -36,31 +29,31 @@ void App() {
 		new UndecoratedWindow(
 			BackgroundWindowStyle(),
 			u"Background",
-			new SolidColorBackground<Placeholder<Fixed, Fixed>, Color::White>()
+			new DefaultBackground<Placeholder<Fixed, Fixed>>()
 		)
 	);
 	desktop.AddWindow(
-		create<DefaultWindow>(
+		new DefaultWindow(
 			DefaultWindow::Style(),
 			u"Placeholder",
-			create<Placeholder<Fixed, Fixed>>()
+			new Placeholder<Fixed, Fixed>()
 		)
 	);
 	desktop.AddWindow(
-		create<DefaultWindow>(
+		new DefaultWindow(
 			DefaultWindow::Style(),
 			u"Example",
-			create<CenterFrame<Fixed, Fixed>>(
-				create<TextBox>(TextBoxStyle(), u"Hello World!")
+			new CenterFrame<Fixed, Fixed>(
+				new TextBox(TextBoxStyle(), u"Hello World!")
 			)
 		)
 	);
 	desktop.AddWindow(
-		create<DefaultWindow>(
+		new DefaultWindow(
 			DefaultWindow::Style(),
 			u"Example",
-			create<ClipFrame<Fixed, Fixed, TopLeft>>(
-				create<TextBox>(TextBoxStyle(), u"Hello World!")
+			new ClipFrame<Fixed, Fixed, TopLeft>(
+				new TextBox(TextBoxStyle(), u"Hello World!")
 			)
 		)
 	);

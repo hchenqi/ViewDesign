@@ -15,29 +15,6 @@
 using namespace ViewDesign;
 
 
-template<class WidthTrait, class HeightTrait>
-class ScaleView : public ScaleFrame<WidthTrait, HeightTrait> {
-private:
-	using Base = ScaleFrame<WidthTrait, HeightTrait>;
-public:
-	ScaleView(Base::child_type child) : Base(Scale(1.0), std::move(child)) {}
-private:
-	virtual ref_ptr<ViewBase> HitTest(MouseEvent& event) override {
-		if (event.ctrl && event.type == MouseEvent::WheelVertical) {
-			return this;
-		}
-		return Base::HitTest(event);
-	}
-private:
-	virtual void OnMouseEvent(MouseEvent event) override {
-		Base::SetScale(Base::scale * Scale(powf(1.1f, event.wheel_delta / 120.0f)));
-	}
-};
-
-template<class T>
-ScaleView(T) -> ScaleView<extract_width_trait<T>, extract_height_trait<T>>;
-
-
 template<template<class Trait> class ListLayout, class Trait>
 class ListView : public HitSelfFallback<ListLayout<Trait>> {
 private:
@@ -77,12 +54,6 @@ private:
 		};
 	public:
 		EditView() : EditBox(Style(), u"Type something here...") {}
-	public:
-		void Edit() {
-			SetCaret(TextRange(-1, 0));
-			SetFocus();
-			CaretStartBlinking();
-		}
 	};
 
 private:
@@ -116,7 +87,7 @@ void Test() {
 			Name<ListLayout<Trait>>::text,
 			new ScrollFrame(
 				new LayerFrameTiled(
-					new ScaleView(
+					new ScaleFrame(
 						new InnerBorderFrame(
 							Border(1.0f, 0.0f, Color::Black),
 							new PaddingFrame(

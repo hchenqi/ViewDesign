@@ -8,9 +8,9 @@ namespace ViewDesign {
 
 
 template<class WidthTrait, class HeightTrait>
-class Button : public SolidColorBackground<Placeholder<WidthTrait, HeightTrait>> {
+class Button : public DefaultBackground<Placeholder<WidthTrait, HeightTrait>> {
 public:
-	using SolidColorBackground<Placeholder<WidthTrait, HeightTrait>>::SolidColorBackground;
+	using DefaultBackground<Placeholder<WidthTrait, HeightTrait>>::DefaultBackground;
 
 	// style
 protected:

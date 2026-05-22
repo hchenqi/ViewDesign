@@ -62,7 +62,7 @@ struct TextLayoutPlaceholder {
 	}
 
 	TextBlock::HitTestPointInfo HitTestPosition(TextRange position) const {
-		if (position.begin() >= length) {
+		if (position.end() >= length) {
 			position = length == 0 ? TextRange(0, 0) : TextRange(length - 1, 1);
 		}
 		if (position.length() == 0) {

@@ -16,7 +16,7 @@ void App() {
 			DefaultWindow::Style(),
 			u"Example",
 			create<CenterFrame<Fixed, Fixed>>(
-				create<TextBox>(TextBoxStyle(), u"Hello World!")
+				create<TextBox>(TextBoxStyle(), u"Hello World!\n你好，世界！")
 			)
 		)
 	);

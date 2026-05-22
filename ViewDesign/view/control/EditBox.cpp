@@ -28,7 +28,7 @@ constexpr size_t GetPrevCharacterLength(u16char ch) {
 } // namespace
 
 
-EditBox::EditBox(Style style, u16string text) : Base(style, std::move(text)), style(style) {
+EditBox::EditBox(const Style& style, u16string text) : Base(style, std::move(text)), style(style) {
 	style.edit._disabled ? ime.Disable(*this) : ime.Enable(*this);
 	word_iterator.SetText(this->text);
 }
@@ -49,12 +49,13 @@ TextRange EditBox::GetWordRange(size_t position) const {
 }
 
 TextRange EditBox::GetParagraphRange(size_t position) const {
-	if (text.length() == 0) { return text_range_empty; }
-	size_t length = text.length(); if (position >= length) { position--; }
+	size_t length = text.length();
+	if (length == 0) { return text_range_empty; }
+	if (position >= length) { position = length - 1; }
 	size_t begin = position - 1, end = position;
 	while (begin < length && text[begin] != u'\n') { begin--; }
 	while (end < length && text[end] != u'\n') { end++; }
-	begin++; end++;
+	begin++; if (end < length) { end++; }
 	return TextRange(begin, end - begin);
 }
 
