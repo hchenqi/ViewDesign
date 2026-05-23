@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ViewDesign/view/widget/UndecoratedWindow.h"
 #include "ViewDesign/view/frame/MutableFrame.h"
 #include "ViewDesign/view/frame/PaddingFrame.h"
 #include "ViewDesign/view/frame/BorderFrame.h"
@@ -17,7 +18,6 @@
 #include "ViewDesign/view/wrapper/Cursor.h"
 #include "ViewDesign/view/wrapper/HitTestHelper.h"
 #include "ViewDesign/view/widget/Tooltip.h"
-#include "ViewDesign/view/widget/UndecoratedWindow.h"
 #include "ViewDesign/event/mouse_tracker.h"
 #include "ViewDesign/messaging/context.h"
 #include "ViewDesign/geometry/border_helper.h"
@@ -90,7 +90,7 @@ protected:
 		}
 	};
 
-	class TitleBar : public HitSelfFallback<DefaultBackground<FixedFrame<Fixed, Auto>>>, Context, ContextProvider {
+	class TitleBar : public HitSelfFallback<DefaultBackground<FixedFrame<Fixed, Auto>>>, Context<TitleBarWindow> {
 	public:
 		class Title : public TextBox {
 		public:
@@ -98,7 +98,7 @@ protected:
 		};
 
 	protected:
-		class ButtonBase : public Button<Auto, Fixed>, protected Context {
+		class ButtonBase : public Button<Auto, Fixed>, protected Context<TitleBarWindow> {
 		public:
 			ButtonBase(Color background, Color foreground, const u16string& tooltip_text) : Button<Auto, Fixed>(50.0f), Context(AsViewBase()), foreground(foreground), tooltip_text(tooltip_text) {
 				this->background = this->background_normal = background;
@@ -128,7 +128,7 @@ protected:
 				canvas.draw(Point(20.0f, 15.0f), new Rectangle(Size(10.0f, 1.0f), 1.0f, foreground));
 			}
 		protected:
-			virtual void OnClick() override { Context::Get<TitleBarWindow>().Minimize(); }
+			virtual void OnClick() override { Context::Get().Minimize(); }
 		};
 
 		class MaximizeButton : public ButtonBase {
@@ -137,7 +137,7 @@ protected:
 		protected:
 			virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
 				ButtonBase::OnDraw(canvas, draw_region);
-				if (Context::Get<TitleBarWindow>().IsMaximized()) {
+				if (Context::Get().IsMaximized()) {
 					canvas.draw(Point(22.0f, 10.0f), new Rectangle(Size(8.0f, 8.0f), 1.0f, foreground));
 					canvas.draw(Point(20.0f, 12.0f), new Rectangle(Size(8.0f, 8.0f), background, 1.0f, foreground));
 				} else {
@@ -145,12 +145,12 @@ protected:
 				}
 			}
 		protected:
-			virtual void OnClick() override { Context::Get<TitleBarWindow>().MaximizeOrRestore(); }
+			virtual void OnClick() override { Context::Get().MaximizeOrRestore(); }
 		protected:
 			virtual void OnFocusEvent(FocusEvent event) override {
 				Button::OnFocusEvent(event);
 				switch (event) {
-				case FocusEvent::MouseEnter: ShowTooltip(*this, Context::Get<TitleBarWindow>().IsMaximized() ? u"restore" : u"maximize"); break;
+				case FocusEvent::MouseEnter: ShowTooltip(*this, Context::Get().IsMaximized() ? u"restore" : u"maximize"); break;
 				case FocusEvent::MouseLeave: HideTooltip(*this); break;
 				}
 			}
@@ -166,7 +166,7 @@ protected:
 				canvas.draw(Point(20.0f, 20.0f), new Line(Vector(10.0f, -10.0f), 1.0f, foreground));
 			}
 		protected:
-			virtual void OnClick() override { Context::Get<TitleBarWindow>().Close(); }
+			virtual void OnClick() override { Context::Get().Close(); }
 		};
 
 	public:
@@ -191,7 +191,7 @@ protected:
 					)
 				)
 			)
-		), Context(AsViewBase()), ContextProvider(AsViewBase()) {
+		), Context(AsViewBase()) {
 			background = style._background_color;
 		}
 
@@ -203,7 +203,7 @@ protected:
 #if defined(VIEWDESIGN_BACKEND_WIN32)
 			case MouseTrackEvent::LeftDown: Win32::AeroSnapDraggingEffect(desktop.GetWindow(*this).GetHandle()); break;
 #endif
-			case MouseTrackEvent::LeftDoubleClick: Context::Get<TitleBarWindow>().MaximizeOrRestore(); break;
+			case MouseTrackEvent::LeftDoubleClick: Context::Get().MaximizeOrRestore(); break;
 			}
 		}
 	};

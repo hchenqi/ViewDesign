@@ -16,22 +16,20 @@ std::unordered_set<ref_ptr<ViewBase>> provider_set;
 } // namespace
 
 
-ContextProvider::ContextProvider(ViewBase& provider) : provider(provider) {
-	if (provider_set.contains(&provider)) {
-		throw std::invalid_argument("ContextProvider already registered");
+ContextProvider::ContextProvider(ViewBase& view) : view(view) {
+	if (provider_set.contains(&view)) {
+		throw std::invalid_argument("view already already registered as a context provider");
 	}
-	provider_set.emplace(&provider);
+	provider_set.emplace(&view);
 }
 
 ContextProvider::~ContextProvider() {
-	provider_set.erase(&provider);
+	provider_set.erase(&view);
 }
 
-ref_ptr<ViewBase> Context::GetNextProvider(ViewBase& user) {
-	auto parent = static_cast<ref_ptr<ViewBasePrivateAccess>>(&user)->Parent();
-	while (parent && !provider_set.contains(parent)) {
-		parent = parent->Parent();
-	}
+ref_ptr<ViewBase> ContextProvider::GetNextProvider(ViewBase& view) {
+	auto parent = static_cast<ref_ptr<ViewBasePrivateAccess>>(&view)->Parent();
+	for (; parent && !provider_set.contains(parent); parent = parent->Parent()) {}
 	return parent;
 }
 

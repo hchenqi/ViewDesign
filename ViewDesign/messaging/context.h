@@ -2,41 +2,44 @@
 
 #include "ViewDesign/view/ViewBase.h"
 
-#include <stdexcept>
-
 
 namespace ViewDesign {
 
 
 class ContextProvider : Uncopyable {
 private:
-	ViewBase& provider;
-public:
-	ContextProvider(ViewBase& provider);
+	ViewBase& view;
+protected:
+	ContextProvider(ViewBase& view);
 	~ContextProvider();
+public:
+	static ref_ptr<ViewBase> GetNextProvider(ViewBase& view);
 };
 
 
-class Context : Uncopyable {
+template<class View>
+class Context {
 private:
-	ViewBase& user;
+	ViewBase& consumer;
 	ref_ptr<ViewBase> provider;
-private:
-	static ref_ptr<ViewBase> GetNextProvider(ViewBase& user);
 public:
-	Context(ViewBase& user) : user(user), provider(nullptr) {}
+	Context(ViewBase& consumer) : consumer(consumer), provider(&consumer) {}
 public:
-	template<class View> requires std::derived_from<View, ViewBase>
 	View& Get() {
-		if (!provider || !dynamic_cast<ref_ptr<View>>(provider)) {
-			ref_ptr<ViewBase> next = &user;
-			do {
-				next = GetNextProvider(*next);
-				if (next == nullptr) {
-					throw std::invalid_argument("context provider not found");
+		if (provider == &consumer) {
+			for (ref_ptr<ViewBase> view = &consumer;;) {
+				view = ContextProvider::GetNextProvider(*view);
+				if (view == nullptr) {
+					provider = nullptr;
+					break;
 				}
-				provider = dynamic_cast<ref_ptr<View>>(next);
-			} while (!provider);
+				if (provider = dynamic_cast<ref_ptr<View>>(view); provider != nullptr) {
+					break;
+				}
+			}
+		}
+		if (provider == nullptr) {
+			throw std::logic_error("context provider not available");
 		}
 		return static_cast<View&>(*provider);
 	}
