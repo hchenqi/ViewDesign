@@ -47,8 +47,8 @@ private:
 	inline static HDC helper_window_hdc = nullptr;
 	inline static HGLRC helper_window_hglrc = nullptr;
 public:
-	static HDC GetHelperWindowHDC() { if (!Initialized()) { throw std::invalid_argument("Win32: OpenGL context not initialized"); } return helper_window_hdc; }
-	static HGLRC GetHelperWindowHGLRC() { if (!Initialized()) { throw std::invalid_argument("Win32: OpenGL context not initialized"); } return helper_window_hglrc; }
+	static HDC GetHelperWindowHDC() { if (!Initialized()) { throw std::logic_error("Win32: OpenGL context not initialized"); } return helper_window_hdc; }
+	static HGLRC GetHelperWindowHGLRC() { if (!Initialized()) { throw std::logic_error("Win32: OpenGL context not initialized"); } return helper_window_hglrc; }
 };
 
 

@@ -20,7 +20,7 @@ private:
 public:
 	SizeU GetSize() const { return size; }
 	bool HasFramebuffer() const { return framebuffer != nullptr; }
-	Handle GetFramebuffer() const { if (!HasFramebuffer()) { throw std::invalid_argument("Layer: framebuffer not created"); } return framebuffer; }
+	Handle GetFramebuffer() const { if (!HasFramebuffer()) { throw std::logic_error("Layer: framebuffer not created"); } return framebuffer; }
 public:
 	void SetFramebuffer(SizeU size, Handle framebuffer) { DestroyFramebuffer(); this->size = size; this->framebuffer = framebuffer; }
 	void CreateFramebuffer(SizeU size);

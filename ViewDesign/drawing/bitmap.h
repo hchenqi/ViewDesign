@@ -18,7 +18,7 @@ protected:
 	mutable Handle texture = nullptr;
 public:
 	SizeU GetSize() const { return pixel_buffer.Size(); }
-	Handle GetTexture() const { if (texture == nullptr) { throw std::invalid_argument("Bitmap: texture not created"); } return texture; }
+	Handle GetTexture() const { if (texture == nullptr) { throw std::logic_error("Bitmap: texture not created"); } return texture; }
 public:
 	void CreateTexture() const;
 	void DestroyTexture() const;

@@ -34,12 +34,12 @@ private:
 	ref_ptr<ViewBase> parent = nullptr;
 protected:
 	bool HasParent() const { return parent != nullptr; }
-	ViewBase& GetParent() const { if (!HasParent()) { throw std::invalid_argument("view has no parent"); } return *parent; }
+	ViewBase& GetParent() const { if (!HasParent()) { throw std::logic_error("view has no parent"); } return *parent; }
 
 	// child
 protected:
 	void VerifyChild(ViewBase& child) const { if (child.parent != this) { throw std::invalid_argument("invalid child view"); } }
-	void RegisterChild(ViewBase& child) { if (child.HasParent()) { throw std::invalid_argument("view already has a parent"); } child.parent = this; }
+	void RegisterChild(ViewBase& child) { if (child.HasParent()) { throw std::logic_error("view already has a parent"); } child.parent = this; }
 	void UnregisterChild(ViewBase& child) { VerifyChild(child); child.parent = nullptr; }
 protected:
 	ViewBase& GetDirectChild(ViewBase& descendent) const;

@@ -16,7 +16,7 @@ class ComPtr : public Microsoft::WRL::ComPtr<T> {
 public:
 	operator T& () {
 		if (Microsoft::WRL::ComPtr<T>::Get() == nullptr) {
-			throw std::invalid_argument("DirectX: ComPtr is null");
+			throw std::logic_error("DirectX: ComPtr is null");
 		}
 		return *Microsoft::WRL::ComPtr<T>::Get();
 	}

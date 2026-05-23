@@ -59,7 +59,7 @@ public:
 	}
 	static DeviceContext& Get() {
 		if (ref == nullptr) {
-			throw std::invalid_argument("Vulkan: device not created");
+			throw std::logic_error("Vulkan: device not created");
 		}
 		return *ref;
 	}

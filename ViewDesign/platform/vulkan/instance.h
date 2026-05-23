@@ -28,13 +28,13 @@ public:
 		if (ref == nullptr) {
 			ref = &context;
 		} else {
-			throw std::invalid_argument("Vulkan: instance context already initialized");
+			throw std::logic_error("Vulkan: instance context already initialized");
 		}
 		return ref->instance;
 	}
 	static vk::raii::Instance& GetInstance() {
 		if (ref == nullptr) {
-			throw std::invalid_argument("Vulkan: instance context not initialized");
+			throw std::logic_error("Vulkan: instance context not initialized");
 		}
 		return ref->instance;
 	}

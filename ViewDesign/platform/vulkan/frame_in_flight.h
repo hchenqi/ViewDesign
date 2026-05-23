@@ -44,10 +44,10 @@ private:
 	inline static ref_ptr<FrameInFlight> current = nullptr;
 	inline static vk::Format format = vk::Format::eUndefined;
 public:
-	static void SetCurrent(ref_ptr<FrameInFlight> frame_in_flight, vk::Format surface_format) { if (current != nullptr) { throw std::invalid_argument("current frame in flight not set"); } current = frame_in_flight; format = surface_format; }
-	static void ResetCurrent() { if (current == nullptr) { throw std::invalid_argument("current frame in flight not set"); } current = nullptr; }
-	static FrameInFlight& GetCurrent() { if (current == nullptr) { throw std::invalid_argument("current frame in flight not set"); } return *current; }
-	static vk::Format GetSurfaceFormat() { if (current == nullptr) { throw std::invalid_argument("current frame in flight not set"); } return format; }
+	static void SetCurrent(ref_ptr<FrameInFlight> frame_in_flight, vk::Format surface_format) { if (current != nullptr) { throw std::logic_error("current frame in flight already set"); } current = frame_in_flight; format = surface_format; }
+	static void ResetCurrent() { if (current == nullptr) { throw std::logic_error("current frame in flight not set"); } current = nullptr; }
+	static FrameInFlight& GetCurrent() { if (current == nullptr) { throw std::logic_error("current frame in flight not set"); } return *current; }
+	static vk::Format GetSurfaceFormat() { if (current == nullptr) { throw std::logic_error("current frame in flight not set"); } return format; }
 };
 
 

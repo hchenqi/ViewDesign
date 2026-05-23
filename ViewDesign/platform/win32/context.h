@@ -14,7 +14,7 @@ class Context {
 public:
 	Context() {
 		if (Initialized()) {
-			throw std::invalid_argument("Win32: context already initialized");
+			throw std::logic_error("Win32: context already initialized");
 		}
 		helper_window = CreateWindowExW(
 			0, L"STATIC", L"",
@@ -35,7 +35,7 @@ protected:
 	inline static HWND helper_window = nullptr;
 public:
 	static bool Initialized() { return helper_window != nullptr; }
-	static HWND GetHelperWindow() { if (!Initialized()) { throw std::invalid_argument("Win32: context not initialized"); } return helper_window; }
+	static HWND GetHelperWindow() { if (!Initialized()) { throw std::logic_error("Win32: context not initialized"); } return helper_window; }
 };
 
 

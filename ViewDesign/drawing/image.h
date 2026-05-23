@@ -22,7 +22,7 @@ protected:
 	mutable Handle texture = nullptr;
 public:
 	SizeU GetSize() const { return size; }
-	Handle GetTexture() const { if (texture == nullptr) { throw std::invalid_argument("Image: texture not created"); } return texture; }
+	Handle GetTexture() const { if (texture == nullptr) { throw std::logic_error("Image: texture not created"); } return texture; }
 public:
 	void CreateTexture() const;
 	void DestroyTexture() const;
