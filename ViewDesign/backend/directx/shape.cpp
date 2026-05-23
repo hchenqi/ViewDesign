@@ -1,4 +1,4 @@
-#include "ViewDesign/drawing/shape.h"
+#include "ViewDesign/view/figure/shape.h"
 #include "ViewDesign/platform/directx/render_target.h"
 
 

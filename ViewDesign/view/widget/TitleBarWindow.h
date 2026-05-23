@@ -20,7 +20,7 @@
 #include "ViewDesign/view/widget/Tooltip.h"
 #include "ViewDesign/event/mouse_tracker.h"
 #include "ViewDesign/messaging/context.h"
-#include "ViewDesign/geometry/border_helper.h"
+#include "ViewDesign/geometry/border_position.h"
 #include "ViewDesign/system/window.h"
 
 #if defined(VIEWDESIGN_BACKEND_WIN32)
@@ -80,7 +80,7 @@ protected:
 			if (event.type == MouseEvent::Move || event.type == MouseEvent::LeftDown) {
 				BorderPosition border_position = HitTestBorderPosition(size, border._width + border._radius, event.point);
 				if (event.type == MouseEvent::Move) {
-					SetWindowCursor(desktop.GetWindow(*this).GetHandle(), GetCursor(GetBorderPositionCursorStyle(border_position)));
+					SetWindowCursor(desktop.GetWindow(*this).GetHandle(), GetCursor(GetResizeCursorStyle(border_position)));
 				} else {
 #if defined(VIEWDESIGN_BACKEND_WIN32)
 					Win32::AeroSnapBorderResizingEffect(desktop.GetWindow(*this).GetHandle(), border_position);

@@ -1,4 +1,4 @@
-#include "ViewDesign/drawing/image.h"
+#include "ViewDesign/view/figure/image.h"
 #include "ViewDesign/geometry/tiling.h"
 
 

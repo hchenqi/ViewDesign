@@ -1,5 +1,5 @@
 #include "ViewDesign/view/control/EditBox.h"
-#include "ViewDesign/drawing/shape.h"
+#include "ViewDesign/view/figure/shape.h"
 #include "ViewDesign/system/clipboard.h"
 
 #include <utility>
@@ -286,10 +286,10 @@ void EditBox::OnImeBegin() {
 	if (IsEditDisabled()) { return; }
 	if (HasSelection()) {
 		UpdateImeComposition(selection_range);
-		ime.SetPosition(*this, selection_region_list.front().RightBottom());
+		ime.SetPosition(*this, selection_region_list.front().BottomRight());
 	} else {
 		UpdateImeComposition(TextRange(caret_position.end(), 0));
-		ime.SetPosition(*this, caret_region.RightBottom());
+		ime.SetPosition(*this, caret_region.BottomRight());
 	}
 }
 

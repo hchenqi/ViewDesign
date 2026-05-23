@@ -1,4 +1,4 @@
-#include "ViewDesign/drawing/shape.h"
+#include "ViewDesign/view/figure/shape.h"
 #include "ViewDesign/geometry/helper.h"
 #include "ViewDesign/platform/glad/render_target.h"
 

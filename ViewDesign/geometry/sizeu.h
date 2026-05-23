@@ -51,26 +51,26 @@ struct RectI {
 	constexpr int32 top() const { return point.y; }
 	constexpr int32 bottom() const { return point.y + size.height; }
 
-	constexpr PointI LeftTop() const { return PointI(left(), top()); }
-	constexpr PointI LeftBottom() const { return PointI(left(), bottom()); }
-	constexpr PointI RightTop() const { return PointI(right(), top()); }
-	constexpr PointI RightBottom() const { return PointI(right(), bottom()); }
+	constexpr PointI TopLeft() const { return PointI(left(), top()); }
+	constexpr PointI BottomLeft() const { return PointI(left(), bottom()); }
+	constexpr PointI TopRight() const { return PointI(right(), top()); }
+	constexpr PointI BottomRight() const { return PointI(right(), bottom()); }
 
 	constexpr bool IsEmpty() const { return size.IsEmpty(); }
 
-	constexpr bool Contains(const PointI& point) const { return point >= LeftTop() && point < RightBottom(); }
-	constexpr bool Contains(const RectI& other) const { return other.LeftTop() >= LeftTop() && other.RightBottom() <= RightBottom(); }
+	constexpr bool Contains(const PointI& point) const { return point >= TopLeft() && point < BottomRight(); }
+	constexpr bool Contains(const RectI& other) const { return other.TopLeft() >= TopLeft() && other.BottomRight() <= BottomRight(); }
 
 	constexpr RectI Union(const RectI& other) const {
 		if (IsEmpty()) { return other; } if (other.IsEmpty()) { return *this; }
-		PointI pl1 = LeftTop(), ph1 = RightBottom(), pl2 = other.LeftTop(), ph2 = other.RightBottom();
+		PointI pl1 = TopLeft(), ph1 = BottomRight(), pl2 = other.TopLeft(), ph2 = other.BottomRight();
 		PointI pl = PointI(std::min(pl1.x, pl2.x), std::min(pl1.y, pl2.y));
 		PointI ph = PointI(std::max(ph1.x, ph2.x), std::max(ph1.y, ph2.y));
 		return RectI(pl, SizeU(ph.x - pl.x, ph.y - pl.y));
 	}
 
 	constexpr RectI Intersect(const RectI& other) const {
-		PointI pl1 = LeftTop(), ph1 = RightBottom(), pl2 = other.LeftTop(), ph2 = other.RightBottom();
+		PointI pl1 = TopLeft(), ph1 = BottomRight(), pl2 = other.TopLeft(), ph2 = other.BottomRight();
 		PointI pl = PointI(std::max(pl1.x, pl2.x), std::max(pl1.y, pl2.y));
 		PointI ph = PointI(std::min(ph1.x, ph2.x), std::min(ph1.y, ph2.y));
 		return ph > pl ? RectI(pl, SizeU(ph.x - pl.x, ph.y - pl.y)) : RectI(PointI(0, 0), SizeU(0, 0));

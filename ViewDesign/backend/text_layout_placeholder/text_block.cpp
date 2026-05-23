@@ -1,5 +1,4 @@
-#include "ViewDesign/drawing/text_block.h"
-#include "ViewDesign/common/text_layout_placeholder.h"
+#include "ViewDesign/view/figure/text_layout_placeholder.h"
 
 
 namespace ViewDesign {

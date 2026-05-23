@@ -6,7 +6,7 @@
 #include "ViewDesign/geometry/tiling.h"
 
 #if !defined(NDEBUG)
-#include "ViewDesign/drawing/shape.h"
+#include "ViewDesign/view/figure/shape.h"
 #endif
 
 #include <unordered_map>

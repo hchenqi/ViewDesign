@@ -2,7 +2,7 @@
 #include "ViewDesign/view/frame/BorderFrame.h"
 #include "ViewDesign/view/layout/DivideLayout.h"
 #include "ViewDesign/view/control/Placeholder.h"
-#include "ViewDesign/drawing/shape.h"
+#include "ViewDesign/view/figure/shape.h"
 
 
 using namespace ViewDesign;

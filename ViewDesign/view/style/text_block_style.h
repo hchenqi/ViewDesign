@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ViewDesign/style/value_tag.h"
+#include "ViewDesign/view/style/value_tag.h"
 #include "ViewDesign/drawing/color.h"
 #include "ViewDesign/common/unicode.h"
 

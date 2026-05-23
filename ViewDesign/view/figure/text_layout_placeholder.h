@@ -1,7 +1,7 @@
 #pragma once
 
-#include "ViewDesign/drawing/text_block.h"
-#include "ViewDesign/drawing/shape.h"
+#include "ViewDesign/view/figure/text_block.h"
+#include "ViewDesign/view/figure/shape.h"
 #include "ViewDesign/geometry/helper.h"
 
 #include <cmath>

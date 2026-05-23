@@ -1,7 +1,7 @@
 #pragma once
 
+#include "ViewDesign/view/style/text_block_style.h"
 #include "ViewDesign/common/uncopyable.h"
-#include "ViewDesign/style/text_block_style.h"
 #include "ViewDesign/common/text_range.h"
 #include "ViewDesign/drawing/figure.h"
 
