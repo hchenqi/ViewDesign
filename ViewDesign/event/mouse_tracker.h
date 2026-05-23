@@ -21,13 +21,13 @@ enum class MouseTrackEvent {
 
 
 class MouseTracker {
-private:
-	uint32 hit_count = 0;
-	static constexpr uint32 timer_interval = 500; // 0.5s
-	Timer timer = Timer([&]() { hit_count = 0; timer.Stop(); });
 public:
 	bool is_mouse_down = false;
 	Point mouse_down_position;
+	uint32 hit_count = 0;
+private:
+	static constexpr uint32 timer_interval = 500; // 0.5s
+	Timer timer = Timer([&]() { hit_count = 0; timer.Stop(); });
 private:
 	static constexpr float move_tolerate_distance = 5.0f; // 5px
 public:
@@ -40,7 +40,7 @@ public:
 			case 2: ret = MouseTrackEvent::LeftTripleClick; break;
 			case 0: default: ret = MouseTrackEvent::LeftDown; hit_count = 0; break;
 			}
-			if (!PointInCircle(event.point, mouse_down_position, move_tolerate_distance)) {
+			if (hit_count > 0 && !PointInCircle(event.point, mouse_down_position, move_tolerate_distance)) {
 				ret = MouseTrackEvent::LeftDown; hit_count = 0;
 			}
 			hit_count++; timer.Set(timer_interval);

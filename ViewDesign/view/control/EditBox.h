@@ -73,7 +73,7 @@ protected:
 	enum class CaretMoveDirection { Left, Right, Up, Down, Home, End };
 protected:
 	TextRange caret_position = text_range_empty;
-	Rect caret_region = rect_empty;
+	Rect caret_region;
 protected:
 	Rect GetCaretRegion(const HitTestPointInfo& info) const;
 	void UpdateCaret(const HitTestPointInfo& info);
@@ -92,7 +92,7 @@ protected:
 protected:
 	Timer caret_timer = Timer(std::bind(&EditBox::CaretBlink, this));
 	CaretState caret_state = CaretState::Hide;
-	uint16 caret_blink_time = 0;
+	uint16 caret_blink_time;
 protected:
 	bool IsCaretVisible() const { return caret_state == CaretState::Show || caret_state == CaretState::BlinkShow; }
 protected:
@@ -104,7 +104,7 @@ protected:
 protected:
 	enum class SelectionMode { Character, Word, Paragraph };
 protected:
-	SelectionMode selection_mode = SelectionMode::Character;
+	SelectionMode selection_mode;
 	TextRange selection_initial_range = text_range_empty;
 protected:
 	TextRange selection_range = text_range_empty;
