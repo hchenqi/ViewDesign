@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ViewDesign/view/ViewFrame.h"
-#include "ViewDesign/view/style/border_style.h"
+#include "ViewDesign/view/style/border.h"
 #include "ViewDesign/view/figure/shape.h"
 #include "ViewDesign/geometry/helper.h"
 

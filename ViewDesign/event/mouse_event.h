@@ -32,7 +32,7 @@ struct MouseEvent {
 		Move,
 		WheelVertical,
 		WheelHorizontal,
-	}type;
+	} type;
 };
 
 

@@ -1,22 +1,32 @@
 #pragma once
 
-#include "ViewDesign/view/style/length_style.h"
+#include "ViewDesign/view/style/length.h"
+#include "ViewDesign/view/style/position.h"
 
 
 namespace ViewDesign {
 
 
-struct LengthStyleHelper {
+struct RegionStyle {
 public:
-	static constexpr Size CalculateSize(ValueTag width, ValueTag height, Size size_ref) {
-		return Size(width.ConvertToPixel(size_ref.width).value(), height.ConvertToPixel(size_ref.height).value());
+	LengthStyle width;
+	LengthStyle height;
+	PositionStyle position;
+
+protected:
+	static constexpr Size CalculateSize(LayoutValue width, LayoutValue height, Size size_ref) {
+		return Size(width.ToPixel(size_ref.width).value(), height.ToPixel(size_ref.height).value());
 	}
+public:
 	static constexpr std::pair<Size, Size> CalculateMinMaxSize(LengthStyle width, LengthStyle height, Size size_ref) {
 		return { CalculateSize(width._min, height._min, size_ref), CalculateSize(width._max, height._max, size_ref) };
 	}
-public:
-	static constexpr bool IsPositionAuto(ValueTag position) { return position.IsAuto() || position.IsCenter(); }
-	static constexpr float CalculatePosition(ValueTag position_low, ValueTag position_high, float length, float length_ref) {
+
+private:
+	static constexpr bool IsPositionAuto(LayoutValue position) {
+		return position.IsAuto() || position.IsCenter();
+	}
+	static constexpr float CalculatePosition(LayoutValue position_low, LayoutValue position_high, float length, float length_ref) {
 		if (IsPositionAuto(position_low)) {
 			if (position_low.IsCenter()) {
 				position_low = px((length_ref - length) / 2);
@@ -26,13 +36,13 @@ public:
 		}
 		return position_low.value();
 	}
-	static constexpr Interval CalculateLength(LengthStyle length, ValueTag position_low, ValueTag position_high, float length_ref) {
-		if (length_ref == 0) { return Interval(); }
-		ValueTag& length_normal = length._normal.ConvertToPixel(length_ref);
-		ValueTag& length_min = length._min.ConvertToPixel(length_ref);
-		ValueTag& length_max = length._max.ConvertToPixel(length_ref);
-		position_low.ConvertToPixel(length_ref);
-		position_high.ConvertToPixel(length_ref);
+protected:
+	static constexpr Interval CalculateLength(LengthStyle length, LayoutValue position_low, LayoutValue position_high, float length_ref) {
+		LayoutValue& length_normal = length._normal.ToPixel(length_ref);
+		LayoutValue& length_min = length._min.ToPixel(length_ref);
+		LayoutValue& length_max = length._max.ToPixel(length_ref);
+		position_low.ToPixel(length_ref);
+		position_high.ToPixel(length_ref);
 		if (length_normal.IsAuto()) {
 			if (IsPositionAuto(position_low) || IsPositionAuto(position_high)) {
 				length_normal = length_max;

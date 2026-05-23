@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ViewDesign/view/style/text_block_style.h"
+#include "ViewDesign/view/style/text.h"
 #include "ViewDesign/common/uncopyable.h"
 #include "ViewDesign/common/text_range.h"
 #include "ViewDesign/drawing/figure.h"
@@ -20,7 +20,7 @@ public:
 protected:
 	Handle layout;
 public:
-	void SetText(const TextBlockStyle& style, const u16string& text);
+	void SetText(const TextStyle& style, const u16string& text);
 	Rect UpdateLayout(Size size_ref);
 public:
 	using HitTestPointInfo = std::pair<TextRange, Rect>;

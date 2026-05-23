@@ -36,7 +36,7 @@ constexpr struct HResultWrapper {
 		}
 		return *this;
 	}
-}hr;
+} hr;
 
 
 } // namespace DirectX

@@ -19,7 +19,7 @@ struct KeyEvent {
 		ImeBegin,
 		ImeString,
 		ImeEnd,
-	}type;
+	} type;
 };
 
 
@@ -95,7 +95,7 @@ struct Key {
 		RCtrl = 0xA3,
 		LAlt = 0xA4,
 		RAlt = 0xA5,
-	}value;
+	} value;
 
 	constexpr Key(Value value) : value(value) {}
 

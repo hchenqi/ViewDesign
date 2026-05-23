@@ -9,7 +9,7 @@ namespace ViewDesign {
 
 class TextBox : public ViewType<Relative, Relative> {
 public:
-	using Style = TextBlockStyle;
+	using Style = TextStyle;
 
 public:
 	TextBox(const Style& style, u16string text) : style(style), text(std::move(text)) { text_block.SetText(style, this->text); }

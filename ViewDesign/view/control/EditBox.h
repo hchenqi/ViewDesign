@@ -31,7 +31,7 @@ protected:
 			constexpr EditStyle& selection_color(Color color) { _selection_color = color; return *this; }
 			constexpr EditStyle& ime_composition_underline_width(float width) { _ime_composition_underline_width = width; return *this; }
 			constexpr EditStyle& ime_composition_underline_color(Color color) { _ime_composition_underline_color = color; return *this; }
-		}edit;
+		} edit;
 	};
 public:
 	struct Style : TextBox::Style, EditBoxStyle {};

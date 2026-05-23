@@ -27,7 +27,7 @@ TextBlock::~TextBlock() {
 	ComPtr<TextLayout>().Swap(reinterpret_cast<owner_ptr<TextLayout>&>(layout));
 }
 
-void TextBlock::SetText(const TextBlockStyle& style, const u16string& text) {
+void TextBlock::SetText(const TextStyle& style, const u16string& text) {
 	ComPtr<TextLayout>().Swap(reinterpret_cast<owner_ptr<TextLayout>&>(layout)).Reset();
 
 	// text format
@@ -68,23 +68,23 @@ void TextBlock::SetText(const TextBlockStyle& style, const u16string& text) {
 	layout->SetFontFallback(font_fallback.Get());
 
 	// paragraph style
-	ValueTag line_spacing = style.paragraph._line_spacing;
-	ValueTag baseline_spacing = style.paragraph._baseline_spacing;
-	ValueTag tab_size = style.paragraph._tab_size;
+	LayoutValue line_spacing = style.paragraph._line_spacing;
+	LayoutValue baseline_spacing = style.paragraph._baseline_spacing;
+	LayoutValue tab_size = style.paragraph._tab_size;
 	layout->SetTextAlignment(static_cast<DWRITE_TEXT_ALIGNMENT>(style.paragraph._text_align));
 	layout->SetParagraphAlignment(static_cast<DWRITE_PARAGRAPH_ALIGNMENT>(style.paragraph._paragraph_align));
 	layout->SetFlowDirection(static_cast<DWRITE_FLOW_DIRECTION>(style.paragraph._flow_direction));
 	layout->SetReadingDirection(static_cast<DWRITE_READING_DIRECTION>(style.paragraph._read_direction));
 	layout->SetWordWrapping(static_cast<DWRITE_WORD_WRAPPING>(style.paragraph._word_wrap));
 	if (line_spacing.IsPixel()) {
-		layout->SetLineSpacing(DWRITE_LINE_SPACING_METHOD_UNIFORM, line_spacing.value(), baseline_spacing.ConvertToPixel(line_spacing.value()).value());
+		layout->SetLineSpacing(DWRITE_LINE_SPACING_METHOD_UNIFORM, line_spacing.value(), baseline_spacing.ToPixel(line_spacing.value()).value());
 	} else if (line_spacing.IsPercent()) {
-		line_spacing.ConvertToPixel(1.0f);
-		layout->SetLineSpacing(DWRITE_LINE_SPACING_METHOD_PROPORTIONAL, line_spacing.value(), baseline_spacing.ConvertToPixel(line_spacing.value()).value());
+		line_spacing.ToPixel(1.0f);
+		layout->SetLineSpacing(DWRITE_LINE_SPACING_METHOD_PROPORTIONAL, line_spacing.value(), baseline_spacing.ToPixel(line_spacing.value()).value());
 	} else {
 		layout->SetLineSpacing(DWRITE_LINE_SPACING_METHOD_DEFAULT, 0.0f, 0.0f);
 	}
-	layout->SetIncrementalTabStop(tab_size.ConvertToPixel(style.font._size).value());
+	layout->SetIncrementalTabStop(tab_size.ToPixel(style.font._size).value());
 
 	this->layout = layout.Detach();
 }

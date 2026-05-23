@@ -37,7 +37,7 @@ public:
 	using menu_type = view_ptr<Auto, Fixed>;
 
 public:
-	struct TitleBarStyle : TextBlockStyle {
+	struct TitleBarStyle : TextStyle {
 		struct BarStyle {
 		public:
 			float _height = 30.0f;
@@ -49,7 +49,7 @@ public:
 			constexpr BarStyle& max_title_length(float max_title_length) { _max_title_length = max_title_length; return *this; }
 			constexpr BarStyle& background_color(Color background_color) { _background_color = background_color; return *this; }
 			constexpr BarStyle& foreground_color(Color foreground_color) { _foreground_color = foreground_color; return *this; }
-		}bar;
+		} bar;
 	};
 
 	struct FrameStyle {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ViewDesign/style/cursor_style.h"
+#include "ViewDesign/style/cursor.h"
 #include "ViewDesign/drawing/pixel_buffer.h"
 #include "ViewDesign/geometry/geometry.h"
 

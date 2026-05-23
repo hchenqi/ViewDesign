@@ -123,7 +123,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 			min_max_info->ptMaxSize = { (LONG)region_max.size.width, (LONG)region_max.size.height };
 			min_max_info->ptMinTrackSize = { (LONG)size_min.width, (LONG)size_min.height };
 			min_max_info->ptMaxTrackSize = min_max_info->ptMaxSize;
-		}break;
+		} break;
 		case WM_WINDOWPOSCHANGING: break;
 		case WM_WINDOWPOSCHANGED: return DefWindowProc(hwnd, msg, wparam, lparam);
 		case WM_MOVE: window->SetPoint(PointI((short)LOWORD(lparam), (short)HIWORD(lparam))); break;
@@ -136,7 +136,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 			HDC hdc = BeginPaint(hwnd, &ps);
 			window->OnDraw();
 			EndPaint(hwnd, &ps);
-		}break;
+		} break;
 		case WM_ERASEBKGND: return true;
 
 			// event

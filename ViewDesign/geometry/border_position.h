@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ViewDesign/geometry/geometry.h"
-#include "ViewDesign/style/cursor_style.h"
+#include "ViewDesign/style/cursor.h"
 
 
 namespace ViewDesign {

@@ -18,7 +18,7 @@ struct TextLayoutPlaceholder {
 
 	Size symbol_size;
 
-	void SetStyle(const TextBlockStyle& style) {
+	void SetStyle(const TextStyle& style) {
 		symbol_size = symbol_size_default * Scale(style.font._size);
 	}
 

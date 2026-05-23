@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ViewDesign/view/style/value_tag.h"
+#include "ViewDesign/view/style/layout_value.h"
 #include "ViewDesign/drawing/color.h"
 #include "ViewDesign/common/unicode.h"
 
@@ -86,7 +86,7 @@ enum class FontStyle : uint8 {
 };
 
 
-struct TextBlockStyle {
+struct TextStyle {
 	struct ParagraphFormat {
 	public:
 		TextAlign _text_align = TextAlign::Leading;
@@ -94,19 +94,19 @@ struct TextBlockStyle {
 		FlowDirection _flow_direction = FlowDirection::TopToBottom;
 		ReadDirection _read_direction = ReadDirection::LeftToRight;
 		WordWrap _word_wrap = WordWrap::Wrap;
-		ValueTag _line_spacing = pct(100);
-		ValueTag _baseline_spacing = pct(100);
-		ValueTag _tab_size = pct(200);
+		LayoutValue _line_spacing = pct(100);
+		LayoutValue _baseline_spacing = pct(100);
+		LayoutValue _tab_size = pct(200);
 	public:
 		constexpr ParagraphFormat& text_align(TextAlign text_align) { _text_align = text_align; return *this; }
 		constexpr ParagraphFormat& paragraph_align(ParagraphAlign paragraph_align) { _paragraph_align = paragraph_align; return *this; }
 		constexpr ParagraphFormat& flow_direction(FlowDirection text_direction) { _flow_direction = text_direction; return *this; }
 		constexpr ParagraphFormat& read_direction(ReadDirection read_direction) { _read_direction = read_direction; return *this; }
 		constexpr ParagraphFormat& word_wrap(WordWrap word_wrap) { _word_wrap = word_wrap; return *this; }
-		constexpr ParagraphFormat& line_spacing(ValueTag line_spacing) { _line_spacing = line_spacing; return *this; }
-		constexpr ParagraphFormat& baseline_spacing(ValueTag baseline_spacing) { _baseline_spacing = baseline_spacing; return *this; }
-		constexpr ParagraphFormat& tab_size(ValueTag tab_size) { _tab_size = tab_size; return *this; }
-	}paragraph;
+		constexpr ParagraphFormat& line_spacing(LayoutValue line_spacing) { _line_spacing = line_spacing; return *this; }
+		constexpr ParagraphFormat& baseline_spacing(LayoutValue baseline_spacing) { _baseline_spacing = baseline_spacing; return *this; }
+		constexpr ParagraphFormat& tab_size(LayoutValue tab_size) { _tab_size = tab_size; return *this; }
+	} paragraph;
 
 	struct FontFormat {
 	public:
@@ -125,7 +125,7 @@ struct TextBlockStyle {
 		constexpr FontFormat& stretch(FontStretch stretch) { _stretch = stretch; return *this; }
 		constexpr FontFormat& size(float size) { _size = size; return *this; }
 		constexpr FontFormat& color(Color color) { _color = color; return *this; }
-	}font;
+	} font;
 };
 
 

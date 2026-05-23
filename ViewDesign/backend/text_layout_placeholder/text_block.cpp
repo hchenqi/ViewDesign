@@ -16,7 +16,7 @@ TextBlock::TextBlock() : layout(new TextLayoutPlaceholder()) {}
 
 TextBlock::~TextBlock() { delete static_cast<owner_ptr<TextLayoutPlaceholder>>(layout); }
 
-void TextBlock::SetText(const TextBlockStyle& style, const u16string& text) {
+void TextBlock::SetText(const TextStyle& style, const u16string& text) {
 	AsTextLayoutPlaceholder(layout)->SetStyle(style);
 	AsTextLayoutPlaceholder(layout)->SetText(text);	
 }

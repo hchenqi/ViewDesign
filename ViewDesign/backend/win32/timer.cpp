@@ -12,7 +12,7 @@ namespace {
 
 struct TimerSyncMap : public std::unordered_map<Handle, Timer&> {
 	~TimerSyncMap() { while (!empty()) { begin()->second.Stop(); } }
-}timer_sync_map;
+} timer_sync_map;
 
 void CALLBACK TimerSyncCallback(HWND Arg1, UINT Arg2, UINT_PTR Arg3, DWORD Arg4) {
 	if (auto it = timer_sync_map.find(reinterpret_cast<Handle>(Arg3)); it != timer_sync_map.end()) {
