@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ViewDesign/view/Desktop.h"
+#include "ViewDesign/view/view_traits.h"
 #include "ViewDesign/view/style/region.h"
 
 

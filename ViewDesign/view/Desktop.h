@@ -2,7 +2,6 @@
 
 #include "ViewDesign/view/Window.h"
 
-#include <memory>
 #include <vector>
 #include <unordered_map>
 #include <unordered_set>
@@ -31,7 +30,6 @@ private:
 	std::vector<std::unique_ptr<Window>> window_list;
 public:
 	Window& AddWindow(std::unique_ptr<Window> window);
-	Window& AddWindow(owner_ptr<Window> window) { return AddWindow(std::unique_ptr<Window>(window)); }
 	std::unique_ptr<Window> RemoveWindow(Window& window);
 public:
 	Window& GetWindow(ViewBase& view);
@@ -116,11 +114,9 @@ inline struct DesktopAPI {
 public:
 	Desktop& Get() { return Desktop::Get(); }
 	const Desktop& Get() const { return Desktop::Get(); }
-
-	// window
 public:
 	Window& AddWindow(std::unique_ptr<Window> window) { return Get().AddWindow(std::move(window)); }
-	Window& AddWindow(owner_ptr<Window> window) { return Get().AddWindow(window); }
+	Window& AddWindow(owner_ptr<Window> window) { return AddWindow(std::unique_ptr<Window>(window)); }
 	std::unique_ptr<Window> RemoveWindow(Window& window) { return Get().RemoveWindow(window); }
 public:
 	Window& GetWindow(ViewBase& view) { return Get().GetWindow(view); }
@@ -128,12 +124,8 @@ public:
 public:
 	bool WindowListEmpty() { return Get().WindowListEmpty(); }
 	void CloseAllWindows() { return Get().CloseAllWindows(); }
-
-	// layout
 public:
 	Size GetSize() const { return Get().GetSize(); }
-
-	// event
 public:
 	void EventLoop() { return Get().EventLoop(); }
 } desktop;

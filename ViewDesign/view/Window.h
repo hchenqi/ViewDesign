@@ -1,22 +1,26 @@
 #pragma once
 
-#include "ViewDesign/view/ViewFrame.h"
+#include "ViewDesign/view/ViewBase.h"
 #include "ViewDesign/geometry/scale.h"
 #include "ViewDesign/drawing/surface.h"
+
+#include <memory>
 
 
 namespace ViewDesign {
 
 
-class Window : public ViewFrame {
+class Window : public ViewBase {
 private:
 	friend class Desktop;
 	friend struct WindowPrivateAccess;
 
 public:
-	Window(Handle window, view_ptr<> child);
-	Window(const u16string& title, view_ptr<> child);
-	~Window();
+	Window(Handle window, std::unique_ptr<ViewBase> child);
+	Window(Handle window, owner_ptr<ViewBase> child) : Window(window, std::unique_ptr<ViewBase>(child)) {}
+	Window(const u16string& title, std::unique_ptr<ViewBase> child);
+	Window(const u16string& title, owner_ptr<ViewBase> child) : Window(title, std::unique_ptr<ViewBase>(child)) {}
+	virtual ~Window() override;
 
 	// surface
 private:
@@ -28,6 +32,10 @@ public:
 public:
 	void SetTitle(const u16string& title);
 
+	// child
+protected:
+	std::unique_ptr<ViewBase> child;
+
 	// layout
 private:
 	PointI point;
@@ -37,7 +45,7 @@ protected:
 	RectI GetRegion() const { return RectI(point, GetSize()); }
 	Scale GetScale() const { return scale; }
 private:
-	void SetSize(SizeU size) { if (GetSize() != size) { surface.Resize(size); UpdateChildSizeRef(child, size / scale); Redraw(rect_infinite); } }
+	void SetSize(SizeU size) { if (GetSize() != size) { surface.Resize(size); UpdateChildSizeRef(*child, size / scale); Redraw(rect_infinite); } }
 	void SetPoint(PointI point) { this->point = point; }
 	void SetScale(Scale scale) { this->scale = Scale(scale); }
 protected:
@@ -46,7 +54,7 @@ private:
 	virtual Transform GetChildTransform(ViewBase& child) const override { return scale; }
 protected:
 	virtual std::pair<Size, Size> CalculateMinMaxSize(Size size_ref) { return { size_empty, size_ref }; }
-	virtual Rect OnWindowSizeRefUpdate(Size size_ref) { return Rect(point_zero, UpdateChildSizeRef(child, size_ref)); }
+	virtual Rect OnWindowSizeRefUpdate(Size size_ref) { return Rect(point_zero, UpdateChildSizeRef(*child, size_ref)); }
 	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override {}
 
 	// state
@@ -77,7 +85,7 @@ private:
 
 	// event
 private:
-	virtual ref_ptr<ViewBase> HitTest(MouseEvent& event) override { event.point /= scale; return ViewFrame::HitTest(event); }
+	virtual ref_ptr<ViewBase> HitTest(MouseEvent& event) override { event.point /= scale; return HitTestChild(*child, event); }
 };
 
 

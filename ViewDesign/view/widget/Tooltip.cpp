@@ -47,7 +47,7 @@ private:
 		glfwSetWindowAttrib(GLFW::AsGLFWWindow(GetHandle()), GLFW_MOUSE_PASSTHROUGH, GLFW_TRUE);
 		glfwSetWindowAttrib(GLFW::AsGLFWWindow(GetHandle()), GLFW_FOCUS_ON_SHOW, GLFW_FALSE);
 #endif
-		region.size = UpdateChildSizeRef(child, size_empty);
+		region.size = UpdateChildSizeRef(*child, size_empty);
 	}
 
 private:

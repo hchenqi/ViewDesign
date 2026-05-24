@@ -23,7 +23,7 @@ private:
 	}
 	virtual Rect OnWindowSizeRefUpdate(Size size_ref) override {
 		Rect region;
-		region.size = UpdateChildSizeRef(child, size);
+		region.size = UpdateChildSizeRef(*child, size);
 		region.point.x = (size_ref.width - region.size.width) / 2;
 		region.point.y = (size_ref.height - region.size.height) / 2;
 		return region;
