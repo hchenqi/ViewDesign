@@ -18,7 +18,7 @@ public:
 
 private:
 	Handle window;
-	SizeU size = size_u_empty;
+	SizeU size;
 public:
 	Handle GetWindow() const { return window; }
 	SizeU GetSize() const { return size; }
@@ -39,15 +39,15 @@ private:
 	Handle surface = nullptr;
 #endif
 #if defined(VIEWDESIGN_BACKEND_OPENGL)
-	RectI invalid_region_front_buffer = rect_i_empty;
-	RectI invalid_region_back_buffer = rect_i_empty;
+	RectI invalid_region_front_buffer;
+	RectI invalid_region_back_buffer;
 #endif
 public:
 	void Resize(SizeU size);
 	void Destroy();
 
 private:
-	RectI invalid_region = rect_i_empty;
+	RectI invalid_region;
 public:
 	void Redraw(RectI redraw_region) { invalid_region = invalid_region.Union(redraw_region); }
 private:

@@ -7,14 +7,14 @@ namespace ViewDesign {
 using namespace OpenGL;
 
 
-void Layer::CreateFramebuffer(SizeU size) {
-	DestroyFramebuffer();
+void Layer::Create(SizeU size) {
+	Destroy();
 	this->size = size;
 	framebuffer = new Framebuffer(size);
 }
 
-void Layer::DestroyFramebuffer() {
-	if (HasFramebuffer()) {
+void Layer::Destroy() {
+	if (!Empty()) {
 		delete static_cast<owner_ptr<Framebuffer>>(framebuffer);
 		framebuffer = nullptr;
 	}

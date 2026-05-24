@@ -13,6 +13,7 @@ struct PointI {
 	int32 x;
 	int32 y;
 
+	explicit constexpr PointI() = default;
 	explicit constexpr PointI(int32 x, int32 y) : x(x), y(y) {}
 
 	constexpr bool operator==(const PointI& other) const { return x == other.x && y == other.y; }
@@ -29,6 +30,7 @@ struct SizeU {
 	uint32 width;
 	uint32 height;
 
+	explicit constexpr SizeU() = default;
 	explicit constexpr SizeU(uint32 width, uint32 height) : width(width), height(height) {}
 
 	constexpr bool IsEmpty() const { return width == 0 || height == 0; }
@@ -42,6 +44,7 @@ struct RectI {
 	PointI point;
 	SizeU size;
 
+	explicit constexpr RectI() = default;
 	explicit constexpr RectI(PointI point, SizeU size) : point(point), size(size) {}
 
 	constexpr bool operator==(const RectI& other) const { return point == other.point && size == other.size; }

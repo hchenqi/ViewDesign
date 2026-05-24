@@ -11,7 +11,7 @@ namespace OpenGL {
 class Framebuffer : public Texture {
 public:
 	Framebuffer() : Texture(), id(0) {}
-	Framebuffer(SizeU size) : Texture(size), id(CreateFramebuffer(Texture::GetId())) {}
+	Framebuffer(SizeU size) : Texture(size), id(Create(Texture::GetId())) {}
 	~Framebuffer() { if (id != 0) { glDeleteFramebuffers(1, &id); id = 0; } }
 
 private:
@@ -20,7 +20,7 @@ public:
 	GLuint GetId() const { return id; }
 
 private:
-	static GLuint CreateFramebuffer(GLuint texture) {
+	static GLuint Create(GLuint texture) {
 		GLuint framebuffer;
 		glGenFramebuffers(1, &framebuffer);
 		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);

@@ -3,6 +3,7 @@
 #include "ViewDesign/system/clipboard.h"
 
 #include <utility>
+#include <cassert>
 
 
 namespace ViewDesign {
@@ -88,6 +89,31 @@ void EditBox::OnDraw(Canvas& canvas, Rect draw_region) {
 	}
 }
 
+void EditBox::CaretStartBlinking() {
+	if (caret_state != CaretState::Hide) {
+		if (!caret_timer.IsSet()) {
+			caret_timer.Set(caret_blink_period);
+		}
+		caret_blink_time = 0;
+	}
+}
+
+void EditBox::CaretBlink() {
+	caret_blink_time += caret_blink_period;
+	if (caret_blink_time >= caret_blink_expire_time) {
+		caret_state = CaretState::Show;
+		caret_timer.Stop();
+		return;
+	}
+	switch (caret_state) {
+	case CaretState::Hide: caret_timer.Stop(); return;
+	case CaretState::Show:
+	case CaretState::BlinkShow: caret_state = CaretState::BlinkHide; break;
+	case CaretState::BlinkHide: caret_state = CaretState::BlinkShow; break;
+	}
+	Redraw(caret_region);
+}
+
 Rect EditBox::GetCaretRegion(const HitTestPointInfo& info) const {
 	const auto& [range, region] = info;
 	if (range.length() == 0) {
@@ -152,31 +178,6 @@ void EditBox::HideCaret() {
 	}
 }
 
-void EditBox::CaretStartBlinking() {
-	if (caret_state != CaretState::Hide) {
-		if (!caret_timer.IsSet()) {
-			caret_timer.Set(caret_blink_period);
-		}
-		caret_blink_time = 0;
-	}
-}
-
-void EditBox::CaretBlink() {
-	caret_blink_time += caret_blink_period;
-	if (caret_blink_time >= caret_blink_expire_time) {
-		caret_state = CaretState::Show;
-		caret_timer.Stop();
-		return;
-	}
-	switch (caret_state) {
-	case CaretState::Hide: caret_timer.Stop(); return;
-	case CaretState::Show:
-	case CaretState::BlinkShow: caret_state = CaretState::BlinkHide; break;
-	case CaretState::BlinkHide: caret_state = CaretState::BlinkShow; break;
-	}
-	Redraw(caret_region);
-}
-
 void EditBox::UpdateSelection(TextRange range) {
 	selection_range = range;
 	selection_region_list.clear();
@@ -207,11 +208,12 @@ void EditBox::SelectParagraph() {
 }
 
 void EditBox::DoSelect(const HitTestPointInfo& info) {
-	TextRange current_range = text_range_empty;
+	TextRange current_range;
 	switch (selection_mode) {
 	case SelectionMode::Character: current_range = TextRange(info.first.end(), 0); break;
 	case SelectionMode::Word: current_range = GetWordRange(info.first.begin()); break;
 	case SelectionMode::Paragraph: current_range = GetParagraphRange(info.first.begin()); break;
+	default: assert(false);
 	}
 	size_t begin = std::min(current_range.begin(), selection_initial_range.begin()), end = std::max(current_range.end(), selection_initial_range.end());
 	UpdateCaret(TextRange(begin, begin < selection_initial_range.begin() ? 0 : end - begin));

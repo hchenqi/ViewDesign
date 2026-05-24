@@ -38,14 +38,14 @@ protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override {
 		if (Size child_size = UpdateChildSizeRef(child, size_ref); size != child_size) {
 			size = child_size;
-			layer.DestroyFramebuffer();
+			layer.Destroy();
 		}
 		return size;
 	}
 	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override {
 		if (size != child_size) {
 			size = child_size;
-			layer.DestroyFramebuffer();
+			layer.Destroy();
 			SizeUpdated(size);
 		}
 	}
@@ -58,17 +58,19 @@ protected:
 protected:
 	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override {
 		child_redraw_region = child_redraw_region.Intersect(Rect(point_zero, size));
-		if (layer.HasFramebuffer()) { invalid_region.Union(RoundUp(child_redraw_region * scale)); }
+		if (!layer.Empty()) { invalid_region.Union(RoundUp(child_redraw_region * scale)); }
 		Redraw(child_redraw_region);
 	}
 	virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
 		draw_region = draw_region.Intersect(Rect(point_zero, size)); if (draw_region.IsEmpty()) { return; }
 		scale = canvas.GetCurrentTransform().GetScale();
 		SizeU layer_size = Round(size * scale);
-		if (layer.GetSize() != layer_size) { layer.DestroyFramebuffer(); }
+		if (!layer.Empty() && layer.GetSize() != layer_size) {
+			layer.Destroy();
+		}
 		Rect composite_region = draw_region * scale, redraw_region = composite_region;
-		if (!layer.HasFramebuffer()) {
-			layer.CreateFramebuffer(layer_size);
+		if (layer.Empty()) {
+			layer.Create(layer_size);
 			invalid_region.Set(RectI(point_i_zero, layer_size));
 		} else {
 			Region render_region(RoundUp(redraw_region)); render_region.Intersect(invalid_region);
@@ -166,7 +168,7 @@ protected:
 			canvas.Group(scale, rect_infinite, [&]() { DrawChild(child, point_zero, canvas, redraw_region / scale); });
 			for (TileIndex tile_index : GetOverlappingTileRange(tile_size, redraw_region)) {
 				Layer& layer = tile_cache[tile_index];
-				if (!layer.HasFramebuffer()) { layer.CreateFramebuffer(tile_size); }
+				if (layer.Empty()) { layer.Create(tile_size); }
 				Vector tile_offset = GetTileOffset(tile_size, tile_index);
 				layer.RenderCanvas(canvas, -tile_offset, redraw_region - tile_offset);
 			}

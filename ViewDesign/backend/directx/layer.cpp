@@ -20,18 +20,17 @@ inline ComPtr<D2DBitmap> CreateEmptyD2DBitmap(SizeU size) {
 } // namespace
 
 
-void Layer::CreateFramebuffer(SizeU size) {
-	DestroyFramebuffer();
+void Layer::Create(SizeU size) {
+	Destroy();
 	this->size = size;
 	framebuffer = CreateEmptyD2DBitmap(size).Detach();
 	RegisterBitmap(reinterpret_cast<owner_ptr<D2DBitmap>&>(framebuffer));
 }
 
-void Layer::DestroyFramebuffer() {
-	if (HasFramebuffer()) {
+void Layer::Destroy() {
+	if (!Empty()) {
 		UnregisterBitmap(reinterpret_cast<owner_ptr<D2DBitmap>&>(framebuffer));
 		ComPtr<D2DBitmap>().Swap(reinterpret_cast<owner_ptr<D2DBitmap>&>(framebuffer));
-		size = size_u_empty;
 	}
 }
 

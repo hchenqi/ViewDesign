@@ -24,18 +24,19 @@ using namespace ViewDesign;
 class EditBoxRef : public EditBox {
 public:
 	struct State {
+		// some states are not initialized just because their values should initially be undefined
 		u16string text = u"Type something here...";
-		TextRange caret_position = text_range_empty;
 		CaretState caret_state = CaretState::Hide;
-		SelectionMode selection_mode;
-		TextRange selection_initial_range = text_range_empty;
+		TextRange caret_position;
 		TextRange selection_range = text_range_empty;
+		SelectionMode selection_mode;
+		TextRange selection_initial_range;
 		TextRange ime_composition_range = text_range_empty;
-		bool is_mouse_down = false;
+		bool mouse_down = false;
 		Point mouse_down_position;
-		uint32 hit_count = 0;
-		bool ctrl = false;
-		bool shift = false;
+		uint32 mouse_hit_count = 0;
+		bool key_ctrl = false;
+		bool key_shift = false;
 		bool focus = false;
 	};
 
@@ -49,34 +50,34 @@ private:
 public:
 	void SaveState() {
 		// state.text = text; // saved at OnTextUpdate 
-		state.caret_position = caret_position;
 		state.caret_state = caret_state;
+		state.caret_position = caret_position;
+		state.selection_range = selection_range;
 		state.selection_mode = selection_mode;
 		state.selection_initial_range = selection_initial_range;
-		state.selection_range = selection_range;
 		state.ime_composition_range = ime_composition_range;
-		state.is_mouse_down = mouse_tracker.is_mouse_down;
-		state.mouse_down_position = mouse_tracker.mouse_down_position;
-		state.hit_count = mouse_tracker.hit_count;
-		state.ctrl = key_tracker.ctrl;
-		state.shift = key_tracker.shift;
+		state.mouse_down = mouse_tracker.down;
+		state.mouse_down_position = mouse_tracker.down_position;
+		state.mouse_hit_count = mouse_tracker.hit_count;
+		state.key_ctrl = key_tracker.ctrl;
+		state.key_shift = key_tracker.shift;
 		// state.focus updated at OnFocusEvent
 	}
 	void LoadState() {
 		//Assign(state.text); // loaded at construction
-		UpdateCaret(state.caret_position);
 		caret_state = state.caret_state;
+		if (caret_state != CaretState::Hide) { UpdateCaret(state.caret_position); }
+		UpdateSelection(state.selection_range);
 		selection_mode = state.selection_mode;
 		selection_initial_range = state.selection_initial_range;
-		UpdateSelection(state.selection_range);
 		UpdateImeComposition(state.ime_composition_range);
-		mouse_tracker.is_mouse_down = state.is_mouse_down;
-		mouse_tracker.mouse_down_position = state.mouse_down_position;
-		mouse_tracker.hit_count = state.hit_count;
-		key_tracker.ctrl = state.ctrl;
-		key_tracker.shift = state.shift;
+		mouse_tracker.down = state.mouse_down;
+		mouse_tracker.down_position = state.mouse_down_position;
+		mouse_tracker.hit_count = state.mouse_hit_count;
+		key_tracker.ctrl = state.key_ctrl;
+		key_tracker.shift = state.key_shift;
 		if (state.focus) { SetFocus(); }
-		if (state.is_mouse_down) { SetCapture(); }
+		if (state.mouse_down) { SetCapture(); }
 	}
 private:
 	virtual void OnTextUpdate() override {
@@ -135,7 +136,6 @@ void App() {
 		}
 
 		// enable this macro to lazily recreate components only when the code version changes
-		// the caret blinking state, mouse state and cursor might not update consistently if this is not enabled
 //#define LAZY_RECREATE
 
 #if defined(LAZY_RECREATE)
@@ -172,6 +172,11 @@ void App() {
 		);
 		// EditBoxRef is detached from the view tree when created and SetFocus() / SetCapture() won't work until it is added in the view tree
 		edit_box->LoadState();
+
+		// the caret blinking state, mouse tracker state and cursor might not display consistently without LAZY_RECREATE, because:
+		// - caret blinking and mouse tracker uses internal timers that are not set at LoadState
+		// - the cursor resets when the tracked view is destructed but the newly added view won't automatically be tracked by Desktop until the next mouse event
+		// however, mouse capture and key focus states can be saved and restored through the newly added view itself
 	}
 }
 

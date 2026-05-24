@@ -58,7 +58,7 @@ private:
 			}
 			switch (mouse_tracker.Track(event)) {
 			case MouseTrackEvent::LeftDrag:
-				region.point += event.point - mouse_tracker.mouse_down_position;
+				region.point += event.point - mouse_tracker.down_position;
 				RegionUpdated(region);
 				break;
 			case MouseTrackEvent::LeftDoubleClick:

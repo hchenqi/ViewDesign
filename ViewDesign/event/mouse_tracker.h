@@ -22,8 +22,8 @@ enum class MouseTrackEvent {
 
 class MouseTracker {
 public:
-	bool is_mouse_down = false;
-	Point mouse_down_position;
+	bool down = false;
+	Point down_position;
 	uint32 hit_count = 0;
 private:
 	static constexpr uint32 timer_interval = 500; // 0.5s
@@ -40,19 +40,19 @@ public:
 			case 2: ret = MouseTrackEvent::LeftTripleClick; break;
 			case 0: default: ret = MouseTrackEvent::LeftDown; hit_count = 0; break;
 			}
-			if (hit_count > 0 && !PointInCircle(event.point, mouse_down_position, move_tolerate_distance)) {
+			if (hit_count > 0 && !PointInCircle(event.point, down_position, move_tolerate_distance)) {
 				ret = MouseTrackEvent::LeftDown; hit_count = 0;
 			}
 			hit_count++; timer.Set(timer_interval);
-			is_mouse_down = true;
-			mouse_down_position = event.point;
+			down = true;
+			down_position = event.point;
 			break;
 		case MouseEvent::LeftUp:
-			ret = is_mouse_down ? MouseTrackEvent::LeftClick : MouseTrackEvent::LeftUp;
-			is_mouse_down = false;
+			ret = down ? MouseTrackEvent::LeftClick : MouseTrackEvent::LeftUp;
+			down = false;
 			break;
 		case MouseEvent::Move:
-			ret = is_mouse_down ? MouseTrackEvent::LeftDrag : MouseTrackEvent::MouseMove;
+			ret = down ? MouseTrackEvent::LeftDrag : MouseTrackEvent::MouseMove;
 			break;
 		default:
 			ret = MouseTrackEvent::None;

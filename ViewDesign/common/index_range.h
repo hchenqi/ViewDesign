@@ -10,6 +10,7 @@ struct IndexRange {
 	size_t _begin;
 	size_t _length;
 
+	explicit constexpr IndexRange() = default;
 	explicit constexpr IndexRange(size_t begin, size_t length) : _begin(begin), _length(length) {}
 
 	constexpr bool operator==(const IndexRange& range) const { return _begin == range._begin && _length == range._length; }

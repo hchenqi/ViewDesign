@@ -27,7 +27,7 @@ inline TileRange GetOverlappingTileRange(Size tile_size, Rect region) {
 
 struct TilingFuncDefault {
 	SizeU operator()(SizeU tile_size_current, Size size_new) {			
-		SizeU tile_size = size_u_empty;
+		SizeU tile_size;
 
 		if (size_new.width <= 64.0f) { tile_size.width = 64; }
 		else if (size_new.width <= 128.0f) { tile_size.width = 128; }

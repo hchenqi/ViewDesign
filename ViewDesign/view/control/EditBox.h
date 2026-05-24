@@ -68,11 +68,27 @@ protected:
 protected:
 	virtual void OnDraw(Canvas& canvas, Rect draw_region) override;
 
+	// caret state
+protected:
+	enum class CaretState : uint16 { Hide, Show, BlinkShow, BlinkHide } caret_state = CaretState::Hide;
+protected:
+	static constexpr uint16 caret_blink_period = 500;  // 500ms
+	static constexpr uint16 caret_blink_expire_time = 20000;  // 20s
+protected:
+	Timer caret_timer = Timer(std::bind(&EditBox::CaretBlink, this));
+	uint16 caret_blink_time;
+protected:
+	bool IsCaretVisible() const { return caret_state == CaretState::Show || caret_state == CaretState::BlinkShow; }
+protected:
+	void HideCaret();
+	void CaretStartBlinking();
+	void CaretBlink();
+
 	// caret
 protected:
 	enum class CaretMoveDirection { Left, Right, Up, Down, Home, End };
 protected:
-	TextRange caret_position = text_range_empty;
+	TextRange caret_position;
 	Rect caret_region;
 protected:
 	Rect GetCaretRegion(const HitTestPointInfo& info) const;
@@ -84,32 +100,14 @@ protected:
 	void SetCaret(TextRange position) { SetCaret(text_block.HitTestPosition(position)); }
 	void MoveCaret(CaretMoveDirection direction);
 
-	// caret state
-protected:
-	static constexpr uint16 caret_blink_period = 500;  // 500ms
-	static constexpr uint16 caret_blink_expire_time = 20000;  // 20s
-	enum class CaretState : uint16 { Hide, Show, BlinkShow, BlinkHide };
-protected:
-	Timer caret_timer = Timer(std::bind(&EditBox::CaretBlink, this));
-	CaretState caret_state = CaretState::Hide;
-	uint16 caret_blink_time;
-protected:
-	bool IsCaretVisible() const { return caret_state == CaretState::Show || caret_state == CaretState::BlinkShow; }
-protected:
-	void HideCaret();
-	void CaretStartBlinking();
-	void CaretBlink();
-
 	// selection
-protected:
-	enum class SelectionMode { Character, Word, Paragraph };
-protected:
-	SelectionMode selection_mode;
-	TextRange selection_initial_range = text_range_empty;
 protected:
 	TextRange selection_range = text_range_empty;
 	std::vector<Rect> selection_region_list;
 	Rect selection_region_union;
+protected:
+	enum class SelectionMode { Character, Word, Paragraph } selection_mode;
+	TextRange selection_initial_range;
 protected:
 	bool HasSelection() const { return !selection_range.empty(); }
 	void UpdateSelection(TextRange range);
