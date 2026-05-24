@@ -13,19 +13,20 @@
 #include <windows.h>
 
 
-using namespace ViewDesign;
-
-
-// hot reload (and immediate mode) requires the states to be stored externally and the components access and update the states by reference, so that the state won't be lost when the components are recreated
+// hot reload (immediate mode) requires the states to be stored externally and the components access and update the states by reference, so that the state won't be lost when the components are recreated
 // EditBox in the standard component library of ViewDesign owns its states internally, therefore, it is extended here to accept an external state reference which is synchronized with its internal states on events
 // alternatively, one can write their own versions of EditBox that just reference an external state without owning internal states
 // other stateless components like TextBox, ClipFrame, BorderFrame, BackgroundFrame, etc can be used directly in immediate mode
 
-class EditBoxRef : public EditBox {
+namespace ViewDesign::IM {
+
+class EditBox : public ViewDesign::EditBox {
+public:
+	using Style = ViewDesign::EditBox::Style;
 public:
 	struct State {
-		// some states are not initialized just because their values should initially be undefined
-		u16string text = u"Type something here...";
+		// some states are not initialized here just because their values should initially be undefined
+		u16string text = u"";
 		CaretState caret_state = CaretState::Hide;
 		TextRange caret_position;
 		TextRange selection_range = text_range_empty;
@@ -39,11 +40,8 @@ public:
 		bool key_shift = false;
 		bool focus = false;
 	};
-
-	using Style = EditBox::Style;
-
 public:
-	EditBoxRef(const Style& style, State& state) : EditBox(style, state.text), state(state) {}
+	EditBox(const Style& style, State& state) : ViewDesign::EditBox(style, state.text), state(state) {}
 
 private:
 	State& state;
@@ -81,26 +79,31 @@ public:
 	}
 private:
 	virtual void OnTextUpdate() override {
-		EditBox::OnTextUpdate();
+		ViewDesign::EditBox::OnTextUpdate();
 		state.text = text;
 	}
 private:
 	virtual void OnMouseEvent(MouseEvent event) override {
-		EditBox::OnMouseEvent(event);
+		ViewDesign::EditBox::OnMouseEvent(event);
 		SaveState();
 	}
 	virtual void OnKeyEvent(KeyEvent event) override {
-		EditBox::OnKeyEvent(event);
+		ViewDesign::EditBox::OnKeyEvent(event);
 		SaveState();
 	}
 	virtual void OnFocusEvent(FocusEvent event) override {
-		EditBox::OnFocusEvent(event);
+		ViewDesign::EditBox::OnFocusEvent(event);
 		switch (event) {
 		case FocusEvent::Focus: state.focus = true; break;
 		case FocusEvent::Blur: state.focus = false; break;
 		}
 	}
 };
+
+} // namespace ViewDesign::IM
+
+
+using namespace ViewDesign;
 
 
 void App() {
@@ -110,7 +113,7 @@ void App() {
 	desktop.AddWindow(
 		new DefaultWindow(
 			DefaultWindow::Style(),
-			u"Hot Reload",
+			u"Hot Reload (Immediate Mode)",
 			// save the mutable_frame pointer here just as a reference
 			// it remains valid until the window is closed
 			mutable_frame = new MutableFrame(
@@ -119,7 +122,8 @@ void App() {
 		)
 	);
 
-	EditBoxRef::State edit_box_state;
+	IM::EditBox::State edit_box_state;
+	edit_box_state.text = u"Type something here...";
 
 	int current_version = -1;
 
@@ -149,7 +153,7 @@ void App() {
 #endif
 
 		// hint: edit the styles while running
-		struct EditBoxStyle : EditBoxRef::Style {
+		struct EditBoxStyle : IM::EditBox::Style {
 			EditBoxStyle() {
 				font.size(36.0f).color(Color::ForestGreen);
 			}
@@ -158,14 +162,14 @@ void App() {
 		// hot reload for adding/removing frame templates or changing template arguments is not supported by Visual Studio
 		// this is because instantiation of templates introduces new data types
 		// we could explicitly instantiate the templates that might be used so that their symbols stay static (see the end of this file)
-		ref_ptr<EditBoxRef> edit_box;
+		ref_ptr<IM::EditBox> edit_box;
 		mutable_frame->Reset(
 			new BackgroundFrame(
 				Color::PaleTurquoise,
 				new ClipFrame<Fixed, Fixed, TopLeft>(
 					new PaddingFrame(
 						Padding(15.0f),
-						edit_box = new EditBoxRef(EditBoxStyle(), edit_box_state)
+						edit_box = new IM::EditBox(EditBoxStyle(), edit_box_state)
 					)
 				)
 			)
