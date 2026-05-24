@@ -95,6 +95,6 @@ The following platform packages will be searched and included automatically.
 
 ### glad (https://glad.dav1d.de/)
 
-> glad can be installed with vcpkg manifest
+> The easiest way to install glad is through vcpkg. The normal way requires generating and unpacking the source files.
 
 ### Vulkan (https://vulkan.lunarg.com/)
