@@ -12,9 +12,9 @@ A C++ GUI library
 - a single static library built with CMake, lightweight, modular and extensible
 - cross-platform with multi-backend support
 - easy to setup and integrate, no boilerplate
-- fit for both 'immediate-mode' and 'retained-mode' GUI programming
 - clear and efficient logic for layout calculation and rendering
-- supporting hot reload with ease
+- intrinsically DPI-aware
+- fit for both 'immediate-mode' and 'retained-mode' GUI programming, supporting hot reload with ease
 - conceptual separation of components as `control`, `frame` and `layout`
 - static check of layout compatibility between components through size traits
 
@@ -154,7 +154,7 @@ On Windows, *ViewDesign* can be built directly by Visual Studio as a CMake proje
 
 ### Principle
 
-*ViewDesign* aims to be modular and transparent. There is no hidden logic or global context, and it is easy to inspect and modify any part of the library code. The files of the library are well structured, self-explanatory and effortless to navigate. Each file is kept small and independent for a single component. The largest file is ~600 lines of code and most files are kept within ~100 lines. There is no single all-in-one header and each component header is to be included individually on demand. This results in better compile-time and run-time efficiency and is less error-prone.
+*ViewDesign* aims to be modular and transparent. There is no hidden logic or global context, and it is easy to inspect and modify any part of the library code. The files of the library are well structured, self-explanatory and effortless to navigate. Each file is kept possibly small and independent for a single component, mostly within ~100 lines. There is no single all-in-one header and each component header is to be included individually on demand. This results in better compile-time and run-time efficiency and is less error-prone.
 
 The example section above demonstrates the standard component library of *ViewDesign* with size traits. The core library (excluding components in subfolders of [ViewDesign/view](ViewDesign/view) and `view_traits.h`), however, does not enforce size traits or any development paradigm. It can be integrated within any project in any C++ design patterns and extended with any custom component libraries to fit special development needs. The standard components provided along with the core library are such examples that can be directly used, inherited, or taken as models of developing custom components in a similar way.
 
@@ -190,9 +190,9 @@ Qt uses signals and slots mechanism historically for communication between objec
 
 Dear ImGui markets itself as an 'immediate-mode' GUI library for engine developers that is easy to integrate with existing render loops for displaying tools. It is single-header based with various pre-defined components that can be used via imperative programming. It internally maintains mouse/key states in a global context and tracks component states with an ID system, while the user-side code only stores the data referenced by the components without having to explicitly manage the component tree as with traditional 'retained-mode' GUI programming.
 
-However, by discarding an object-oriented and functional design, it is more difficult and error-prone with ImGui to deal with scopes, implement complex layout dependencies and to extend the components to fit custom needs. In *ViewDesign* which is particularly layout-sensitive, it is necessary to take the object-oriented approach utilizing C++ features, ensuring precise control of scopes and making it much easier to develop components with custom layout calculation and rendering needs.
+However, by discarding an object-oriented and functional design, it is more difficult and error-prone with ImGui to deal with scopes, implement complex layout dependencies and to extend the components to fit custom needs. In *ViewDesign* which is particularly layout-sensitive, it is necessary to still take the object-oriented approach utilizing C++ features, ensuring precise control of scopes and easing development of custom components to fit complex layout calculation and rendering needs.
 
-Being object-oriented doesn't immediately mean being equal to a traditional 'retained-mode' GUI framework. With *ViewDesign*, it is possible to implement both 'immediate-mode' and 'retained-mode' rendering loops. While in retained mode the components are designed to persist across rendering frames with their states stored internally, in immediate mode they are designed to be reconstructible every frame from externally persistent states. This relies rather on the choice of the component library than than on the core *ViewDesign* library. Though the standard component library of *ViewDesign* still aligns more with retained-mode GUI programming. (see example [HotReload(Win32)](Example/win32/HotReload.cpp))
+Being object-oriented doesn't immediately mean being equal to a traditional 'retained-mode' GUI framework. With *ViewDesign*, it is possible to implement both 'immediate-mode' and 'retained-mode' rendering loops. While in retained mode the components are designed to persist across rendering frames with their states stored internally, in immediate mode they are designed to be reconstructible every frame from externally persistent states. This relies rather on the choice of the component library than on the core *ViewDesign* library itself. Though the standard component library of *ViewDesign* still aligns more with retained-mode GUI programming, it is not difficult to develop corresponding immediate-mode versions of the stateful components. (see example [HotReload(Win32)](Example/win32/HotReload.cpp))
 
 ### Limitation
 
@@ -372,18 +372,22 @@ The `view` sub-folder defines `ViewBase`, `Window` and `Desktop` classes. It als
 ### messaging
 
 The `messaging` sub-folder provides optional messaging tools:
-- `State` / `State::Watcher`
-- `ContextProvider` / `Context`
+- `State<T>` / `State<T>::Watcher`
+- `ContextProvider` / `Context<ProviderViewClass>`
 
 #### State
 
-`State` and `State::Watcher` provides a general way to reference the state of a value and react to the value updates.
+`State<T>` and `State<T>::Watcher` provide a general way to maintain the state of values and monitor value updates.
+
+Because the state and the watchers are usually stored in parallel components, careful lifetime management of the `State` object is required to avoid null references.
 
 #### Context
 
-`Context` is to be used within a view tree. A view can inherit `ContextProvider` to register itself as a discoverable context provider, and a descendant view can use `Context` to access a registered ancestor view across multiple levels in the view tree. This avoids explicitly passing the view down level by level.
+`Context` is meant to be used by view components in the view tree. A view can inherit `ContextProvider` to register itself as a discoverable context provider, and a descendant view can use `Context<ProviderViewClass>` to query a registered ancestor view by its class name across multiple levels in the view tree. This avoids explicitly passing the reference of the ancestor view down level by level.
 
-An example usage of Context is provided by [TitleBarWindow.h](ViewDesign/view/widget/TitleBarWindow.h).
+Usually the a view component won't move in the view tree once it is added, but this still can happen in certain realistic scenarios. Therefore, it is worth noting that `Context` stores the reference to the provider ancestor view component at `Context::Get()` and won't be automatically updated when the consumer view component is removed from the sub-tree of the provider. In this case, `Context::Drop()` needs to be explicitly called to reset the reference to the provider. Alternatively, `Context::GetCurrent()` can be used which drops the stored reference and queries the current provider every time.
+
+An example usage of Context can be found in [TitleBarWindow.h](ViewDesign/view/widget/TitleBarWindow.h).
 
 ### platform
 

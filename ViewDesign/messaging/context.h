@@ -12,7 +12,9 @@ private:
 protected:
 	ContextProvider(ViewBase& view);
 	~ContextProvider();
-public:
+private:
+	template<class View> friend class Context;
+private:
 	static ref_ptr<ViewBase> GetNextProvider(ViewBase& view);
 };
 
@@ -42,6 +44,13 @@ public:
 			throw std::logic_error("context provider not available");
 		}
 		return static_cast<View&>(*provider);
+	}
+	void Drop() {
+		provider = &consumer;
+	}
+	View& GetCurrent() {
+		Drop();
+		return Get();
 	}
 };
 
