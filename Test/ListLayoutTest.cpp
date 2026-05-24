@@ -7,9 +7,9 @@
 #include <ViewDesign/view/layout/ListLayout.h>
 #include <ViewDesign/view/control/EditBox.h>
 #include <ViewDesign/view/wrapper/HitTestHelper.h>
+#include <ViewDesign/view/widget/TextBoxConverter.h.>
 
 #include "trait_name.h"
-#include "text_box_helper.h"
 
 
 using namespace ViewDesign;
@@ -63,7 +63,9 @@ private:
 			new ItemFrame(
 				new PaddingFrame(
 					Padding(10.0f),
-					WrapTextBox<typename Base::width_trait, typename Base::height_trait>(edit_view = new EditView())
+					TextBoxConverter<typename Base::width_trait, typename Base::height_trait>(
+						edit_view = new EditView()
+					)
 				)
 			)
 		);
