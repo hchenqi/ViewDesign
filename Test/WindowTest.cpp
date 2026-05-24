@@ -1,11 +1,11 @@
-#include "ViewDesign/view/Desktop.h"
-#include "ViewDesign/view/frame/MutableFrame.h"
-#include "ViewDesign/view/frame/LayerFrame.h"
-#include "ViewDesign/view/control/Placeholder.h"
-#include "ViewDesign/drawing/bitmap.h"
+#include <ViewDesign/view/Desktop.h>
+#include <ViewDesign/view/frame/MutableFrame.h>
+#include <ViewDesign/view/frame/LayerFrame.h>
+#include <ViewDesign/view/control/Placeholder.h>
+#include <ViewDesign/drawing/bitmap.h>
 
 #if defined(VIEWDESIGN_BACKEND_WIN32)
-#include "ViewDesign/platform/win32/aero_snap.h"
+#include <ViewDesign/platform/win32/aero_snap.h>
 #endif
 
 

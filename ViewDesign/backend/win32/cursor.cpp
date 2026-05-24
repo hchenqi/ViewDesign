@@ -1,5 +1,6 @@
 #include "ViewDesign/system/cursor.h"
-#include "ViewDesign/platform/win32/cursor.h"
+
+#include <ViewDesign/platform/win32/cursor.h>
 
 #include <array>
 #include <vector>

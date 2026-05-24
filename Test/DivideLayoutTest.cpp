@@ -1,8 +1,8 @@
-#include "ViewDesign/view/widget/DefaultWindow.h"
-#include "ViewDesign/view/frame/BorderFrame.h"
-#include "ViewDesign/view/layout/DivideLayout.h"
-#include "ViewDesign/view/control/Placeholder.h"
-#include "ViewDesign/view/figure/shape.h"
+#include <ViewDesign/view/widget/DefaultWindow.h>
+#include <ViewDesign/view/frame/BorderFrame.h>
+#include <ViewDesign/view/layout/DivideLayout.h>
+#include <ViewDesign/view/control/Placeholder.h>
+#include <ViewDesign/view/figure/shape.h>
 
 
 using namespace ViewDesign;

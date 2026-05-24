@@ -1,10 +1,10 @@
 #include "ViewDesign/view/widget/UndecoratedWindow.h"
 
 #if defined(VIEWDESIGN_BACKEND_WIN32)
-#include "ViewDesign/platform/win32/window.h"
+#include <ViewDesign/platform/win32/window.h>
 #endif
 #if defined(VIEWDESIGN_BACKEND_GLFW)
-#include "ViewDesign/platform/glfw/window.h"
+#include <ViewDesign/platform/glfw/window.h>
 #endif
 
 

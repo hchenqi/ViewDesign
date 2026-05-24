@@ -1,5 +1,5 @@
-#include "ViewDesign/view/widget/TitleBarWindow.h"
-#include "ViewDesign/view/control/Placeholder.h"
+#include <ViewDesign/view/widget/TitleBarWindow.h>
+#include <ViewDesign/view/control/Placeholder.h>
 
 using namespace ViewDesign;
 

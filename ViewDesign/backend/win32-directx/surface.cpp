@@ -1,12 +1,13 @@
 #include "ViewDesign/drawing/surface.h"
-#include "ViewDesign/platform/win32/window.h"
-#include "ViewDesign/platform/win32/geometry_helper.h"
-#include "ViewDesign/platform/directx/d3d_api.h"
-#include "ViewDesign/platform/directx/dxgi_api.h"
-#include "ViewDesign/platform/directx/dcomp_api.h"
-#include "ViewDesign/platform/directx/render_target.h"
-#include "ViewDesign/platform/directx/helper.h"
-#include "ViewDesign/platform/directx/resource.h"
+
+#include <ViewDesign/platform/win32/window.h>
+#include <ViewDesign/platform/win32/geometry_helper.h>
+#include <ViewDesign/platform/directx/d3d_api.h>
+#include <ViewDesign/platform/directx/dxgi_api.h>
+#include <ViewDesign/platform/directx/dcomp_api.h>
+#include <ViewDesign/platform/directx/render_target.h>
+#include <ViewDesign/platform/directx/helper.h>
+#include <ViewDesign/platform/directx/resource.h>
 
 
 namespace ViewDesign {

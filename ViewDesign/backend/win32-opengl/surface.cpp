@@ -1,7 +1,8 @@
 #include "ViewDesign/drawing/surface.h"
-#include "ViewDesign/platform/win32/window.h"
-#include "ViewDesign/platform/win32/opengl_context.h"
-#include "ViewDesign/platform/glad/render_target.h"
+
+#include <ViewDesign/platform/win32/window.h>
+#include <ViewDesign/platform/win32/opengl_context.h>
+#include <ViewDesign/platform/glad/render_target.h>
 
 #include <GL/wglext.h>
 

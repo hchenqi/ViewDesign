@@ -1,7 +1,8 @@
 #include "ViewDesign/system/cursor.h"
-#include "ViewDesign/platform/glfw/cursor.h"
-#include "ViewDesign/platform/glfw/window.h"
-#include "ViewDesign/platform/glfw/context.h"
+
+#include <ViewDesign/platform/glfw/cursor.h>
+#include <ViewDesign/platform/glfw/window.h>
+#include <ViewDesign/platform/glfw/context.h>
 
 #include <array>
 #include <vector>

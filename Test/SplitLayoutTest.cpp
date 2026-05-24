@@ -1,8 +1,8 @@
-#include "ViewDesign/view/widget/DefaultWindow.h"
-#include "ViewDesign/view/frame/CenterFrame.h"
-#include "ViewDesign/view/frame/BorderFrame.h"
-#include "ViewDesign/view/layout/SplitLayout.h"
-#include "ViewDesign/view/control/EditBox.h"
+#include <ViewDesign/view/widget/DefaultWindow.h>
+#include <ViewDesign/view/frame/CenterFrame.h>
+#include <ViewDesign/view/frame/BorderFrame.h>
+#include <ViewDesign/view/layout/SplitLayout.h>
+#include <ViewDesign/view/control/EditBox.h>
 
 #include "trait_name.h"
 #include "text_box_helper.h"

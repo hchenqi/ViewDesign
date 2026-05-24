@@ -1,6 +1,6 @@
-#include "ViewDesign/view/view_traits.h"
-#include "ViewDesign/view/layout/ListLayout.h"
-#include "ViewDesign/view/layout/SplitLayout.h"
+#include <ViewDesign/view/view_traits.h>
+#include <ViewDesign/view/layout/ListLayout.h>
+#include <ViewDesign/view/layout/SplitLayout.h>
 
 
 using namespace ViewDesign;

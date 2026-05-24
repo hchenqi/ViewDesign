@@ -1,6 +1,6 @@
-#include "ViewDesign/view/widget/DefaultWindow.h"
-#include "ViewDesign/view/frame/CenterFrame.h"
-#include "ViewDesign/view/control/TextBox.h"
+#include <ViewDesign/view/widget/DefaultWindow.h>
+#include <ViewDesign/view/frame/CenterFrame.h>
+#include <ViewDesign/view/control/TextBox.h>
 
 using namespace ViewDesign;
 

@@ -1,7 +1,8 @@
 #include "ViewDesign/drawing/surface.h"
-#include "ViewDesign/platform/win32/window.h"
+
+#include <ViewDesign/platform/win32/window.h>
 #define VK_USE_PLATFORM_WIN32_KHR
-#include "ViewDesign/platform/vulkan/surface.h"
+#include <ViewDesign/platform/vulkan/surface.h>
 
 
 namespace ViewDesign {

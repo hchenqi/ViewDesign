@@ -2,13 +2,13 @@
 // works with Visual Studio Hot Reload for C++ (https://learn.microsoft.com/en-us/visualstudio/debugger/edit-and-continue-visual-cpp?view=visualstudio)
 // the compile option /ZI and link option /INCREMENTAL for this file are already set in CMakeLists.txt
 
-#include "ViewDesign/view/widget/DefaultWindow.h"
-#include "ViewDesign/view/frame/MutableFrame.h"
-#include "ViewDesign/view/frame/BackgroundFrame.h"
-#include "ViewDesign/view/frame/ClipFrame.h"
-#include "ViewDesign/view/frame/PaddingFrame.h"
-#include "ViewDesign/view/control/Placeholder.h"
-#include "ViewDesign/view/control/EditBox.h"
+#include <ViewDesign/view/widget/DefaultWindow.h>
+#include <ViewDesign/view/frame/MutableFrame.h>
+#include <ViewDesign/view/frame/BackgroundFrame.h>
+#include <ViewDesign/view/frame/ClipFrame.h>
+#include <ViewDesign/view/frame/PaddingFrame.h>
+#include <ViewDesign/view/control/Placeholder.h>
+#include <ViewDesign/view/control/EditBox.h>
 
 #include <windows.h>
 

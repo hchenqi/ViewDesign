@@ -1,5 +1,6 @@
 #include "ViewDesign/view/figure/shape.h"
-#include "ViewDesign/platform/directx/render_target.h"
+
+#include <ViewDesign/platform/directx/render_target.h>
 
 
 namespace ViewDesign {

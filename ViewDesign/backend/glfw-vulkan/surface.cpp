@@ -1,6 +1,7 @@
 #include "ViewDesign/drawing/surface.h"
-#include "ViewDesign/platform/vulkan/surface.h"
-#include "ViewDesign/platform/glfw/window.h"
+
+#include <ViewDesign/platform/vulkan/surface.h>
+#include <ViewDesign/platform/glfw/window.h>
 
 
 namespace ViewDesign {

@@ -1,10 +1,10 @@
-#include "ViewDesign/view/widget/DefaultWindow.h"
-#include "ViewDesign/view/frame/ScrollFrame.h"
-#include "ViewDesign/view/frame/PaddingFrame.h"
-#include "ViewDesign/view/frame/ScaleFrame.h"
-#include "ViewDesign/view/frame/ClipFrame.h"
-#include "ViewDesign/view/control/EditBox.h"
-#include "ViewDesign/view/wrapper/Background.h"
+#include <ViewDesign/view/widget/DefaultWindow.h>
+#include <ViewDesign/view/frame/ScrollFrame.h>
+#include <ViewDesign/view/frame/PaddingFrame.h>
+#include <ViewDesign/view/frame/ScaleFrame.h>
+#include <ViewDesign/view/frame/ClipFrame.h>
+#include <ViewDesign/view/control/EditBox.h>
+#include <ViewDesign/view/wrapper/Background.h>
 
 using namespace ViewDesign;
 

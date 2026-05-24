@@ -23,9 +23,9 @@ A C++ GUI library
 The program below displays "Hello World!" at the center of the main window: ([Example/HelloWorld.cpp](Example/HelloWorld.cpp))
 
 ```cpp
-#include "ViewDesign/view/widget/DefaultWindow.h"
-#include "ViewDesign/view/frame/CenterFrame.h"
-#include "ViewDesign/view/control/TextBox.h"
+#include <ViewDesign/view/widget/DefaultWindow.h>
+#include <ViewDesign/view/frame/CenterFrame.h>
+#include <ViewDesign/view/control/TextBox.h>
 
 using namespace ViewDesign;
 
@@ -38,7 +38,7 @@ struct TextBoxStyle : TextBox::Style {
 void App() {
 	desktop.AddWindow(
 		create<DefaultWindow>(
-            DefaultWindow::Style(),
+			DefaultWindow::Style(),
 			u"Example",
 			create<CenterFrame<Fixed, Fixed>>(
 				create<TextBox>(TextBoxStyle(), u"Hello World!")
@@ -60,12 +60,12 @@ We first include headers of components, then we define text style for `TextBox` 
 If we change it to `ClipFrame<Fixed, Fixed, TopLeft>`, the `TextBox` will stay at the top-left corner.
 
 ```cpp
-// #include "ViewDesign/view/frame/ClipFrame.h"
+// #include <ViewDesign/view/frame/ClipFrame.h>
 
 	desktop.AddWindow(
 		create<DefaultWindow>(
 			DefaultWindow::Style(),
-            u"Example",
+			u"Example",
 			create<ClipFrame<Fixed, Fixed, TopLeft>>(
 				create<TextBox>(TextBoxStyle(), u"Hello World!")
 			)
@@ -96,7 +96,7 @@ The size of a `TextBox` depends on both the layout box provided by its parent vi
 ```cpp
 	desktop.AddWindow(
 		new DefaultWindow(
-            DefaultWindow::Style(),
+			DefaultWindow::Style(),
 			u"Example",
 			new CenterFrame<Fixed, Fixed>(
 				new TextBox(TextBoxStyle(), u"Hello World!")
@@ -112,8 +112,8 @@ UTF-16 strings are used across this project. Prefix `u` is for declaring UTF-16 
 A simpler program below displays an empty main window: ([Example/Placeholder.cpp](Example/Placeholder.cpp))
 
 ```cpp
-#include "ViewDesign/view/widget/DefaultWindow.h"
-#include "ViewDesign/view/control/Placeholder.h"
+#include <ViewDesign/view/widget/DefaultWindow.h>
+#include <ViewDesign/view/control/Placeholder.h>
 
 using namespace ViewDesign;
 

@@ -1,6 +1,7 @@
 #include "ViewDesign/drawing/layer.h"
-#include "ViewDesign/platform/directx/render_target.h"
-#include "ViewDesign/platform/directx/helper.h"
+
+#include <ViewDesign/platform/directx/render_target.h>
+#include <ViewDesign/platform/directx/helper.h>
 
 
 namespace ViewDesign {
