@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ViewDesign/view/view_traits.h"
-#include "ViewDesign/drawing/image.h"
+#include "ViewDesign/view/figure/image.h"
 
 
 namespace ViewDesign {
@@ -9,7 +9,7 @@ namespace ViewDesign {
 
 class ImageBox : public ViewType<Auto, Auto> {
 public:
-	ImageBox(u16string image_file) : image(image_file) {}
+	ImageBox(const u16string& file_name) : image(file_name) {}
 protected:
 	Image image;
 protected:
@@ -26,7 +26,7 @@ protected:
 
 class ImageRepeatBox : public ViewType<Fixed, Fixed> {
 public:
-	ImageRepeatBox(u16string image_file, Point offset = point_zero) : image(image_file), offset(offset - point_zero) {}
+	ImageRepeatBox(const u16string& file_name, Point offset = point_zero) : image(file_name), offset(offset - point_zero) {}
 protected:
 	Image image;
 	Vector offset;

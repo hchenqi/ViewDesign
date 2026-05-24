@@ -13,7 +13,7 @@ namespace ViewDesign {
 
 class Image : Uncopyable {
 public:
-	Image(u16string file_name);
+	Image(const u16string& file_name);
 	Image(void* address, size_t size);
 	~Image();
 protected:

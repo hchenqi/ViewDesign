@@ -23,7 +23,7 @@ void App() {
 							// this padding is scaled
 							new PaddingFrame(
 								Padding(10.0f),
-								edit_box = new EditBox(EditBox::Style(), u"Type something here...\n(note: use ctrl + scroll to change the scale)")
+								edit_box = new EditBox(EditBox::Style(), u"Type something here...\n(hint: zoom with Ctrl + scroll)")
 							)
 						)
 					)

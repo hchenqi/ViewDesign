@@ -7,38 +7,43 @@ namespace ViewDesign {
 
 
 template<class WidthTrait, class HeightTrait>
-class CenterFrame;
+class StretchFrame;
 
 
-class _CenterFrame_Base : public ViewFrame {
+class _StretchFrame_Base : public ViewFrame {
 protected:
-	_CenterFrame_Base(view_ptr<> child) : ViewFrame(std::move(child)) {}
+	_StretchFrame_Base(view_ptr<> child) : ViewFrame(std::move(child)) {}
 
 	// layout
 protected:
 	Size size;
 	Size child_size;
 protected:
-	Vector GetChildOffset() const { return Vector((size.width - child_size.width) / 2, (size.height - child_size.height) / 2); }
-	Rect GetChildRegion() const { return Rect(point_zero + GetChildOffset(), child_size); }
+	Scale GetCurrentScale() const { return child_size.IsEmpty() ? scale_identity : Scale(size.width / child_size.width, size.height / child_size.height); }
 protected:
-	virtual Transform GetChildTransform(ViewBase& child) const override { return GetChildOffset(); }
+	virtual Transform GetChildTransform(ViewBase& child) const override { return GetCurrentScale(); }
 
 	// drawing
 protected:
-	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override { Redraw(child_redraw_region + GetChildOffset()); }
-	virtual void OnDraw(Canvas& canvas, Rect draw_region) override { return DrawChild(child, point_zero + GetChildOffset(), canvas, draw_region); }
+	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override {
+		Redraw(child_redraw_region * GetCurrentScale());
+	}
+	virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
+		canvas.Group(GetCurrentScale(), rect_infinite, [&]() {
+			DrawChild(child, point_zero, canvas, draw_region / GetCurrentScale());
+		});
+	}
 
 	// event
 protected:
-	virtual ref_ptr<ViewBase> HitTest(MouseEvent& event) override { event.point -= GetChildOffset(); return ViewFrame::HitTest(event); }
+	virtual ref_ptr<ViewBase> HitTest(MouseEvent& event) override { event.point /= GetCurrentScale(); return ViewFrame::HitTest(event); }
 };
 
 
 template<>
-class CenterFrame<Fixed, Fixed> : public _CenterFrame_Base, public SizeTrait<Fixed, Fixed> {
+class StretchFrame<Fixed, Fixed> : public _StretchFrame_Base, public SizeTrait<Fixed, Fixed> {
 public:
-	CenterFrame(view_ptr<> child) : _CenterFrame_Base(std::move(child)) {}
+	StretchFrame(view_ptr<> child) : _StretchFrame_Base(std::move(child)) {}
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override { child_size = UpdateChildSizeRef(child, size = size_ref); return size; }
 	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override { this->child_size = child_size; Redraw(rect_infinite); }
@@ -46,9 +51,9 @@ protected:
 
 
 template<class HeightTrait> requires (!IsFixed<HeightTrait>)
-class CenterFrame<Fixed, HeightTrait> : public _CenterFrame_Base, public SizeTrait<Fixed, HeightTrait> {
+class StretchFrame<Fixed, HeightTrait> : public _StretchFrame_Base, public SizeTrait<Fixed, HeightTrait> {
 public:
-	CenterFrame(view_ptr<Relative, HeightTrait> child) : _CenterFrame_Base(std::move(child)) {}
+	StretchFrame(view_ptr<Relative, HeightTrait> child) : _StretchFrame_Base(std::move(child)) {}
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override {
 		child_size = UpdateChildSizeRef(this->child, size_ref);
@@ -66,9 +71,9 @@ protected:
 
 
 template<class WidthTrait> requires (!IsFixed<WidthTrait>)
-class CenterFrame<WidthTrait, Fixed> : public _CenterFrame_Base, public SizeTrait<WidthTrait, Fixed> {
+class StretchFrame<WidthTrait, Fixed> : public _StretchFrame_Base, public SizeTrait<WidthTrait, Fixed> {
 public:
-	CenterFrame(view_ptr<WidthTrait, Relative> child) : _CenterFrame_Base(std::move(child)) {}
+	StretchFrame(view_ptr<WidthTrait, Relative> child) : _StretchFrame_Base(std::move(child)) {}
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override {
 		child_size = UpdateChildSizeRef(this->child, size_ref);

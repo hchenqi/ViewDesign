@@ -31,7 +31,7 @@ ComPtr<ImageSource> LoadFromDecoder(ComPtr<IWICBitmapDecoder> decoder) {
 	return converter;
 }
 
-ComPtr<ImageSource> LoadImageFromFile(u16string file_name) {
+ComPtr<ImageSource> LoadImageFromFile(const u16string& file_name) {
 	try {
 		ComPtr<IWICBitmapDecoder> decoder;
 		hr << GetWICFactory().CreateDecoderFromFilename(
@@ -81,11 +81,11 @@ inline ComPtr<D2DBitmap> CreateD2DBitmapFromWicBitmap(ImageSource& source) {
 } // namespace
 
 
-Image::Image(u16string file_name) : source(LoadImageFromFile(file_name).Detach()), size(GetImageSize(*static_cast<ref_ptr<ImageSource>>(source))) {}
+Image::Image(const u16string& file_name) : source(LoadImageFromFile(file_name).Detach()), size(GetImageSize(*static_cast<ref_ptr<ImageSource>>(source))) {}
 
 Image::Image(void* address, size_t size) : source(LoadImageFromMemory(address, size).Detach()), size(GetImageSize(*static_cast<ref_ptr<ImageSource>>(source))) {}
 
-Image::~Image() { ComPtr<ImageSource>().Swap(reinterpret_cast<owner_ptr<ImageSource>&>(source)); }
+Image::~Image() { DestroyTexture(); ComPtr<ImageSource>().Swap(reinterpret_cast<owner_ptr<ImageSource>&>(source)); }
 
 void Image::CreateTexture() const {
 	if (texture == nullptr) {
