@@ -6,14 +6,14 @@
 namespace ViewDesign {
 
 
-class ViewFrame : public ViewBase {
+class ReferenceFrame : public ViewBase {
 public:
-	ViewFrame(view_ptr<> child) : child(std::move(child)) { RegisterChild(this->child); }
-	virtual ~ViewFrame() override {}
+	ReferenceFrame(view_ref<> child) : child(child) { RegisterChild(child); }
+	virtual ~ReferenceFrame() override { UnregisterChild(child); }
 
 	// child
 protected:
-	view_ptr<> child;
+	view_ref<> child;
 
 	// layout
 protected:

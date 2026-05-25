@@ -1,4 +1,6 @@
 #include <ViewDesign/view/Desktop.h>
+#include <ViewDesign/view/frame/ViewFrame.h>
+#include <ViewDesign/view/frame/ReferenceFrame.h>
 #include <ViewDesign/view/frame/MutableFrame.h>
 #include <ViewDesign/view/frame/LayerFrame.h>
 #include <ViewDesign/view/control/Placeholder.h>
@@ -96,7 +98,7 @@ void App() {
 
 	std::unique_ptr<MainView> view(new MainView());
 	desktop.AddWindow(new MainWindow(u"WindowTest", new ViewFrame(new MainView())));
-	desktop.AddWindow(new MainWindow(u"WindowTest", new ViewFrameRef(*view)));
+	desktop.AddWindow(new MainWindow(u"WindowTest", new ReferenceFrame(*view)));
 	desktop.AddWindow(new MainWindow(u"WindowTest", new MutableFrame(new MainView())));
 	desktop.AddWindow(new MainWindow(u"WindowTest", new LayerFrame(new MainView())));
 	desktop.EventLoop();
