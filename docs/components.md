@@ -26,8 +26,6 @@ The `control` sub-folder includes view components which have no child views.
 
 ### Placeholder
 
-### Button
-
 ### TextView
 
 ### TextEditor
@@ -84,13 +82,21 @@ The `layout` sub-folder includes view components which could have two or more ch
 
 ## wrapper
 
-The `wrapper` sub-folder includes templates that inherits and modifies a view component class.
+The `wrapper` sub-folder includes wrapper templates that inherits and modifies a view component class.
+
+Wrappers and frames all could decorate a view component. A frame is an individual parent view component in the view tree, while a wrapper is a class template that extends the interfaces of the view component class. Therefore, decorating a view component with wrapper is slightly more efficient at run-time than decorating with frame, though wrappers are less functional than frames. Wrappers are not able to intercept `SizeUpdated` or `Redraw` calls from the view and modify the reflow or redraw behaviour, but a frame as a parent view can.
 
 ### Cursor
 
 ### Background
 
 ### HitTestHelper
+
+### Button
+
+The `Button` wrapper turns a view component to a button-like component that reacts to mouse click events with `OnClick` callback.
+
+`Button` is not provided as a control, but as a wrapper and is considered as an abstract state machine that reacts to mouse and focus events and changes its state. This way, all view components can function like a button and it simplifies customization of buttons with text, padding, etc.
 
 ### DelayedUpdate
 

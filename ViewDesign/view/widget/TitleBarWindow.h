@@ -12,8 +12,9 @@
 #include "ViewDesign/view/layout/SplitLayout.h"
 #include "ViewDesign/view/layout/StackLayout.h"
 #include "ViewDesign/view/layout/ListLayout.h"
+#include "ViewDesign/view/control/Placeholder.h"
 #include "ViewDesign/view/control/TextView.h"
-#include "ViewDesign/view/control/Button.h"
+#include "ViewDesign/view/wrapper/Button.h"
 #include "ViewDesign/view/wrapper/Background.h"
 #include "ViewDesign/view/wrapper/Cursor.h"
 #include "ViewDesign/view/wrapper/HitTestHelper.h"
@@ -98,17 +99,26 @@ protected:
 		};
 
 	protected:
-		class ButtonBase : public Button<Auto, Fixed>, protected Context<TitleBarWindow> {
+		class ButtonBase : public Button<DefaultBackground<Placeholder<Auto, Fixed>>>, protected Context<TitleBarWindow> {
 		public:
-			ButtonBase(Color background, Color foreground, const u16string& tooltip_text) : Button<Auto, Fixed>(50.0f), Context(AsViewBase()), foreground(foreground), tooltip_text(tooltip_text) {
-				this->background = this->background_normal = background;
+			ButtonBase(const TitleBarStyle::BarStyle& style, const u16string& tooltip_text = u"") : Base(50.0f), Context(AsViewBase()), foreground(style._foreground_color), tooltip_text(tooltip_text), background_normal(style._background_color) {
+				this->background = background_normal;
 			}
 			~ButtonBase() {
 				DestroyTooltip(*this);
 			}
 		protected:
 			Color foreground;
-			u16string tooltip_text;
+			const u16string tooltip_text;
+		protected:
+			Color background_normal;
+		protected:
+			static constexpr Color background_hovered = Color::Gray;
+			static constexpr Color background_pressed = Color::DimGray;
+		protected:
+			void OnHover() { SetBackground(background_hovered); }
+			void OnPress() { SetBackground(background_pressed); }
+			void OnLeave() { SetBackground(background_normal); }
 		protected:
 			virtual void OnFocusEvent(FocusEvent event) override {
 				Button::OnFocusEvent(event);
@@ -185,9 +195,9 @@ protected:
 				create<HitThroughMargin<ClipFrame<Fixed, Fixed, Right>>>(
 					new ListLayoutHorizontal(
 						0.0f,
-						create<MinimizeButton>(style._background_color, style._foreground_color, u"minimize"),
-						create<MaximizeButton>(style._background_color, style._foreground_color, u""),
-						create<CloseButton>(style._background_color, style._foreground_color, u"close")
+						create<MinimizeButton>(style, u"minimize"),
+						create<MaximizeButton>(style),
+						create<CloseButton>(style, u"close")
 					)
 				)
 			)

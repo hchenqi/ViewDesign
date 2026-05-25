@@ -18,6 +18,13 @@ public:
 	// style
 protected:
 	Color background = color;
+protected:
+	void SetBackground(Color background) {
+		if (this->background != background) {
+			this->background = background;
+			View::Redraw(rect_infinite);
+		}
+	}
 
 	// drawing
 protected:
