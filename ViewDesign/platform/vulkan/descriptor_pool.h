@@ -11,7 +11,7 @@ namespace Vulkan {
 
 
 template<class DescriptorSetLayout>
-inline vk::raii::DescriptorSetLayout& GetDescriptorSetLayout() {
+vk::raii::DescriptorSetLayout& GetDescriptorSetLayout() {
 	static size_t index = Registry<vk::raii::DescriptorSetLayout>::Get().PutItem(DescriptorSetLayout::Create());
 	return Registry<vk::raii::DescriptorSetLayout>::Get().GetItem(index);
 }

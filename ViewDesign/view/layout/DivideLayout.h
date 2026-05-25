@@ -8,10 +8,6 @@
 namespace ViewDesign {
 
 
-template<class Direction>
-class DivideLayout;
-
-
 class _DivideLayout_Base : public ViewType<Fixed, Fixed> {
 public:
 	using child_type = view_ptr<Fixed, Fixed>;
@@ -50,10 +46,9 @@ protected:
 };
 
 
-template<>
-class DivideLayout<Vertical> : public _DivideLayout_Base {
+class DivideLayoutVertical : public _DivideLayout_Base {
 public:
-	DivideLayout(auto&& ...args) : _DivideLayout_Base(std::forward<decltype(args)>(args)...) {}
+	DivideLayoutVertical(auto&& ...args) : _DivideLayout_Base(std::forward<decltype(args)>(args)...) {}
 
 	// layout
 protected:
@@ -101,10 +96,9 @@ protected:
 };
 
 
-template<>
-class DivideLayout<Horizontal> : public _DivideLayout_Base {
+class DivideLayoutHorizontal : public _DivideLayout_Base {
 public:
-	DivideLayout(auto&& ...args) : _DivideLayout_Base(std::forward<decltype(args)>(args)...) {}
+	DivideLayoutHorizontal(auto&& ...args) : _DivideLayout_Base(std::forward<decltype(args)>(args)...) {}
 
 	// layout
 protected:

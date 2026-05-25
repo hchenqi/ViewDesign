@@ -7,6 +7,11 @@
 namespace ViewDesign {
 
 
+struct Vertical {};
+struct Horizontal {};
+struct Bidirectional {};
+
+
 template<class Direction>
 class ScrollFrame;
 

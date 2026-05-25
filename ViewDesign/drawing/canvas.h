@@ -64,7 +64,7 @@ public:
 
 
 template<class RenderTarget>
-inline void RenderCanvas(RenderTarget& target, const Canvas& canvas, Vector offset, Rect clip_region) {
+void RenderCanvas(RenderTarget& target, const Canvas& canvas, Vector offset, Rect clip_region) {
 	target.PushClip(clip_region);
 	target.Clear();
 	target.SetTransform(offset);

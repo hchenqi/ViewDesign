@@ -6,7 +6,7 @@
 using namespace ViewDesign;
 
 
-template<class> inline constexpr bool always_false = false;
+template<class> constexpr bool always_false = false;
 
 
 template<class Trait>

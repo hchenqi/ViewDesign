@@ -12,7 +12,7 @@ template<class WidthTrait, class HeightTrait>
 view_ptr<WidthTrait, HeightTrait> TextViewAdapter(std::unique_ptr<TextView> text_view);
 
 template<class WidthTrait, class HeightTrait>
-inline view_ptr<WidthTrait, HeightTrait> TextViewAdapter(owner_ptr<TextView> text_view) { return TextViewAdapter<WidthTrait, HeightTrait>(std::unique_ptr<TextView>(text_view)); }
+view_ptr<WidthTrait, HeightTrait> TextViewAdapter(owner_ptr<TextView> text_view) { return TextViewAdapter<WidthTrait, HeightTrait>(std::unique_ptr<TextView>(text_view)); }
 
 
 template<>

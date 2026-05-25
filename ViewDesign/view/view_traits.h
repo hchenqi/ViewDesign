@@ -142,13 +142,9 @@ concept is_ptr_compatible = std::derived_from<extract_width_trait<T>, extract_wi
 template<class T, class D>
 concept is_compatible_unique_ptr = is_unique_ptr<T> && is_ptr_compatible<T, D>;
 
+
 template<class T>
 auto create(auto&&... args) { return std::make_unique<T>(std::forward<decltype(args)>(args)...); }
-
-
-struct Vertical {};
-struct Horizontal {};
-struct Bidirectional {};
 
 
 } // namespace ViewDesign

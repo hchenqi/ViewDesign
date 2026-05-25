@@ -4,7 +4,10 @@ root = true
 
 indent_style = tab
 indent_size = 4
-tab_width= 4
+tab_width = 4
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
 insert_final_newline = true
 
 cpp_indent_braces = false
@@ -20,6 +23,7 @@ cpp_indent_preprocessor = leftmost_column
 cpp_indent_access_specifiers = false
 cpp_indent_namespace_contents = false
 cpp_indent_preserve_comments = false
+
 cpp_new_line_before_open_brace_namespace = same_line
 cpp_new_line_before_open_brace_type = same_line
 cpp_new_line_before_open_brace_function = same_line
@@ -31,6 +35,7 @@ cpp_new_line_close_brace_same_line_empty_function = true
 cpp_new_line_before_catch = false
 cpp_new_line_before_else = false
 cpp_new_line_before_while_in_do_while = false
+
 cpp_space_before_function_open_parenthesis = remove
 cpp_space_within_parameter_list_parentheses = false
 cpp_space_between_empty_parameter_list_parentheses = false
@@ -64,15 +69,5 @@ cpp_space_around_binary_operator = insert
 cpp_space_around_assignment_operator = insert
 cpp_space_pointer_reference_alignment = left
 cpp_space_around_ternary_operator = insert
-cpp_use_unreal_engine_macro_formatting = true
-cpp_wrap_preserve_blocks = one_liners
 
-cpp_include_cleanup_add_missing_error_tag_type = suggestion
-cpp_include_cleanup_remove_unused_error_tag_type = dimmed
-cpp_include_cleanup_optimize_unused_error_tag_type = suggestion
-cpp_include_cleanup_sort_after_edits = false
-cpp_sort_includes_error_tag_type = none
-cpp_sort_includes_priority_case_sensitive = false
-cpp_sort_includes_priority_style = quoted
-cpp_includes_style = default
-cpp_includes_use_forward_slash = true
+cpp_wrap_preserve_blocks = one_liners

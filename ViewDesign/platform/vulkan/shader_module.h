@@ -10,7 +10,7 @@ namespace Vulkan {
 
 
 template<class Shader>
-inline vk::raii::ShaderModule& GetShaderModule() {
+vk::raii::ShaderModule& GetShaderModule() {
 	static size_t index = Registry<vk::raii::ShaderModule>::Get().PutItem(DeviceContext::Get().device.createShaderModule(vk::ShaderModuleCreateInfo({}, Shader::code)));
 	return Registry<vk::raii::ShaderModule>::Get().GetItem(index);
 }

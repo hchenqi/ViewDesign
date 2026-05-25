@@ -72,18 +72,18 @@ void App() {
 		new DefaultWindow(
 			DefaultWindow::Style(),
 			u"DivideLayoutTest",
-			new Background<DivideLayout<Vertical>>(
-				create<Background<DivideLayout<Horizontal>>>(
+			new Background<DivideLayoutVertical>(
+				create<Background<DivideLayoutHorizontal>>(
 					create<Block>(),
 					create<Block>(),
 					create<Block>()
 				),
-				create<Background<DivideLayout<Horizontal>>>(
+				create<Background<DivideLayoutHorizontal>>(
 					create<Block>(),
 					create<Block>(),
 					create<Block>()
 				),
-				create<Background<DivideLayout<Horizontal>>>(
+				create<Background<DivideLayoutHorizontal>>(
 					create<Block>(),
 					create<Block>(),
 					create<Block>()

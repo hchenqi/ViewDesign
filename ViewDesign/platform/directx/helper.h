@@ -11,7 +11,7 @@ namespace ViewDesign {
 namespace DirectX {
 
 
-template <class T>
+template<class T>
 class ComPtr : public Microsoft::WRL::ComPtr<T> {
 public:
 	operator T& () {
