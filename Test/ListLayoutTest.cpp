@@ -5,9 +5,9 @@
 #include <ViewDesign/view/frame/InnerBorderFrame.h>
 #include <ViewDesign/view/frame/PaddingFrame.h>
 #include <ViewDesign/view/layout/ListLayout.h>
-#include <ViewDesign/view/control/EditBox.h>
+#include <ViewDesign/view/control/TextEditor.h>
 #include <ViewDesign/view/wrapper/HitTestHelper.h>
-#include <ViewDesign/view/widget/TextBoxConverter.h.>
+#include <ViewDesign/view/widget/TextViewAdapter.h>
 
 #include "trait_name.h"
 
@@ -45,31 +45,31 @@ private:
 	template<class T>
 	ItemFrame(T) -> ItemFrame<extract_width_trait<T>, extract_height_trait<T>>;
 
-	class EditView : public EditBox {
+	class Item : public TextEditor {
 	private:
-		struct Style : public EditBox::Style {
+		struct Style : public TextEditor::Style {
 			Style() {
 				font.size(20);
 			}
 		};
 	public:
-		EditView() : EditBox(Style(), u"Type something here...") {}
+		Item() : TextEditor(Style(), u"Type something here...") {}
 	};
 
 private:
 	void AppendItem() {
-		ref_ptr<EditView> edit_view;
+		ref_ptr<Item> item;
 		Base::AppendChild(
 			new ItemFrame(
 				new PaddingFrame(
 					Padding(10.0f),
-					TextBoxConverter<typename Base::width_trait, typename Base::height_trait>(
-						edit_view = new EditView()
+					TextViewAdapter<typename Base::width_trait, typename Base::height_trait>(
+						item = new Item()
 					)
 				)
 			)
 		);
-		edit_view->Edit();
+		item->Edit();
 	}
 
 private:

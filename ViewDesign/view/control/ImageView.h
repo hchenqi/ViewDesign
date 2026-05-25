@@ -7,9 +7,9 @@
 namespace ViewDesign {
 
 
-class ImageBox : public ViewType<Auto, Auto> {
+class ImageView : public ViewType<Auto, Auto> {
 public:
-	ImageBox(const u16string& file_name) : image(file_name) {}
+	ImageView(const u16string& file_name) : image(file_name) {}
 protected:
 	Image image;
 protected:
@@ -24,9 +24,9 @@ protected:
 };
 
 
-class ImageRepeatBox : public ViewType<Fixed, Fixed> {
+class ImageRepeatView : public ViewType<Fixed, Fixed> {
 public:
-	ImageRepeatBox(const u16string& file_name, Point offset = point_zero) : image(file_name), offset(offset - point_zero) {}
+	ImageRepeatView(const u16string& file_name, Point offset = point_zero) : image(file_name), offset(offset - point_zero) {}
 protected:
 	Image image;
 	Vector offset;

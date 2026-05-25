@@ -25,12 +25,12 @@ The program below displays "Hello World!" at the center of the main window: ([Ex
 ```cpp
 #include <ViewDesign/view/widget/DefaultWindow.h>
 #include <ViewDesign/view/frame/CenterFrame.h>
-#include <ViewDesign/view/control/TextBox.h>
+#include <ViewDesign/view/control/TextView.h>
 
 using namespace ViewDesign;
 
-struct TextBoxStyle : TextBox::Style {
-	TextBoxStyle() {
+struct TextViewStyle : TextView::Style {
+	TextViewStyle() {
 		font.size(75.0f).color(Color::Black);
 	}
 };
@@ -41,7 +41,7 @@ void App() {
 			DefaultWindow::Style(),
 			u"Example",
 			create<CenterFrame<Fixed, Fixed>>(
-				create<TextBox>(TextBoxStyle(), u"Hello World!")
+				create<TextView>(TextViewStyle(), u"Hello World!")
 			)
 		)
 	);
@@ -51,13 +51,13 @@ void App() {
 
 ![screenshot HelloWorld-1](docs/HelloWorld-1.png)
 
-We first include headers of components, then we define text style for `TextBox` derived from the default style, and finally in the entrypoint `void App()`, we create and combine the components, add main window `DefaultWindow` and enter event loop.
+We first include headers of components, then we define text style for `TextView` derived from the default style, and finally in the entrypoint `void App()`, we create and combine the components, add main window `DefaultWindow` and enter event loop.
 
-`CenterFrame<Fixed, Fixed>` always places `TextBox` at the center when it is being resized:
+`CenterFrame<Fixed, Fixed>` always places `TextView` at the center when it is being resized:
 
 ![screen recording HelloWorld-1](docs/HelloWorld-1.gif)
 
-If we change it to `ClipFrame<Fixed, Fixed, TopLeft>`, the `TextBox` will stay at the top-left corner.
+If we change it to `ClipFrame<Fixed, Fixed, TopLeft>`, the `TextView` will stay at the top-left corner.
 
 ```cpp
 // #include <ViewDesign/view/frame/ClipFrame.h>
@@ -67,7 +67,7 @@ If we change it to `ClipFrame<Fixed, Fixed, TopLeft>`, the `TextBox` will stay a
 			DefaultWindow::Style(),
 			u"Example",
 			create<ClipFrame<Fixed, Fixed, TopLeft>>(
-				create<TextBox>(TextBoxStyle(), u"Hello World!")
+				create<TextView>(TextViewStyle(), u"Hello World!")
 			)
 		)
 	);
@@ -77,19 +77,19 @@ If we change it to `ClipFrame<Fixed, Fixed, TopLeft>`, the `TextBox` will stay a
 
 Similarly, `ClipFrame<Fixed, Fixed, TopRight>`, `ClipFrame<Fixed, Fixed, BottomLeft>` and `ClipFrame<Fixed, Fixed, BottomRight>` place their child views at top-right, bottom-left and bottom-right corners respectively.
 
-`Fixed` is one of the size traits of a view, marking that a dimension (width or height) is to be assigned by the parent view. `DefaultWindow` expects both width and height traits of the child view to be `Fixed`, thus we used `CenterFrame<Fixed, Fixed>` or `ClipFrame<Fixed, Fixed, TopLeft>`, etc. We can not directly put the `TextBox` in the `DefaultWindow`, because both width and height traits of `TextBox` are not `Fixed`, but `Relative`, and the code below won't compile:
+`Fixed` is one of the size traits of a view, marking that a dimension (width or height) is to be assigned by the parent view. `DefaultWindow` expects both width and height traits of the child view to be `Fixed`, that's why we wrote `CenterFrame<Fixed, Fixed>` or `ClipFrame<Fixed, Fixed, TopLeft>`, etc. We can not directly put a `TextView` in `DefaultWindow`, because both width and height traits of `TextView` are not `Fixed`, but `Relative`. The code below won't compile:
 
 ```cpp
 	desktop.AddWindow(
 		create<DefaultWindow>(
 			DefaultWindow::Style(),
 			u"Example",
-			create<TextBox>(TextBoxStyle(), u"Hello World!") // error: size traits incompatible
+			create<TextView>(TextViewStyle(), u"Hello World!") // error: size traits incompatible
 		)
 	);
 ```
 
-The size of a `TextBox` depends on both the layout box provided by its parent view and its text content, therefore, it has `Relative` traits. We must explicitly choose where to place `TextBox` in the `DefaultWindow` because its size might not exactly be the size of the `DefaultWindow` if it has `Relative` traits. `CenterFrame<Fixed, Fixed>` can be used as an adapter in between, which itself has `Fixed` traits and can be accepted by `DefaultWindow`, and accepts a child view with `Relative` traits by placing the child view at the center.
+The size of a `TextView` depends on both the size constraint provided by its parent view and its text content, therefore, it has `Relative` traits. Because its size might not exactly be the size of the `DefaultWindow`, it can't be directly placed in the `DefaultWindow` without specifying how. `CenterFrame<Fixed, Fixed>` can be used as an adapter in between, which itself has `Fixed` traits that fits with `DefaultWindow`, and accepts a child view with `Relative` traits by placing the child view at the center.
 
 `create<>` is just a shorter alias of `std::make_unique<>`. We can also use the even shorter `new` here to create the components, and it will not be unsafe because the raw pointer returned by `new` will be immediately captured as a `unique_ptr` internally in the parent view constructors.
 
@@ -99,7 +99,7 @@ The size of a `TextBox` depends on both the layout box provided by its parent vi
 			DefaultWindow::Style(),
 			u"Example",
 			new CenterFrame<Fixed, Fixed>(
-				new TextBox(TextBoxStyle(), u"Hello World!")
+				new TextView(TextViewStyle(), u"Hello World!")
 			)
 		)
 	);
@@ -168,7 +168,7 @@ The features and benefits of *ViewDesign* can be demonstrated by comparing with 
 
 In web development, elements, styles and event handling are described separately by HTML, CSS and Javascript which can get distracting, complicate the development and affect the performance. With *ViewDesign*, they can be all implemented in pure C++ which directly compiles to machine code targeting desktop applications. One can choose to separate the style definitions and main logic in different files at will without losing the integrity.
 
-In web development, each element consists of padding, border and margin along with its content according to the CSS box model, which makes it easy to design and change the style of an element but also makes an element unnecessarily large to store all the style information. In *ViewDesign*, each view as a component is aimed to be minimal and lightweight without additional decorations. For example, the `TextBox` just displays text with a given layout box without any border, padding, background color or layout styles. It can however be combined with other components like `CenterFrame`, `BorderFrame`, `PaddingFrame` or `MaxFrame` to implement such additional attributes.
+In web development, each element consists of padding, border and margin along with its content according to the CSS box model, which makes it easy to design and change the style of an element but also makes an element unnecessarily large to store all the style information. In *ViewDesign*, each view as a component is aimed to be minimal and lightweight without additional decorations. For example, the `TextView` just displays text within a given size constraint without any border, padding, background color or layout styles. It can however be combined with other components like `CenterFrame`, `BorderFrame`, `PaddingFrame` or `MaxFrame` to implement such additional attributes.
 
 In web development, the layout styles of parent and child elements can be conflicting. For example, a parent element might have style `width: fix-content` while its child element has style `width: 100%`, which doesn't make sense. With the standard component library of *ViewDesign*, this scenario can be prevented at compile-time when parent view expects the width trait of its child view to be `Auto` but child view's width trait is `Fixed`. This usually encourages developers to think about the sizing behaviour of a component and the layout compatibility between components. Nevertheless, there remains the possibility of building a general-purpose, style-guided and run-time calculated rich component like an HTML-element on top of the core *ViewDesign* library. In other words, *ViewDesign* can provide a basis for a browser engine.
 
@@ -206,7 +206,7 @@ Contribution to this project and the component library is therefore very welcome
 
 ## Concepts
 
-This section explains the basic concepts related with the view tree, layout, drawing and event handling with *ViewDesign*.
+This section introduces the basic concepts related with view tree, layout, drawing and event handling in *ViewDesign*.
 
 ### View / Desktop / Window
 
@@ -220,11 +220,11 @@ Each view can have a parent view and multiple child views. All views form a view
 
 Control, frame and layout are different types of view components.
 
-- A control has no child view and does basic functions or displays raw content, like `Placeholder`, `Button`, `TextBox`, `ImageBox`, etc.
+- A *control* has no child view and does basic functions or displays raw content, like `Placeholder`, `TextView`, `ImageView`, etc.
 
-- A frame has one child view to decorate, like `BorderFrame` and `BackgroundFrame`.
+- A *frame* has one child view to decorate, like `BorderFrame`, `BackgroundFrame`, `CenterFrame`, etc. A `Window` is also a frame that has one direct child view.
 
-- A layout may have multiple child views that are visually arranged in a certain way, like `ListLayout`, `SplitLayout`, `OverlapLayout`, etc.
+- A *layout* may have multiple child views that are visually arranged in a certain layout, like `ListLayout`, `SplitLayout`, `OverlapLayout`, etc.
 
 ### Reflow / Redraw
 
@@ -232,7 +232,7 @@ Each view occupies a rectangular region on its parent view. Usually the position
 
 Reflow is the process of propagating size change and calculating the layout of a view, determining the size of the view and the sizes and positions of its child views. Redraw is the process of propagating an updated region of a view and drawing its content including child views on the updated region.
 
-In the core library, regardless of size traits, the parent view provides a size reference `size_ref` to a child view, the child view calculates its size based on the `size_ref` or on its own, and returns its actual size to the parent view, which then calculates its layout and its own size. Some particular views like `OverlapLayout` also define their own mechanism of calculating layout out of this convention.
+In the core library, regardless of size traits, the parent view provides a size reference `size_ref` to a child view, the child view calculates its size based on the `size_ref` or on its own, and returns its actual size to the parent view, which then calculates its layout and its own size.
 
 If a view later changes its size by itself, it notifies its parent view, and the parent view calculates its layout again and might also change its own size. Reflow stops at the first parent view who updated its internal layout but doesn't change its own size. This final parent view then initiates redraw over its updated region.
 
@@ -252,19 +252,21 @@ The standard component library of *ViewDesign* introduces size traits `Fixed`, `
 
 - `Relative` means a dimension of a view is finally calculated by the view but based on some information provided by its parent view.
 
-`Fixed` and `Auto` are naturally also `Relative`, but not vice versa.
-
-These traits already describes most scenarios of layout dependencies. Other more complex layout dependencies that doesn't fall in these traits, if possibly existing, can be implemented by extending the core interfaces in a custom way.
-
 `view_ref` holds a reference to a view, and `view_ptr` owns a unique pointer to a view. Both of them can be marked by a certain size trait, and a parent view may only accept child views passed as `view_ref` or `view_ptr` with certain size traits. This will be checked as concepts at compile-time.
 
 Some frames act as adapters for converting size traits of the child view:
 
-- `ClipFrame`, `CenterFrame` and `ScrollFrame` convert a dimension of the child view from `Auto` or `Relative` to `Fixed`, clipping the overflowing part of the child view. `ClipFrame` puts the child view at a corner or to a side. `CenterFrame` puts the child view at the center. `ScrollFrame` makes it possible to scroll to the overflowing part of the child view.
+- `ClipFrame`, `CenterFrame` and `ScrollFrame` convert a dimension of the child view from `Auto` or `Relative` to `Fixed`, clipping the overflowing part of the child view. `ClipFrame` puts the child view at a corner or to a side. `CenterFrame` puts the child view at the center. `ScrollFrame` makes it possible to scroll to the overflowing part of the child view. `StretchFrame` does the same trait conversion, though it stretches its child view to make it fit in itself.
 
 - `FixedFrame` converts a dimension of the child view from `Fixed` to `Auto`. It sets a fixed value for the dimension of the child view.
 
-- `MaxFrame` and `MinFrame` convert a dimension of the child view from `Relative` to `Auto`, normalizing its child view with a max or min size. They are often combined with child view components with flowing behaviour like `TextBox` by providing a layout box for the child view.
+- `MaxFrame` and `MinFrame` convert a dimension of the child view from `Relative` to `Auto`, normalizing its child view with a max or min size. `MaxFrame` is often combined with child view components with flowing behaviour, like `TextView`, by providing a max size constraint to the child view.
+
+`Fixed` and `Auto` are naturally also `Relative`, but not vice versa. Therefore, `Relative` has the most freedom and the weakest restriction.
+
+How a view component with `Relative` traits or a parent view accepting a child view with `Relative` traits interpret the `size_ref` depends on the components. For example, `TextView` has `Relative` traits and regards the `size_ref` as the size constraint for calculating the text layout, which agrees with `MaxFrame` that provides the `size_ref` as the max size constraint. However, another component with `Relative` traits may calculate its size as a percentage of `size_ref`, which usually won't work very well with `MaxFrame` even though it fits with `MaxFrame` by size traits.
+
+The reflow logic and the size traits already describe most scenarios of layout dependencies. Other more complex or special layout dependencies can be implemented by certain view components extending the core interfaces in a custom way. For example, a `Window` or an `OverlapLayout::Window` doesn't only decide its size, but also its position on the `Desktop` or the `OverlapLayout`, which is governed by special interfaces.
 
 ### Figure / RenderTarget / Canvas / Surface / Layer
 
@@ -294,11 +296,11 @@ A view can acquire the focus to receive key events as instances of `KeyEvent`. T
 
 ## Code Structure
 
-This section gives an overview of the source code structure of *ViewDesign*.
+This section gives an overview of the source code structure of *ViewDesign* with short descriptions for each module.
 
 ### common
 
-The `common` sub-folder keeps the core type definitions and utility functions.
+The `common` sub-folder includes some common type definitions and utility functions.
 
 #### `Handle` / `ref_ptr` / `owner_ptr`
 
@@ -320,7 +322,7 @@ The `geometry` sub-folder defines the following types in 2D geometry, which all 
 - `Scale`
 - `Transform`
 
-For `Window`, `Surface` and `Layer`, values of integer type are used to work with actual pixels of a render target. They are defined as:
+For `Window`, `Surface` and `Layer` that work with device pixels of a render target, integer values are used with the following types:
 - `PointI`
 - `SizeU`
 - `RectI`
@@ -331,7 +333,7 @@ Converting functions from types with floating point values to types with integer
 
 The `drawing` sub-folder includes the following classes related with drawing and rendering:
 - `Color`: color in BGRA format stored as a 32-bit integer
-- `PixelBuffer`: CPU-side bitmap, can be converted to `Bitmap` as a GPU-side texture
+- `PixelBuffer`: CPU-side bitmap as a 2D array of `Color` pixels, which can be converted to `Bitmap` as a GPU-side texture
 - `Figure`: abstract base class for figures
 - `Canvas`: abstract render target for view components as a container of figures in groups
 - `Bitmap`: GPU-side texture

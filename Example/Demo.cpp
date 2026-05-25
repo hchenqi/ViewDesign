@@ -3,7 +3,7 @@
 #include <ViewDesign/view/control/Placeholder.h>
 #include <ViewDesign/view/frame/ClipFrame.h>
 #include <ViewDesign/view/frame/CenterFrame.h>
-#include <ViewDesign/view/control/TextBox.h>
+#include <ViewDesign/view/control/TextView.h>
 #include <ViewDesign/view/wrapper/Background.h>
 
 
@@ -17,8 +17,8 @@ struct BackgroundWindowStyle : UndecoratedWindow::Style {
 	}
 };
 
-struct TextBoxStyle : TextBox::Style {
-	TextBoxStyle() {
+struct TextViewStyle : TextView::Style {
+	TextViewStyle() {
 		font.size(75.0f).color(Color::Black);
 	}
 };
@@ -44,7 +44,7 @@ void App() {
 			DefaultWindow::Style(),
 			u"Example",
 			new CenterFrame<Fixed, Fixed>(
-				new TextBox(TextBoxStyle(), u"Hello World!")
+				new TextView(TextViewStyle(), u"Hello World!")
 			)
 		)
 	);
@@ -53,7 +53,7 @@ void App() {
 			DefaultWindow::Style(),
 			u"Example",
 			new ClipFrame<Fixed, Fixed, TopLeft>(
-				new TextBox(TextBoxStyle(), u"Hello World!")
+				new TextView(TextViewStyle(), u"Hello World!")
 			)
 		)
 	);

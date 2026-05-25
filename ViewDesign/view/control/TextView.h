@@ -7,13 +7,13 @@
 namespace ViewDesign {
 
 
-class TextBox : public ViewType<Relative, Relative> {
+class TextView : public ViewType<Relative, Relative> {
 public:
 	using Style = TextStyle;
 
 public:
-	TextBox(const Style& style, u16string text) : style(style), text(std::move(text)) { text_block.SetText(style, this->text); }
-	~TextBox() {}
+	TextView(const Style& style, u16string text) : style(style), text(std::move(text)) { text_block.SetText(style, this->text); }
+	~TextView() {}
 
 	// text
 protected:

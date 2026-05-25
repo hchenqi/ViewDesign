@@ -7,57 +7,57 @@
 #include <ViewDesign/view/frame/PaddingFrame.h>
 #include <ViewDesign/view/frame/BackgroundFrame.h>
 #include <ViewDesign/view/layout/ListLayout.h>
-#include <ViewDesign/view/control/EditBox.h>
-#include <ViewDesign/view/control/TextBox.h>
+#include <ViewDesign/view/control/TextEditor.h>
+#include <ViewDesign/view/control/TextView.h>
 #include <ViewDesign/view/wrapper/Background.h>
-#include <ViewDesign/view/widget/TextBoxConverter.h.>
+#include <ViewDesign/view/widget/TextViewAdapter.h>
 #include <ViewDesign/messaging/state.h>
 
 
 using namespace ViewDesign;
 
 
-class EditView : public EditBox {
+class TextInput : public TextEditor {
 public:
-	using Style = EditBox::Style;
+	using Style = TextEditor::Style;
 public:
-	EditView(const Style& style, u16string text) : EditBox(style, std::move(text)), text_state(this->text) {}
+	TextInput(const Style& style, u16string text) : TextEditor(style, std::move(text)), text_state(this->text) {}
 public:
 	State<u16string> text_state;
 private:
 	virtual void OnTextUpdate() override {
-		EditBox::OnTextUpdate();
+		TextEditor::OnTextUpdate();
 		text_state.Set(text);
 	}
 };
 
 
-class TextView : public TextBox {
+class Text : public TextView {
 public:
-	using Style = TextBox::Style;
+	using Style = TextView::Style;
 public:
-	TextView(const Style& style, const State<u16string>& text_state) : TextBox(style, text_state.Get()), text_state_watcher(text_state, [&](const u16string& text) { Assign(text); }) {}
+	Text(const Style& style, const State<u16string>& text_state) : TextView(style, text_state.Get()), text_state_watcher(text_state, [&](const u16string& text) { Assign(text); }) {}
 private:
 	State<u16string>::Watcher text_state_watcher;
 };
 
 
-struct TextViewStyleA : TextView::Style {
-	TextViewStyleA() {
+struct TextStyleA : Text::Style {
+	TextStyleA() {
 		font.size(30.0f).color(Color::Black);
 	}
 };
 
-struct TextViewStyleB : TextView::Style {
-	TextViewStyleB() {
+struct TextStyleB : Text::Style {
+	TextStyleB() {
 		font.size(50.0f).color(Color::Blue);
 	}
 };
 
 
 void App() {
-	std::unique_ptr<EditView> edit_view = create<EditView>(EditView::Style(), u"Type something here...");
-	EditView& edit_view_ref = *edit_view;
+	std::unique_ptr<TextInput> text_input = create<TextInput>(TextInput::Style(), u"Type something here...");
+	TextInput& text_input_ref = *text_input;
 
 	desktop.AddWindow(
 		new DefaultWindow(
@@ -71,8 +71,8 @@ void App() {
 							Color::LightSalmon,
 							new PaddingFrame(
 								Padding(20.0f),
-								TextBoxConverter<Relative, Auto>(
-									new TextView(TextViewStyleA(), edit_view_ref.text_state)
+								TextViewAdapter<Relative, Auto>(
+									new Text(TextStyleA(), text_input_ref.text_state)
 								)
 							)
 						),
@@ -80,15 +80,15 @@ void App() {
 							Border(2.0f, Color::Orange),
 							new PaddingFrame(
 								Padding(10.0f),
-								TextBoxConverter<Relative, Auto>(
-									std::move(edit_view)
+								TextViewAdapter<Relative, Auto>(
+									std::move(text_input)
 								)
 							)
 						),
 						create<BackgroundFrame<Relative, Auto>>(
 							Color::LightSkyBlue,
-							TextBoxConverter<Relative, Auto>(
-								create<TextView>(TextViewStyleB(), edit_view_ref.text_state)
+							TextViewAdapter<Relative, Auto>(
+								create<Text>(TextStyleB(), text_input_ref.text_state)
 							)
 						)
 					)
@@ -97,7 +97,7 @@ void App() {
 		)
 	);
 
-	edit_view_ref.Edit();
+	text_input_ref.Edit();
 
 	desktop.EventLoop();
 }

@@ -28,13 +28,13 @@ The `control` sub-folder includes view components which have no child views.
 
 ### Button
 
-### TextBox
+### TextView
 
-### EditBox
+### TextEditor
 
-> Known issue: `TextBox` / `EditBox` don't well support vertical text layout (the text layout direction is related with the choice of ClipFrame that wraps them).
+> Known issue: `TextView` / `TextEditor` don't well support vertical text layout (the text layout direction is related with the choice of ClipFrame that wraps them).
 
-### ImageBox
+### ImageView
 
 ## frame
 

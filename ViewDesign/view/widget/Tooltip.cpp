@@ -3,7 +3,7 @@
 #include "ViewDesign/view/frame/MaxFrame.h"
 #include "ViewDesign/view/frame/BorderFrame.h"
 #include "ViewDesign/view/frame/PaddingFrame.h"
-#include "ViewDesign/view/control/TextBox.h"
+#include "ViewDesign/view/control/TextView.h"
 #include "ViewDesign/view/wrapper/Background.h"
 #include "ViewDesign/geometry/helper.h"
 #include "ViewDesign/event/timer.h"
@@ -31,7 +31,7 @@ private:
 				Border(1.5f, 0x767676),
 				new PaddingFrame(
 					Padding(5.0f, 2.0f),
-					text_box = new SolidColorBackground<0xF1F2F7, TextBox>(TextStyle(), u"")
+					text_view = new SolidColorBackground<0xF1F2F7, TextView>(TextStyle(), u"")
 				)
 			)
 		)
@@ -51,14 +51,14 @@ private:
 	}
 
 private:
-	struct TextStyle : TextBox::Style {
+	struct TextStyle : TextView::Style {
 		TextStyle() {
 			font.size(13).color(0x737374);
 		}
 	};
 
 private:
-	ref_ptr<TextBox> text_box;
+	ref_ptr<TextView> text_view;
 
 private:
 	Rect region;
@@ -142,7 +142,7 @@ private:
 public:
 	void Show(ViewBase& view, const u16string& text) {
 		this->view = &view;
-		text_box->Assign(text);
+		text_view->Assign(text);
 		switch (state) {
 		case State::Hidden:
 			state = State::Waiting;

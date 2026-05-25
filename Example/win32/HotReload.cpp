@@ -8,21 +8,21 @@
 #include <ViewDesign/view/frame/ClipFrame.h>
 #include <ViewDesign/view/frame/PaddingFrame.h>
 #include <ViewDesign/view/control/Placeholder.h>
-#include <ViewDesign/view/control/EditBox.h>
+#include <ViewDesign/view/control/TextEditor.h>
 
 #include <windows.h>
 
 
 // hot reload (immediate mode) requires the states to be stored externally and the components access and update the states by reference, so that the state won't be lost when the components are recreated
-// EditBox in the standard component library of ViewDesign owns its states internally, therefore, it is extended here to accept an external state reference which is synchronized with its internal states on events
-// alternatively, one can write their own versions of EditBox that just reference an external state without owning internal states
-// other stateless components like TextBox, ClipFrame, BorderFrame, BackgroundFrame, etc can be used directly in immediate mode
+// TextEditor in the standard component library of ViewDesign owns its states internally, therefore, it is extended here to accept an external state reference which is synchronized with its internal states on events
+// alternatively, one can write their own versions of TextEditor that just reference an external state without owning internal states
+// other stateless or possibly constant components like TextView, ClipFrame, BackgroundFrame, etc might be used directly in immediate mode
 
 namespace ViewDesign::IM {
 
-class EditBox : public ViewDesign::EditBox {
+class TextEditor : public ViewDesign::TextEditor {
 public:
-	using Style = ViewDesign::EditBox::Style;
+	using Style = ViewDesign::TextEditor::Style;
 public:
 	struct State {
 		// some states are not initialized here just because their values should initially be undefined
@@ -41,7 +41,7 @@ public:
 		bool focus = false;
 	};
 public:
-	EditBox(const Style& style, State& state) : ViewDesign::EditBox(style, state.text), state(state) {}
+	TextEditor(const Style& style, State& state) : ViewDesign::TextEditor(style, state.text), state(state) {}
 
 private:
 	State& state;
@@ -79,20 +79,20 @@ public:
 	}
 private:
 	virtual void OnTextUpdate() override {
-		ViewDesign::EditBox::OnTextUpdate();
+		ViewDesign::TextEditor::OnTextUpdate();
 		state.text = text;
 	}
 private:
 	virtual void OnMouseEvent(MouseEvent event) override {
-		ViewDesign::EditBox::OnMouseEvent(event);
+		ViewDesign::TextEditor::OnMouseEvent(event);
 		SaveState();
 	}
 	virtual void OnKeyEvent(KeyEvent event) override {
-		ViewDesign::EditBox::OnKeyEvent(event);
+		ViewDesign::TextEditor::OnKeyEvent(event);
 		SaveState();
 	}
 	virtual void OnFocusEvent(FocusEvent event) override {
-		ViewDesign::EditBox::OnFocusEvent(event);
+		ViewDesign::TextEditor::OnFocusEvent(event);
 		switch (event) {
 		case FocusEvent::Focus: state.focus = true; break;
 		case FocusEvent::Blur: state.focus = false; break;
@@ -122,8 +122,8 @@ void App() {
 		)
 	);
 
-	IM::EditBox::State edit_box_state;
-	edit_box_state.text = u"Type something here...";
+	IM::TextEditor::State text_editor_state;
+	text_editor_state.text = u"Type something here...";
 
 	int current_version = -1;
 
@@ -153,8 +153,8 @@ void App() {
 #endif
 
 		// hint: edit the styles while running
-		struct EditBoxStyle : IM::EditBox::Style {
-			EditBoxStyle() {
+		struct TextEditorStyle : IM::TextEditor::Style {
+			TextEditorStyle() {
 				font.size(36.0f).color(Color::ForestGreen);
 			}
 		};
@@ -162,20 +162,20 @@ void App() {
 		// hot reload for adding/removing frame templates or changing template arguments is not supported by Visual Studio
 		// this is because instantiation of templates introduces new data types
 		// we could explicitly instantiate the templates that might be used so that their symbols stay static (see the end of this file)
-		ref_ptr<IM::EditBox> edit_box;
+		ref_ptr<IM::TextEditor> text_editor;
 		mutable_frame->Reset(
 			new BackgroundFrame(
 				Color::PaleTurquoise,
 				new ClipFrame<Fixed, Fixed, TopLeft>(
 					new PaddingFrame(
 						Padding(15.0f),
-						edit_box = new IM::EditBox(EditBoxStyle(), edit_box_state)
+						text_editor = new IM::TextEditor(TextEditorStyle(), text_editor_state)
 					)
 				)
 			)
 		);
-		// EditBoxRef is detached from the view tree when created and SetFocus() / SetCapture() won't work until it is added in the view tree
-		edit_box->LoadState();
+		// TextEditorRef is detached from the view tree when created and SetFocus() / SetCapture() won't work until it is added in the view tree
+		text_editor->LoadState();
 
 		// the caret blinking state, mouse tracker state and cursor might not display consistently without LAZY_RECREATE, because:
 		// - caret blinking and mouse tracker uses internal timers that are not set at LoadState

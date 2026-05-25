@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ViewDesign/view/control/TextBox.h"
+#include "ViewDesign/view/control/TextView.h"
 #include "ViewDesign/view/wrapper/Cursor.h"
 #include "ViewDesign/common/word_iterator.h"
 #include "ViewDesign/event/timer.h"
@@ -12,9 +12,9 @@
 namespace ViewDesign {
 
 
-class EditBox : public CustomizedCursor<CursorStyle::Text, TextBox> {
+class TextEditor : public CustomizedCursor<CursorStyle::Text, TextView> {
 protected:
-	struct EditBoxStyle {
+	struct TextEditorStyle {
 		struct EditStyle {
 		public:
 			bool _disabled = false; // can only select and copy if disabled
@@ -34,15 +34,15 @@ protected:
 		} edit;
 	};
 public:
-	struct Style : TextBox::Style, EditBoxStyle {};
+	struct Style : TextView::Style, TextEditorStyle {};
 
 public:
-	EditBox(const Style& style, u16string text = u"");
-	~EditBox() {}
+	TextEditor(const Style& style, u16string text = u"");
+	~TextEditor() {}
 
 	// style
 protected:
-	EditBoxStyle style;
+	TextEditorStyle style;
 protected:
 	bool IsEditDisabled() const { return style.edit._disabled; }
 
@@ -75,7 +75,7 @@ protected:
 	static constexpr uint16 caret_blink_period = 500;  // 500ms
 	static constexpr uint16 caret_blink_expire_time = 20000;  // 20s
 protected:
-	Timer caret_timer = Timer(std::bind(&EditBox::CaretBlink, this));
+	Timer caret_timer = Timer(std::bind(&TextEditor::CaretBlink, this));
 	uint16 caret_blink_time;
 protected:
 	bool IsCaretVisible() const { return caret_state == CaretState::Show || caret_state == CaretState::BlinkShow; }

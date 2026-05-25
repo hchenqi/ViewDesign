@@ -12,7 +12,7 @@
 #include "ViewDesign/view/layout/SplitLayout.h"
 #include "ViewDesign/view/layout/StackLayout.h"
 #include "ViewDesign/view/layout/ListLayout.h"
-#include "ViewDesign/view/control/TextBox.h"
+#include "ViewDesign/view/control/TextView.h"
 #include "ViewDesign/view/control/Button.h"
 #include "ViewDesign/view/wrapper/Background.h"
 #include "ViewDesign/view/wrapper/Cursor.h"
@@ -92,9 +92,9 @@ protected:
 
 	class TitleBar : public HitSelfFallback<DefaultBackground<FixedFrame<Fixed, Auto>>>, Context<TitleBarWindow> {
 	public:
-		class Title : public TextBox {
+		class Title : public TextView {
 		public:
-			Title(const TitleBarStyle& style, const u16string& text) : TextBox(style, text) {}
+			Title(const TitleBarStyle& style, const u16string& text) : TextView(style, text) {}
 		};
 
 	protected:
@@ -221,7 +221,7 @@ public:
 							new TitleBar(
 								style.title.bar,
 								std::move(menu),
-								title_text_box = new TitleBar::Title(style.title, title)
+								title_text_view = new TitleBar::Title(style.title, title)
 							),
 							new BackgroundFrame(
 								style.background_color,
@@ -236,9 +236,9 @@ public:
 
 protected:
 	ref_ptr<ResizeBorder> border;
-	ref_ptr<TitleBar::Title> title_text_box;
+	ref_ptr<TitleBar::Title> title_text_view;
 public:
-	void SetTitle(const u16string& str) { title_text_box->Assign(str); Window::SetTitle(str); }
+	void SetTitle(const u16string& str) { title_text_view->Assign(str); Window::SetTitle(str); }
 
 protected:
 	ref_ptr<MutableFrame<Fixed, Fixed>> outer_frame;

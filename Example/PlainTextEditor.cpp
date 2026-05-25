@@ -3,13 +3,13 @@
 #include <ViewDesign/view/frame/PaddingFrame.h>
 #include <ViewDesign/view/frame/ScaleFrame.h>
 #include <ViewDesign/view/frame/ClipFrame.h>
-#include <ViewDesign/view/control/EditBox.h>
+#include <ViewDesign/view/control/TextEditor.h>
 #include <ViewDesign/view/wrapper/Background.h>
 
 using namespace ViewDesign;
 
 void App() {
-	ref_ptr<EditBox> edit_box;
+	ref_ptr<TextEditor> text_editor;
 	desktop.AddWindow(
 		new DefaultWindow(
 			DefaultWindow::Style(),
@@ -23,7 +23,7 @@ void App() {
 							// this padding is scaled
 							new PaddingFrame(
 								Padding(10.0f),
-								edit_box = new EditBox(EditBox::Style(), u"Type something here...\n(hint: zoom with Ctrl + scroll)")
+								text_editor = new TextEditor(TextEditor::Style(), u"Type something here...\n(hint: zoom with Ctrl + scroll)")
 							)
 						)
 					)
@@ -31,6 +31,6 @@ void App() {
 			)
 		)
 	);
-	edit_box->Edit(22); // length of u"Type something here..."
+	text_editor->Edit(22); // length of u"Type something here..."
 	desktop.EventLoop();
 }

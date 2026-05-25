@@ -3,20 +3,20 @@
 #include <ViewDesign/view/widget/TitleBarWindow.h>
 #include <ViewDesign/view/frame/CenterFrame.h>
 #include <ViewDesign/view/frame/ClipFrame.h>
-#include <ViewDesign/view/control/TextBox.h>
+#include <ViewDesign/view/control/TextView.h>
 
 
 using namespace ViewDesign;
 
 
-struct TextBoxStyle : TextBox::Style {
-	TextBoxStyle() {
+struct TextViewStyle : TextView::Style {
+	TextViewStyle() {
 		font.size(75).color(Color::Black);
 		// paragraph.flow_direction(FlowDirection::RightToLeft).read_direction(ReadDirection::TopToBottom);
 	}
 };
 
-static const u16string title = u"TextBoxTest";
+static const u16string title = u"TextViewTest";
 static const u16string text = u"Hello World!\n你好，世界！";
 
 
@@ -26,7 +26,7 @@ void App() {
 			DefaultWindow::Style(),
 			title,
 			new CenterFrame<Fixed, Fixed>(
-				new TextBox(TextBoxStyle(), text)
+				new TextView(TextViewStyle(), text)
 			)
 		)
 	);
@@ -37,7 +37,7 @@ void App() {
 			DefaultWindow::Style(),
 			title,
 			new ClipFrame<Fixed, Fixed, TopLeft>(
-				new TextBox(TextBoxStyle(), text)
+				new TextView(TextViewStyle(), text)
 			)
 		)
 	);
@@ -48,7 +48,7 @@ void App() {
 			DefaultWindow::Style(),
 			title,
 			new ClipFrame<Fixed, Fixed, BottomRight>(
-				new TextBox(TextBoxStyle(), text)
+				new TextView(TextViewStyle(), text)
 			)
 		)
 	);
@@ -59,7 +59,7 @@ void App() {
 			UndecoratedWindow::Style(),
 			title,
 			new CenterFrame<Fixed, Fixed>(
-				new TextBox(TextBoxStyle(), text)
+				new TextView(TextViewStyle(), text)
 			)
 		)
 	);
@@ -70,7 +70,7 @@ void App() {
 			TitleBarWindow::Style(),
 			title,
 			new CenterFrame<Fixed, Fixed>(
-				new TextBox(TextBoxStyle(), text)
+				new TextView(TextViewStyle(), text)
 			)
 		)
 	);

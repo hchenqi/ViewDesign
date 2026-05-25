@@ -2,7 +2,7 @@
 #include <ViewDesign/view/frame/CenterFrame.h>
 #include <ViewDesign/view/frame/ScaleFrame.h>
 #include <ViewDesign/view/frame/StretchFrame.h>
-#include <ViewDesign/view/control/ImageBox.h>
+#include <ViewDesign/view/control/ImageView.h>
 
 using namespace ViewDesign;
 
@@ -15,7 +15,7 @@ void App() {
 			u"ImageView (centered) (hint: zoom with Ctrl + scroll)",
 			new CenterFrame<Fixed, Fixed>(
 				new ScaleFrame(
-					new ImageBox(file)
+					new ImageView(file)
 				)
 			)
 		)
@@ -25,7 +25,7 @@ void App() {
 			DefaultWindow::Style(),
 			u"ImageView (stretched)",
 			new StretchFrame<Fixed, Fixed>(
-				new ImageBox(file)
+				new ImageView(file)
 			)
 		)
 	);
@@ -34,7 +34,7 @@ void App() {
 			DefaultWindow::Style(),
 			u"ImageView (repeating) (hint: zoom with Ctrl + scroll)",
 			new ScaleFrame(
-				new ImageRepeatBox(file, Point(500.0f, 300.0f))
+				new ImageRepeatView(file, Point(500.0f, 300.0f))
 			)
 		)
 	);

@@ -1,4 +1,4 @@
-#include "ViewDesign/view/control/EditBox.h"
+#include "ViewDesign/view/control/TextEditor.h"
 #include "ViewDesign/view/figure/shape.h"
 #include "ViewDesign/system/clipboard.h"
 
@@ -29,12 +29,12 @@ constexpr size_t GetPrevCharacterLength(u16char ch) {
 } // namespace
 
 
-EditBox::EditBox(const Style& style, u16string text) : Base(style, std::move(text)), style(style) {
+TextEditor::TextEditor(const Style& style, u16string text) : Base(style, std::move(text)), style(style) {
 	style.edit._disabled ? ime.Disable(*this) : ime.Enable(*this);
 	word_iterator.SetText(this->text);
 }
 
-TextRange EditBox::GetCharacterRange(size_t position) const {
+TextRange TextEditor::GetCharacterRange(size_t position) const {
 	switch (GetU16UnitType(text[position])) {
 	case U16UnitType::Single: return TextRange(position, 1);
 	case U16UnitType::SurrogateHigh: if (position + 1 < text.length()) { return TextRange(position, 2); } break;
@@ -43,13 +43,13 @@ TextRange EditBox::GetCharacterRange(size_t position) const {
 	throw std::invalid_argument("invalid UTF-16 code point");
 }
 
-TextRange EditBox::GetWordRange(size_t position) const {
+TextRange TextEditor::GetWordRange(size_t position) const {
 	if (text.length() == 0) { return text_range_empty; }
 	if (position >= text.length()) { position--; }
 	return word_iterator.Seek(position);
 }
 
-TextRange EditBox::GetParagraphRange(size_t position) const {
+TextRange TextEditor::GetParagraphRange(size_t position) const {
 	size_t length = text.length();
 	if (length == 0) { return text_range_empty; }
 	if (position >= length) { position = length - 1; }
@@ -60,20 +60,20 @@ TextRange EditBox::GetParagraphRange(size_t position) const {
 	return TextRange(begin, end - begin);
 }
 
-void EditBox::OnTextUpdate() {
+void TextEditor::OnTextUpdate() {
 	word_iterator.SetText(text);
-	TextBox::OnTextUpdate();
+	TextView::OnTextUpdate();
 }
 
-Size EditBox::OnSizeRefUpdate(Size size_ref) {
-	Size size = TextBox::OnSizeRefUpdate(size_ref);
+Size TextEditor::OnSizeRefUpdate(Size size_ref) {
+	Size size = TextView::OnSizeRefUpdate(size_ref);
 	UpdateCaret(caret_position);
 	UpdateSelection(selection_range);
 	return size;
 }
 
-void EditBox::OnDraw(Canvas& canvas, Rect draw_region) {
-	TextBox::OnDraw(canvas, draw_region);
+void TextEditor::OnDraw(Canvas& canvas, Rect draw_region) {
+	TextView::OnDraw(canvas, draw_region);
 	if (IsCaretVisible()) {
 		canvas.draw(caret_region.point, new Rectangle(caret_region.size, style.edit._caret_color));
 	}
@@ -89,7 +89,7 @@ void EditBox::OnDraw(Canvas& canvas, Rect draw_region) {
 	}
 }
 
-void EditBox::CaretStartBlinking() {
+void TextEditor::CaretStartBlinking() {
 	if (caret_state != CaretState::Hide) {
 		if (!caret_timer.IsSet()) {
 			caret_timer.Set(caret_blink_period);
@@ -98,7 +98,7 @@ void EditBox::CaretStartBlinking() {
 	}
 }
 
-void EditBox::CaretBlink() {
+void TextEditor::CaretBlink() {
 	caret_blink_time += caret_blink_period;
 	if (caret_blink_time >= caret_blink_expire_time) {
 		caret_state = CaretState::Show;
@@ -114,7 +114,7 @@ void EditBox::CaretBlink() {
 	Redraw(caret_region);
 }
 
-Rect EditBox::GetCaretRegion(const HitTestPointInfo& info) const {
+Rect TextEditor::GetCaretRegion(const HitTestPointInfo& info) const {
 	const auto& [range, region] = info;
 	if (range.length() == 0) {
 		return Rect(region.point, Size(style.edit._caret_width, region.size.height));
@@ -123,12 +123,12 @@ Rect EditBox::GetCaretRegion(const HitTestPointInfo& info) const {
 	}
 }
 
-void EditBox::UpdateCaret(const HitTestPointInfo& info) {
+void TextEditor::UpdateCaret(const HitTestPointInfo& info) {
 	caret_position = info.first;
 	Redraw(std::exchange(caret_region, GetCaretRegion(info)).Union(caret_region));
 }
 
-void EditBox::SetCaret(const HitTestPointInfo& info) {
+void TextEditor::SetCaret(const HitTestPointInfo& info) {
 	UpdateCaret(info);
 	caret_state = CaretState::Show;
 	ClearSelection();
@@ -136,7 +136,7 @@ void EditBox::SetCaret(const HitTestPointInfo& info) {
 	selection_mode = SelectionMode::Character;
 }
 
-void EditBox::MoveCaret(CaretMoveDirection direction) {
+void TextEditor::MoveCaret(CaretMoveDirection direction) {
 	switch (direction) {
 	case CaretMoveDirection::Left:
 		if (HasSelection()) {
@@ -171,14 +171,14 @@ void EditBox::MoveCaret(CaretMoveDirection direction) {
 	}
 }
 
-void EditBox::HideCaret() {
+void TextEditor::HideCaret() {
 	if (caret_state != CaretState::Hide) {
 		caret_state = CaretState::Hide;
 		Redraw(caret_region);
 	}
 }
 
-void EditBox::UpdateSelection(TextRange range) {
+void TextEditor::UpdateSelection(TextRange range) {
 	selection_range = range;
 	selection_region_list.clear();
 	Rect selection_region_union = rect_empty;
@@ -193,21 +193,21 @@ void EditBox::UpdateSelection(TextRange range) {
 	Redraw(std::exchange(this->selection_region_union, selection_region_union).Union(this->selection_region_union));
 }
 
-void EditBox::SelectWord() {
+void TextEditor::SelectWord() {
 	UpdateSelection(GetWordRange(selection_initial_range.begin()));
 	selection_mode = SelectionMode::Word;
 	selection_initial_range = selection_range;
 	UpdateCaret(TextRange(selection_range.end() - 1, 1));
 }
 
-void EditBox::SelectParagraph() {
+void TextEditor::SelectParagraph() {
 	UpdateSelection(GetParagraphRange(selection_initial_range.begin()));
 	selection_mode = SelectionMode::Paragraph;
 	selection_initial_range = selection_range;
 	UpdateCaret(TextRange(selection_range.end() - 1, 1));
 }
 
-void EditBox::DoSelect(const HitTestPointInfo& info) {
+void TextEditor::DoSelect(const HitTestPointInfo& info) {
 	TextRange current_range;
 	switch (selection_mode) {
 	case SelectionMode::Character: current_range = TextRange(info.first.end(), 0); break;
@@ -220,60 +220,60 @@ void EditBox::DoSelect(const HitTestPointInfo& info) {
 	UpdateSelection(TextRange(begin, end - begin));
 }
 
-void EditBox::Insert(u16char ch) {
+void TextEditor::Insert(u16char ch) {
 	if (IsEditDisabled()) { return; }
 	if (HasSelection()) {
-		TextBox::Replace(selection_range, ch);
+		TextView::Replace(selection_range, ch);
 		SetCaret(TextRange(selection_range.begin() + 1, 0));
 	} else {
-		TextBox::Insert(caret_position.end(), ch);
+		TextView::Insert(caret_position.end(), ch);
 		SetCaret(TextRange(caret_position.end() + 1, 0));
 	}
 }
 
-void EditBox::Insert(u16pair ch) {
+void TextEditor::Insert(u16pair ch) {
 	if (IsEditDisabled()) { return; }
 	if (HasSelection()) {
-		TextBox::Replace(selection_range, ch);
+		TextView::Replace(selection_range, ch);
 		SetCaret(TextRange(selection_range.begin() + ch.length(), 0));
 	} else {
-		TextBox::Insert(caret_position.end(), ch);
+		TextView::Insert(caret_position.end(), ch);
 		SetCaret(TextRange(caret_position.end() + ch.length(), 0));
 	}
 }
 
-void EditBox::Insert(const u16string& str) {
+void TextEditor::Insert(const u16string& str) {
 	if (IsEditDisabled()) { return; }
 	if (HasSelection()) {
-		TextBox::Replace(selection_range, str);
+		TextView::Replace(selection_range, str);
 		SetCaret(TextRange(selection_range.begin() + str.length(), 0));
 	} else {
-		TextBox::Insert(caret_position.end(), str);
+		TextView::Insert(caret_position.end(), str);
 		SetCaret(TextRange(caret_position.end() + str.length(), 0));
 	}
 }
 
-void EditBox::Delete(bool is_backspace) {
+void TextEditor::Delete(bool is_backspace) {
 	if (IsEditDisabled()) { return; }
 	if (HasSelection()) {
-		TextBox::Erase(selection_range);
+		TextView::Erase(selection_range);
 		SetCaret(TextRange(selection_range.begin(), 0));
 	} else {
 		if (is_backspace) {
 			if (caret_position.end() > 0) {
 				size_t length = GetPrevCharacterLength(text[caret_position.end() - 1]);
-				TextBox::Erase(TextRange(caret_position.end() - length, length));
+				TextView::Erase(TextRange(caret_position.end() - length, length));
 				SetCaret(TextRange(caret_position.end() - length, 0));
 			}
 		} else {
 			if (caret_position.end() < text.length()) {
-				TextBox::Erase(TextRange(caret_position.end(), GetNextCharacterLength(text[caret_position.end()])));
+				TextView::Erase(TextRange(caret_position.end(), GetNextCharacterLength(text[caret_position.end()])));
 			}
 		}
 	}
 }
 
-void EditBox::UpdateImeComposition(TextRange range) {
+void TextEditor::UpdateImeComposition(TextRange range) {
 	ime_composition_range = range;
 	ime_composition_region_list.clear();
 	if (!ime_composition_range.empty()) {
@@ -284,7 +284,7 @@ void EditBox::UpdateImeComposition(TextRange range) {
 	}
 }
 
-void EditBox::OnImeBegin() {
+void TextEditor::OnImeBegin() {
 	if (IsEditDisabled()) { return; }
 	if (HasSelection()) {
 		UpdateImeComposition(selection_range);
@@ -295,41 +295,41 @@ void EditBox::OnImeBegin() {
 	}
 }
 
-void EditBox::OnImeString() {
+void TextEditor::OnImeString() {
 	if (IsEditDisabled()) { return; }
 	u16string str = ime.GetString();
-	TextBox::Replace(ime_composition_range, str);
+	TextView::Replace(ime_composition_range, str);
 	UpdateImeComposition(TextRange(ime_composition_range.begin(), str.length()));
 	SetCaret(TextRange(ime_composition_range.begin(), ime.GetCursorPosition()));
 }
 
-void EditBox::OnImeEnd() {
+void TextEditor::OnImeEnd() {
 	if (caret_position.end() != ime_composition_range.end()) {
 		SetCaret(TextRange(ime_composition_range.end() - 1, 1));
 	}
 	ClearImeComposition();
 }
 
-void EditBox::Cut() {
+void TextEditor::Cut() {
 	if (HasSelection()) {
 		Copy();
 		Delete(false);
 	}
 }
 
-void EditBox::Copy() {
+void TextEditor::Copy() {
 	if (HasSelection()) {
 		SetClipboardText(text.substr(selection_range.begin(), selection_range.length()));
 	}
 }
 
-void EditBox::Paste() {
+void TextEditor::Paste() {
 	if (IsEditDisabled()) { return; }
 	u16string str; GetClipboardText(str);
 	if (!str.empty()) { Insert(str); }
 }
 
-void EditBox::OnMouseEvent(MouseEvent event) {
+void TextEditor::OnMouseEvent(MouseEvent event) {
 	switch (event.type) {
 	case MouseEvent::LeftDown: SetCaret(event.point); SetFocus(); SetCapture(); break;
 	case MouseEvent::LeftUp: ReleaseCapture(); break;
@@ -342,7 +342,7 @@ void EditBox::OnMouseEvent(MouseEvent event) {
 	CaretStartBlinking();
 }
 
-void EditBox::OnKeyEvent(KeyEvent event) {
+void TextEditor::OnKeyEvent(KeyEvent event) {
 	key_tracker.Track(event);
 	switch (event.type) {
 	case KeyEvent::KeyDown:
@@ -379,7 +379,7 @@ void EditBox::OnKeyEvent(KeyEvent event) {
 	CaretStartBlinking();
 }
 
-void EditBox::OnFocusEvent(FocusEvent event) {
+void TextEditor::OnFocusEvent(FocusEvent event) {
 	switch (event) {
 	case FocusEvent::Blur: HideCaret(); ClearSelection(); ClearImeComposition(); break;
 	}

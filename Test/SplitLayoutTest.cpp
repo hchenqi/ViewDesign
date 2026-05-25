@@ -2,8 +2,8 @@
 #include <ViewDesign/view/frame/CenterFrame.h>
 #include <ViewDesign/view/frame/BorderFrame.h>
 #include <ViewDesign/view/layout/SplitLayout.h>
-#include <ViewDesign/view/control/EditBox.h>
-#include <ViewDesign/view/widget/TextBoxConverter.h.>
+#include <ViewDesign/view/control/TextEditor.h>
+#include <ViewDesign/view/widget/TextViewAdapter.h>
 
 #include "trait_name.h"
 
@@ -23,14 +23,14 @@ void Test() {
 					new SplitLayout(
 						new BorderFrame(
 							Border(2.0f, Color::Green),
-							TextBoxConverter<WidthTraitFirst, HeightTraitFirst>(
-								new EditBox(EditBox::Style(), u"Edit here ...")
+							TextViewAdapter<WidthTraitFirst, HeightTraitFirst>(
+								new TextEditor(TextEditor::Style(), u"Edit here ...")
 							)
 						),
 						new BorderFrame(
 							Border(2.0f, Color::Red),
-							TextBoxConverter<WidthTraitSecond, HeightTraitSecond>(
-								new EditBox(EditBox::Style(), u"Edit here, too ...")
+							TextViewAdapter<WidthTraitSecond, HeightTraitSecond>(
+								new TextEditor(TextEditor::Style(), u"Edit here, too ...")
 							)
 						)
 					)

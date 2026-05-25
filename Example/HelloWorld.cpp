@@ -1,11 +1,11 @@
 #include <ViewDesign/view/widget/DefaultWindow.h>
 #include <ViewDesign/view/frame/CenterFrame.h>
-#include <ViewDesign/view/control/TextBox.h>
+#include <ViewDesign/view/control/TextView.h>
 
 using namespace ViewDesign;
 
-struct TextBoxStyle : TextBox::Style {
-	TextBoxStyle() {
+struct TextViewStyle : TextView::Style {
+	TextViewStyle() {
 		font.size(75.0f).color(Color::Black);
 	}
 };
@@ -16,7 +16,7 @@ void App() {
 			DefaultWindow::Style(),
 			u"Example",
 			create<CenterFrame<Fixed, Fixed>>(
-				create<TextBox>(TextBoxStyle(), u"Hello World!\n你好，世界！")
+				create<TextView>(TextViewStyle(), u"Hello World!\n你好，世界！")
 			)
 		)
 	);
