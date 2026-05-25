@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ViewDesign/platform/vulkan/image.h"
 #include "ViewDesign/platform/vulkan/render_target.h"
 
 

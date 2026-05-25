@@ -1,6 +1,6 @@
 #include "ViewDesign/view/figure/shape.h"
 
-#include <ViewDesign/platform/vulkan/render_target.h>
+#include <ViewDesign/platform/vulkan/pipeline/flat.h>
 
 
 namespace ViewDesign {
@@ -13,7 +13,7 @@ void Line::DrawOn(RenderTarget& target, Point point) const {
 		return Rectangle(Size(width, width), color).DrawOn(target, point + begin - Vector(width, width) / 2.0f);
 	}
 	target.BindPipeline<FlatPipeline>();
-	target.SetColor(color);
+	FlatPipeline::SetColor(target, color);
 	Point begin = point + this->begin, end = point + this->end;
 	Vector offset = Normal(Normalize(end - begin)) * (width / 2.0f);
 	target.DrawVertices(GetVertices(Quad{ begin - offset, begin + offset, end + offset, end - offset }));
@@ -22,11 +22,11 @@ void Line::DrawOn(RenderTarget& target, Point point) const {
 void Rectangle::DrawOn(RenderTarget& target, Point point) const {
 	target.BindPipeline<FlatPipeline>();
 	if (fill_color.IsVisible()) {
-		target.SetColor(fill_color);
+		FlatPipeline::SetColor(target, fill_color);
 		target.DrawVertices(GetVertices(AsQuad(Rect(point, size))));
 	}
 	if (border_width > 0.0f && border_color.IsVisible()) {
-		target.SetColor(border_color);
+		FlatPipeline::SetColor(target, border_color);
 		auto outer = AsQuad(Rect(point, size)), inner = AsQuad(Extend(Rect(point, size), -Margin(border_width)));
 		std::array quad_list = {
 			Quad{ outer[0], outer[1], inner[1], inner[0] },

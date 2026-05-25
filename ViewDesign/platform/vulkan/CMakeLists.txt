@@ -4,7 +4,7 @@ if(NOT Vulkan_FOUND)
     return()
 endif()
 
-add_subdirectory(shaders)
+add_subdirectory(shader)
 
 file(GLOB_RECURSE LIB_SOURCES *.h *.cpp)
 add_library(ViewDesignPlatformVulkan STATIC ${LIB_SOURCES})

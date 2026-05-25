@@ -1,6 +1,6 @@
 #include "ViewDesign/drawing/bitmap.h"
 
-#include <ViewDesign/platform/vulkan/render_target.h>
+#include <ViewDesign/platform/vulkan/pipeline/composite.h>
 
 
 namespace ViewDesign {
@@ -25,8 +25,8 @@ void Bitmap::DestroyTexture() const {
 
 void BitmapFigure::DrawOn(RenderTarget& target, Point point) const {
 	target.BindPipeline<CompositePipeline>();
-	target.SetOpacity(opacity);
-	target.CommandBuffer().bindDescriptorSets(vk::PipelineBindPoint::eGraphics, *GetPipelineLayout<CompositePipeline::Layout>(), 0, *static_cast<ref_ptr<Texture>>(bitmap.GetTexture())->descriptor_set, {});
+	CompositePipeline::SetOpacity(target, opacity);
+	CompositePipeline::BindTexture(target, *static_cast<ref_ptr<Texture>>(bitmap.GetTexture()));
 	target.DrawVertices(Zip(GetVertices(AsQuad(Rect(point, region.size))), GetVertices(AsQuad(Normalize(bitmap.GetSize(), region)))));
 }
 
