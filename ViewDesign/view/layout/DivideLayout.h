@@ -26,8 +26,8 @@ protected:
 		return child_list;
 	}()) {}
 	_DivideLayout_Base(auto... child) requires (!compatible_unique_ptr_type<decltype(child), child_type> || ...) {
-		static_assert((unique_ptr_type<decltype(child)> && ...), "DivideLayout: child view arguments should be wrapped with unique_ptr.");
-		static_assert((size_trait_compatible_with<decltype(child), child_type> && ...), "DivideLayout: child view size traits incompatible.");
+		static_assert((unique_ptr_type<decltype(child)> && ...), "DivideLayout: child view argument of raw pointer type not accepted");
+		static_assert((size_trait_compatible_with<decltype(child), child_type> && ...), "DivideLayout: child view size traits incompatible");
 	}
 
 	// child

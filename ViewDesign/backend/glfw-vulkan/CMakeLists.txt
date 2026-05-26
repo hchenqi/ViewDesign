@@ -1,9 +1,9 @@
 if(NOT TARGET ViewDesign::Platform::GLFW)
-    message(FATAL_ERROR "GLFW not found.")
+    message(FATAL_ERROR "GLFW not found")
 endif()
 
 if(NOT TARGET ViewDesign::Platform::Vulkan)
-    message(FATAL_ERROR "Vulkan not found.")
+    message(FATAL_ERROR "Vulkan not found")
 endif()
 
 file(GLOB_RECURSE LIB_SOURCES *.cpp)

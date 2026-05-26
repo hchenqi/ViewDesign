@@ -1,13 +1,13 @@
 if(NOT TARGET ViewDesign::Platform::Win32)
-    message(FATAL_ERROR "Not Win32 platform.")
+    message(FATAL_ERROR "not Win32 platform")
 endif()
 
 if(NOT TARGET ViewDesign::Platform::OpenGL)
-    message(FATAL_ERROR "OpenGL not found.")
+    message(FATAL_ERROR "OpenGL not found")
 endif()
 
 if(NOT TARGET ViewDesign::Platform::GLAD)
-    message(FATAL_ERROR "glad not found.")
+    message(FATAL_ERROR "glad not found")
 endif()
 
 file(GLOB_RECURSE LIB_SOURCES *.cpp)

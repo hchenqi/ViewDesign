@@ -1,5 +1,5 @@
 if(NOT TARGET ViewDesign::Platform::DirectX)
-    message(FATAL_ERROR "DirectX not found.")
+    message(FATAL_ERROR "DirectX not found")
 endif()
 
 file(GLOB_RECURSE LIB_SOURCES *.cpp)

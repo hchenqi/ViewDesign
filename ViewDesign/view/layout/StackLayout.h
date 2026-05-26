@@ -45,7 +45,7 @@ protected:
 template<class WidthTraitFirst, class HeightTraitFirst, class WidthTraitSecond, class HeightTraitSecond>
 class StackLayout : public _StackLayout_Base {
 public:
-	static_assert((IsFixed<WidthTraitFirst> && IsFixed<HeightTraitFirst>) || (IsFixed<WidthTraitSecond> && IsFixed<HeightTraitSecond>), "At least one child view's width and height should be Fixed.");
+	static_assert((IsFixed<WidthTraitFirst> && IsFixed<HeightTraitFirst>) || (IsFixed<WidthTraitSecond> && IsFixed<HeightTraitSecond>), "StackLayout: at least one child view's width and height should be Fixed");
 public:
 	using width_trait = std::conditional_t<IsFixed<WidthTraitFirst>, WidthTraitSecond, WidthTraitFirst>;
 	using height_trait = std::conditional_t<IsFixed<HeightTraitFirst>, HeightTraitSecond, HeightTraitFirst>;
@@ -109,8 +109,8 @@ public:
 		for (auto& child : child_list) { RegisterChild(child); }
 	}
 	StackLayoutMultiple(auto... child) requires (!compatible_unique_ptr_type<decltype(child), child_type> || ...) {
-		static_assert((unique_ptr_type<decltype(child)> && ...), "StackLayoutMultiple: child view arguments should be wrapped with unique_ptr.");
-		static_assert((size_trait_compatible_with<decltype(child), child_type> && ...), "StackLayoutMultiple: child view size traits incompatible.");
+		static_assert((unique_ptr_type<decltype(child)> && ...), "StackLayoutMultiple: child view argument of raw pointer type not accepted");
+		static_assert((size_trait_compatible_with<decltype(child), child_type> && ...), "StackLayoutMultiple: child view size traits incompatible");
 	}
 
 	// child

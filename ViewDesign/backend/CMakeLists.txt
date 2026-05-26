@@ -3,7 +3,7 @@ if(DEFINED VIEWDESIGN_BACKEND)
 endif()
 
 if(NOT DEFINED BACKEND)
-    message(FATAL_ERROR "Backend not specified.")
+    message(FATAL_ERROR "backend not specified")
 
 elseif(BACKEND STREQUAL "Win32-DirectX")
     add_subdirectory(win32)
@@ -35,5 +35,5 @@ elseif(BACKEND STREQUAL "GLFW-Vulkan")
     add_subdirectory(text_layout_placeholder)
 
 else()
-    message(FATAL_ERROR "Backend: ${BACKEND} not supported.")
+    message(FATAL_ERROR "backend: ${BACKEND} not supported")
 endif()

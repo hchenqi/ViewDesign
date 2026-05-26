@@ -24,13 +24,13 @@ void Test() {
 						new BorderFrame(
 							Border(2.0f, Color::Green),
 							TextViewAdapter<WidthTraitFirst, HeightTraitFirst>(
-								new TextEditor(TextEditor::Style(), u"Edit here ...")
+								new TextEditor(TextEditor::Style(), u"Type something here...")
 							)
 						),
 						new BorderFrame(
 							Border(2.0f, Color::Red),
 							TextViewAdapter<WidthTraitSecond, HeightTraitSecond>(
-								new TextEditor(TextEditor::Style(), u"Edit here, too ...")
+								new TextEditor(TextEditor::Style(), u"Type something here, too...")
 							)
 						)
 					)

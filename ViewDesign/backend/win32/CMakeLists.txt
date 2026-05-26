@@ -1,5 +1,5 @@
 if(NOT TARGET ViewDesign::Platform::Win32)
-    message(FATAL_ERROR "Not Win32 platform.")
+    message(FATAL_ERROR "not Win32 platform")
 endif()
 
 file(GLOB_RECURSE LIB_SOURCES *.cpp)

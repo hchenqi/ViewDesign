@@ -208,8 +208,8 @@ public:
 		}
 	}
 	ListLayoutVertical(float gap, auto... child) requires (!compatible_unique_ptr_type<decltype(child), child_type> || ...) {
-		static_assert((unique_ptr_type<decltype(child)> && ...), "ListLayoutVertical: child view arguments should be wrapped with unique_ptr.");
-		static_assert((size_trait_compatible_with<decltype(child), child_type> && ...), "ListLayoutVertical: child view size traits incompatible.");
+		static_assert((unique_ptr_type<decltype(child)> && ...), "ListLayoutVertical: child view argument of raw pointer type not accepted");
+		static_assert((size_trait_compatible_with<decltype(child), child_type> && ...), "ListLayoutVertical: child view size traits incompatible");
 	}
 
 public:
@@ -496,8 +496,8 @@ public:
 		}
 	}
 	ListLayoutHorizontal(float gap, auto... child) requires (!compatible_unique_ptr_type<decltype(child), child_type> || ...) {
-		static_assert((unique_ptr_type<decltype(child)> && ...), "ListLayoutHorizontal: child view arguments should be wrapped with unique_ptr.");
-		static_assert((size_trait_compatible_with<decltype(child), child_type> && ...), "ListLayoutHorizontal: child view size traits incompatible.");
+		static_assert((unique_ptr_type<decltype(child)> && ...), "ListLayoutHorizontal: child view argument of raw pointer type not accepted");
+		static_assert((size_trait_compatible_with<decltype(child), child_type> && ...), "ListLayoutHorizontal: child view size traits incompatible");
 	}
 
 public:
