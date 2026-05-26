@@ -8,7 +8,7 @@ namespace ViewDesign {
 
 class _SplitLayout_Base : public ViewBase {
 protected:
-	using child_type = view_ptr<>;
+	using child_type = view_ptr_any;
 
 protected:
 	_SplitLayout_Base(child_type child_first, child_type child_second) : child_first(std::move(child_first)), child_second(std::move(child_second)) {

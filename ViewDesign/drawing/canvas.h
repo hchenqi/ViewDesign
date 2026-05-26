@@ -34,7 +34,7 @@ public:
 	void draw(Point offset, owner_ptr<const Figure> figure) {
 		draw(offset, std::unique_ptr<const Figure>(figure));
 	}
-	template<class T> requires std::derived_from<T, Figure>
+	template<class T> requires (std::derived_from<T, Figure>)
 	void draw(Point offset, auto&&... args) {
 		draw(offset, std::make_unique<T>(std::forward<decltype(args)>(args)...));
 	}

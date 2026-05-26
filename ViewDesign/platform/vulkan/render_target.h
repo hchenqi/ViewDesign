@@ -88,7 +88,7 @@ public:
 private:
 	ref_ptr<vk::raii::Pipeline> current_pipeline = nullptr;
 public:
-	template<class Pipeline> requires std::derived_from<typename Pipeline::Layout::Context, PipelineLayoutCommon::Context>
+	template<class Pipeline> requires (std::derived_from<typename Pipeline::Layout::Context, PipelineLayoutCommon::Context>)
 	void BindPipeline() {
 		vk::raii::Pipeline& pipeline = GetPipeline<Pipeline>();
 		if (current_pipeline != &pipeline) {

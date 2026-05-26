@@ -18,7 +18,7 @@ class ScrollFrame;
 
 class _ScrollFrame_Base : public ViewFrame, public SizeTrait<Fixed, Fixed> {
 protected:
-	_ScrollFrame_Base(view_ptr<> child) : ViewFrame(std::move(child)) {}
+	_ScrollFrame_Base(view_ptr_any child) : ViewFrame(std::move(child)) {}
 
 	// layout
 protected:
@@ -81,7 +81,7 @@ protected:
 template<>
 class ScrollFrame<Bidirectional> : public _ScrollFrame_Base {
 public:
-	ScrollFrame(view_ptr<> child) : _ScrollFrame_Base(std::move(child)) {}
+	ScrollFrame(view_ptr_any child) : _ScrollFrame_Base(std::move(child)) {}
 
 	// layout
 protected:

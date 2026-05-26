@@ -6,7 +6,7 @@
 namespace ViewDesign {
 
 
-template<class View> requires std::derived_from<View, ViewBase>
+template<view_type View>
 class Button : public HitSelf<View> {
 protected:
 	using Base = Button;

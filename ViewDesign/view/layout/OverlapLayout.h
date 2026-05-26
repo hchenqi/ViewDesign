@@ -15,7 +15,7 @@ public:
 	private:
 		friend class OverlapLayout;
 	public:
-		Window(view_ptr<> child) : ViewFrame(std::move(child)) {}
+		Window(view_ptr_any child) : ViewFrame(std::move(child)) {}
 		~Window() {}
 	protected:
 		OverlapLayout& GetParent() const { return static_cast<OverlapLayout&>(ViewBase::GetParent()); }

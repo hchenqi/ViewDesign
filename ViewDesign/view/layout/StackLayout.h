@@ -9,14 +9,14 @@ namespace ViewDesign {
 
 class _StackLayout_Base : public ViewBase {
 protected:
-	_StackLayout_Base(view_ptr<> child_first, view_ptr<> child_second) : child_first(std::move(child_first)), child_second(std::move(child_second)) {
+	_StackLayout_Base(view_ptr_any child_first, view_ptr_any child_second) : child_first(std::move(child_first)), child_second(std::move(child_second)) {
 		RegisterChild(this->child_first); RegisterChild(this->child_second);
 	}
 
 	// child
 protected:
-	view_ptr<> child_first;
-	view_ptr<> child_second;
+	view_ptr_any child_first;
+	view_ptr_any child_second;
 
 	// layout
 protected:
@@ -104,13 +104,13 @@ public:
 	using child_type = view_ptr<Fixed, Fixed>;
 
 public:
-	StackLayoutMultiple(auto... child) requires (is_compatible_unique_ptr<decltype(child), child_type> && ...) : child_list() {
+	StackLayoutMultiple(auto... child) requires (compatible_unique_ptr_type<decltype(child), child_type> && ...) : child_list() {
 		child_list.reserve(sizeof...(child)); (child_list.emplace_back(std::move(child)), ...);
 		for (auto& child : child_list) { RegisterChild(child); }
 	}
-	StackLayoutMultiple(auto... child) requires (!is_compatible_unique_ptr<decltype(child), child_type> || ...) {
-		static_assert((is_unique_ptr<decltype(child)> && ...), "StackLayoutMultiple: child view arguments should be wrapped with unique_ptr.");
-		static_assert((is_ptr_compatible<decltype(child), child_type> && ...), "StackLayoutMultiple: child view size traits incompatible.");
+	StackLayoutMultiple(auto... child) requires (!compatible_unique_ptr_type<decltype(child), child_type> || ...) {
+		static_assert((unique_ptr_type<decltype(child)> && ...), "StackLayoutMultiple: child view arguments should be wrapped with unique_ptr.");
+		static_assert((size_trait_compatible_with<decltype(child), child_type> && ...), "StackLayoutMultiple: child view size traits incompatible.");
 	}
 
 	// child

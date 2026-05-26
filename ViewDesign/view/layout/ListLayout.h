@@ -15,10 +15,10 @@ class _ListLayout_Base : public ViewBase {
 protected:
 	struct ChildInfo {
 	public:
-		view_ptr<> view;
+		view_ptr_any view;
 		Rect region;
 	public:
-		ChildInfo(view_ptr<> view) : view(std::move(view)), region(rect_empty) {}
+		ChildInfo(view_ptr_any view) : view(std::move(view)), region(rect_empty) {}
 	};
 
 private:
@@ -30,7 +30,7 @@ private:
 		}
 	}
 protected:
-	_ListLayout_Base(float gap, auto... child) requires (is_unique_ptr<decltype(child)> && ...) : _ListLayout_Base(gap, [&]() {
+	_ListLayout_Base(float gap, auto... child) requires (unique_ptr_type<decltype(child)> && ...) : _ListLayout_Base(gap, [&]() {
 		std::vector<ChildInfo> child_list; child_list.reserve(sizeof...(child));
 		(child_list.emplace_back(std::move(child)), ...);
 		return child_list;
@@ -57,7 +57,7 @@ protected:
 		}
 	}
 protected:
-	std::vector<ChildInfo>::iterator InsertChild(size_t index, view_ptr<> child) {
+	std::vector<ChildInfo>::iterator InsertChild(size_t index, view_ptr_any child) {
 		if (index > child_list.size()) {
 			index = child_list.size();
 		}
@@ -66,7 +66,7 @@ protected:
 		UpdateIndex(it);
 		return it;
 	}
-	std::pair<std::vector<ChildInfo>::iterator, std::vector<ChildInfo>::iterator> InsertChild(size_t index, auto list) requires std::ranges::input_range<decltype(list)> {
+	std::pair<std::vector<ChildInfo>::iterator, std::vector<ChildInfo>::iterator> InsertChild(size_t index, auto list) requires (std::ranges::input_range<decltype(list)>) {
 		if (index > child_list.size()) {
 			index = child_list.size();
 		}
@@ -198,7 +198,7 @@ public:
 	using child_type = view_ptr<WidthTrait, Auto>;
 
 public:
-	ListLayoutVertical(float gap, auto... child) requires (is_compatible_unique_ptr<decltype(child), child_type> && ...) : _ListLayoutVertical_Base(gap, std::move(child)...) {
+	ListLayoutVertical(float gap, auto... child) requires (compatible_unique_ptr_type<decltype(child), child_type> && ...) : _ListLayoutVertical_Base(gap, std::move(child)...) {
 		if constexpr (IsAuto<WidthTrait>) {
 			for (auto& child : child_list) {
 				child.region.size = UpdateChildSizeRef(child.view, Size(width_ref, length_zero));
@@ -207,9 +207,9 @@ public:
 			UpdateOffsetHeight(child_list.begin(), child_list.end());
 		}
 	}
-	ListLayoutVertical(float gap, auto... child) requires (!is_compatible_unique_ptr<decltype(child), child_type> || ...) {
-		static_assert((is_unique_ptr<decltype(child)> && ...), "ListLayoutVertical: child view arguments should be wrapped with unique_ptr.");
-		static_assert((is_ptr_compatible<decltype(child), child_type> && ...), "ListLayoutVertical: child view size traits incompatible.");
+	ListLayoutVertical(float gap, auto... child) requires (!compatible_unique_ptr_type<decltype(child), child_type> || ...) {
+		static_assert((unique_ptr_type<decltype(child)> && ...), "ListLayoutVertical: child view arguments should be wrapped with unique_ptr.");
+		static_assert((size_trait_compatible_with<decltype(child), child_type> && ...), "ListLayoutVertical: child view size traits incompatible.");
 	}
 
 public:
@@ -486,7 +486,7 @@ public:
 	using child_type = view_ptr<Auto, HeightTrait>;
 
 public:
-	ListLayoutHorizontal(float gap, auto... child) requires (is_compatible_unique_ptr<decltype(child), child_type> && ...) : _ListLayoutHorizontal_Base(gap, std::move(child)...) {
+	ListLayoutHorizontal(float gap, auto... child) requires (compatible_unique_ptr_type<decltype(child), child_type> && ...) : _ListLayoutHorizontal_Base(gap, std::move(child)...) {
 		if constexpr (IsAuto<HeightTrait>) {
 			for (auto& child : child_list) {
 				child.region.size = UpdateChildSizeRef(child.view, Size(length_zero, height_ref));
@@ -495,9 +495,9 @@ public:
 			UpdateOffsetWidth(child_list.begin(), child_list.end());
 		}
 	}
-	ListLayoutHorizontal(float gap, auto... child) requires (!is_compatible_unique_ptr<decltype(child), child_type> || ...) {
-		static_assert((is_unique_ptr<decltype(child)> && ...), "ListLayoutHorizontal: child view arguments should be wrapped with unique_ptr.");
-		static_assert((is_ptr_compatible<decltype(child), child_type> && ...), "ListLayoutHorizontal: child view size traits incompatible.");
+	ListLayoutHorizontal(float gap, auto... child) requires (!compatible_unique_ptr_type<decltype(child), child_type> || ...) {
+		static_assert((unique_ptr_type<decltype(child)> && ...), "ListLayoutHorizontal: child view arguments should be wrapped with unique_ptr.");
+		static_assert((size_trait_compatible_with<decltype(child), child_type> && ...), "ListLayoutHorizontal: child view size traits incompatible.");
 	}
 
 public:

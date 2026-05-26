@@ -8,12 +8,12 @@ namespace ViewDesign {
 
 class ViewFrame : public ViewBase {
 public:
-	ViewFrame(view_ptr<> child) : child(std::move(child)) { RegisterChild(this->child); }
+	ViewFrame(view_ptr_any child) : child(std::move(child)) { RegisterChild(this->child); }
 	virtual ~ViewFrame() override {}
 
 	// child
 protected:
-	view_ptr<> child;
+	view_ptr_any child;
 
 	// layout
 protected:

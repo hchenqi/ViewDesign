@@ -29,7 +29,7 @@ public:
 			}
 		}(other), ...);
 
-		auto map_to_child = [](auto& other) -> view_ptr<>& { if constexpr (std::same_as<MutableFrame&, decltype(other)>) { return other.child; } else { return other; }};
+		auto map_to_child = [](auto& other) -> view_ptr_any& { if constexpr (std::same_as<MutableFrame&, decltype(other)>) { return other.child; } else { return other; }};
 		auto view_ptr_ref_tuple = std::tie(map_to_child(other)...);
 		auto view_ptr_tuple_rotated = move_rotate_tuple<1>(std::make_tuple((std::move(map_to_child(other)))...));
 		move_assign_tuple(std::move(view_ptr_tuple_rotated), view_ptr_ref_tuple);

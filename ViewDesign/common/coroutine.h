@@ -104,8 +104,8 @@ private:
 	std::function<void(T)> function;
 	std::coroutine_handle<> continuation;
 public:
-	template<class U = T> requires(std::is_void_v<U>) void operator()() const { function(); }
-	template<class U = T> requires(!std::is_void_v<U>) void operator()(U value) const { function(std::move(value)); }
+	template<class U = T> requires (std::is_void_v<U>) void operator()() const { function(); }
+	template<class U = T> requires (!std::is_void_v<U>) void operator()(U value) const { function(std::move(value)); }
 	void Destroy() { continuation.destroy(); }
 };
 

@@ -48,8 +48,8 @@ protected:
 private:
 	uint64 data = 0;
 protected:
-	template<class T> void SetChildData(ViewBase& child, T data) const requires(sizeof(T) <= sizeof(uint64)) { VerifyChild(child); memcpy(&child.data, &data, sizeof(T)); }
-	template<class T> T GetChildData(ViewBase& child) const requires(sizeof(T) <= sizeof(uint64)) { VerifyChild(child); T data; memcpy(&data, &child.data, sizeof(T)); return data; }
+	template<class T> void SetChildData(ViewBase& child, T data) const requires (sizeof(T) <= sizeof(uint64)) { VerifyChild(child); memcpy(&child.data, &data, sizeof(T)); }
+	template<class T> T GetChildData(ViewBase& child) const requires (sizeof(T) <= sizeof(uint64)) { VerifyChild(child); T data; memcpy(&data, &child.data, sizeof(T)); return data; }
 
 	// layout
 protected:

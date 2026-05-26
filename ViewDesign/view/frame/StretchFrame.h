@@ -12,7 +12,7 @@ class StretchFrame;
 
 class _StretchFrame_Base : public ViewFrame {
 protected:
-	_StretchFrame_Base(view_ptr<> child) : ViewFrame(std::move(child)) {}
+	_StretchFrame_Base(view_ptr_any child) : ViewFrame(std::move(child)) {}
 
 	// layout
 protected:
@@ -43,7 +43,7 @@ protected:
 template<>
 class StretchFrame<Fixed, Fixed> : public _StretchFrame_Base, public SizeTrait<Fixed, Fixed> {
 public:
-	StretchFrame(view_ptr<> child) : _StretchFrame_Base(std::move(child)) {}
+	StretchFrame(view_ptr_any child) : _StretchFrame_Base(std::move(child)) {}
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override { child_size = UpdateChildSizeRef(child, size = size_ref); return size; }
 	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override { this->child_size = child_size; Redraw(rect_infinite); }

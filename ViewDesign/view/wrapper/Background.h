@@ -7,7 +7,7 @@
 namespace ViewDesign {
 
 
-template<Color color, class View> requires std::derived_from<View, ViewBase>
+template<Color color, view_type View>
 class SolidColorBackground : public View {
 protected:
 	using Base = SolidColorBackground;

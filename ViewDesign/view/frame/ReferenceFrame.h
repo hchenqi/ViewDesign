@@ -8,12 +8,12 @@ namespace ViewDesign {
 
 class ReferenceFrame : public ViewBase {
 public:
-	ReferenceFrame(view_ref<> child) : child(child) { RegisterChild(child); }
+	ReferenceFrame(view_ref_any child) : child(child) { RegisterChild(child); }
 	virtual ~ReferenceFrame() override { UnregisterChild(child); }
 
 	// child
 protected:
-	view_ref<> child;
+	view_ref_any child;
 
 	// layout
 protected:

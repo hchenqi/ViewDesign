@@ -6,7 +6,7 @@
 namespace ViewDesign {
 
 
-template<class View> requires std::derived_from<View, ViewBase>
+template<view_type View>
 class HitSelf : public View {
 protected:
 	using Base = HitSelf;
@@ -19,7 +19,7 @@ protected:
 };
 
 
-template<class View> requires std::derived_from<View, ViewBase>
+template<view_type View>
 class HitSelfFallback : public View {
 protected:
 	using Base = HitSelfFallback;
@@ -39,7 +39,7 @@ protected:
 };
 
 
-template<class View> requires std::derived_from<View, ViewBase>
+template<view_type View>
 class HitSelfFallbackNext : public View {
 protected:
 	using Base = HitSelfFallbackNext;
@@ -65,7 +65,7 @@ protected:
 };
 
 
-template<class View> requires std::derived_from<View, ViewBase>
+template<view_type View>
 class HitSelfFallbackRecursive : public View {
 protected:
 	using Base = HitSelfFallbackRecursive;
@@ -98,7 +98,7 @@ protected:
 };
 
 
-template<class View> requires std::derived_from<View, ViewBase>
+template<view_type View>
 class HitThrough : public View {
 protected:
 	using Base = HitThrough;
@@ -111,7 +111,7 @@ protected:
 };
 
 
-template<class View> requires std::derived_from<View, ViewBase>
+template<view_type View>
 class HitThroughFallback : public View {
 protected:
 	using Base = HitThroughFallback;
@@ -129,7 +129,7 @@ protected:
 };
 
 
-template<class Frame> requires std::derived_from<Frame, ViewFrame>
+template<class Frame> requires (std::derived_from<Frame, ViewFrame>)
 class HitThroughMargin : public Frame {
 protected:
 	using Base = HitThroughMargin;

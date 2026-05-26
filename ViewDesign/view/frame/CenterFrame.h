@@ -12,7 +12,7 @@ class CenterFrame;
 
 class _CenterFrame_Base : public ViewFrame {
 protected:
-	_CenterFrame_Base(view_ptr<> child) : ViewFrame(std::move(child)) {}
+	_CenterFrame_Base(view_ptr_any child) : ViewFrame(std::move(child)) {}
 
 	// layout
 protected:
@@ -38,7 +38,7 @@ protected:
 template<>
 class CenterFrame<Fixed, Fixed> : public _CenterFrame_Base, public SizeTrait<Fixed, Fixed> {
 public:
-	CenterFrame(view_ptr<> child) : _CenterFrame_Base(std::move(child)) {}
+	CenterFrame(view_ptr_any child) : _CenterFrame_Base(std::move(child)) {}
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override { child_size = UpdateChildSizeRef(child, size = size_ref); return size; }
 	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override { this->child_size = child_size; Redraw(rect_infinite); }

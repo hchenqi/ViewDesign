@@ -1,12 +1,12 @@
 #pragma once
 
-#include "ViewDesign/view/ViewBase.h"
+#include "ViewDesign/view/view_traits.h"
 
 
 namespace ViewDesign {
 
 
-template<CursorStyle cursor, class View> requires std::derived_from<View, ViewBase>
+template<CursorStyle cursor, view_type View>
 class CustomizedCursor : public View {
 protected:
 	using Base = CustomizedCursor;
