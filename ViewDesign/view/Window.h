@@ -80,8 +80,8 @@ public:
 protected:
 	void Redraw(Rect redraw_region);
 private:
-	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override { Redraw(child_redraw_region); }
 	void OnDraw();
+	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override { Redraw(child_redraw_region); }
 
 	// event
 private:

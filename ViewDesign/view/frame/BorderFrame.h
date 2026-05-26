@@ -38,9 +38,6 @@ protected:
 
 	// drawing
 protected:
-	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override {
-		Redraw(child_redraw_region + GetChildOffset());
-	}
 	virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
 		DrawChild(child, point_zero + GetChildOffset(), canvas, draw_region);
 		if (border._width > 0.0f && border._color.IsVisible()) {
@@ -50,6 +47,9 @@ protected:
 				canvas.draw(point_zero, new Rectangle(size, border._width, border._color));
 			}
 		}
+	}
+	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override {
+		Redraw(child_redraw_region + GetChildOffset());
 	}
 
 	// event

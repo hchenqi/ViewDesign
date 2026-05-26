@@ -56,11 +56,6 @@ protected:
 	Layer layer;
 	Region invalid_region;
 protected:
-	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override {
-		child_redraw_region = child_redraw_region.Intersect(Rect(point_zero, size));
-		if (!layer.Empty()) { invalid_region.Union(RoundUp(child_redraw_region * scale)); }
-		Redraw(child_redraw_region);
-	}
 	virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
 		draw_region = draw_region.Intersect(Rect(point_zero, size)); if (draw_region.IsEmpty()) { return; }
 		scale = canvas.GetCurrentTransform().GetScale();
@@ -83,6 +78,11 @@ protected:
 			invalid_region.Sub(RoundDown(redraw_region));
 		}
 		canvas.draw(draw_region.point, new LayerFigure(layer, composite_region, draw_region.size, opacity));
+	}
+	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override {
+		child_redraw_region = child_redraw_region.Intersect(Rect(point_zero, size));
+		if (!layer.Empty()) { invalid_region.Union(RoundUp(child_redraw_region * scale)); }
+		Redraw(child_redraw_region);
 	}
 };
 
@@ -143,11 +143,6 @@ protected:
 	};
 	std::unordered_map<TileIndex, Layer, TileIndexHash> tile_cache;
 protected:
-	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override {
-		child_redraw_region = child_redraw_region.Intersect(Rect(point_zero, size));
-		invalid_region.Union(RoundUp(child_redraw_region * scale));
-		Redraw(child_redraw_region);
-	}
 	virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
 		draw_region = draw_region.Intersect(Rect(point_zero, size)); if (draw_region.IsEmpty()) { return; }
 		if (Scale scale_new = canvas.GetCurrentTransform().GetScale(); scale != scale_new) {
@@ -182,6 +177,11 @@ protected:
 			canvas.draw((point_zero + tile_offset) / scale, new Rectangle(tile_size / scale, 1.0f, Color(Color::Red, 0x7F)));
 #endif
 		}
+	}
+	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override {
+		child_redraw_region = child_redraw_region.Intersect(Rect(point_zero, size));
+		invalid_region.Union(RoundUp(child_redraw_region * scale));
+		Redraw(child_redraw_region);
 	}
 };
 

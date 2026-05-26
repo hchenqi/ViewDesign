@@ -36,8 +36,8 @@ protected:
 
 	// drawing
 protected:
-	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override { Redraw(child_redraw_region + GetChildOffset()); }
 	virtual void OnDraw(Canvas& canvas, Rect draw_region) override { return DrawChild(child, GetChildRegion(), canvas, draw_region.Intersect(Rect(point_zero, size))); }
+	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override { Redraw(child_redraw_region + GetChildOffset()); }
 
 	// event
 protected:

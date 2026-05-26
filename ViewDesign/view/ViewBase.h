@@ -53,8 +53,8 @@ protected:
 
 	// layout
 protected:
-	void SizeUpdated(Size size) { if (HasParent()) { GetParent().OnChildSizeUpdate(*this, size); } }
 	Size UpdateChildSizeRef(ViewBase& child, Size size_ref) { VerifyChild(child); return child.OnSizeRefUpdate(size_ref); }
+	void SizeUpdated(Size size) { if (HasParent()) { GetParent().OnChildSizeUpdate(*this, size); } }
 protected:
 	virtual Transform GetChildTransform(ViewBase& child) const { return Transform::Identity(); }
 protected:
@@ -66,12 +66,12 @@ protected:
 
 	// drawing
 protected:
-	void Redraw(Rect redraw_region) { if (HasParent() && !redraw_region.IsEmpty()) { GetParent().OnChildRedraw(*this, redraw_region); } }
 	void DrawChild(ViewBase& child, Point child_offset, Canvas& canvas, Rect draw_region);
 	void DrawChild(ViewBase& child, Rect child_region, Canvas& canvas, Rect draw_region);
+	void Redraw(Rect redraw_region) { if (HasParent() && !redraw_region.IsEmpty()) { GetParent().OnChildRedraw(*this, redraw_region); } }
 protected:
-	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) {}
 	virtual void OnDraw(Canvas& canvas, Rect draw_region) {}
+	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) {}
 
 	// event
 protected:

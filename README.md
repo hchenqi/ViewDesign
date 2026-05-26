@@ -4,7 +4,7 @@ A C++ GUI library
 
 ## Introduction
 
-*ViewDesign* is a general-purpose, object-oriented, highly modular, minimal and flexible cross-platform C++ GUI library with multi-backend support. It additionally provides an easily extensible component library for intuitive and explicit UI building, featuring static layout compatibility check through C++ templating which is particularly helpful for designing complex UI components with minimal run-time overhead.
+*ViewDesign* is a general-purpose, object-oriented, highly modular, minimal and flexible cross-platform C++ GUI library with multi-backend support. It ships with an easily extensible component library for intuitive and explicit UI building, featuring compile-time layout compatibility check via C++ concepts which is particularly helpful for designing complex UI components with minimal run-time overhead.
 
 ### Highlight
 
@@ -13,10 +13,11 @@ A C++ GUI library
 - cross-platform with multi-backend support
 - easy to setup and integrate, no boilerplate
 - clear and efficient logic for layout calculation and rendering
-- intrinsically DPI-aware
 - fit for both 'immediate-mode' and 'retained-mode' GUI programming, supporting hot reload with ease
+- intrinsically DPI-aware
 - conceptual separation of components as `control`, `frame` and `layout`
-- static check of layout compatibility between components through size traits
+- explicit control of component layouts
+- compile-time check of layout compatibility between components through size traits
 
 ### Example
 
@@ -105,7 +106,7 @@ The size of a `TextView` depends on both the size constraint provided by its par
 	);
 ```
 
-Another advantage of using plain `new` is that it well supports template parameter deduction guide for specific parent views without having to explicitly provide the template arguments, while with `create<>` the parent view's template arguments must be fully given (see [Example/Background.cpp](Example/Background.cpp)).
+Another advantage of using plain `new` is that it well supports template parameter deduction guide for specific parent view components without having to explicitly provide the template arguments, while with `create<>` the parent view's template arguments must be fully given (see [Example/Background.cpp](Example/Background.cpp)). However, for layout components like `ListLayout`, `DivideLayout` and `StackLayoutMultiple` that accept variable number of child views, passing a child view as raw pointer created by `new` is not allowed to ensure exception-safety.
 
 UTF-16 strings are used across this project. Prefix `u` is for declaring UTF-16 string literals.
 
@@ -137,7 +138,9 @@ More examples can be found in sub-folder [Example](Example), including:
 - [BackgroundWrapper](Example/BackgroundWrapper.cpp)
 - [TitleBarWindow](Example/TitleBarWindow.cpp)
 - [PlainTextEditor](Example/PlainTextEditor.cpp)
+- [StateMirroring](Example/StateMirroring.cpp)
 - [HotReload(Win32)](Example/win32/HotReload.cpp)
+- [ImageView(Win32-DirectX)](Example/win32-directx/ImageView.cpp)
 
 ### Build
 
@@ -148,9 +151,9 @@ More examples can be found in sub-folder [Example](Example), including:
 - `GLFW-OpenGL` (Windows, Linux)
 - `GLFW-Vulkan` (Windows, Linux)
 
-> Backends other than `Win32-DirectX` are not yet natively equipped with text rendering capabilities. Texts are presented as placeholders.
+On Windows, *ViewDesign* with `Win32-DirectX` backend can be directly built by Visual Studio as a CMake project. [Building ViewDesign](docs/build.md) provides more detailed instructions on configuring and building *ViewDesign* with different backends and platforms.
 
-On Windows, *ViewDesign* can be built directly by Visual Studio as a CMake project. [Building ViewDesign](docs/build.md) provides more detailed instructions on configuring and building *ViewDesign* on different platforms.
+> Backends other than `Win32-DirectX` are not yet natively equipped with complete shape, image and text rendering capabilities. Texts are presented as placeholder rectangles, and there could be inconsistent appearance with some shapes and link errors about missing implementations for loading images.
 
 ### Principle
 
@@ -192,11 +195,11 @@ Dear ImGui markets itself as an 'immediate-mode' GUI library for engine develope
 
 However, by discarding an object-oriented and functional design, it is more difficult and error-prone with ImGui to deal with scopes, implement complex layout dependencies and to extend the components to fit custom needs. In *ViewDesign* which is particularly layout-sensitive, it is necessary to still take the object-oriented approach utilizing C++ features, ensuring precise control of scopes and easing development of custom components to fit complex layout calculation and rendering needs.
 
-Being object-oriented doesn't immediately mean being equal to a traditional 'retained-mode' GUI framework. With *ViewDesign*, it is possible to implement both 'immediate-mode' and 'retained-mode' rendering loops. While in retained mode the components are designed to persist across rendering frames with their states stored internally, in immediate mode they are designed to be reconstructible every frame from externally persistent states. This relies rather on the choice of the component library than on the core *ViewDesign* library itself. Though the standard component library of *ViewDesign* still aligns more with retained-mode GUI programming, it is not difficult to develop corresponding immediate-mode versions of the stateful components. (see example [HotReload(Win32)](Example/win32/HotReload.cpp))
+Being object-oriented doesn't immediately mean being equal to a traditional 'retained-mode' GUI framework. With *ViewDesign*, it is possible to implement both 'immediate-mode' and 'retained-mode' rendering loops for supporting hot reload. While in retained mode the components are designed to persist across rendering frames with their states stored internally, in immediate mode they are designed to be reconstructible every frame from externally persistent states. This relies rather on the choice of the component library than on the core *ViewDesign* library itself. Though the standard component library of *ViewDesign* still aligns more with retained-mode GUI programming, it is not difficult to develop corresponding immediate-mode versions of the stateful components. (see example [HotReload(Win32)](Example/win32/HotReload.cpp))
 
 ### Limitation
 
-The examples and the standard component library of *ViewDesign* are currently still being extended. And there is no particular support for accessibility and internationalization in the standard component library yet. Extensive correctness and performance testing targeting multiple platforms are also needed.
+The backends, examples and the standard component library of *ViewDesign* are currently still being implemented and extended. And there is no particular support for accessibility and internationalization in the standard component library yet. Extensive correctness and performance testing targeting multiple platforms are also needed.
 
 Contribution to this project and the component library is therefore very welcome!
 
@@ -367,9 +370,33 @@ The `style` sub-folder defines the cursor style that is referenced by all view c
 
 ### view
 
-The `view` sub-folder defines `ViewBase`, `Window` and `Desktop` classes. It also includes the standard component library as sub-folders.
+The `view` sub-folder defines classes: `ViewBase`, `ViewFrame`, `ReferenceFrame`, `Window` and `Desktop`. It also contains the standard component library including `view_traits.h` and sub-folders. [Standard Component Library of ViewDesign](docs/components.md) provides an overview of the standard component library.
 
-[Standard Component Library of ViewDesign](docs/components.md) provides an overview of the standard components.
+#### ViewBase
+
+`ViewBase` is the base class of view components. It defines interfaces for managing child views, updating layout, drawing and handling events.
+
+The two virtual functions handle top-down and bottom-up layout update respectively:
+- `virtual Size OnSizeRefUpdate(Size size_ref)`
+- `virtual void OnChildSizeUpdate(ViewBase& child, Size child_size)`
+
+They are respectively initiated by the parent view and a child view by:
+- `Size UpdateChildSizeRef(ViewBase& child, Size size_ref)`
+- `void SizeUpdated(Size size)`
+
+The two virtual functions handle top-down drawing and bottom-up redraw request respectively:
+- `virtual void OnDraw(Canvas& canvas, Rect draw_region)`
+- `virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region)`
+
+They are respectively initiated by the parent view and a child view by:
+- `void DrawChild(ViewBase& child, Point child_offset, Canvas& canvas, Rect draw_region)` (not clipping child region) or `void DrawChild(ViewBase& child, Rect child_region, Canvas& canvas, Rect draw_region)` (clipping child region)
+- `void Redraw(Rect redraw_region)`
+
+#### ViewFrame / ReferenceFrame
+
+`ViewFrame` is the simplest frame and the base class of `Window` and other frames that decorates one child view. It implements the `ViewBase` virtual interfaces by simply forwarding the same arguments between its own parent view and its child view.
+
+`ReferenceFrame` is similar to `ViewFrame`. The only difference between them is that `ViewFrame` accepts a child view by `unique_ptr` and manages its lifetime, while `ReferenceFrame` accepts a child view by reference whose lifetime is managed externally by the user. Most frame and layout components only accept child views as `unique_ptr` to simplify the lifetime management, nevertheless, they can be combined with `ReferenceFrame` to also accept child views as references.
 
 ### messaging
 

@@ -74,15 +74,15 @@ protected:
 
 	// drawing
 protected:
-	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override {
-		Rect child_region = GetChildRegion(child);
-		Redraw(child_region.Intersect(child_redraw_region + (child_region.point - point_zero)));
-	}
 	virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
 		if (child_list.empty()) { return; }
 		draw_region = draw_region.Intersect(Rect(point_zero, size)); if (draw_region.IsEmpty()) { return; }
 		size_t begin = HitTestItem(draw_region.top()), end = HitTestItem(ceilf(draw_region.bottom()) - 1.0f);
 		for (size_t index = begin; index <= end; ++index) { DrawChild(child_list[index], GetChildRegion(index), canvas, draw_region); }
+	}
+	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override {
+		Rect child_region = GetChildRegion(child);
+		Redraw(child_region.Intersect(child_redraw_region + (child_region.point - point_zero)));
 	}
 
 	// event
@@ -124,15 +124,15 @@ protected:
 
 	// drawing
 protected:
-	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override {
-		Rect child_region = GetChildRegion(child);
-		Redraw(child_region.Intersect(child_redraw_region + (child_region.point - point_zero)));
-	}
 	virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
 		if (child_list.empty()) { return; }
 		draw_region = draw_region.Intersect(Rect(point_zero, size)); if (draw_region.IsEmpty()) { return; }
 		size_t begin = HitTestItem(draw_region.left()), end = HitTestItem(ceilf(draw_region.right()) - 1.0f);
 		for (size_t index = begin; index <= end; ++index) { DrawChild(child_list[index], GetChildRegion(index), canvas, draw_region); }
+	}
+	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override {
+		Rect child_region = GetChildRegion(child);
+		Redraw(child_region.Intersect(child_redraw_region + (child_region.point - point_zero)));
 	}
 
 	// event

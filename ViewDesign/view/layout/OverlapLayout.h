@@ -129,13 +129,13 @@ protected:
 private:
 	using ViewBase::OnChildRedraw;
 protected:
-	virtual void OnWindowRedraw(Window& window, Rect redraw_region) {
-		Redraw((redraw_region + (window.region.point - point_zero)).Intersect(window.region));
-	}
 	virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
 		for (auto& window : window_list) {
 			DrawChild(*window, window->region, canvas, draw_region);
 		}
+	}
+	virtual void OnWindowRedraw(Window& window, Rect redraw_region) {
+		Redraw((redraw_region + (window.region.point - point_zero)).Intersect(window.region));
 	}
 
 	// event

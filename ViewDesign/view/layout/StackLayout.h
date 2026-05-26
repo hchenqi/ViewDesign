@@ -26,11 +26,11 @@ protected:
 
 	// drawing
 protected:
-	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override { Redraw(child_redraw_region); }
 	virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
 		DrawChild(child_first, point_zero, canvas, draw_region);
 		DrawChild(child_second, point_zero, canvas, draw_region);
 	}
+	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override { Redraw(child_redraw_region); }
 
 	// event
 protected:
@@ -126,8 +126,8 @@ protected:
 
 	// drawing
 protected:
-	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override { Redraw(child_redraw_region); }
 	virtual void OnDraw(Canvas& canvas, Rect draw_region) override { for (auto& child : child_list) { DrawChild(child, point_zero, canvas, draw_region); } }
+	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override { Redraw(child_redraw_region); }
 
 	// event
 protected:
