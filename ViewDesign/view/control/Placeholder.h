@@ -11,7 +11,7 @@ class Placeholder;
 
 
 template<>
-class Placeholder<Auto, Auto> : public ViewType<Auto, Auto> {
+class Placeholder<Auto, Auto> : public ViewBase, public SizeTrait<Auto, Auto> {
 public:
 	Placeholder(Size size) : size(size) {}
 protected:
@@ -24,7 +24,7 @@ protected:
 
 
 template<>
-class Placeholder<Auto, Fixed> : public ViewType<Auto, Fixed> {
+class Placeholder<Auto, Fixed> : public ViewBase, public SizeTrait<Auto, Fixed> {
 public:
 	Placeholder(float width) : size(width, 0.0f) {}
 protected:
@@ -37,7 +37,7 @@ protected:
 
 
 template<>
-class Placeholder<Fixed, Auto> : public ViewType<Fixed, Auto> {
+class Placeholder<Fixed, Auto> : public ViewBase, public SizeTrait<Fixed, Auto> {
 public:
 	Placeholder(float height) : size(0.0f, height) {}
 protected:
@@ -50,7 +50,7 @@ protected:
 
 
 template<>
-class Placeholder<Fixed, Fixed> : public ViewType<Fixed, Fixed> {};
+class Placeholder<Fixed, Fixed> : public ViewBase, public SizeTrait<Fixed, Fixed> {};
 
 
 } // namespace ViewDesign

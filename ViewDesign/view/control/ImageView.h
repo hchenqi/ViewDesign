@@ -7,7 +7,7 @@
 namespace ViewDesign {
 
 
-class ImageView : public ViewType<Auto, Auto> {
+class ImageView : public ViewBase, public SizeTrait<Auto, Auto> {
 public:
 	ImageView(const u16string& file_name) : image(file_name) {}
 protected:
@@ -24,7 +24,7 @@ protected:
 };
 
 
-class ImageRepeatView : public ViewType<Fixed, Fixed> {
+class ImageRepeatView : public ViewBase, public SizeTrait<Fixed, Fixed> {
 public:
 	ImageRepeatView(const u16string& file_name, Point offset = point_zero) : image(file_name), offset(offset - point_zero) {}
 protected:

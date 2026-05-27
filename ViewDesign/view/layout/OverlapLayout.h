@@ -9,7 +9,7 @@
 namespace ViewDesign {
 
 
-class OverlapLayout : public ViewType<Fixed, Fixed> {
+class OverlapLayout : public ViewBase, public SizeTrait<Fixed, Fixed> {
 public:
 	class Window : public ViewFrame {
 	private:

@@ -99,7 +99,7 @@ template<class T1, class T2>
 StackLayout(T1, T2) -> StackLayout<extract_width_trait<T1>, extract_height_trait<T1>, extract_width_trait<T2>, extract_height_trait<T2>>;
 
 
-class StackLayoutMultiple : public ViewType<Fixed, Fixed> {
+class StackLayoutMultiple : public ViewBase, public SizeTrait<Fixed, Fixed> {
 public:
 	using child_type = view_ptr<Fixed, Fixed>;
 

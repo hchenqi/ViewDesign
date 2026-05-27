@@ -29,9 +29,6 @@ struct SizeTrait {
 	using height_trait = HeightTrait;
 };
 
-template<size_trait WidthTrait, size_trait HeightTrait>
-class ViewType : public ViewBase, public SizeTrait<WidthTrait, HeightTrait> {};
-
 
 template<class T>
 struct extract_size_trait;

@@ -107,7 +107,7 @@ Wrappers and frames all could decorate a view component. A frame is an individua
 
 ### SizeTrait
 
-The wrapper `SizeTrait` overrides the size traits of the wrapped view component. It's not recommended to use it with normal components because it changes their size traits and might introduce undefined behaviour. However, it can be used for decorating `ViewFrame` which is not templated on size traits.
+The wrapper `SizeTraitOverride` overrides the size traits of the wrapped view component. It's not recommended to use it with normal components because it forces the change of their size traits which might introduce undefined behaviour. However, it can be used for decorating `ViewFrame` or other components that are not originally templated on size traits.
 
 ### Cursor
 

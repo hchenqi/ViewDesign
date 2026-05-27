@@ -7,7 +7,7 @@
 namespace ViewDesign {
 
 
-class TextView : public ViewType<Relative, Relative> {
+class TextView : public ViewBase, public SizeTrait<Relative, Relative> {
 public:
 	using Style = TextStyle;
 

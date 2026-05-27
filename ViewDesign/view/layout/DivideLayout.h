@@ -8,7 +8,7 @@
 namespace ViewDesign {
 
 
-class _DivideLayout_Base : public ViewType<Fixed, Fixed> {
+class _DivideLayout_Base : public ViewBase, public SizeTrait<Fixed, Fixed> {
 public:
 	using child_type = view_ptr<Fixed, Fixed>;
 
