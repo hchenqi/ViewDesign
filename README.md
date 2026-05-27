@@ -392,12 +392,6 @@ They are respectively initiated by the parent view and a child view by:
 - `void DrawChild(ViewBase& child, Point child_offset, Canvas& canvas, Rect draw_region)` (not clipping child region) or `void DrawChild(ViewBase& child, Rect child_region, Canvas& canvas, Rect draw_region)` (clipping child region)
 - `void Redraw(Rect redraw_region)`
 
-#### ViewFrame / ReferenceFrame
-
-`ViewFrame` is the simplest frame and the base class of `Window` and other frames that decorates one child view. It implements the `ViewBase` virtual interfaces by simply forwarding the same arguments between its own parent view and its child view.
-
-`ReferenceFrame` is similar to `ViewFrame`. The only difference between them is that `ViewFrame` accepts a child view by `unique_ptr` and manages its lifetime, while `ReferenceFrame` accepts a child view by reference whose lifetime is managed externally by the user. Most frame and layout components only accept child views as `unique_ptr` to simplify the lifetime management, nevertheless, they can be combined with `ReferenceFrame` to also accept child views as references.
-
 ### messaging
 
 The `messaging` sub-folder provides optional messaging tools:

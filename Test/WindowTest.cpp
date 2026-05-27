@@ -12,6 +12,7 @@
 // - handling focus and key event
 // - event loop with multiple windows
 // - ViewFrame, ReferenceFrame, MutableFrame and LayerFrame all with the same visual appearance as the child view itself
+// - longer lifetime of the child view than ReferenceFrame
 
 #include <ViewDesign/view/Window.h>
 #include <ViewDesign/view/Desktop.h>
@@ -113,9 +114,17 @@ void App() {
 	desktop.EventLoop();
 
 	std::unique_ptr<MainView> view(new MainView());
-	desktop.AddWindow(new MainWindow(u"WindowTest", new ViewFrame(new MainView())));
-	desktop.AddWindow(new MainWindow(u"WindowTest", new ReferenceFrame(*view)));
-	desktop.AddWindow(new MainWindow(u"WindowTest", new MutableFrame(new MainView())));
-	desktop.AddWindow(new MainWindow(u"WindowTest", new LayerFrame(new MainView())));
+
+	desktop.AddWindow(new MainWindow(u"WindowTest", new MainView()));
+	desktop.AddWindow(new MainWindow(u"WindowTest (ViewFrame)", new ViewFrame(new MainView())));
+	desktop.AddWindow(new MainWindow(u"WindowTest (ReferenceFrame)", new ReferenceFrame(*view)));
+	desktop.AddWindow(new MainWindow(u"WindowTest (MutableFrame)", new MutableFrame(new MainView())));
+	desktop.AddWindow(new MainWindow(u"WindowTest (LayerFrame)", new LayerFrame(new MainView())));
+	desktop.EventLoop();
+
+	desktop.AddWindow(new MainWindow(u"WindowTest (ReferenceFrame)", new ReferenceFrame(*view)));
+	desktop.EventLoop();
+
+	desktop.AddWindow(new MainWindow(u"WindowTest", std::move(view)));
 	desktop.EventLoop();
 }

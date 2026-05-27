@@ -36,11 +36,40 @@ The `control` sub-folder includes view components which have no child views.
 
 ## frame
 
-The `frame` sub-folder includes view components which have a single child view.
+The `frame` sub-folder includes frames as view components that decorate a single child view.
+
+The frames can be classified as follows:
+- content-preserving: `ViewFrame`, `ReferenceFrame`, `MutableFrame`, `LayerFrame`
+- size-preserving (but not content-preserving): `BackgroundFrame`, `InnerBorderFrame`
+- size-traits-preserving (but not size-preserving): `PaddingFrame`, `BorderFrame`, `ScaleFrame`
+- size-traits-converting:
+  - `Relative`->`Fixed`: `ClipFrame`, `CenterFrame`, `ScrollFrame`, `StretchFrame`
+  - `Fixed`->`Auto`: `FixedFrame`
+  - `Relative`->`Auto`: `MaxFrame`, `MinFrame`
 
 ### ViewFrame
 
+`ViewFrame` is the simplest frame which implements the `ViewBase` virtual interfaces by just forwarding the same arguments between its own parent view and its child view. Most frames inherit `ViewFrame` modifying the default forwarding behaviour.
+
+### ReferenceFrame
+
+`ReferenceFrame` is similar to `ViewFrame` that just forwards the same arguments. The only difference between them is that `ViewFrame` accepts a child view by `unique_ptr` and manages its lifetime, while `ReferenceFrame` accepts a child view by reference whose lifetime is managed externally by the user, and the user must ensure the lifetime of the child view is longer than `ReferenceFrame`.
+
+Most frame and layout components only accept a child view as `unique_ptr` to simplify the lifetime management, nevertheless, they can be combined with `ReferenceFrame` to also accept a child view as references so that the child view can persist when its parent view destructs. This can probably be used to avoid re-creating stateless view components during hot reload.
+
 ### MutableFrame
+
+### LayerFrame
+
+### BackgroundFrame
+
+### InnerBorderFrame
+
+### PaddingFrame
+
+### BorderFrame
+
+### ScaleFrame
 
 ### ClipFrame
 
@@ -48,23 +77,13 @@ The `frame` sub-folder includes view components which have a single child view.
 
 ### ScrollFrame
 
+### StretchFrame
+
 ### FixedFrame
 
 ### MaxFrame
 
 ### MinFrame
-
-### BorderFrame
-
-### PaddingFrame
-
-### BackgroundFrame
-
-### InnerBorderFrame
-
-### ScaleFrame
-
-### LayerFrame
 
 ## layout
 

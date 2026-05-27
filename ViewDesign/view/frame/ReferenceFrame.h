@@ -6,14 +6,18 @@
 namespace ViewDesign {
 
 
+template<class WidthTrait, class HeightTrait>
 class ReferenceFrame : public ViewBase {
 public:
-	ReferenceFrame(view_ref_any child) : child(child) { RegisterChild(child); }
+	using child_type = view_ref<WidthTrait, HeightTrait>;
+
+public:
+	ReferenceFrame(child_type child) : child(child) { RegisterChild(child); }
 	virtual ~ReferenceFrame() override { UnregisterChild(child); }
 
 	// child
 protected:
-	view_ref_any child;
+	child_type child;
 
 	// layout
 protected:
@@ -31,6 +35,10 @@ protected:
 protected:
 	virtual ref_ptr<ViewBase> HitTest(MouseEvent& event) override { return HitTestChild(child, event); }
 };
+
+
+template<class T>
+ReferenceFrame(T) -> ReferenceFrame<extract_width_trait<T>, extract_height_trait<T>>;
 
 
 } // namespace ViewDesign
