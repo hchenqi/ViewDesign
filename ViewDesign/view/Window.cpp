@@ -20,18 +20,18 @@ void Window::Maximize() { MaximizeWindow(GetHandle()); }
 void Window::Restore() { RestoreWindow(GetHandle()); }
 void Window::Close() { CloseWindow(GetHandle()); }
 
+void Window::Draw() {
+	surface.Render([&](Rect draw_region) {
+		Canvas canvas;
+		canvas.Group(scale, rect_infinite, [&]() { OnDraw(canvas, draw_region / scale); });
+		return canvas;
+	});
+}
+
 void Window::Redraw(Rect rect) {
 	RectI redraw_region = RoundUp(rect * scale).Intersect(RectI(point_i_zero, GetSize()));
 	surface.Redraw(redraw_region);
 	RedrawWindowRegion(GetHandle(), redraw_region);
-}
-
-void Window::OnDraw() {
-	surface.Render([&](Rect draw_region) {
-		Canvas canvas;
-		canvas.Group(scale, rect_infinite, [&]() { DrawChild(*child, point_zero, canvas, draw_region / scale); });
-		return canvas;
-	});
 }
 
 

@@ -8,7 +8,7 @@
 namespace ViewDesign {
 
 struct WindowPrivateAccess : Window {
-	using Window::OnDraw;
+	using Window::Draw;
 };
 
 struct DesktopPrivateAccess : Desktop {
@@ -42,7 +42,7 @@ void EventLoop() {
 		}
 
 		for (auto& window : window_list) {
-			static_cast<WindowPrivateAccess&>(*window).OnDraw();
+			static_cast<WindowPrivateAccess&>(*window).Draw();
 		}
 	}
 }

@@ -44,6 +44,12 @@ using extract_height_trait = typename extract_size_trait<T>::height_trait;
 
 
 template<class T, class WidthTrait, class HeightTrait>
+concept size_trait_equal = std::same_as<extract_width_trait<T>, WidthTrait> && std::same_as<extract_height_trait<T>, HeightTrait>;
+
+template<class T1, class T2>
+concept size_trait_equal_with = size_trait_equal<T1, extract_width_trait<T2>, extract_height_trait<T2>>;
+
+template<class T, class WidthTrait, class HeightTrait>
 concept size_trait_compatible = std::derived_from<extract_width_trait<T>, WidthTrait> && std::derived_from<extract_height_trait<T>, HeightTrait>;
 
 template<class T1, class T2>

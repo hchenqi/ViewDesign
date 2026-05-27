@@ -185,7 +185,7 @@ void TextEditor::UpdateSelection(TextRange range) {
 	if (!selection_range.empty()) {
 		HitTestRangeInfo selection_info = text_block.HitTestRange(selection_range); selection_region_list.reserve(selection_info.size());
 		for (auto& it : selection_info) {
-			it.second.size = it.second.size.Union(Size(5.0f, 5.0f));
+			it.second.size = it.second.size.Union(Size(1.0f, 1.0f));
 			selection_region_list.emplace_back(it.second);
 			selection_region_union = Rect::Union(selection_region_union, it.second);
 		}

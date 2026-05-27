@@ -1,3 +1,8 @@
+// testing:
+// - ListLayout AppendChild
+// - correct layout calculation of ListLayoutVertical and ListLayoutHorizontal with all possible size traits
+// - layer tiling with TileLayerFrame under scaling context
+
 #include <ViewDesign/view/widget/DefaultWindow.h>
 #include <ViewDesign/view/frame/ScrollFrame.h>
 #include <ViewDesign/view/frame/LayerFrame.h>
@@ -6,6 +11,7 @@
 #include <ViewDesign/view/frame/PaddingFrame.h>
 #include <ViewDesign/view/layout/ListLayout.h>
 #include <ViewDesign/view/control/TextEditor.h>
+#include <ViewDesign/view/wrapper/Background.h>
 #include <ViewDesign/view/wrapper/HitTestHelper.h>
 #include <ViewDesign/view/widget/TextViewAdapter.h>
 
@@ -81,20 +87,32 @@ private:
 };
 
 
+template<class WidthTrait>
+struct Name<ListLayoutVertical<WidthTrait>> {
+	inline static const u16string text = u"ListLayoutVertical<" + GetName<WidthTrait>() + u">";
+};
+
+template<class HeightTrait>
+struct Name<ListLayoutHorizontal<HeightTrait>> {
+	inline static const u16string text = u"ListLayoutHorizontal<" + GetName<HeightTrait>() + u">";
+};
+
 template<template<class Trait> class ListLayout, class Trait>
 void Test() {
 	desktop.AddWindow(
-		new DefaultWindow(
+		new DefaultBackground<DefaultWindow>(
 			DefaultWindow::Style(),
-			Name<ListLayout<Trait>>::text,
+			GetName<ListLayout<Trait>>(),
 			new ScrollFrame(
 				new LayerFrameTiled(
 					new ScaleFrame(
-						new InnerBorderFrame(
-							Border(1.0f, 0.0f, Color::Black),
-							new PaddingFrame(
-								Padding(5.0f),
-								new ListView<ListLayout, Trait>(5)
+						new LayerFrameTiled(
+							new InnerBorderFrame(
+								Border(1.0f, 0.0f, Color::Black),
+								new PaddingFrame(
+									Padding(5.0f),
+									new ListView<ListLayout, Trait>(5)
+								)
 							)
 						)
 					)

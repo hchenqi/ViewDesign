@@ -27,7 +27,7 @@ struct WindowPrivateAccess : Window {
 	using Window::SetPoint;
 	using Window::State;
 	using Window::SetState;
-	using Window::OnDraw;
+	using Window::Draw;
 };
 
 struct DesktopPrivateAccess : Desktop {
@@ -135,7 +135,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 		case WM_PAINT: {
 			PAINTSTRUCT ps;
 			HDC hdc = BeginPaint(hwnd, &ps);
-			window->OnDraw();
+			window->Draw();
 			EndPaint(hwnd, &ps);
 		} break;
 		case WM_ERASEBKGND: return true;

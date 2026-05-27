@@ -1,3 +1,7 @@
+// testing:
+// - mouse capture
+// - continuous dragging and redraw of OverlapLayout::Window
+
 #include <ViewDesign/view/widget/DefaultWindow.h>
 #include <ViewDesign/view/frame/BorderFrame.h>
 #include <ViewDesign/view/layout/OverlapLayout.h>

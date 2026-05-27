@@ -1,3 +1,19 @@
+// testing:
+// - creating and closing window
+// - overriding Window interfaces
+// - Window redraw and presentation
+// - overriding Placeholder for customized layout calculation, drawing and event handling
+// - correct rendering with canvas Offset and Group
+// - rendering rectangles
+// - creating and rendering a Bitmap
+// - creating and compositing a Layer with LayerFrame
+// - rendering rectangle/bitmap/layer and presenting Window with opacity
+// - handling mouse event
+// - handling focus and key event
+// - event loop with multiple windows
+// - ViewFrame, ReferenceFrame, MutableFrame and LayerFrame all with the same visual appearance as the child view itself
+
+#include <ViewDesign/view/Window.h>
 #include <ViewDesign/view/Desktop.h>
 #include <ViewDesign/view/frame/ViewFrame.h>
 #include <ViewDesign/view/frame/ReferenceFrame.h>

@@ -50,7 +50,7 @@ private:
 	void SetScale(Scale scale) { this->scale = Scale(scale); }
 protected:
 	void RegionUpdated(Rect region);
-private:
+protected:
 	virtual Transform GetChildTransform(ViewBase& child) const override { return scale; }
 protected:
 	virtual std::pair<Size, Size> CalculateMinMaxSize(Size size_ref) { return { size_empty, size_ref }; }
@@ -78,13 +78,14 @@ public:
 
 	// drawing
 protected:
+	void Draw();
 	void Redraw(Rect redraw_region);
-private:
-	void OnDraw();
+protected:
+	virtual void OnDraw(Canvas& canvas, Rect draw_region) override { DrawChild(*child, point_zero, canvas, draw_region); }
 	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override { Redraw(child_redraw_region); }
 
 	// event
-private:
+protected:
 	virtual ref_ptr<ViewBase> HitTest(MouseEvent& event) override { event.point /= scale; return HitTestChild(*child, event); }
 };
 

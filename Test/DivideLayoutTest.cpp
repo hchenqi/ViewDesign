@@ -1,3 +1,8 @@
+// testing:
+// - constructing DivideLayout with variable number of child view arguments
+// - handling focus event as the tracked view and an ancestor of the tracked view
+// - rendering dirty region with swapchain of a window
+
 #include <ViewDesign/view/widget/DefaultWindow.h>
 #include <ViewDesign/view/frame/BorderFrame.h>
 #include <ViewDesign/view/layout/DivideLayout.h>

@@ -1,8 +1,15 @@
+// testing:
+// - correct layout calculation of SplitLayoutVertical and SplitLayoutHorizontal with all allowed size traits
+// - decorating TextView/TextEditor with TextViewAdapter
+
 #include <ViewDesign/view/widget/DefaultWindow.h>
 #include <ViewDesign/view/frame/CenterFrame.h>
+#include <ViewDesign/view/frame/ScaleFrame.h>
 #include <ViewDesign/view/frame/BorderFrame.h>
+#include <ViewDesign/view/frame/PaddingFrame.h>
 #include <ViewDesign/view/layout/SplitLayout.h>
 #include <ViewDesign/view/control/TextEditor.h>
+#include <ViewDesign/view/wrapper/Background.h>
 #include <ViewDesign/view/widget/TextViewAdapter.h>
 
 #include "trait_name.h"
@@ -11,26 +18,45 @@
 using namespace ViewDesign;
 
 
+template<class WidthTraitFirst, class HeightTraitFirst, class WidthTraitSecond, class HeightTraitSecond>
+struct Name<SplitLayoutVertical<WidthTraitFirst, HeightTraitFirst, WidthTraitSecond, HeightTraitSecond>> {
+	inline static const u16string text = u"SplitLayoutVertical<" + GetName<WidthTraitFirst>() + u", " + GetName<HeightTraitFirst>() + u", " + GetName<WidthTraitSecond>() + u", " + GetName<HeightTraitSecond>() + u">";
+};
+
+template<class WidthTraitFirst, class HeightTraitFirst, class WidthTraitSecond, class HeightTraitSecond>
+struct Name<SplitLayoutHorizontal<WidthTraitFirst, HeightTraitFirst, WidthTraitSecond, HeightTraitSecond>> {
+	inline static const u16string text = u"SplitLayoutHorizontal<" + GetName<WidthTraitFirst>() + u", " + GetName<HeightTraitFirst>() + u", " + GetName<WidthTraitSecond>() + u", " + GetName<HeightTraitSecond>() + u">";
+};
+
 template<template<class WidthTraitFirst, class HeightTraitFirst, class WidthTraitSecond, class HeightTraitSecond> class SplitLayout, class WidthTraitFirst, class HeightTraitFirst, class WidthTraitSecond, class HeightTraitSecond>
 void Test() {
 	desktop.AddWindow(
-		new DefaultWindow(
+		new DefaultBackground<DefaultWindow>(
 			DefaultWindow::Style(),
-			Name<SplitLayout<WidthTraitFirst, HeightTraitFirst, WidthTraitSecond, HeightTraitSecond>>::text,
+			GetName<SplitLayout<WidthTraitFirst, HeightTraitFirst, WidthTraitSecond, HeightTraitSecond>>(),
 			new CenterFrame<Fixed, Fixed>(
-				new BorderFrame(
-					Border(2.0f, Color::Yellow),
-					new SplitLayout(
-						new BorderFrame(
-							Border(2.0f, Color::Green),
-							TextViewAdapter<WidthTraitFirst, HeightTraitFirst>(
-								new TextEditor(TextEditor::Style(), u"Type something here...")
-							)
-						),
-						new BorderFrame(
-							Border(2.0f, Color::Red),
-							TextViewAdapter<WidthTraitSecond, HeightTraitSecond>(
-								new TextEditor(TextEditor::Style(), u"Type something here, too...")
+				new ScaleFrame(
+					Scale(2.0f),
+					new BorderFrame(
+						Border(2.0f, Color::Yellow),
+						new SplitLayout(
+							new BorderFrame(
+								Border(2.0f, Color::Green),
+								TextViewAdapter<WidthTraitFirst, HeightTraitFirst>(
+									new PaddingFrame(
+										Padding(5.0f),
+										new TextEditor(TextEditor::Style(), u"Type here...")
+									)
+								)
+							),
+							new BorderFrame(
+								Border(2.0f, Color::Red),
+								TextViewAdapter<WidthTraitSecond, HeightTraitSecond>(
+									new PaddingFrame(
+										Padding(5.0f),
+										new TextEditor(TextEditor::Style(), u"Type here, too...")
+									)
+								)
 							)
 						)
 					)
