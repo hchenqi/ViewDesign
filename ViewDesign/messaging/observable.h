@@ -26,7 +26,7 @@ protected:
 	};
 
 protected:
-	~Observable() { for (auto observer : observer_list) { observer->observable = nullptr; } }
+	~Observable() { for (auto observer : observer_list) { if (observer != nullptr) { observer->observable = nullptr; } } }
 
 private:
 	mutable std::list<ref_ptr<Observer>> observer_list;
@@ -35,13 +35,17 @@ private:
 		return observer_list.emplace(observer_list.end(), &observer);
 	}
 	void RemoveObserver(std::list<ref_ptr<Observer>>::iterator index) const {
-		observer_list.erase(index);
+		*index = nullptr;
 	}
 
 protected:
 	void Notify(Arg... arg) const {
 		for (auto it = observer_list.begin(); it != observer_list.end();) {
-			(*it++)->callback(arg...);
+			if (*it == nullptr) {
+				it = observer_list.erase(it);
+			} else {
+				(*it++)->callback(arg...);
+			}
 		}
 	}
 };

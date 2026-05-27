@@ -11,7 +11,9 @@ public:
 	using Listener = Observable<>::Observer;
 
 public:
-	using Observable<>::Notify;
+	void Notify() const {
+		Observable<>::Notify();
+	}
 };
 
 

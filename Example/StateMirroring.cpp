@@ -27,12 +27,12 @@ public:
 public:
 	TextInput(const Style& style, u16string text) : TextEditor(style, std::move(text)), text_state(this->text) {}
 public:
-	State<u16string> text_state;
+	StateRef<u16string> text_state;
 	Signal text_update_signal;
 private:
 	virtual void OnTextUpdate() override {
 		TextEditor::OnTextUpdate();
-		text_state.Set(text);
+		text_state.Notify();
 		text_update_signal.Notify();
 	}
 };
@@ -42,9 +42,9 @@ class TextLabel : public TextView {
 public:
 	using Style = TextView::Style;
 public:
-	TextLabel(const Style& style, const State<u16string>& text_state) : TextView(style, text_state.Get()), text_state_watcher(text_state, [&](const u16string& text) { Assign(text); }) {}
+	TextLabel(const Style& style, const StateRef<u16string>& text_state) : TextView(style, text_state.Get()), text_state_watcher(text_state, [&](const u16string& text) { Assign(text); }) {}
 private:
-	State<u16string>::Watcher text_state_watcher;
+	StateRef<u16string>::Watcher text_state_watcher;
 };
 
 
