@@ -430,6 +430,6 @@ The `backend` sub-folder contains backend-specific implementations of rendering 
 
 *ViewDesign* is licensed under the MIT license. (see [LICENSE](LICENSE))
 
-## History
+## About
 
-The development history of *ViewDesign* can be found in [History](docs/history.md).
+The development history of *ViewDesign*, my thoughts during the development, sponsorship options and my contact are to be found in [About](docs/aboout.md).
