@@ -129,7 +129,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 		case WM_WINDOWPOSCHANGED: return DefWindowProc(hwnd, msg, wparam, lparam);
 		case WM_MOVE: window->SetPoint(PointI((short)LOWORD(lparam), (short)HIWORD(lparam))); break;
 		case WM_SIZE: window->SetState(static_cast<WindowPrivateAccess::State>(wparam <= 2 ? wparam : 2)); if (wparam != SIZE_MINIMIZED) { window->SetSize(SizeU(LOWORD(lparam), HIWORD(lparam))); } break;
-		case WM_DPICHANGED: window->SetScale(LOWORD(wparam) / dpi_default); break;
+		case WM_DPICHANGED: window->SetScale(Scale(LOWORD(wparam) / dpi_default)); break;
 
 			// drawing
 		case WM_PAINT: {
@@ -231,7 +231,7 @@ void AttachWindow(Handle window, Window& view) {
 
 void DestroyWindow(Handle window) { DestroyWindow(AsHWND(window)); }
 
-Scale GetWindowScale(Handle window) { return GetDpiForWindow(AsHWND(window)) / dpi_default; }
+Scale GetWindowScale(Handle window) { return Scale(GetDpiForWindow(AsHWND(window)) / dpi_default); }
 
 void SetWindowTitle(Handle window, const u16string& title) { SetWindowTextW(AsHWND(window), as_wchar_str(title.c_str())); }
 void SetWindowRegion(Handle window, RectI region) { MoveWindow(AsHWND(window), region.point.x, region.point.y, region.size.width, region.size.height, false); }

@@ -13,7 +13,7 @@ public:
 
 public:
 	ScaleFrame(Scale scale, child_type child) : ViewFrame(std::move(child)), scale(scale) {}
-	ScaleFrame(child_type child) : ScaleFrame(1.0f, std::move(child)) {}
+	ScaleFrame(child_type child) : ScaleFrame(Scale(1.0f), std::move(child)) {}
 
 	// style
 protected:

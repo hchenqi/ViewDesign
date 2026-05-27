@@ -8,11 +8,11 @@
 namespace ViewDesign {
 
 
-inline Vector GetTileOffset(Size tile_size, TileIndex tile) {
+constexpr Vector GetTileOffset(Size tile_size, TileIndex tile) {
 	return Vector(tile.x * tile_size.width, tile.y * tile_size.height);
 }
 
-inline Rect GetTileRegion(Size tile_size, TileIndex tile) {
+constexpr Rect GetTileRegion(Size tile_size, TileIndex tile) {
 	return Rect(point_zero + GetTileOffset(tile_size, tile), tile_size);
 }
 
@@ -26,21 +26,34 @@ inline TileRange GetOverlappingTileRange(Size tile_size, Rect region) {
 
 
 struct TilingFuncDefault {
-	SizeU operator()(SizeU tile_size_current, Size size_new) {			
+	constexpr SizeU operator()(SizeU tile_size_current, Size size_new) const {
 		SizeU tile_size;
 
-		if (size_new.width <= 64.0f) { tile_size.width = 64; }
-		else if (size_new.width <= 128.0f) { tile_size.width = 128; }
-		else if (size_new.width <= 256.0f) { tile_size.width = 256; }
-		else { tile_size.width = 512; }
+		if (size_new.width <= 64.0f) {
+			tile_size.width = 64;
+		} else if (size_new.width <= 128.0f) {
+			tile_size.width = 128;
+		} else if (size_new.width <= 256.0f) {
+			tile_size.width = 256;
+		} else {
+			tile_size.width = 512;
+		}
+		if (tile_size.width < tile_size_current.width) {
+			tile_size.width = tile_size_current.width;
+		}
 
-		if (size_new.height <= 64.0f) { tile_size.height = 64; }
-		else if (size_new.height <= 128.0f) { tile_size.height = 128; }
-		else if (size_new.height <= 256.0f) { tile_size.height = 256; }
-		else { tile_size.height = 512; }
-
-		if (tile_size.width < tile_size_current.width) { tile_size.width = tile_size_current.width; }
-		if (tile_size.height < tile_size_current.height) { tile_size.height = tile_size_current.height; }
+		if (size_new.height <= 64.0f) {
+			tile_size.height = 64;
+		} else if (size_new.height <= 128.0f) {
+			tile_size.height = 128;
+		} else if (size_new.height <= 256.0f) {
+			tile_size.height = 256;
+		} else {
+			tile_size.height = 512;
+		}
+		if (tile_size.height < tile_size_current.height) {
+			tile_size.height = tile_size_current.height;
+		}
 
 		return tile_size;
 	}

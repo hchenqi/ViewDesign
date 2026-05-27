@@ -10,12 +10,12 @@ using namespace Vulkan;
 
 void Line::DrawOn(RenderTarget& target, Point point) const {
 	if (begin == end) {
-		return Rectangle(Size(width, width), color).DrawOn(target, point + begin - Vector(width, width) / 2.0f);
+		return Rectangle(Size(width, width), color).DrawOn(target, point + begin - Vector(width, width) / Scale(2.0f));
 	}
 	target.BindPipeline<FlatPipeline>();
 	FlatPipeline::SetColor(target, color);
 	Point begin = point + this->begin, end = point + this->end;
-	Vector offset = Normal(Normalize(end - begin)) * (width / 2.0f);
+	Vector offset = Normal(Normalize(end - begin)) * Scale(width / 2.0f);
 	target.DrawVertices(GetVertices(Quad{ begin - offset, begin + offset, end + offset, end - offset }));
 }
 

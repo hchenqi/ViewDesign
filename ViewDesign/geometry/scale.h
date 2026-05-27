@@ -8,9 +8,9 @@ struct Scale {
 	float x;
 	float y;
 
-	constexpr Scale() = default;
-	constexpr Scale(float scale) : Scale(scale, scale) {}
-	constexpr Scale(float x, float y) : x(x), y(y) {}
+	explicit constexpr Scale() = default;
+	explicit constexpr Scale(float scale) : Scale(scale, scale) {}
+	explicit constexpr Scale(float x, float y) : x(x), y(y) {}
 
 	constexpr bool operator==(const Scale& other) const { return x == other.x && y == other.y; }
 

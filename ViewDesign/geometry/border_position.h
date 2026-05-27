@@ -20,7 +20,7 @@ enum class BorderPosition {
 	_Count,
 };
 
-inline BorderPosition HitTestBorderPosition(Size size, float border_width, Point point) {
+constexpr BorderPosition HitTestBorderPosition(Size size, float border_width, Point point) {
 	float x1 = border_width, y1 = border_width;
 	float x2 = size.width - border_width, y2 = size.height - border_width;
 	float x = point.x, y = point.y;
@@ -51,7 +51,7 @@ inline BorderPosition HitTestBorderPosition(Size size, float border_width, Point
 	}
 }
 
-inline CursorStyle GetResizeCursorStyle(BorderPosition border_position) {
+constexpr CursorStyle GetResizeCursorStyle(BorderPosition border_position) {
 	switch (border_position) {
 	case BorderPosition::Left: return CursorStyle::ResizeWE;
 	case BorderPosition::Top: return CursorStyle::ResizeNS;
