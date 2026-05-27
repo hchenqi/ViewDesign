@@ -8,7 +8,7 @@
 namespace ViewDesign {
 
 template<class View>
-class DelayedReflow;
+class DeferredReflow;
 
 
 class _ListLayout_Base : public ViewBase {
@@ -191,7 +191,6 @@ protected:
 	}
 };
 
-
 template<class WidthTrait>
 class ListLayoutVertical : public _ListLayoutVertical_Base, public SizeTrait<WidthTrait, Auto> {
 public:
@@ -342,11 +341,10 @@ protected:
 template<class T, class... Ts>
 ListLayoutVertical(float, T, Ts...) -> ListLayoutVertical<extract_width_trait<T>>;
 
-
-template<class ListLayoutVertical> requires std::derived_from<_ListLayoutVertical_Base, ListLayoutVertical>
-class DelayedReflow<ListLayoutVertical> : public ListLayoutVertical {
+template<class ListLayoutVertical> requires std::derived_from<ListLayoutVertical, _ListLayoutVertical_Base>
+class DeferredReflow<ListLayoutVertical> : public ListLayoutVertical {
 protected:
-	using Base = DelayedReflow;
+	using Base = DeferredReflow;
 
 public:
 	using ListLayoutVertical::ListLayoutVertical;
@@ -357,33 +355,42 @@ protected:
 	using ListLayoutVertical::size;
 	using ListLayoutVertical::UpdateOffset;
 	using ListLayoutVertical::CalculateMaxWidth;
+	using ListLayoutVertical::SizeUpdated;
+	using ListLayoutVertical::RedrawChild;
 
 protected:
-	size_t first = 0, last = 0;
+	size_t first = -1, last = 0;
 	bool calculate_max_width = false;
 	float width = 0.0f;
 public:
 	void Reflow() {
 		if (calculate_max_width) {
 			width = CalculateMaxWidth();
-			calculate_max_width = false;
 		} else {
 			width = std::max(width, size.width);
 		}
-		auto it_first = child_list.begin() + first, it_last = child_list.begin() + last;
 		if (size.width == width) {
-			float height = UpdateOffset(it_first + 1, it_last + 1);
-			if (size.height != height) {
-				size.height = height;
-				SizeUpdated(size);
-			} else {
-				RedrawChild(it_first, it_last);
+			if (first <= last) {
+				auto it_first = child_list.begin() + first, it_last = child_list.begin() + last;
+				float height = UpdateOffset(it_first + 1, it_last + 1);
+				if (size.height != height) {
+					size.height = height;
+					SizeUpdated(size);
+				} else {
+					RedrawChild(it_first, it_last);
+				}
 			}
 		} else {
 			size.width = width;
-			size.height = UpdateOffset(it_first + 1, it_last + 1);
+			if (first <= last) {
+				auto it_first = child_list.begin() + first, it_last = child_list.begin() + last;
+				size.height = UpdateOffset(it_first + 1, it_last + 1);
+			}
 			SizeUpdated(size);
 		}
+		first = -1; last = 0;
+		calculate_max_width = false;
+		width = 0.0f;
 	}
 
 protected:
@@ -478,7 +485,6 @@ protected:
 		return child->view;
 	}
 };
-
 
 template<class HeightTrait>
 class ListLayoutHorizontal : public _ListLayoutHorizontal_Base, public SizeTrait<Auto, HeightTrait> {
@@ -630,11 +636,10 @@ protected:
 template<class T, class... Ts>
 ListLayoutHorizontal(float, T, Ts...) -> ListLayoutHorizontal<extract_height_trait<T>>;
 
-
-template<class ListLayoutHorizontal> requires std::derived_from<_ListLayoutHorizontal_Base, ListLayoutHorizontal>
-class DelayedReflow<ListLayoutHorizontal> : public ListLayoutHorizontal {
+template<class ListLayoutHorizontal> requires std::derived_from<ListLayoutHorizontal, _ListLayoutHorizontal_Base>
+class DeferredReflow<ListLayoutHorizontal> : public ListLayoutHorizontal {
 protected:
-	using Base = DelayedReflow;
+	using Base = DeferredReflow;
 
 public:
 	using ListLayoutHorizontal::ListLayoutHorizontal;
@@ -645,33 +650,42 @@ protected:
 	using ListLayoutHorizontal::size;
 	using ListLayoutHorizontal::UpdateOffset;
 	using ListLayoutHorizontal::CalculateMaxHeight;
+	using ListLayoutHorizontal::SizeUpdated;
+	using ListLayoutHorizontal::RedrawChild;
 
 protected:
-	size_t first = 0, last = 0;
+	size_t first = -1, last = 0;
 	bool calculate_max_height = false;
 	float height = 0.0f;
 public:
 	void Reflow() {
 		if (calculate_max_height) {
 			height = CalculateMaxHeight();
-			calculate_max_height = false;
 		} else {
 			height = std::max(height, size.height);
 		}
-		auto it_first = child_list.begin() + first, it_last = child_list.begin() + last;
 		if (size.height == height) {
-			float width = UpdateOffset(it_first + 1, it_last + 1);
-			if (size.width != width) {
-				size.width = width;
-				SizeUpdated(size);
-			} else {
-				RedrawChild(it_first, it_last);
+			if (first <= last) {
+				auto it_first = child_list.begin() + first, it_last = child_list.begin() + last;
+				float width = UpdateOffset(it_first + 1, it_last + 1);
+				if (size.width != width) {
+					size.width = width;
+					SizeUpdated(size);
+				} else {
+					RedrawChild(it_first, it_last);
+				}
 			}
 		} else {
 			size.height = height;
-			size.width = UpdateOffset(it_first + 1, it_last + 1);
+			if (first <= last) {
+				auto it_first = child_list.begin() + first, it_last = child_list.begin() + last;
+				size.width = UpdateOffset(it_first + 1, it_last + 1);
+			}
 			SizeUpdated(size);
 		}
+		first = -1; last = 0;
+		calculate_max_height = false;
+		height = 0.0f;
 	}
 
 protected:

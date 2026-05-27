@@ -7,14 +7,17 @@
 
 namespace ViewDesign {
 
+template<class View>
+class DeferredReflow;
 
 template<class View>
-class DelayedReflow;
+class DeferredRedraw;
+
 
 template<class Frame> requires (std::derived_from<Frame, ViewFrame>)
-class DelayedReflow<Frame> : public Frame {
+class DeferredReflow<Frame> : public Frame {
 protected:
-	using Base = DelayedReflow;
+	using Base = DeferredReflow;
 
 public:
 	using Frame::Frame;
@@ -28,19 +31,17 @@ public:
 			current_child_size.reset();
 		}
 	}
-
 protected:
-	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override { current_child_size = child_size; }
+	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override {
+		current_child_size = child_size;
+	}
 };
 
 
-template<class Frame>
-class DelayedRedraw;
-
 template<class Frame> requires (std::derived_from<Frame, ViewFrame>)
-class DelayedRedraw<Frame> : public Frame {
+class DeferredRedraw<Frame> : public Frame {
 protected:
-	using Base = DelayedRedraw;
+	using Base = DeferredRedraw;
 
 public:
 	using Frame::Frame;
@@ -54,9 +55,10 @@ public:
 			current_child_redraw_region = rect_empty;
 		}
 	}
-
 protected:
-	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override { current_child_redraw_region = current_child_redraw_region.Union(child_redraw_region); }
+	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override {
+		current_child_redraw_region = current_child_redraw_region.Union(child_redraw_region);
+	}
 };
 
 

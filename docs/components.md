@@ -87,15 +87,15 @@ Most frame and layout components only accept a child view as `unique_ptr` to sim
 
 ## layout
 
-The `layout` sub-folder includes view components which could have two or more child views.
-
-### SplitLayout
+The `layout` sub-folder includes layout components which could have two or more child views.
 
 ### StackLayout
 
-### ListLayout
+### SplitLayout
 
 ### DivideLayout
+
+### ListLayout
 
 ### OverlapLayout
 
@@ -103,7 +103,11 @@ The `layout` sub-folder includes view components which could have two or more ch
 
 The `wrapper` sub-folder includes wrapper templates that inherits and modifies a view component class.
 
-Wrappers and frames all could decorate a view component. A frame is an individual parent view component in the view tree, while a wrapper is a class template that extends the interfaces of the view component class. Therefore, decorating a view component with wrapper is slightly more efficient at run-time than decorating with frame, though wrappers are less functional than frames. Wrappers are not able to intercept `SizeUpdated` or `Redraw` calls from the view and modify the reflow or redraw behaviour, but a frame as a parent view can.
+Wrappers and frames all could decorate a view component. A frame is an individual parent view component in the view tree, while a wrapper is a class template that extends the interfaces of the view component class. Therefore, decorating a view component with wrapper is simpler slightly more efficient than decorating with frame, though wrappers are less functional than frames. Wrappers are not able to intercept `SizeUpdated` or `Redraw` calls from the view to modify the reflow or redraw behaviour, but a frame as a parent view component can.
+
+### SizeTrait
+
+The wrapper `SizeTrait` overrides the size traits of the wrapped view component. It's not recommended to use it with normal components because it changes their size traits and might introduce undefined behaviour. However, it can be used for decorating `ViewFrame` which is not templated on size traits.
 
 ### Cursor
 
@@ -117,7 +121,13 @@ The `Button` wrapper turns a view component to a button-like component that reac
 
 `Button` is not provided as a control, but as a wrapper and is considered as an abstract state machine that reacts to mouse and focus events and changes its state. This way, all view components can function like a button and it simplifies customization of buttons with text, padding, etc.
 
-### DelayedUpdate
+### DeferredUpdate
+
+The wrappers `DeferredReflow` and `DeferredRedraw` are provided to accumulate multiple child size update or child redraw requests and commit them in one go by explicitly calling `Reflow` or `Redraw`.
+
+This is useful when multiple views in the view tree are updated in a single operation, to avoid repetitive reflow or redraw propagations eagerly initiated by each updated view.
+
+`DeferredReflow` and `DeferredRedraw` logics need to be implemented for specific layout components, like in `ListLayout.h`. They can also directly decorate `ViewFrame` or certain frames for the frame to accumulate all updates of its subtree and then propagate.
 
 ## widget
 
@@ -130,3 +140,5 @@ The `widget` sub-folder includes more complex components that are derived from o
 ### TitleBarWindow
 
 ### Tooltip
+
+### TextViewAdapter
