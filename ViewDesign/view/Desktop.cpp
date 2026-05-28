@@ -3,6 +3,7 @@
 #include "ViewDesign/system/window.h"
 #include "ViewDesign/system/event_loop.h"
 #include "ViewDesign/common/reversion_wrapper.h"
+#include "Desktop.h"
 
 
 namespace ViewDesign {
@@ -239,6 +240,10 @@ void Desktop::ImeSetPosition(ViewBase& view, Point point) {
 
 void Desktop::EventLoop() {
 	ViewDesign::EventLoop();
+}
+
+void Desktop::PollEvents() {
+	ViewDesign::PollEvents();
 }
 
 

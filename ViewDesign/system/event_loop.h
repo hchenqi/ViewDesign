@@ -8,5 +8,7 @@ namespace ViewDesign {
 
 void EventLoop();
 
+void PollEvents();
+
 
 } // namespace ViewDesign

@@ -1,8 +1,8 @@
 #include "ViewDesign/system/event_loop.h"
+#include "ViewDesign/view/Desktop.h"
 
 #include <ViewDesign/platform/glfw/window.h>
 #include <ViewDesign/platform/glfw/timer_queue.h>
-#include "ViewDesign/view/Desktop.h"
 
 
 namespace ViewDesign {
@@ -18,6 +18,29 @@ struct DesktopPrivateAccess : Desktop {
 using namespace GLFW;
 
 
+namespace {
+
+inline void CheckDestroyWindows() {
+	for (auto& window_list = static_cast<DesktopPrivateAccess&>(desktop.Get()).window_list;;) {
+		std::vector<std::unique_ptr<Window>> window_to_destroy;
+		window_list.erase(std::remove_if(window_list.begin(), window_list.end(), [&](auto& window) {
+			return glfwWindowShouldClose(AsGLFWWindow(window->GetHandle())) == GLFW_TRUE ? window_to_destroy.emplace_back(std::move(window)), true : false;
+		}), window_list.end());
+		if (window_to_destroy.empty()) {
+			break;
+		}
+	}
+}
+
+inline void DrawWindows() {
+	for (auto& window : static_cast<DesktopPrivateAccess&>(desktop.Get()).window_list) {
+		static_cast<WindowPrivateAccess&>(*window).Draw();
+	}
+}
+
+} // namespace
+
+
 void EventLoop() {
 	for (;;) {
 		double timeout = ProcessTimerQueue();
@@ -27,24 +50,20 @@ void EventLoop() {
 			glfwWaitEvents();
 		}
 
-		auto& window_list = static_cast<DesktopPrivateAccess&>(desktop.Get()).window_list;
+		CheckDestroyWindows();
+		DrawWindows();
 
-		for (;;) {
-			std::vector<std::unique_ptr<Window>> window_closed;
-			window_list.erase(std::remove_if(window_list.begin(), window_list.end(), [&](auto& window) {
-				return glfwWindowShouldClose(AsGLFWWindow(window->GetHandle())) == GLFW_TRUE ? window_closed.emplace_back(std::move(window)), true : false;
-			}), window_list.end());
-			if (window_closed.empty()) { break; }
-		}
-
-		if (window_list.empty()) {
+		if (desktop.WindowListEmpty()) {
 			break;
 		}
-
-		for (auto& window : window_list) {
-			static_cast<WindowPrivateAccess&>(*window).Draw();
-		}
 	}
+}
+
+void PollEvents() {
+	ProcessTimerQueue();
+	glfwPollEvents();
+	CheckDestroyWindows();
+	DrawWindows();
 }
 
 

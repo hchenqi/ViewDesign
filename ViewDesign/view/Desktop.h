@@ -107,6 +107,7 @@ private:
 	// event
 public:
 	void EventLoop();
+	void PollEvents();
 };
 
 
@@ -128,6 +129,7 @@ public:
 	Size GetSize() const { return Get().GetSize(); }
 public:
 	void EventLoop() { return Get().EventLoop(); }
+	void PollEvents() { return Get().PollEvents(); }
 } desktop;
 
 

@@ -15,8 +15,6 @@
 
 #include <glm/gtc/matrix_transform.hpp> 
 
-#include <windows.h>
-
 
 using namespace ViewDesign;
 
@@ -125,10 +123,7 @@ void App() {
 	);
 
 	for (;;) {
-		for (MSG msg; PeekMessageW(&msg, NULL, 0, 0, PM_REMOVE);) {
-			TranslateMessage(&msg);
-			DispatchMessageW(&msg);
-		}
+		desktop.PollEvents();
 
 		if (desktop.WindowListEmpty()) {
 			break;

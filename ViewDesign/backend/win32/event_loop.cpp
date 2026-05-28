@@ -8,8 +8,7 @@ namespace ViewDesign {
 
 
 void EventLoop() {
-	MSG msg;
-	for (;;) {
+	for (MSG msg;;) {
 		GetMessageW(&msg, nullptr, 0, 0);
 		TranslateMessage(&msg);
 		DispatchMessageW(&msg);
@@ -17,6 +16,13 @@ void EventLoop() {
 		if (desktop.WindowListEmpty()) {
 			break;
 		}
+	}
+}
+
+void PollEvents() {
+	for (MSG msg; PeekMessageW(&msg, NULL, 0, 0, PM_REMOVE);) {
+		TranslateMessage(&msg);
+		DispatchMessageW(&msg);
 	}
 }
 

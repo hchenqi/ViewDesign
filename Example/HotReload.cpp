@@ -10,8 +10,6 @@
 #include <ViewDesign/view/control/Placeholder.h>
 #include <ViewDesign/view/control/TextEditor.h>
 
-#include <windows.h>
-
 
 // hot reload (immediate mode) requires the states to be stored externally and the components access and update the states by reference, so that the state won't be lost when the components are recreated
 // TextEditor in the standard component library of ViewDesign owns its states internally, therefore, it is extended here to accept an external state reference which is synchronized with its internal states on events
@@ -127,13 +125,8 @@ void App() {
 
 	int current_version = -1;
 
-	// the default desktop.EventLoop() is blocking
-	// here we define the Win32 message loop ourselves
 	for (;;) {
-		for (MSG msg; PeekMessageW(&msg, NULL, 0, 0, PM_REMOVE);) {
-			TranslateMessage(&msg);
-			DispatchMessageW(&msg);
-		}
+		desktop.PollEvents();
 
 		if (desktop.WindowListEmpty()) {
 			break;
