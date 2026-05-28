@@ -4,7 +4,7 @@ A C++ GUI library
 
 ## Introduction
 
-*ViewDesign* is a general-purpose, object-oriented, highly modular, minimal and flexible cross-platform C++ GUI library with multi-backend support. It ships with an easily extensible component library for intuitive and explicit UI building, featuring compile-time layout compatibility check via C++ concepts which is particularly helpful for designing complex UI components with minimal run-time overhead.
+*ViewDesign* is a general-purpose, object-oriented, highly modular, minimal and flexible cross-platform C++ GUI library with multi-backend support. It ships with an easily extensible component library for explicit and intuitive UI building, featuring compile-time layout compatibility check via C++ concepts, which is particularly helpful for designing complex UI components with minimal run-time overhead.
 
 ### Highlight
 
@@ -78,7 +78,7 @@ If we change it to `ClipFrame<Fixed, Fixed, TopLeft>`, the `TextView` will stay 
 
 Similarly, `ClipFrame<Fixed, Fixed, TopRight>`, `ClipFrame<Fixed, Fixed, BottomLeft>` and `ClipFrame<Fixed, Fixed, BottomRight>` place their child views at top-right, bottom-left and bottom-right corners respectively.
 
-`Fixed` is one of the size traits of a view, marking that a dimension (width or height) is to be assigned by the parent view. `DefaultWindow` expects both width and height traits of the child view to be `Fixed`, that's why we wrote `CenterFrame<Fixed, Fixed>` or `ClipFrame<Fixed, Fixed, TopLeft>`, etc. We can not directly put a `TextView` in `DefaultWindow`, because both width and height traits of `TextView` are not `Fixed`, but `Relative`. The code below won't compile:
+`Fixed` is one of the size traits of a view, marking that a dimension (width or height) is to be assigned by the parent view. `DefaultWindow` expects both width and height traits of the child view to be `Fixed`, therefore, we wrote `CenterFrame<Fixed, Fixed>` or `ClipFrame<Fixed, Fixed, TopLeft>`, etc. We can not directly put a `TextView` in `DefaultWindow`, because both width and height traits of `TextView` are not `Fixed`, but `Relative`. The code below won't compile:
 
 ```cpp
 	desktop.AddWindow(
@@ -90,7 +90,7 @@ Similarly, `ClipFrame<Fixed, Fixed, TopRight>`, `ClipFrame<Fixed, Fixed, BottomL
 	);
 ```
 
-The size of a `TextView` depends on both the size constraint provided by its parent view and its text content, therefore, it has `Relative` traits. Because its size might not exactly be the size of the `DefaultWindow`, it can't be directly placed in the `DefaultWindow` without specifying how. `CenterFrame<Fixed, Fixed>` can be used as an adapter in between, which itself has `Fixed` traits that fits with `DefaultWindow`, and accepts a child view with `Relative` traits by placing the child view at the center.
+The size of a `TextView` depends on both the size constraint provided by its parent view and its text content, thus it has `Relative` traits. Because its size might not exactly be the same as `DefaultWindow`, `DefaultWindow` doesn't know how to place it. `CenterFrame<Fixed, Fixed>` can be used as an adapter in between, which itself has `Fixed` traits that fits with `DefaultWindow`, while accepting a child view with `Relative` traits and places the child view at its center.
 
 `create<>` is just a shorter alias of `std::make_unique<>`. We can also use the even shorter `new` here to create the components, and it will not be unsafe because the raw pointer returned by `new` will be immediately captured as a `unique_ptr` internally in the parent view constructors.
 
@@ -134,13 +134,15 @@ void App() {
 
 `DefaultWindow` always expects a child view with `Fixed` traits to be given. `Placeholder<Fixed, Fixed>` here works literally as a placeholder of the child view that draws nothing and can be replaced later.
 
-More examples can be found in sub-folder [Example](Example), including:
+More examples can be found in subfolder [Example](Example) which are built along with *ViewDesign* library, including:
 - [BackgroundWrapper](Example/BackgroundWrapper.cpp)
-- [TitleBarWindow](Example/TitleBarWindow.cpp)
+- [ImageView (Win32-DirectX)](Example/win32-directx/ImageView.cpp)
 - [PlainTextEditor](Example/PlainTextEditor.cpp)
+- [TitleBarWindow](Example/TitleBarWindow.cpp)
 - [StateMirroring](Example/StateMirroring.cpp)
-- [HotReload(Win32)](Example/win32/HotReload.cpp)
-- [ImageView(Win32-DirectX)](Example/win32-directx/ImageView.cpp)
+- [ViewMirroring](Example/ViewMirroring.cpp)
+- [HotReload](Example/HotReload.cpp)
+- [SceneEmbedding (Vulkan)](Example/vulkan/SceneEmbedding.cpp)
 
 ### Build
 
@@ -153,11 +155,11 @@ More examples can be found in sub-folder [Example](Example), including:
 
 On Windows, *ViewDesign* with `Win32-DirectX` backend can be directly built by Visual Studio as a CMake project. [Building ViewDesign](docs/build.md) provides more detailed instructions on configuring and building *ViewDesign* with different backends and platforms.
 
-> Backends other than `Win32-DirectX` are not yet natively equipped with complete shape, image and text rendering capabilities. Texts are presented as placeholder rectangles, and there could be inconsistent appearance with some shapes and link errors about missing implementations for loading images.
+> Backends other than `Win32-DirectX` are not yet natively equipped with complete shape, image and text rendering capabilities. Texts are presented as placeholder rectangles, and there could be inconsistent appearance with some shapes like `RoundedRectangle` and link error about missing image loaders.
 
 ### Principle
 
-*ViewDesign* aims to be modular and transparent. There is no hidden logic or global context, and it is easy to inspect and modify any part of the library code. The files of the library are well structured, self-explanatory and effortless to navigate. Each file is kept possibly small and independent for a single component, mostly within ~100 lines. There is no single all-in-one header and each component header is to be included individually on demand. This results in better compile-time and run-time efficiency and is less error-prone.
+*ViewDesign* aims to be modular and transparent. There is no hidden logic or global context, and it is easy to inspect and modify any part of the library code. The files of the library are well structured, self-explanatory and effortless to navigate. Each file is kept possibly small and independent for a single component, mostly within ~100 lines. There is no single all-in-one header and each component header is to be included individually on demand. This results in better develop-time, compile-time and run-time efficiency.
 
 The example section above demonstrates the standard component library of *ViewDesign* with size traits. The core library (excluding components in subfolders of [ViewDesign/view](ViewDesign/view) and `view_traits.h`), however, does not enforce size traits or any development paradigm. It can be integrated within any project in any C++ design patterns and extended with any custom component libraries to fit special development needs. The standard components provided along with the core library are such examples that can be directly used, inherited, or taken as models of developing custom components in a similar way.
 
@@ -187,21 +189,21 @@ Qt provides multiple frameworks and rich tool sets for cross-platform GUI and so
 
 Qt uses size policy to similarly describe how a widget is to be resized, but this is rather a suggestion that is performed by certain layout boxes at run-time, than a trait with compatibility check. In the standard component library of *ViewDesign*, size traits are built in with all components, and they can not only be used to check and catch ill-combined components at compile-time, but also automatically select the one compatible implementation from all implementations for common frames and layouts like `BorderFrame`, `ScrollFrame`, `SplitLayout` or `ListLayout` with help of C++ template deduction guide, making it seamless to build up well-formed view components with little effort.
 
-Qt uses signals and slots mechanism historically for communication between objects that extends the C++ language. *ViewDesign* sticks to native C++, is open to all kinds of custom design patterns, and provides optional mechanisms for messaging like `State` and `Context` as standalone headers for developers to choose.
+Qt uses signals and slots mechanism historically for communication between objects that extends the C++ language. *ViewDesign* sticks to native C++, is open to all kinds of custom design patterns, and provides optional mechanisms for messaging like `Observable` and `Context` as standalone headers for developers to choose.
 
 #### Dear ImGui
 
 Dear ImGui markets itself as an 'immediate-mode' GUI library for engine developers that is easy to integrate with existing render loops for displaying tools. It is single-header based with various pre-defined components that can be used via imperative programming. It internally maintains mouse/key states in a global context and tracks component states with an ID system, while the user-side code only stores the data referenced by the components without having to explicitly manage the component tree as with traditional 'retained-mode' GUI programming.
 
-However, by discarding an object-oriented and functional design, it is more difficult and error-prone with ImGui to deal with scopes, implement complex layout dependencies and to extend the components to fit custom needs. In *ViewDesign* which is particularly layout-sensitive, it is necessary to still take the object-oriented approach utilizing C++ features, ensuring precise control of scopes and easing development of custom components to fit complex layout calculation and rendering needs.
+However, by discarding an object-oriented and functional design, it is more difficult and error-prone with ImGui to deal with scopes, implement complex layout dependencies and to extend the components to fit custom needs. In *ViewDesign* which is particularly layout-sensitive, it is necessary to still take the object-oriented approach utilizing C++ features, ensuring precise control of scopes and easing the building of custom components to fit complex layout calculation and rendering needs.
 
-Being object-oriented doesn't immediately mean being equal to a traditional 'retained-mode' GUI framework. With *ViewDesign*, it is possible to implement both 'immediate-mode' and 'retained-mode' rendering loops for supporting hot reload. While in retained mode the components are designed to persist across rendering frames with their states stored internally, in immediate mode they are designed to be reconstructible every frame from externally persistent states. This relies rather on the choice of the component library than on the core *ViewDesign* library itself. Though the standard component library of *ViewDesign* still aligns more with retained-mode GUI programming, it is not difficult to develop corresponding immediate-mode versions of the stateful components. (see example [HotReload(Win32)](Example/win32/HotReload.cpp))
+Being object-oriented doesn't immediately mean being equal to a traditional 'retained-mode' GUI framework. With *ViewDesign*, it is possible to implement both 'immediate-mode' and 'retained-mode' rendering loops for supporting hot reload. While in retained mode the components are designed to persist across rendering frames with their states stored internally, in immediate mode they are designed to be reconstructible every frame from externally persistent states. This relies rather on the choice of the component library than on the core *ViewDesign* library itself. Though the standard component library of *ViewDesign* currently still aligns more with retained-mode GUI programming, it is not difficult to develop corresponding immediate-mode versions of stateful components. (see example [HotReload](Example/HotReload.cpp))
 
 ### Limitation
 
-The backends, examples and the standard component library of *ViewDesign* are currently still being implemented and extended. And there is no particular support for accessibility and internationalization in the standard component library yet. Extensive correctness and performance testing targeting multiple platforms are also needed.
+The backends, examples, documentation and the standard component library of *ViewDesign* are currently still being extended. And there is no particular support for accessibility and internationalization in the standard component library yet. Extensive correctness and performance testing targeting multiple platforms are also needed.
 
-Contribution to this project and the component library is therefore very welcome!
+**Contribution to this project is therefore very welcome!**
 
 ### Summary
 
@@ -209,7 +211,7 @@ Contribution to this project and the component library is therefore very welcome
 
 ## Concepts
 
-This section introduces the basic concepts related with view tree, layout, drawing and event handling in *ViewDesign*.
+This section introduces the basic concepts and algorithms related with view tree, layout, drawing and event handling in *ViewDesign*.
 
 ### View / Desktop / Window
 
@@ -225,9 +227,9 @@ Control, frame and layout are different types of view components.
 
 - A *control* has no child view and does basic functions or displays raw content, like `Placeholder`, `TextView`, `ImageView`, etc.
 
-- A *frame* has one child view to decorate, like `BorderFrame`, `BackgroundFrame`, `CenterFrame`, etc. A `Window` is also a frame that has one direct child view.
+- A *frame* has one child view to decorate, like `BorderFrame`, `BackgroundFrame`, `CenterFrame`, etc. A `Window` can also been regarded as a frame that has one direct child view.
 
-- A *layout* may have multiple child views that are visually arranged in a certain layout, like `ListLayout`, `SplitLayout`, `OverlapLayout`, etc.
+- A *layout* may have multiple child views that are visually arranged in certain layouts, like `ListLayout`, `StackLayout`, `SplitLayout`, `OverlapLayout`, etc.
 
 ### Reflow / Redraw
 
@@ -249,9 +251,9 @@ The core library provides the generic logic for updating layout of a view, but t
 
 The standard component library of *ViewDesign* introduces size traits `Fixed`, `Auto` and `Relative` that marks how the width or the height of a view component is to be decided which can be checked at compile-time.
 
-- `Fixed` means a dimension of a view is only assigned by its parent view.
+- `Fixed` means a dimension of a view is assigned by its parent view.
 
-- `Auto` means a dimension of a view is only determined by the view itself.
+- `Auto` means a dimension of a view is determined by the view itself.
 
 - `Relative` means a dimension of a view is finally calculated by the view but based on some information provided by its parent view.
 
@@ -269,7 +271,7 @@ Some frames act as adapters for converting size traits of the child view:
 
 How a view component with `Relative` traits or a parent view accepting a child view with `Relative` traits interpret the `size_ref` depends on the components. For example, `TextView` has `Relative` traits and regards the `size_ref` as the size constraint for calculating the text layout, which agrees with `MaxFrame` that provides the `size_ref` as the max size constraint. However, another component with `Relative` traits may calculate its size as a percentage of `size_ref`, which usually won't work very well with `MaxFrame` even though it fits with `MaxFrame` by size traits.
 
-The reflow logic and the size traits already describe most scenarios of layout dependencies. Other more complex or special layout dependencies can be implemented by certain view components extending the core interfaces in a custom way. For example, a `Window` or an `OverlapLayout::Window` doesn't only decide its size, but also its position on the `Desktop` or the `OverlapLayout`, which is governed by special interfaces.
+The reflow logic and the size traits already describe most scenarios of layout dependencies. Other more complex or special layout dependencies can be implemented by certain view components extending the core interfaces in a custom way. For example, a `Window` or an `OverlapLayout::Window` doesn't only decide its size, but also its position on the `Desktop` or the `OverlapLayout`, which is reflected by special interfaces.
 
 ### Figure / RenderTarget / Canvas / Surface / Layer
 
@@ -281,7 +283,7 @@ In the current implementation, the `Canvas` actually collects the figures drawn 
 
 A `Surface` or a `Layer` can hold the actual backend-dependent render target for rendering a `Canvas`. A `Surface` is owned by a `Window` that is capable of presenting the window on the desktop. A `Layer` is an off-screen framebuffer that can render the figures and itself be composited as a `Figure` on another `Layer` or a `Surface`.
 
-The component `LayerFrame` is provided as a wrapper of a `Layer` that can be directly inserted in the view tree, caching the content of its child views to avoid frequent redraws when scrolling.
+The component `LayerFrame` is provided as a wrapper of a `Layer` that can be directly inserted in the view tree, caching the content of its child views to avoid frequent redraws.
 
 ### MouseEvent / KeyEvent / FocusEvent
 
@@ -303,7 +305,7 @@ This section gives an overview of the source code structure of *ViewDesign* with
 
 ### common
 
-The `common` sub-folder includes some common type definitions and utility functions.
+The `common` subfolder includes some common type definitions and utility functions.
 
 #### `Handle` / `ref_ptr` / `owner_ptr`
 
@@ -311,13 +313,13 @@ This project tries to avoid using raw pointers and prefers `std::unique_ptr` or 
 
 #### `u16char` / `u16string`
 
-In alignment with ICU, UTF-16 strings are used in this project. `u16char` is an alias of `char16_t` and `u16string` an alias of `std::u16string`.
+In alignment with ICU (International Components for Unicode), UTF-16 strings are used in this project. `u16char` is an alias of `char16_t` and `u16string` an alias of `std::u16string`.
 
 Converters between `std::u8string` and `std::u16string` are provided which depends on the ICU library. `reinterpret_cast` is used at platform boundaries for casting between `char16_t*` and `wchar_t*` for Win32 APIs, and between `char8_t*` and `char*` for GLFW APIs.
 
 ### geometry
 
-The `geometry` sub-folder defines the following types in 2D geometry, which all hold floating-point values for a more precise calculation:
+The `geometry` subfolder defines the following types in 2D geometry, which all hold floating-point values for a more precise calculation under scaling:
 - `Point`
 - `Size`
 - `Rect`
@@ -334,7 +336,7 @@ Converting functions from types with floating point values to types with integer
 
 ### drawing
 
-The `drawing` sub-folder includes the following classes related with drawing and rendering:
+The `drawing` subfolder includes the following classes related with drawing and rendering:
 - `Color`: color in BGRA format stored as a 32-bit integer
 - `PixelBuffer`: CPU-side bitmap as a 2D array of `Color` pixels, which can be converted to `Bitmap` as a GPU-side texture
 - `Figure`: abstract base class for figures
@@ -343,11 +345,11 @@ The `drawing` sub-folder includes the following classes related with drawing and
 - `Surface`: GPU-side surface for a window
 - `Layer`: GPU-side off-screen framebuffer
 
-The implementations of backend-dependent classes `Bitmap`, `Surface` and `Layer` are to be found in the `backend` sub-folder.
+The implementations of backend-dependent classes `Bitmap`, `Surface` and `Layer` are to be found in the `backend` subfolder.
 
 ### event
 
-The `event` sub-folder defines types related with events:
+The `event` subfolder defines types related with events:
 - `MouseEvent`
 - `KeyEvent`
 - `FocusEvent`
@@ -356,21 +358,21 @@ The `event` sub-folder defines types related with events:
 
 ### system
 
-The `system` sub-folder defines common system interfaces related with:
+The `system` subfolder defines common system interfaces related with:
 - window
 - event loop
 - cursor
 - clipboard
 
-The backend-specific implementations are also to be found in the `backend` sub-folder.
+The backend-specific implementations are also to be found in the `backend` subfolder.
 
 ### style
 
-The `style` sub-folder defines the cursor style that is referenced by all view components. More styles related with layout, text and border for specific components can be found in the standard component library under `view/style`.
+The `style` subfolder defines the cursor style that is referenced by all view components. More styles related with layout, text and border for specific components can be found in the standard component library under `view/style`.
 
 ### view
 
-The `view` sub-folder defines classes: `ViewBase`, `ViewFrame`, `ReferenceFrame`, `Window` and `Desktop`. It also contains the standard component library including `view_traits.h` and sub-folders. [Standard Component Library of ViewDesign](docs/components.md) provides an overview of the standard component library.
+The `view` subfolder defines classes `ViewBase`, `Window` and `Desktop`. It also contains the standard component library as `view_traits.h` and the subfolders. [Standard Component Library of ViewDesign](docs/components.md) provides an overview of the standard component library.
 
 #### ViewBase
 
@@ -394,31 +396,49 @@ They are respectively initiated by the parent view and a child view by:
 
 ### messaging
 
-The `messaging` sub-folder provides optional messaging tools:
-- `State<T>` / `State<T>::Watcher`
-- `ContextProvider` / `Context<ProviderViewClass>`
+The `messaging` subfolder provides optional messaging tools:
+- `Observable` / `Observer` (class template):
+  - `State` / `Watcher`
+  - `Signal` / `Listener`
+- `ContextProvider` / `Context`
 
-#### State
+#### Observable
 
-`State<T>` and `State<T>::Watcher` provide a general way to maintain the state of values and monitor value updates.
+Class template `Observable` and `Observer` provide a general way to notify data updates.
 
-Because the state and the watchers are usually stored in parallel components, careful lifetime management of the `State` object is required to avoid null references.
+Because the `Observer` is usually stored in a parallel component, careful lifetime management of the `Observable` object is required to avoid null references.
+
+##### State
+
+`State` implements `Observable` that stores a value. All `Watcher` will get notified with the current value when the value is updated.
+
+`StateRef` is similar to `State` but it only keeps the reference of the value which is stored and updated externally.
+
+##### Signal
+
+`Signal` also implements `Observable` but doesn't store any value. It is only used for signaling an event.
+
+An example of using `StateRef` and `Signal` can be found in [StateMirroring](Example/StateMirroring.cpp).
 
 #### Context
 
 `Context` is meant to be used by view components in the view tree. A view can inherit `ContextProvider` to register itself as a discoverable context provider, and a descendant view can use `Context<ProviderViewClass>` to query a registered ancestor view by its class name across multiple levels in the view tree. This avoids explicitly passing the reference of the ancestor view down level by level.
 
-Usually the a view component won't move in the view tree once it is added, but this still can happen in certain realistic scenarios. Therefore, it is worth noting that `Context` stores the reference to the provider ancestor view component at `Context::Get()` and won't be automatically updated when the consumer view component is removed from the sub-tree of the provider. In this case, `Context::Drop()` needs to be explicitly called to reset the reference to the provider. Alternatively, `Context::GetCurrent()` can be used which drops the stored reference and queries the current provider every time.
+Usually a view component won't move once it is added in the view tree, but this still can happen in certain realistic scenarios. With `Context::Get()`, the reference to the provider ancestor view component is cached and won't be automatically updated when the consumer view component is removed from the subtree of the provider. `Context::Drop()` can be explicitly called in this case to reset the reference to the provider. Alternatively, `Context::GetCurrent()` can be used which drops the cached reference and queries the current provider every time.
 
 An example usage of Context can be found in [TitleBarWindow.h](ViewDesign/view/widget/TitleBarWindow.h).
 
 ### platform
 
-The `platform` sub-folder contains helper functions for each platform under its own namespace. These functions are to be referenced by the related backends and custom platform-specific logics.
+The `platform` subfolder contains helper functions for each platform under its own namespace. These functions are to be referenced by the related backends and custom platform-specific logics.
 
 ### backend
 
-The `backend` sub-folder contains backend-specific implementations of rendering and system interfaces.
+The `backend` subfolder contains backend-specific implementations of rendering and system interfaces.
+
+## Todo
+
+A to-do list for future development plans can be found in [To Do](docs/todo.md).
 
 ## License
 
@@ -426,4 +446,4 @@ The `backend` sub-folder contains backend-specific implementations of rendering 
 
 ## About
 
-The development history of *ViewDesign*, my thoughts during the development, sponsorship options and my contact are to be found in [About](docs/aboout.md).
+The development history of *ViewDesign*, my thoughts during the development, sponsorship options and a little more about myself are to be found in [About](docs/about.md).

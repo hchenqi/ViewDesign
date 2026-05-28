@@ -4,7 +4,7 @@ Overview of the standard component library of *ViewDesign* under [ViewDesign/vie
 
 ## figure
 
-The `figure` sub-folder includes common figures types inheriting `Figure` abstract base class which are used by certain view components:
+The `figure` subfolder includes common figures types inheriting `Figure` abstract base class which are used by certain view components:
 - shape:
   - `Line`
   - `Rectangle`
@@ -18,28 +18,30 @@ The `figure` sub-folder includes common figures types inheriting `Figure` abstra
 
 ## style
 
-The `style` sub-folder includes common style types and layout values including `px` and `pct` which are referenced by certain view components.
+The `style` subfolder includes common style types and layout values including `px` and `pct` which are referenced by certain view components.
 
 ## control
 
-The `control` sub-folder includes view components which have no child views.
+The `control` subfolder includes control components, which have no child views.
 
 ### Placeholder
+
+`Placeholder` is the simplest control that takes up a certain space and draws nothing.
 
 ### TextView
 
 ### TextEditor
 
-> Known issue: `TextView` / `TextEditor` don't well support vertical text layout (the text layout direction is related with the choice of ClipFrame that wraps them).
+> Known issue: `TextEditor` doesn't well support vertical text layout (the text layout direction of a `TextView` can be related with the choice of the ClipFrame that wraps it, because `TextView` itself doesn't care about the position within its parent view).
 
 ### ImageView
 
 ## frame
 
-The `frame` sub-folder includes frames as view components that decorate a single child view.
+The `frame` subfolder includes frames as view components that decorate a single child view.
 
 The frames can be classified as follows:
-- content-preserving: `ViewFrame`, `ReferenceFrame`, `MutableFrame`, `LayerFrame`
+- content-preserving: `ViewFrame`, `ReferenceFrame`, `MutableFrame`, `LayerFrame`, `MirroringFrame`
 - size-preserving (but not content-preserving): `BackgroundFrame`, `InnerBorderFrame`
 - size-traits-preserving (but not size-preserving): `PaddingFrame`, `BorderFrame`, `ScaleFrame`
 - size-traits-converting:
@@ -61,6 +63,14 @@ Most frame and layout components only accept a child view as `unique_ptr` to sim
 
 ### LayerFrame
 
+### MirroringFrame
+
+`MirroringFrame` can mirror the content of its child view to multiple `MirrorView` controls.
+
+Normally a view component can only have one parent view on the view tree. `MirroringFrame` makes it possible to mirror a view component on other view tree branches. A `MirrorView` control is less functional than the original view, which has `Auto` size traits and is always kept in the same size as the original view. It redirects `OnDraw` to the `MirroringFrame` to draw the same content as the original view. 
+
+Adding a `MirrorView` as a descendent view of the `MirroringFrame` might cause infinite recursion of drawing if no offset/scaling/clipping is performed.
+
 ### BackgroundFrame
 
 ### InnerBorderFrame
@@ -72,6 +82,8 @@ Most frame and layout components only accept a child view as `unique_ptr` to sim
 ### ScaleFrame
 
 ### ClipFrame
+
+`ClipFrame` converts a dimension of its child view from `Relative` trait to `Fixed`. It passes the value of the dimension in `size_ref` from its parent view to its child view.
 
 ### CenterFrame
 
@@ -87,9 +99,15 @@ Most frame and layout components only accept a child view as `unique_ptr` to sim
 
 ## layout
 
-The `layout` sub-folder includes layout components which could have two or more child views.
+The `layout` subfolder includes layout components which could have two or more child views.
 
 ### StackLayout
+
+A `StackLayout` stacks all its child views on top of another, whose sizes are all equal to the size of the `StackLayout` itself. The child views are drawn bottom-up, but hit test of mouse events is performed top-down if the top child view doesn't process the event. `HitTestHelper` wrappers are provided to decorate the child views for conveniently choosing the child view to consume a mouse event.
+
+`StackLayout` accepts two child views. At least one of the child views must have `Fixed` traits for both its width and height. The size traits of the `StackLayout` is the same as the size traits of the other child view.
+
+`StackLayoutMultiple` accepts multiple child views with `Fixed` traits for both width and height, and itself has `Fixed` traits.
 
 ### SplitLayout
 
@@ -101,7 +119,7 @@ The `layout` sub-folder includes layout components which could have two or more 
 
 ## wrapper
 
-The `wrapper` sub-folder includes wrapper templates that inherits and modifies a view component class.
+The `wrapper` subfolder includes wrapper templates that inherits and modifies a view component class.
 
 Wrappers and frames all could decorate a view component. A frame is an individual parent view component in the view tree, while a wrapper is a class template that extends the interfaces of the view component class. Therefore, decorating a view component with wrapper is simpler slightly more efficient than decorating with frame, though wrappers are less functional than frames. Wrappers are not able to intercept `SizeUpdated` or `Redraw` calls from the view to modify the reflow or redraw behaviour, but a frame as a parent view component can.
 
@@ -114,6 +132,16 @@ The wrapper `SizeTraitOverride` overrides the size traits of the wrapped view co
 ### Background
 
 ### HitTestHelper
+
+`HitTestHelper` includes wrappers related with hit test. They are often used to decorate child views of `StackLayout` to choose which child view in the stack is to receive a mouse event.
+
+The wrappers include:
+- `HitSelf`: the decorated view consumes the mouse event itself
+- `HitSelfFallback`: the decorated view consumes the mouse event itself, if it couldn't find a child view to process the event
+- `HitSelfFallbackRecursive`: the decorated view consumes the mouse event itself, if no descendent view could be found to consume the event
+- `HitThrough`: the decorated view doesn't process the mouse event (which is then passed back to the next view in `StackLayout`)
+- `HitThroughFallback`: the decorated view wouldn't process the mouse event either, if it couldn't find a child view to process the event
+- `HitThroughMargin`: the decorated frame wouldn't process the mouse event, if the mouse hits the margin of its child view (only to decorate frames with margin around its child view, like `PaddingFrame`, `BorderFrame`, `ClipFrame`, `CenterFrame`, etc)
 
 ### Button
 
@@ -131,7 +159,7 @@ This is useful when multiple views in the view tree are updated in a single oper
 
 ## widget
 
-The `widget` sub-folder includes more complex components that are derived from or constructed with simple components.
+The `widget` subfolder includes more complex components that are derived from or constructed with simple components.
 
 ### DefaultWindow
 

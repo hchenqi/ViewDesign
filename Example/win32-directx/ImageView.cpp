@@ -32,6 +32,17 @@ void App() {
 	desktop.AddWindow(
 		new DefaultWindow(
 			DefaultWindow::Style(),
+			u"ImageView (stretched uniformly)",
+			new CenterFrame<Fixed, Fixed>(
+				new StretchFrameUniform(
+					new ImageView(file)
+				)
+			)
+		)
+	);
+	desktop.AddWindow(
+		new DefaultWindow(
+			DefaultWindow::Style(),
 			u"ImageView (repeating) (hint: zoom with Ctrl + scroll)",
 			new ScaleFrame(
 				new ImageRepeatView(file, Point(500.0f, 300.0f))
