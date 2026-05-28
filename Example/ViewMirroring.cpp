@@ -5,6 +5,7 @@
 #include <ViewDesign/view/frame/MaxFrame.h>
 #include <ViewDesign/view/frame/PaddingFrame.h>
 #include <ViewDesign/view/frame/BackgroundFrame.h>
+#include <ViewDesign/view/frame/StretchFrame.h>
 #include <ViewDesign/view/frame/ScaleFrame.h>
 #include <ViewDesign/view/layout/StackLayout.h>
 #include <ViewDesign/view/control/TextEditor.h>
@@ -38,9 +39,11 @@ void App() {
 				create<HitThrough<ClipFrame<Fixed, Fixed, BottomRight>>>(
 					new BackgroundFrame(
 						Color(Color::LightBlue, 0x80),
-						new ScaleFrame(
-							Scale(0.5f),
-							mirroring_frame_ref.CreateMirrorView()
+						new MaxFrame(
+							Size(400.0f, 400.0f),
+							new StretchFrameUniform(
+								mirroring_frame_ref.CreateMirrorView()
+							)
 						)
 					)
 				),
