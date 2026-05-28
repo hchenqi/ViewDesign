@@ -184,8 +184,12 @@ void App() {
 #define EXPORT
 #endif
 
+namespace ViewDesign {
+
 // explicitly instantiate and export the templates that might be used to force the linker to keep their symbols
 template class EXPORT ClipFrame<Fixed, Fixed, TopLeft>;
 template class EXPORT ClipFrame<Fixed, Fixed, TopRight>;
 template class EXPORT ClipFrame<Fixed, Fixed, BottomLeft>;
 template class EXPORT ClipFrame<Fixed, Fixed, BottomRight>;
+
+} // ViewDesign

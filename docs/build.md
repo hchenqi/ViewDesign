@@ -1,15 +1,21 @@
 # Building ViewDesign
 
 Tools to install:
+
+(required)
 - CMake: https://cmake.org/download/
+
+(optional)
 - Ninja: https://ninja-build.org/ (recommended CMake generator for faster build)
-- vcpkg: https://learn.microsoft.com/en-us/vcpkg/get_started/get-started (recommended C++ package manager for automatically installing several required libraries)
+- vcpkg: https://learn.microsoft.com/en-us/vcpkg/get_started/get-started (recommended C++ package manager for automatically installing dependent libraries)
 - Visual Studio Code: https://code.visualstudio.com/ (recommended code editor)
   - CMake Tools (extension integrating CMake in VS Code)
 
-The configuring and building of this library follow CMake routines. Possible base presets are specified in `CMakePresets.json` and can be inherited as in the example `CMakeUserPresets.example.json`. One may create a copy of the latter and rename it to `CMakeUserPresets.json` for actual use.
+The configuring and building of this library follow CMake routines.
 
-*ViewDesign* source files can be downloaded and directly included in a CMake project with `add_subdirectory(path_to_ViewDesign_root)` and `target_link_libraries(AppName PRIVATE ViewDesign)`. The environment variable `VIEWDESIGN_BACKEND` needs to be specified as one of the supported backends.
+Possible base presets are specified in `CMakePresets.json` and can be inherited as in the example `CMakeUserPresets.example.json`. One may create a copy of the latter and rename it to `CMakeUserPresets.json` for actual use.
+
+*ViewDesign* source files can be downloaded and directly included in a CMake project with `add_subdirectory(path_to_ViewDesign_root)` and `target_link_libraries(AppName PRIVATE ViewDesign)`. The CMake cache variable `VIEWDESIGN_BACKEND` needs to be specified as one of the supported backends.
 
 ## Compiler
 
@@ -33,12 +39,12 @@ The following compilers can be used to build *ViewDesign*:
 - Mingw-w64 (Linux host):
   - Install G++: (Debian / Ubuntu) `sudo apt install g++-mingw-w64-x86-64`
 
-> Mingw-w64 might use an older version of Windows SDK that doesn't include the header `icu.h`. In this case, ICU can be installed independently.
+> Mingw-w64 might use an older version of Windows SDK that doesn't include the header `icu.h`. And there might be build or installation issues with ICU.
 
-> Mingw might not find the entry point defined in the library at link time, in this case, add this command while building:
+> Mingw might not find the entry point provided by the library at link time. In this case, add the following link options for the targets:
 > ```cmake
 > if(MINGW)
->     target_link_options(${TEST_NAME} PRIVATE -Wl,--whole-archive $<TARGET_LINKER_FILE:ViewDesign> -Wl,--no-whole-archive)
+>     target_link_options(${TARGET_NAME} PRIVATE -Wl,--whole-archive $<TARGET_LINKER_FILE:ViewDesign> -Wl,--no-whole-archive)
 > endif()
 > ```
 
@@ -48,14 +54,14 @@ The following compilers can be used to build *ViewDesign*:
 
 ## Backend
 
-The following backends can be selected for building *ViewDesign*:
+The following backends can be selected for for configuring and building *ViewDesign*:
 - `Win32-DirectX` (Windows)
 - `Win32-OpenGL` (Windows)
 - `Win32-Vulkan` (Windows)
 - `GLFW-OpenGL` (Windows, Linux)
 - `GLFW-Vulkan` (Windows, Linux)
 
-Additional platform packages might be required for a backend. These packages can be installed from source, with vcpkg or the system package manager globally or via the provided vcpkg manifest `vcpkg.json`.
+Additional platform packages might be required for a backend. These packages can be installed from source, with vcpkg or the system package manager globally, or via the provided vcpkg manifest `vcpkg.json`.
 
 > Backend / Platform:
 > 
@@ -89,12 +95,12 @@ The following platform packages will be searched and included automatically.
 > - `cmake --build build -j$(nproc)`
 > - `sudo cmake --install build`
 >
-> It is still recommended to use vcpkg manifest `vcpkg.json` for installing GLFW and glad together.
+> It is still recommended to use vcpkg manifest `vcpkg.json` for automatically installing GLFW and glad together.
 
-> On Linux, GLFW- backends currently don't work well with Wayland. Set environment variables with `export XDG_SESSION_TYPE=x11` or `export WAYLAND_DISPLAY=` before running the program to let GLFW choose x11 instead of Wayland.
+> On Linux (WSL2), GLFW- backends currently don't work well with Wayland. Set environment variables by `export XDG_SESSION_TYPE=x11` or `export WAYLAND_DISPLAY=` before running the program to let GLFW choose x11 instead of Wayland.
 
 ### glad (https://glad.dav1d.de/)
 
-> The easiest way to install glad is through vcpkg. The normal way requires generating and unpacking the source files.
+> The easiest way to install glad is through vcpkg. The normal way requires generating and unpacking the source files manually.
 
 ### Vulkan (https://vulkan.lunarg.com/)

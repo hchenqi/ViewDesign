@@ -5,6 +5,7 @@
 
 #include <list>
 #include <functional>
+#include <exception>
 #include <stdexcept>
 
 
