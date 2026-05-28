@@ -111,7 +111,12 @@
     {
       "name": "ninja-linux-gcc-debug-glfw-vulkan",
       "displayName": "Ninja Linux GCC Debug (Backend: GLFW-Vulkan)",
-      "inherits": ["ninja", "gcc", "debug", "glfw-vulkan"]
+      "inherits": ["ninja", "gcc", "debug", "glfw-vulkan"],
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+        "VCPKG_TARGET_TRIPLET": "x64-linux",
+        "VCPKG_MANIFEST_FEATURES": "glfw-vulkan"
+      }
     }
   ],
 

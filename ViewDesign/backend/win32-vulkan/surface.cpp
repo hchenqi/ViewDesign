@@ -27,7 +27,9 @@ void Surface::Destroy() {
 }
 
 void Surface::RenderBegin() {
-	static_cast<ref_ptr<VulkanSurface>>(surface)->RenderBegin();
+	if (!invalid_region.IsEmpty()) {
+		static_cast<ref_ptr<VulkanSurface>>(surface)->RenderBegin();
+	}
 }
 
 void Surface::RenderEnd(const Canvas& canvas) {
