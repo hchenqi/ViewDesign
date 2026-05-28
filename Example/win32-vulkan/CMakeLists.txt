@@ -12,3 +12,6 @@ foreach(EXAMPLE_SOURCE ${EXAMPLE_SOURCES})
     target_link_libraries(${EXAMPLE_NAME} PRIVATE ViewDesign)
     set_target_properties(${EXAMPLE_NAME} PROPERTIES FOLDER "Example/Win32-Vulkan")
 endforeach()
+
+find_package(glm REQUIRED)
+target_link_libraries(SceneEmbedding PRIVATE glm::glm)
