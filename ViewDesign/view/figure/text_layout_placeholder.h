@@ -10,49 +10,53 @@
 namespace ViewDesign {
 
 
-struct TextLayoutPlaceholder {
+class TextLayoutPlaceholder {
+public:
+	TextLayoutPlaceholder() { UpdateLayout(size_empty); }
+
 	// style
+private:
 	static constexpr Size symbol_size_default = Size(0.5f, 1.0f);
 	static constexpr float symbol_gap = 1.0f;
 	static constexpr float row_gap = 5.0f;
-
-	Size symbol_size;
-
+private:
+	Size symbol_size = symbol_size_default;
+public:
 	void SetStyle(const TextStyle& style) {
 		symbol_size = symbol_size_default * Scale(style.font._size);
 	}
 
 	// text
-	size_t length;
-
+private:
+	size_t length = 0;
+public:
 	void SetText(const u16string& text) {
 		length = text.length();
 	}
 
 	// layout
+private:
 	size_t symbol_number;
 	size_t row_number;
 	Size size;
-
+private:
 	Rect GetSymbolRect(size_t row_index, size_t symbol_index) const {
 		return Rect(Point(symbol_index * (symbol_size.width + symbol_gap), row_index * (symbol_size.height + row_gap)), symbol_size);
 	}
-
 	Rect GetSymbolRect(size_t index) const {
 		return GetSymbolRect(index / symbol_number, index % symbol_number);
 	}
-
 	Rect GetSymbolRangeRect(size_t row_index, size_t symbol_index_begin, size_t symbol_index_end) const {
 		return Rect(Point(symbol_index_begin * (symbol_size.width + symbol_gap), row_index * (symbol_size.height + row_gap)), Size((symbol_size.width + symbol_gap) * (symbol_index_end - symbol_index_begin + 1) - symbol_gap, symbol_size.height));
 	}
-
+public:
 	Size UpdateLayout(Size size_ref) {
 		symbol_number = std::max((size_t)1, (size_t)floorf((size_ref.width + symbol_gap) / (symbol_size.width + symbol_gap)));
 		row_number = std::max((size_t)1, (length + symbol_number - 1) / symbol_number);
 		size = Size((row_number == 1 ? length : symbol_number) * (symbol_size.width + symbol_gap) - symbol_gap, row_number * (symbol_size.height + row_gap) - row_gap);
 		return size;
 	}
-
+public:
 	TextBlock::HitTestPointInfo HitTestPoint(Point point) const {
 		size_t symbol_index = std::max(0, (int)floorf(point.x / (symbol_size.width + symbol_gap)));
 		size_t row_index = std::max(0, (int)floorf(point.y / (symbol_size.height + row_gap)));
@@ -60,7 +64,6 @@ struct TextLayoutPlaceholder {
 		symbol_index = std::min(symbol_index, row_index == row_number - 1 ? length == 0 ? 0 : length - row_index * symbol_number - 1 : symbol_number - 1);
 		return std::make_pair(TextRange(row_index * symbol_number + symbol_index, length == 0 ? 0 : point.x >= GetSymbolRect(row_index, symbol_index).Center().x ? 1 : 0), GetSymbolRect(row_index, symbol_index));
 	}
-
 	TextBlock::HitTestPointInfo HitTestPosition(TextRange position) const {
 		if (position.end() >= length) {
 			position = length == 0 ? TextRange(0, 0) : TextRange(length - 1, 1);
@@ -71,7 +74,6 @@ struct TextLayoutPlaceholder {
 			return std::make_pair(TextRange(position.end() - 1, 1), GetSymbolRect(position.end() - 1));
 		}
 	}
-
 	TextBlock::HitTestRangeInfo HitTestRange(TextRange range) const {
 		if (range.begin() >= length) { return {}; }
 		if (range.end() > length) { range._length = length - range.begin(); }
@@ -91,7 +93,7 @@ struct TextLayoutPlaceholder {
 		}
 		return result;
 	}
-
+public:
 	void DrawOn(RenderTarget& target, Point point, Color font_color) {
 		for (size_t index = 0; index < length; ++index) {
 			Rect rect = Extend(GetSymbolRect(index), -1.0f);
