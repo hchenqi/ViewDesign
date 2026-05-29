@@ -17,7 +17,7 @@ owner_ptr<Texture> CreateTexture(const Stb::Image& image) {
 	auto texture = std::make_unique<Texture>();
 	auto size = image.GetSize();
 	texture->CreateImage(vk::Format::eR8G8B8A8Unorm, size, vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled);
-	texture->CopyFromBuffer(size.width * size.height * 4, image.data);
+	texture->CopyImageFromBuffer(size.width * size.height * 4, image.data);
 	return texture.release();
 }
 

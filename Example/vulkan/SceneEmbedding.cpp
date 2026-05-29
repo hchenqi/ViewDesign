@@ -5,7 +5,7 @@
 #include <ViewDesign/view/frame/BorderFrame.h>
 #include <ViewDesign/view/control/Placeholder.h>
 
-#include <ViewDesign/platform/vulkan/framebuffer.h>
+#include <ViewDesign/platform/vulkan/texture.h>
 #include <ViewDesign/platform/vulkan/pipeline/composite.h>
 
 #include "pipeline/tetra.h"
@@ -21,22 +21,37 @@ using namespace ViewDesign;
 
 class EmbeddedView : public Placeholder<Auto, Auto> {
 private:
-	class Scene : public Framebuffer {
+	// the existing `Vulkan::Framebuffer` and `Vulkan::Render()` are used for `Layer` or `Surface` to render a `Canvas` with transform/clip context
+	// therefore, we define `Scene` as our framebuffer with an additional depth image and a custom render function
+	class Scene {
 	public:
 		static constexpr SizeU size = SizeU(400, 400);
 	public:
-		// using the same Framebuffer constructor as for Layer (depth not enabled)
-		Scene() : Framebuffer(size) {}
+		Texture color_texture;
+		Texture depth_texture;
 	public:
-		// the existing Framebuffer::Render() is used for Layer to render a Canvas with transform/clip context
-		// therefore, we define our own render function
+		Scene() : color_texture(size) {
+			depth_texture.CreateDepthImage(size);
+			depth_texture.ClearDepthImage();
+		}
+	public:
 		void Render() {
-			// called during EmbeddedView::OnDraw(), reusing the command buffer of the current frame-in-flight of the window's surface
+			// called during `EmbeddedView::OnDraw()`, reusing the command buffer of the current frame-in-flight of the window's surface
 			// the frame-in-flight itself is currently not being rendered
 			FrameInFlight& frame_in_flight = FrameInFlight::GetCurrent();
 			vk::raii::CommandBuffer& command_buffer = frame_in_flight.command_buffer;
 
-			Vulkan::Render(command_buffer, *image, image_layout, image_view, vk::ImageLayout::eShaderReadOnlyOptimal, extent, vk::Rect2D({}, extent), [&]() {
+			static constexpr vk::ClearValue color_clear_value = vk::ClearValue(vk::ClearColorValue(std::array<float, 4>{ 0.0f, 0.0f, 0.0f, 0.0f }));
+			static constexpr vk::ClearValue depth_clear_value = vk::ClearValue(vk::ClearDepthStencilValue(1.0f, 0));
+
+			vk::Extent2D extent = color_texture.extent;
+
+			TransitionImageLayout(command_buffer, color_texture.image, color_texture.image_layout, vk::ImageLayout::eColorAttachmentOptimal);
+			vk::RenderingAttachmentInfo color_attachment(*color_texture.image_view, vk::ImageLayout::eColorAttachmentOptimal, {}, {}, {}, vk::AttachmentLoadOp::eClear, vk::AttachmentStoreOp::eStore, color_clear_value);
+			vk::RenderingAttachmentInfo depth_attachment(*depth_texture.image_view, vk::ImageLayout::eDepthAttachmentOptimal, {}, {}, {}, vk::AttachmentLoadOp::eClear, vk::AttachmentStoreOp::eDontCare, depth_clear_value);
+			command_buffer.beginRendering(vk::RenderingInfo({}, vk::Rect2D({}, extent), 1, 0, color_attachment, &depth_attachment));
+
+			{
 				using Layout = TetraPipeline::Layout;
 				using Vertex = TetraPipeline::Input;
 
@@ -71,7 +86,10 @@ private:
 				auto [vertex_buffer, offset] = frame_in_flight.PushVertices(vertices.data(), sizeof(vertices));
 				command_buffer.bindVertexBuffers(0, vertex_buffer, { offset });
 				command_buffer.draw(vertices.size(), 1, 0, 0);
-			});
+			}
+
+			command_buffer.endRendering();
+			TransitionImageLayout(command_buffer, color_texture.image, color_texture.image_layout, vk::ImageLayout::eShaderReadOnlyOptimal);
 		}
 	};
 
@@ -82,10 +100,10 @@ private:
 
 		virtual void DrawOn(RenderTarget& target, Point point) const override {
 			// the frame-in-flight is currently being rendered
-			// Scene::Render() should not be called here
+			// `Scene::Render()` should not be called here
 			target.BindPipeline<CompositePipeline>();
 			CompositePipeline::SetOpacity(target, 1.0f);
-			CompositePipeline::BindTexture(target, *static_cast<ref_ptr<Texture>>(&scene));
+			CompositePipeline::BindTexture(target, scene.color_texture);
 			target.DrawVertices(Zip(GetVertices(AsQuad(Rect(point, scene.size))), GetVertices(AsQuad(Rect(0.0f, 0.0f, 1.0f, 1.0f)))));
 		}
 	};
@@ -99,7 +117,7 @@ public:
 	void Redraw() { Placeholder::Redraw(rect_infinite); }
 private:
 	virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
-		// Scene should also be created during EmbeddedView::OnDraw(), because it uses the command buffer of the current frame-in-flight as well
+		// `Scene` should also be created during `EmbeddedView::OnDraw()`, because it uses the command buffer of the current frame-in-flight as well
 		if (!scene.has_value()) { scene.emplace(); }
 		scene.value().Render();
 		canvas.draw(point_zero, new SceneFigure(*scene));
@@ -129,7 +147,7 @@ void App() {
 			break;
 		}
 
-		// embedded_view becomes a dangling reference after the window is closed
+		// `embedded_view` becomes a dangling reference after the window is closed
 		embedded_view->Redraw();
 	}
 }

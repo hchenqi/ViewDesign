@@ -55,6 +55,8 @@ public:
 		vk::PipelineRasterizationStateCreateInfo rasterizer({}, {}, {}, vk::PolygonMode::eFill, vk::CullModeFlagBits::eNone, {}, {}, {}, {}, {}, 1.0f);
 		vk::PipelineMultisampleStateCreateInfo multisampling({}, vk::SampleCountFlagBits::e1);
 
+		vk::PipelineDepthStencilStateCreateInfo depth_stencil({}, true, true, vk::CompareOp::eLess, false, false, {}, {}, 0.0f, 1.0f);
+
 		vk::PipelineColorBlendAttachmentState blend_attachment(VK_TRUE, vk::BlendFactor::eOne, vk::BlendFactor::eOneMinusSrcAlpha, vk::BlendOp::eAdd, vk::BlendFactor::eOne, vk::BlendFactor::eOneMinusSrcAlpha, vk::BlendOp::eAdd, vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG | vk::ColorComponentFlagBits::eB | vk::ColorComponentFlagBits::eA);
 		vk::PipelineColorBlendStateCreateInfo color_blending({}, {}, {}, blend_attachment);
 
@@ -62,8 +64,8 @@ public:
 		vk::PipelineDynamicStateCreateInfo dynamic_state({}, dynamic_state_list);
 
 		vk::Format color_attachment_format = FrameInFlight::GetSurfaceFormat();
-		vk::PipelineRenderingCreateInfo rendering_info(0, color_attachment_format);
+		vk::PipelineRenderingCreateInfo rendering_info(0, color_attachment_format, DeviceContext::Get().FindDepthFormat());
 
-		return DeviceContext::Get().device.createGraphicsPipeline(nullptr, vk::GraphicsPipelineCreateInfo({}, stage_list, &vertex_input, &input_assembly, {}, &viewport_state, &rasterizer, &multisampling, {}, &color_blending, &dynamic_state, *GetPipelineLayout<Layout>(), {}, {}, {}, {}, &rendering_info));
+		return DeviceContext::Get().device.createGraphicsPipeline(nullptr, vk::GraphicsPipelineCreateInfo({}, stage_list, &vertex_input, &input_assembly, {}, &viewport_state, &rasterizer, &multisampling, &depth_stencil, &color_blending, &dynamic_state, *GetPipelineLayout<Layout>(), {}, {}, {}, {}, &rendering_info));
 	}
 };

@@ -41,11 +41,11 @@ public:
 	Texture() {}
 	Texture(const PixelBuffer& pixel_buffer) {
 		CreateImage(vk::Format::eB8G8R8A8Unorm, pixel_buffer.Size(), vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled);
-		CopyFromBuffer(pixel_buffer.PixelDataLength(), pixel_buffer.PixelData());
+		CopyImageFromBuffer(pixel_buffer.PixelDataLength(), pixel_buffer.PixelData());
 	}
 	Texture(SizeU size) {
 		CreateImage(FrameInFlight::GetSurfaceFormat(), size, vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eColorAttachment);
-		Clear();
+		ClearImage();
 	}
 
 public:
@@ -68,7 +68,7 @@ public:
 		DeviceContext::Get().device.updateDescriptorSets(vk::WriteDescriptorSet(*descriptor_set, 0, 0, vk::DescriptorType::eCombinedImageSampler, image_info), {});
 	}
 
-	void CopyFromBuffer(size_t size, const void* data) {
+	void CopyImageFromBuffer(size_t size, const void* data) {
 		DeviceContext& device_context = DeviceContext::Get();
 		FrameInFlight& frame_in_flight = FrameInFlight::GetCurrent();
 		vk::raii::CommandBuffer& command_buffer = frame_in_flight.command_buffer;
@@ -80,12 +80,43 @@ public:
 		TransitionImageLayout(command_buffer, *image, image_layout, vk::ImageLayout::eShaderReadOnlyOptimal);
 	}
 
-	void Clear() {
+	void ClearImage() {
 		vk::raii::CommandBuffer& command_buffer = FrameInFlight::GetCurrent().command_buffer;
 
 		TransitionImageLayout(command_buffer, *image, image_layout, vk::ImageLayout::eTransferDstOptimal);
 		command_buffer.clearColorImage(*image, image_layout, vk::ClearColorValue(std::array<float, 4>{0.0f, 0.0f, 0.0f, 0.0f}), vk::ImageSubresourceRange(vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1));
 		TransitionImageLayout(command_buffer, *image, image_layout, vk::ImageLayout::eShaderReadOnlyOptimal);
+	}
+
+public:
+	vk::ImageAspectFlags GetDepthImageAspect() const {
+		vk::ImageAspectFlags aspect = vk::ImageAspectFlagBits::eDepth;
+		if (format == vk::Format::eD32SfloatS8Uint || format == vk::Format::eD24UnormS8Uint) {
+			aspect |= vk::ImageAspectFlagBits::eStencil;
+		}
+		return aspect;
+	}
+public:
+	void CreateDepthImage(SizeU size) {
+		DeviceContext& device_context = DeviceContext::Get();
+
+		format = device_context.FindDepthFormat();
+		extent = vk::Extent2D(size.width, size.height);
+		image = device_context.device.createImage(vk::ImageCreateInfo({}, vk::ImageType::e2D, format, vk::Extent3D(extent, 1), 1, 1, vk::SampleCountFlagBits::e1, vk::ImageTiling::eOptimal, vk::ImageUsageFlagBits::eDepthStencilAttachment, vk::SharingMode::eExclusive));
+		image_layout = vk::ImageLayout::eUndefined;
+
+		vk::MemoryRequirements memory_requirements = image.getMemoryRequirements();
+		device_memory = device_context.device.allocateMemory(vk::MemoryAllocateInfo(memory_requirements.size, device_context.FindMemoryType(memory_requirements.memoryTypeBits, vk::MemoryPropertyFlagBits::eDeviceLocal)));
+		image.bindMemory(*device_memory, 0);
+
+		image_view = device_context.device.createImageView(vk::ImageViewCreateInfo({}, *image, vk::ImageViewType::e2D, format, {}, vk::ImageSubresourceRange(GetDepthImageAspect(), 0, 1, 0, 1)));
+	}
+	void ClearDepthImage() {
+		vk::raii::CommandBuffer& command_buffer = FrameInFlight::GetCurrent().command_buffer;
+
+		TransitionImageLayout(command_buffer, *image, image_layout, vk::ImageLayout::eTransferDstOptimal);
+		command_buffer.clearDepthStencilImage(*image, image_layout, vk::ClearDepthStencilValue(1.0f, 0), vk::ImageSubresourceRange(GetDepthImageAspect(), 0, 1, 0, 1));
+		TransitionImageLayout(command_buffer, *image, image_layout, vk::ImageLayout::eDepthAttachmentOptimal, GetDepthImageAspect());
 	}
 };
 

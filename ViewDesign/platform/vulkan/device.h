@@ -68,9 +68,27 @@ public:
 	uint32_t FindMemoryType(uint32_t type_filter, vk::MemoryPropertyFlags required_properties) {
 		vk::PhysicalDeviceMemoryProperties memory_properties = physical_device.getMemoryProperties();
 		for (uint32_t i = 0; i < memory_properties.memoryTypeCount; ++i) {
-			if ((type_filter & (1u << i)) && (memory_properties.memoryTypes[i].propertyFlags & required_properties) == required_properties) { return i; }
+			if ((type_filter & (1u << i)) && (memory_properties.memoryTypes[i].propertyFlags & required_properties) == required_properties) {
+				return i;
+			}
 		}
 		throw std::runtime_error("Vulkan: no suitable memory type");
+	}
+
+public:
+	vk::Format depth_format = vk::Format::eUndefined;
+public:
+	vk::Format FindDepthFormat() {
+		if (depth_format != vk::Format::eUndefined) {
+			return depth_format;
+		}
+		for (vk::Format format : { vk::Format::eD32Sfloat, vk::Format::eD32SfloatS8Uint, vk::Format::eD24UnormS8Uint }) {
+			vk::FormatProperties props = physical_device.getFormatProperties(format);
+			if (props.optimalTilingFeatures & vk::FormatFeatureFlagBits::eDepthStencilAttachment) {
+				return depth_format = format;
+			}
+		}
+		throw std::runtime_error("Vulkan: no supported depth format found");
 	}
 };
 
