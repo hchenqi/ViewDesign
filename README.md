@@ -13,8 +13,8 @@ A C++ GUI library
 - cross-platform with multi-backend support
 - easy to setup and integrate, no boilerplate
 - clear and efficient logic for layout calculation and rendering
-- fit for both 'immediate-mode' and 'retained-mode' GUI programming, supporting hot reload with ease
 - intrinsically DPI-aware
+- fit for both 'immediate-mode' and 'retained-mode' GUI programming, supporting hot reload with ease
 - conceptual separation of components as `control`, `frame` and `layout`
 - explicit control of component layouts
 - compile-time check of layout compatibility between components through size traits
@@ -32,7 +32,7 @@ using namespace ViewDesign;
 
 struct TextViewStyle : TextView::Style {
 	TextViewStyle() {
-		font.size(75.0f).color(Color::Black);
+		font.size(75.0f).color(ColorCode::Black);
 	}
 };
 
@@ -134,15 +134,16 @@ void App() {
 
 `DefaultWindow` always expects a child view with `Fixed` traits to be given. `Placeholder<Fixed, Fixed>` here works literally as a placeholder of the child view that draws nothing and can be replaced later.
 
-More examples can be found in subfolder [Example](Example) which are built along with *ViewDesign* library, including:
-- [BackgroundWrapper](Example/BackgroundWrapper.cpp)
-- [ImageView (Win32-DirectX)](Example/win32-directx/ImageView.cpp)
-- [PlainTextEditor](Example/PlainTextEditor.cpp)
-- [TitleBarWindow](Example/TitleBarWindow.cpp)
-- [StateMirroring](Example/StateMirroring.cpp)
-- [ViewMirroring](Example/ViewMirroring.cpp)
-- [HotReload](Example/HotReload.cpp)
-- [SceneEmbedding (Vulkan)](Example/vulkan/SceneEmbedding.cpp)
+More examples can be found in subfolder [Example](Example) which are built along with the library. They include:
+- [BackgroundWrapper](Example/BackgroundWrapper.cpp): adding background to a view component
+- [Canvas](Example/Canvas.cpp): drawing random shapes on a blank window
+- [ImageView](Example/ImageView.cpp): displaying an image with different stretch modes
+- [PlainTextEditor](Example/PlainTextEditor.cpp): a plain-text editor supporting word/paragraph- level selection, copy/paste and IME input
+- [TitleBarWindow](Example/TitleBarWindow.cpp): a customized window frame
+- [StateMirroring](Example/StateMirroring.cpp): duplicating the text state of a text editor to other text views
+- [ViewMirroring](Example/ViewMirroring.cpp): duplicating the exact drawing content of a view component
+- [HotReload](Example/HotReload.cpp): immediate-mode rendering with support of hot reload
+- [SceneEmbedding (Vulkan)](Example/vulkan/SceneEmbedding.cpp): embedding a custom 3D-scene in a view component
 
 ### Build
 
@@ -155,13 +156,13 @@ More examples can be found in subfolder [Example](Example) which are built along
 
 On Windows, *ViewDesign* with `Win32-DirectX` backend can be directly built by Visual Studio as a CMake project. [Building ViewDesign](docs/build.md) provides more detailed instructions on configuring and building *ViewDesign* with different backends and platforms.
 
-> Backends other than `Win32-DirectX` are not yet natively equipped with complete shape, image and text rendering capabilities. Texts are presented as placeholder rectangles, and there could be inconsistent appearance with some shapes like `RoundedRectangle` and link error about missing image loaders.
+> `-OpenGL/Vulkan` backends are not yet natively equipped with text rendering capabilities due to the complexities, with which text characters in a `TextView` component are presented as placeholder rectangles. Nevertheless, *ViewDesign* exposes the necessary OpenGL/Vulkan contexts, helper functions and examples so that one could custom implement drawing texts or other complex 2D shapes with third-party 2D graphics libraries, like *Skia*.
 
 ### Principle
 
 *ViewDesign* aims to be modular and transparent. There is no hidden logic or global context, and it is easy to inspect and modify any part of the library code. The files of the library are well structured, self-explanatory and effortless to navigate. Each file is kept possibly small and independent for a single component, mostly within ~100 lines. There is no single all-in-one header and each component header is to be included individually on demand. This results in better develop-time, compile-time and run-time efficiency.
 
-The example section above demonstrates the standard component library of *ViewDesign* with size traits. The core library (excluding components in subfolders of [ViewDesign/view](ViewDesign/view) and `view_traits.h`), however, does not enforce size traits or any development paradigm. It can be integrated within any project in any C++ design patterns and extended with any custom component libraries to fit special development needs. The standard components provided along with the core library are such examples that can be directly used, inherited, or taken as models of developing custom components in a similar way.
+The example section above demonstrates the components like `TextView`, `CenterFrame`, etc with size traits in the standard component library of *ViewDesign*. The core library (excluding components in subfolders of [ViewDesign/view](ViewDesign/view) and `view_traits.h`), however, does not enforce size traits, component styles or any development paradigm. It can be integrated with any project in any C++ design patterns and extended with any custom component libraries to fit special development needs. The standard components provided along with the core library are such examples that can be directly used, inherited, or taken as models of developing custom components in a similar way.
 
 ### Comparison
 
@@ -187,7 +188,7 @@ Other Win32-targeting GUI frameworks like MFC, WPF or WinUI evolve to align more
 
 Qt provides multiple frameworks and rich tool sets for cross-platform GUI and software development in general under a large community. *ViewDesign* is a single static, mostly header-based C++ library which is extremely lightweight without the need of a particular development environment but remains highly flexible and extensible.
 
-Qt uses size policy to similarly describe how a widget is to be resized, but this is rather a suggestion that is performed by certain layout boxes at run-time, than a trait with compatibility check. In the standard component library of *ViewDesign*, size traits are built in with all components, and they can not only be used to check and catch ill-combined components at compile-time, but also automatically select the one compatible implementation from all implementations for common frames and layouts like `BorderFrame`, `ScrollFrame`, `SplitLayout` or `ListLayout` with help of C++ template deduction guide, making it seamless to build up well-formed view components with little effort.
+Qt uses size policy to similarly describe how a widget is to be resized, but this is rather a suggestion that is performed by certain layout boxes at run-time, than an enforced compatibility check. In the standard component library of *ViewDesign*, size traits are built-in for all components to check layout compatibilities and catch ill-combined components at compile-time, which are stripped away after compilation. Moreover, they can be used to automatically select the compatible implementation from all implementations for common frames and layouts like `BorderFrame`, `ScrollFrame`, `SplitLayout` or `ListLayout` with help of C++ template deduction guide, making it seamless to build up well-formed view components with little effort.
 
 Qt uses signals and slots mechanism historically for communication between objects that extends the C++ language. *ViewDesign* sticks to native C++, is open to all kinds of custom design patterns, and provides optional mechanisms for messaging like `Observable` and `Context` as standalone headers for developers to choose.
 
@@ -269,7 +270,7 @@ Some frames act as adapters for converting size traits of the child view:
 
 `Fixed` and `Auto` are naturally also `Relative`, but not vice versa. Therefore, `Relative` has the most freedom and the weakest restriction.
 
-How a view component with `Relative` traits or a parent view accepting a child view with `Relative` traits interpret the `size_ref` depends on the components. For example, `TextView` has `Relative` traits and regards the `size_ref` as the size constraint for calculating the text layout, which agrees with `MaxFrame` that provides the `size_ref` as the max size constraint. However, another component with `Relative` traits may calculate its size as a percentage of `size_ref`, which usually won't work very well with `MaxFrame` even though it fits with `MaxFrame` by size traits.
+How a view component with `Relative` traits or a parent view accepting a child view with `Relative` traits interpret the `size_ref` depends on the components. For example, `TextView` has `Relative` traits and regards the `size_ref` as the size constraint for calculating the text layout, which agrees with `MaxFrame` that provides the `size_ref` as the max size constraint. However, another component with `Relative` traits may calculate its size as a percentage of `size_ref`, which usually won't work very well with `MaxFrame` even though it fits with `MaxFrame` by size traits. It is possible that more traits, like `Bounded`, could be proposed to further restrict the usage of `Relative`.
 
 The reflow logic and the size traits already describe most scenarios of layout dependencies. Other more complex or special layout dependencies can be implemented by certain view components extending the core interfaces in a custom way. For example, a `Window` or an `OverlapLayout::Window` doesn't only decide its size, but also its position on the `Desktop` or the `OverlapLayout`, which is reflected by special interfaces.
 
@@ -376,7 +377,7 @@ The `view` subfolder defines classes `ViewBase`, `Window` and `Desktop`. It also
 
 #### ViewBase
 
-`ViewBase` is the base class of view components. It defines interfaces for managing child views, updating layout, drawing and handling events.
+`ViewBase` is the base class of view components. It defines the minimal interfaces for managing child views, updating layout, drawing content and handling events.
 
 The two virtual functions handle top-down and bottom-up layout update respectively:
 - `virtual Size OnSizeRefUpdate(Size size_ref)`

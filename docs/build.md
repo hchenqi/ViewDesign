@@ -104,3 +104,7 @@ The following platform packages will be searched and included automatically.
 > The easiest way to install glad is through vcpkg. The normal way requires generating and unpacking the source files manually.
 
 ### Vulkan (https://vulkan.lunarg.com/)
+
+### stb (https://github.com/nothings/stb)
+
+> The header-only library *stb* provides an image loader that is used for OpenGL and Vulkan backends.
