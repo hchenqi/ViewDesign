@@ -6,6 +6,8 @@
 #include "ViewDesign/platform/vulkan/geometry_helper.h"
 #include "ViewDesign/platform/vulkan/pipeline.h"
 
+#include <ranges>
+
 
 namespace ViewDesign {
 
@@ -105,10 +107,12 @@ public:
 	std::pair<vk::Buffer, size_t> PushVertices(const void* data, size_t size) {
 		return frame_in_flight.PushVertices(data, size);
 	}
-	void DrawVertices(auto vertices) {
-		auto [vertex_buffer, offset] = PushVertices(vertices.data(), sizeof(vertices));
+public:
+	template<std::ranges::contiguous_range Vertices>
+	void DrawVertices(const Vertices& vertices) {
+		auto [vertex_buffer, offset] = PushVertices(std::ranges::data(vertices), std::ranges::size(vertices) * sizeof(std::ranges::range_value_t<Vertices>));
 		CommandBuffer().bindVertexBuffers(0, vertex_buffer, { offset });
-		CommandBuffer().draw(vertices.size(), 1, 0, 0);
+		CommandBuffer().draw(std::ranges::size(vertices), 1, 0, 0);
 	}
 };
 
