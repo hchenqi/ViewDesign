@@ -18,8 +18,8 @@ void App() {
 			// PaddingFrame doesn't clip the child view's content within the padding and therefore the draw region for its child view exceeds the extent
 			new PaddingFrame(
 				Padding(50.0f),
-				new SolidColorBackground<Color::LightPink, BackgroundFrame<Fixed, Fixed>>(
-					Color::Ivory,
+				new SolidColorBackground<ColorCode::LightPink, BackgroundFrame<Fixed, Fixed>>(
+					ColorCode::Ivory,
 					new Placeholder<Fixed, Fixed>()
 				)
 			)

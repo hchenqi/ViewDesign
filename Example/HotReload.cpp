@@ -148,7 +148,7 @@ void App() {
 		// hint: edit the styles while running
 		struct TextEditorStyle : IM::TextEditor::Style {
 			TextEditorStyle() {
-				font.size(36.0f).color(Color::ForestGreen);
+				font.size(36.0f).color(ColorCode::ForestGreen);
 			}
 		};
 
@@ -158,7 +158,7 @@ void App() {
 		ref_ptr<IM::TextEditor> text_editor;
 		mutable_frame->Reset(
 			new BackgroundFrame(
-				Color::PaleTurquoise,
+				ColorCode::PaleTurquoise,
 				new ClipFrame<Fixed, Fixed, TopLeft>(
 					new PaddingFrame(
 						Padding(15.0f),

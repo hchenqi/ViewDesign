@@ -59,7 +59,7 @@ private:
 			new MaxFrame(
 				size_infinite,
 				new BorderFrame(
-					Border(1.0f, Color::Black),
+					Border(1.0f, ColorCode::Black),
 					new PaddingFrame(
 						Padding(20.0f, 5.0f),
 						new TextView(TextView::Style(), u"load")
@@ -68,9 +68,9 @@ private:
 			)
 		), Context(AsViewBase()) {}
 	private:
-		static constexpr Color background_normal = Color::White;
-		static constexpr Color background_hovered = Color::LightGray;
-		static constexpr Color background_pressed = Color::Gray;
+		static constexpr Color background_normal = ColorCode::White;
+		static constexpr Color background_hovered = ColorCode::LightGray;
+		static constexpr Color background_pressed = ColorCode::Gray;
 	private:
 		virtual void OnHover() override { SetBackground(background_hovered); }
 		virtual void OnPress() override { SetBackground(background_pressed); }
@@ -82,8 +82,8 @@ private:
 private:
 	inline static const u16string filename_default = uR"(C:\Windows\Web\Wallpaper\Windows\img0.jpg)";
 private:
-	static constexpr Border border_normal = Border(2.0f, Color::Black);
-	static constexpr Border border_error = Border(2.0f, Color::Red);
+	static constexpr Border border_normal = Border(2.0f, ColorCode::Black);
+	static constexpr Border border_error = Border(2.0f, ColorCode::Red);
 private:
 	ref_ptr<TextEditor> filename_input;
 	ref_ptr<BorderFrame<Fixed, Fixed>> filename_input_border;

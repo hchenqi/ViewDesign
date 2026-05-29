@@ -116,7 +116,7 @@ struct TextStyle {
 		FontStyle _style = FontStyle::Normal;
 		FontStretch _stretch = FontStretch::Normal;
 		float _size = 16.0f;
-		Color _color = Color::Black;
+		Color _color = ColorCode::Black;
 	public:
 		FontFormat& family(auto... list) requires (sizeof...(list) >= 1) { _family_list = { std::move(list)... }; return *this; }
 		FontFormat& locale(u16string locale) { _locale = locale; return *this; }

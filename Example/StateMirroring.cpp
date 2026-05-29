@@ -50,13 +50,13 @@ private:
 
 struct TextStyleA : TextLabel::Style {
 	TextStyleA() {
-		font.size(30.0f).color(Color::Black);
+		font.size(30.0f).color(ColorCode::Black);
 	}
 };
 
 struct TextStyleB : TextLabel::Style {
 	TextStyleB() {
-		font.size(50.0f).color(Color::Blue);
+		font.size(50.0f).color(ColorCode::Blue);
 	}
 };
 
@@ -77,7 +77,7 @@ void App() {
 					list_view = new ListView(
 						5.0f,
 						create<BackgroundFrame<Relative, Auto>>(
-							Color::LightSalmon,
+							ColorCode::LightSalmon,
 							new PaddingFrame(
 								Padding(20.0f),
 								TextViewAdapter<Relative, Auto>(
@@ -86,7 +86,7 @@ void App() {
 							)
 						),
 						create<BorderFrame<Relative, Auto>>(
-							Border(2.0f, Color::Orange),
+							Border(2.0f, ColorCode::Orange),
 							new PaddingFrame(
 								Padding(10.0f),
 								TextViewAdapter<Relative, Auto>(
@@ -95,7 +95,7 @@ void App() {
 							)
 						),
 						create<BackgroundFrame<Relative, Auto>>(
-							Color::LightSkyBlue,
+							ColorCode::LightSkyBlue,
 							TextViewAdapter<Relative, Auto>(
 								create<TextLabel>(TextStyleB(), text_input_ref.text_state)
 							)

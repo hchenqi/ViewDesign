@@ -36,7 +36,7 @@ protected:
 
 
 template<class View>
-using DefaultBackground = SolidColorBackground<Color::White, View>;
+using DefaultBackground = SolidColorBackground<ColorCode::White, View>;
 
 
 } // namespace ViewDesign

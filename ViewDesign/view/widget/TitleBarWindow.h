@@ -43,8 +43,8 @@ public:
 		public:
 			float _height = 30.0f;
 			float _max_title_length = 300.0f;
-			Color _background_color = Color::DarkGray;
-			Color _foreground_color = Color::White;
+			Color _background_color = ColorCode::DarkGray;
+			Color _foreground_color = ColorCode::White;
 		public:
 			constexpr BarStyle& height(float height) { _height = height; return *this; }
 			constexpr BarStyle& max_title_length(float max_title_length) { _max_title_length = max_title_length; return *this; }
@@ -64,10 +64,10 @@ public:
 
 		Style() {
 			padding = Padding(2.0f);
-			border.width(2.0f).radius(2.0f).color(Color::CadetBlue);
-			background_color = Color::White;
-			title.bar.background_color(Color::CadetBlue);
-			title.font.color(Color::White);
+			border.width(2.0f).radius(2.0f).color(ColorCode::CadetBlue);
+			background_color = ColorCode::White;
+			title.bar.background_color(ColorCode::CadetBlue);
+			title.font.color(ColorCode::White);
 			title.paragraph.line_spacing(pct(100));
 		}
 	};
@@ -113,8 +113,8 @@ protected:
 		protected:
 			Color background_normal;
 		protected:
-			static constexpr Color background_hovered = Color::Gray;
-			static constexpr Color background_pressed = Color::DimGray;
+			static constexpr Color background_hovered = ColorCode::Gray;
+			static constexpr Color background_pressed = ColorCode::DimGray;
 		protected:
 			virtual void OnHover() override { SetBackground(background_hovered); }
 			virtual void OnPress() override { SetBackground(background_pressed); }

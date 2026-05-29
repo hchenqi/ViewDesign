@@ -23,8 +23,8 @@ private:
 		public:
 			View() { background = background_color; }
 		private:
-			constexpr static Color background_color = Color(Color::Orange, 0x40);
-			constexpr static Color background_color_focus = Color(Color::Orange, 0x80);
+			constexpr static Color background_color = Color(ColorCode::Orange, 0x40);
+			constexpr static Color background_color_focus = Color(ColorCode::Orange, 0x80);
 		public:
 			void Focus() { background = background_color_focus; Redraw(rect_infinite); }
 			void Blur() { background = background_color; Redraw(rect_infinite); }
@@ -33,7 +33,7 @@ private:
 	public:
 		Window(Point point) : Base(
 			new BorderFrame(
-				Border(3.0f, 0.0f, Color::Yellow),
+				Border(3.0f, 0.0f, ColorCode::Yellow),
 				view = new View()
 			)
 		), region(point, Size(300.0f, 300.0f)) {

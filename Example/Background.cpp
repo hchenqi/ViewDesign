@@ -14,7 +14,7 @@ void App() {
 			// with new we don't need to provide the template arguments thanks to template argument deduction guide
 			// template argument deduction guide doesn't work everywhere and in certain cases we still need to explicitly provide the arguments
 			new BackgroundFrame(
-				Color::LightPink,
+				ColorCode::LightPink,
 				new Placeholder<Fixed, Fixed>()
 			)
 		)

@@ -115,7 +115,7 @@ void App() {
 			u"SceneEmbedding",
 			new CenterFrame<Fixed, Fixed>(
 				new BorderFrame(
-					Border(2.0f, Color::Orange),
+					Border(2.0f, ColorCode::Orange),
 					embedded_view = new EmbeddedView()
 				)
 			)

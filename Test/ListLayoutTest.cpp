@@ -37,8 +37,8 @@ private:
 	public:
 		ItemFrame(Base::child_type child) : Base(border_normal, std::move(child)) {}
 	private:
-		constexpr static Border border_normal = Border(2.0f, 5.0f, Color::CadetBlue);
-		constexpr static Border border_focused = Border(2.0f, 5.0f, Color::Orange);
+		constexpr static Border border_normal = Border(2.0f, 5.0f, ColorCode::CadetBlue);
+		constexpr static Border border_focused = Border(2.0f, 5.0f, ColorCode::Orange);
 	private:
 		virtual void OnFocusEvent(FocusEvent event) override {
 			switch (event) {
@@ -108,7 +108,7 @@ void Test() {
 					new ScaleFrame(
 						new LayerFrameTiled(
 							new InnerBorderFrame(
-								Border(1.0f, 0.0f, Color::Black),
+								Border(1.0f, 0.0f, ColorCode::Black),
 								new PaddingFrame(
 									Padding(5.0f),
 									new ListView<ListLayout, Trait>(5)

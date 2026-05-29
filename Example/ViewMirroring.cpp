@@ -38,7 +38,7 @@ void App() {
 				std::move(mirroring_frame),
 				create<HitThrough<ClipFrame<Fixed, Fixed, BottomRight>>>(
 					new BackgroundFrame(
-						Color(Color::LightBlue, 0x80),
+						Color(ColorCode::LightBlue, 0x80),
 						new MaxFrame(
 							Size(400.0f, 400.0f),
 							new StretchFrameUniform(
@@ -49,7 +49,7 @@ void App() {
 				),
 				create<HitThrough<ClipFrame<Fixed, Fixed, TopRight>>>(
 					new BackgroundFrame(
-						Color(Color::Fuchsia, 0x40),
+						Color(ColorCode::Fuchsia, 0x40),
 						new ScaleFrame(
 							Scale(0.3f),
 							mirroring_frame_ref.CreateMirrorView()

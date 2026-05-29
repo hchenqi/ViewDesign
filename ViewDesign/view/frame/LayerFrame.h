@@ -174,7 +174,7 @@ protected:
 			Rect tile_region = Rect(point_zero + tile_offset, tile_size).Intersect(composite_region);
 			canvas.draw(tile_region.point / scale, new LayerFigure(tile_cache.at(tile_index), tile_region - tile_offset, tile_region.size / scale, opacity));
 #if !defined(NDEBUG)
-			canvas.draw((point_zero + tile_offset) / scale, new Rectangle(tile_size / scale, 1.0f, Color(Color::Red, 0x7F)));
+			canvas.draw((point_zero + tile_offset) / scale, new Rectangle(tile_size / scale, 1.0f, Color(ColorCode::Red, 0x7F)));
 #endif
 		}
 	}

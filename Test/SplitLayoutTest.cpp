@@ -38,10 +38,10 @@ void Test() {
 				new ScaleFrame(
 					Scale(2.0f),
 					new BorderFrame(
-						Border(2.0f, Color::Yellow),
+						Border(2.0f, ColorCode::Yellow),
 						new SplitLayout(
 							new BorderFrame(
-								Border(2.0f, Color::Green),
+								Border(2.0f, ColorCode::Green),
 								TextViewAdapter<WidthTraitFirst, HeightTraitFirst>(
 									new PaddingFrame(
 										Padding(5.0f),
@@ -50,7 +50,7 @@ void Test() {
 								)
 							),
 							new BorderFrame(
-								Border(2.0f, Color::Red),
+								Border(2.0f, ColorCode::Red),
 								TextViewAdapter<WidthTraitSecond, HeightTraitSecond>(
 									new PaddingFrame(
 										Padding(5.0f),

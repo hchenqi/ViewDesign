@@ -19,10 +19,10 @@ protected:
 		public:
 			bool _disabled = false; // can only select and copy if disabled
 			float _caret_width = 1.0f;
-			Color _caret_color = Color::DimGray;
-			Color _selection_color = Color(Color::DimGray, 0x7f);
+			Color _caret_color = ColorCode::DimGray;
+			Color _selection_color = Color(ColorCode::DimGray, 0x7f);
 			float _ime_composition_underline_width = 1.0f;
-			Color _ime_composition_underline_color = Color::DimGray;
+			Color _ime_composition_underline_color = ColorCode::DimGray;
 		public:
 			constexpr EditStyle& enable() { _disabled = false; return *this; }
 			constexpr EditStyle& disable() { _disabled = true; return *this; }

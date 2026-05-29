@@ -19,7 +19,7 @@ struct BackgroundWindowStyle : UndecoratedWindow::Style {
 
 struct TextViewStyle : TextView::Style {
 	TextViewStyle() {
-		font.size(75.0f).color(Color::Black);
+		font.size(75.0f).color(ColorCode::Black);
 	}
 };
 
