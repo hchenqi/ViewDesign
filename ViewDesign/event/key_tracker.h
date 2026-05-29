@@ -15,14 +15,14 @@ public:
 		switch (event.type) {
 		case KeyEvent::KeyDown:
 			switch (event.key) {
-			case Key::Ctrl: ctrl = true; break;
-			case Key::Shift: shift = true; break;
+			case Key::Ctrl: case Key::LCtrl: case Key::RCtrl: ctrl = true; break;
+			case Key::Shift: case Key::LShift: case Key::RShift: shift = true; break;
 			}
 			break;
 		case KeyEvent::KeyUp:
 			switch (event.key) {
-			case Key::Ctrl: ctrl = false; break;
-			case Key::Shift: shift = false; break;
+			case Key::Ctrl: case Key::LCtrl: case Key::RCtrl: ctrl = false; break;
+			case Key::Shift: case Key::LShift: case Key::RShift: shift = false; break;
 			}
 			break;
 		}

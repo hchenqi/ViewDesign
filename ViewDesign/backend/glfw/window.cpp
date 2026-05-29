@@ -167,7 +167,13 @@ void CharModsCallback(GLFWwindow* glfw_window, unsigned int codepoint, int mods)
 
 
 Handle CreateWindow(const u16string& title) {
-	GLFWwindow* glfw_window = glfwCreateWindow(1, 1, as_char_str(to_u8string(title).c_str()), nullptr, nullptr);
+#if defined(VIEWDESIGN_BACKEND_GLFW_OPENGL)
+	GLFWwindow* share = Context::GetHelperWindow();
+#endif
+#if defined(VIEWDESIGN_BACKEND_GLFW_VULKAN)
+	GLFWwindow* share = nullptr;
+#endif
+	GLFWwindow* glfw_window = glfwCreateWindow(1, 1, as_char_str(to_u8string(title).c_str()), nullptr, share);
 	if (glfw_window == nullptr) { throw std::runtime_error("GLFW: create window error"); }
 	return glfw_window;
 }
