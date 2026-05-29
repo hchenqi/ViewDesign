@@ -1,4 +1,4 @@
-find_package(Vulkan)
+find_package(Vulkan QUIET)
 
 if(NOT Vulkan_FOUND)
     return()

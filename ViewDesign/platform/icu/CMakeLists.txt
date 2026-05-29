@@ -1,4 +1,4 @@
-find_package(ICU COMPONENTS uc)
+find_package(ICU COMPONENTS uc QUIET)
 
 if (NOT ICU_FOUND)
     return()

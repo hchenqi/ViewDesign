@@ -23,7 +23,7 @@ function(vulkan_compile_shaders)
 
     # compile shader binaries
 
-    find_program(GLSLC_EXECUTABLE glslc)
+    find_program(GLSLC_EXECUTABLE glslc QUIET)
 
     if(NOT GLSLC_EXECUTABLE)
         return()

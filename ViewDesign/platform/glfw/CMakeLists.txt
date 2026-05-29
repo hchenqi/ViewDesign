@@ -1,4 +1,4 @@
-find_package(glfw3 CONFIG)
+find_package(glfw3 CONFIG QUIET)
 
 if(NOT glfw3_FOUND)
     return()

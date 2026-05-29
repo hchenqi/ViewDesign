@@ -1,4 +1,4 @@
-find_package(glad CONFIG)
+find_package(glad CONFIG QUIET)
 
 if(NOT glad_FOUND)
     return()

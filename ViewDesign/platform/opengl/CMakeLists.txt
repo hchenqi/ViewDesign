@@ -1,4 +1,4 @@
-find_package(OpenGL)
+find_package(OpenGL QUIET)
 
 if(NOT OPENGL_FOUND)
     return()
