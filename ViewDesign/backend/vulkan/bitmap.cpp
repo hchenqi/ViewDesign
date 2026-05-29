@@ -1,5 +1,6 @@
 #include "ViewDesign/drawing/bitmap.h"
 
+#include <ViewDesign/platform/vulkan/texture.h>
 #include <ViewDesign/platform/vulkan/pipeline/composite.h>
 
 

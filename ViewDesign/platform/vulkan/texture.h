@@ -38,16 +38,17 @@ public:
 	vk::raii::DescriptorSet descriptor_set = nullptr;
 
 public:
+	Texture() {}
 	Texture(const PixelBuffer& pixel_buffer) {
 		CreateImage(vk::Format::eB8G8R8A8Unorm, pixel_buffer.Size(), vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled);
-		CopyPixelBuffer(pixel_buffer.PixelDataLength(), pixel_buffer.PixelData());
+		CopyFromBuffer(pixel_buffer.PixelDataLength(), pixel_buffer.PixelData());
 	}
 	Texture(SizeU size) {
 		CreateImage(FrameInFlight::GetSurfaceFormat(), size, vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eColorAttachment);
 		Clear();
 	}
 
-private:
+public:
 	void CreateImage(vk::Format format, SizeU size, vk::ImageUsageFlags image_usage_flags) {
 		DeviceContext& device_context = DeviceContext::Get();
 
@@ -67,7 +68,7 @@ private:
 		DeviceContext::Get().device.updateDescriptorSets(vk::WriteDescriptorSet(*descriptor_set, 0, 0, vk::DescriptorType::eCombinedImageSampler, image_info), {});
 	}
 
-	void CopyPixelBuffer(size_t size, const void* data) {
+	void CopyFromBuffer(size_t size, const void* data) {
 		DeviceContext& device_context = DeviceContext::Get();
 		FrameInFlight& frame_in_flight = FrameInFlight::GetCurrent();
 		vk::raii::CommandBuffer& command_buffer = frame_in_flight.command_buffer;

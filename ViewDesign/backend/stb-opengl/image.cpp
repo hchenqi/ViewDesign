@@ -16,9 +16,9 @@ namespace {
 GLuint CreateTexture(const Stb::Image& image) {
 	GLenum format;
 	switch (image.channels) {
-	case 1: format = GL_RED; break;
-	case 3: format = GL_RGB; break;
-	case 4: format = GL_RGBA; break;
+	case STBI_grey: format = GL_RED; break;
+	case STBI_rgb: format = GL_RGB; break;
+	case STBI_rgb_alpha: format = GL_RGBA; break;
 	default: throw std::runtime_error("OpenGL: image format unsupported");
 	}
 
