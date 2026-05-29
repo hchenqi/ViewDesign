@@ -116,9 +116,9 @@ protected:
 			static constexpr Color background_hovered = Color::Gray;
 			static constexpr Color background_pressed = Color::DimGray;
 		protected:
-			void OnHover() { SetBackground(background_hovered); }
-			void OnPress() { SetBackground(background_pressed); }
-			void OnLeave() { SetBackground(background_normal); }
+			virtual void OnHover() override { SetBackground(background_hovered); }
+			virtual void OnPress() override { SetBackground(background_pressed); }
+			virtual void OnLeave() override { SetBackground(background_normal); }
 		protected:
 			virtual void OnFocusEvent(FocusEvent event) override {
 				Button::OnFocusEvent(event);
