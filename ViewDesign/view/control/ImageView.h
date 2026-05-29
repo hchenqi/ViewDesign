@@ -2,16 +2,19 @@
 
 #include "ViewDesign/view/view_traits.h"
 #include "ViewDesign/view/figure/image.h"
+#include "ViewDesign/common/holder.h"
 
 
 namespace ViewDesign {
 
+namespace Stateful {
+
 
 class ImageView : public ViewBase, public SizeTrait<Auto, Auto> {
 public:
-	ImageView(const u16string& filename) : image(filename) {}
+	ImageView(const Image& image) : image(image) {}
 protected:
-	Image image;
+	const Image& image;
 protected:
 	Size GetSize() { return image.GetSize(); }
 protected:
@@ -26,9 +29,9 @@ protected:
 
 class ImageRepeatView : public ViewBase, public SizeTrait<Fixed, Fixed> {
 public:
-	ImageRepeatView(const u16string& filename, Point offset = point_zero) : image(filename), offset(offset - point_zero) {}
+	ImageRepeatView(const Image& image, Point offset = point_zero) : image(image), offset(offset - point_zero) {}
 protected:
-	Image image;
+	const Image& image;
 	Vector offset;
 protected:
 	Size size;
@@ -38,6 +41,21 @@ protected:
 	virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
 		canvas.draw(draw_region.point, new ImageRepeatFigure(image, Rect(draw_region.point + offset, draw_region.size)));
 	}
+};
+
+
+} // namespace Stateful
+
+
+class ImageView : protected Holder<Image>, public Stateful::ImageView {
+public:
+	ImageView(const u16string& filename) : Holder(filename), Stateful::ImageView(value) {}
+};
+
+
+class ImageRepeatView : protected Holder<Image>, public Stateful::ImageRepeatView {
+public:
+	ImageRepeatView(const u16string& filename, Point offset = point_zero) : Holder(filename), Stateful::ImageRepeatView(value, offset) {}
 };
 
 

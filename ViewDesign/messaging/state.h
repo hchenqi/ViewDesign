@@ -1,21 +1,22 @@
 #pragma once
 
 #include "ViewDesign/messaging/observable.h"
+#include "ViewDesign/common/holder.h"
 
 
 namespace ViewDesign {
 
 
 template<class T> requires (std::is_object_v<T>)
-class State : public Observable<const T&> {
+class State : public Observable<const T&>, private Holder<T> {
 public:
 	using Watcher = typename Observable<const T&>::Observer;
 
 public:
-	State(auto&&... args) : value(std::forward<decltype(args)>(args)...) {}
+	using Holder<T>::Holder;
 
 private:
-	T value;
+	using Holder<T>::value;
 public:
 	const T& Get() const { return value; }
 	void Set(auto&& arg) { value = std::forward<decltype(arg)>(arg); Observable<const T&>::Notify(value); }
