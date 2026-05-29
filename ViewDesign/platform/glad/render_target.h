@@ -1,9 +1,11 @@
 #pragma once
 
+#include "ViewDesign/geometry/sizeu.h"
 #include "ViewDesign/geometry/transform.h"
-#include "ViewDesign/platform/glad/framebuffer.h"
 
 #include <vector>
+
+#include <glad/glad.h>
 
 
 namespace ViewDesign {
@@ -13,8 +15,8 @@ namespace OpenGL {
 
 struct RenderContext {
 public:
-	RenderContext(SizeU size, ref_ptr<Framebuffer> framebuffer) : size(size) {
-		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer == nullptr ? 0 : framebuffer->GetId());
+	RenderContext(SizeU size, GLuint framebuffer_id) : size(size) {
+		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_id);
 
 		glViewport(0, 0, size.width, size.height);
 

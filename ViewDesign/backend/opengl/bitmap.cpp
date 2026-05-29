@@ -1,5 +1,6 @@
 #include "ViewDesign/drawing/bitmap.h"
 
+#include <ViewDesign/platform/glad/texture.h>
 #include <ViewDesign/platform/glad/render_target.h>
 
 

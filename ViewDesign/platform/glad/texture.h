@@ -13,9 +13,11 @@ namespace OpenGL {
 
 class Texture {
 public:
-	Texture() : id(0) {}
-	Texture(const PixelBuffer& pixel_buffer) : id(CreateTexture(pixel_buffer)) {}
-	Texture(SizeU size) : id(CreateTexture(size)) {}
+	Texture() : Texture(0) {}
+	Texture(GLuint id) : id(id) {}
+	Texture(const PixelBuffer& pixel_buffer) : Texture(CreateTexture(pixel_buffer)) {}
+	Texture(SizeU size) : Texture(CreateTexture(size)) {}
+public:
 	~Texture() { if (id != 0) { glDeleteTextures(1, &id); id = 0; } }
 
 private:

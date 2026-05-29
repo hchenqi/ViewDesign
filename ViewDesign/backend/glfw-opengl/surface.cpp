@@ -26,7 +26,7 @@ void Surface::RenderBegin() {
 }
 
 void Surface::RenderEnd(const Canvas& canvas) {
-	RenderContext context(size, nullptr);
+	RenderContext context(size, 0);
 	ViewDesign::RenderCanvas(static_cast<RenderTarget&>(context), canvas, vector_zero, invalid_region);
 
 	glfwSwapBuffers(AsGLFWWindow(window));
