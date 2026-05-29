@@ -1,7 +1,7 @@
 #include "ViewDesign/system/window.h"
 #include "ViewDesign/system/desktop.h"
+#include "ViewDesign/common/unicode.h"
 
-#include <ViewDesign/platform/win32/string.h>
 #include <ViewDesign/platform/win32/window.h>
 #include <ViewDesign/platform/win32/geometry_helper.h>
 #include <ViewDesign/platform/win32/ime.h>

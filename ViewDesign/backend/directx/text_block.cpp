@@ -1,6 +1,5 @@
 #include "ViewDesign/view/figure/text_block.h"
 
-#include <ViewDesign/platform/directx/string.h>
 #include <ViewDesign/platform/directx/dwrite_api.h>
 #include <ViewDesign/platform/directx/render_target.h>
 #include <ViewDesign/platform/directx/helper.h>

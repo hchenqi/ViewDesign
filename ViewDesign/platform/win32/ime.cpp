@@ -1,5 +1,4 @@
 #include "ViewDesign/platform/win32/ime.h"
-#include "ViewDesign/platform/win32/string.h"
 
 
 namespace ViewDesign {

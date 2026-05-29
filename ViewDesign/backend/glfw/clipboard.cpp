@@ -1,11 +1,9 @@
-#include <ViewDesign/platform/glfw/string.h>
+#include "ViewDesign/common/unicode.h"
 
 #include <GLFW/glfw3.h>
 
 
 namespace ViewDesign {
-
-using namespace GLFW;
 
 
 void SetClipboardText(u16string text) {

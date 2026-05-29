@@ -1,5 +1,5 @@
+#include "ViewDesign/common/unicode.h"
 #include "ViewDesign/platform/win32/clipboard.h"
-#include "ViewDesign/platform/win32/string.h"
 
 #include <windows.h>
 

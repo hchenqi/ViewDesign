@@ -1,6 +1,5 @@
 #include "ViewDesign/view/figure/image.h"
 
-#include <ViewDesign/platform/directx/string.h>
 #include <ViewDesign/platform/directx/wic_api.h>
 #include <ViewDesign/platform/directx/render_target.h>
 #include <ViewDesign/platform/directx/helper.h>
