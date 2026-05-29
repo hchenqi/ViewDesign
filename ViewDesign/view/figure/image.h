@@ -13,8 +13,8 @@ namespace ViewDesign {
 
 class Image : Uncopyable {
 public:
-	Image(const u16string& file_name);
-	Image(void* address, size_t size);
+	Image(const u16string& filename);
+	Image(const void* buffer, size_t size);
 	~Image();
 protected:
 	Handle source;
@@ -45,7 +45,7 @@ struct ImageRepeatFigure : Figure {
 	Rect region;
 	float opacity;
 
-	ImageRepeatFigure(const Image& image, Rect region, float opacity = 1.0f) : image(image), region(region), opacity(opacity) {}
+	ImageRepeatFigure(const Image& image, Rect region, float opacity = 1.0f) : image(image), region(region), opacity(opacity) { image.CreateTexture(); }
 
 	virtual void DrawOn(RenderTarget& target, Point point) const override;
 };

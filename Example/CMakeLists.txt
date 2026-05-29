@@ -13,4 +13,3 @@ if (MSVC)
 endif()
 
 add_subdirectory(vulkan)
-add_subdirectory(win32-directx)

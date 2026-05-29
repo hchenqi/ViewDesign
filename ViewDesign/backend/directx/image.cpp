@@ -4,6 +4,8 @@
 #include <ViewDesign/platform/directx/render_target.h>
 #include <ViewDesign/platform/directx/helper.h>
 
+#include <shlwapi.h>
+
 
 namespace ViewDesign {
 
@@ -30,11 +32,11 @@ ComPtr<ImageSource> LoadFromDecoder(ComPtr<IWICBitmapDecoder> decoder) {
 	return converter;
 }
 
-ComPtr<ImageSource> LoadImageFromFile(const u16string& file_name) {
+ComPtr<ImageSource> LoadImageFromFile(const u16string& filename) {
 	try {
 		ComPtr<IWICBitmapDecoder> decoder;
 		hr << GetWICFactory().CreateDecoderFromFilename(
-			as_wchar_str(file_name.c_str()),
+			as_wchar_str(filename.c_str()),
 			NULL,
 			GENERIC_READ,
 			WICDecodeMetadataCacheOnDemand,
@@ -46,12 +48,13 @@ ComPtr<ImageSource> LoadImageFromFile(const u16string& file_name) {
 	}
 }
 
-ComPtr<ImageSource> LoadImageFromMemory(void* address, size_t size) {
+ComPtr<ImageSource> LoadImageFromMemory(const void* buffer, size_t size) {
 	try {
-		ComPtr<IWICStream> stream;
+		ComPtr<IStream> stream;
+		stream.Attach(SHCreateMemStream(reinterpret_cast<const BYTE*>(buffer), (UINT)size));
+		if (!stream) { hr << E_OUTOFMEMORY; }
+
 		ComPtr<IWICBitmapDecoder> decoder;
-		hr << GetWICFactory().CreateStream(&stream);
-		hr << stream->InitializeFromMemory(reinterpret_cast<BYTE*>(address), (DWORD)size);
 		hr << GetWICFactory().CreateDecoderFromStream(
 			stream.Get(),
 			NULL,
@@ -60,7 +63,7 @@ ComPtr<ImageSource> LoadImageFromMemory(void* address, size_t size) {
 		);
 		return LoadFromDecoder(decoder);
 	} catch (std::runtime_error&) {
-		throw std::invalid_argument("invalid image address");
+		throw std::invalid_argument("invalid image buffer");
 	}
 }
 
@@ -80,9 +83,9 @@ inline ComPtr<D2DBitmap> CreateD2DBitmapFromWicBitmap(ImageSource& source) {
 } // namespace
 
 
-Image::Image(const u16string& file_name) : source(LoadImageFromFile(file_name).Detach()), size(GetImageSize(*static_cast<ref_ptr<ImageSource>>(source))) {}
+Image::Image(const u16string& filename) : source(LoadImageFromFile(filename).Detach()), size(GetImageSize(*static_cast<ref_ptr<ImageSource>>(source))) {}
 
-Image::Image(void* address, size_t size) : source(LoadImageFromMemory(address, size).Detach()), size(GetImageSize(*static_cast<ref_ptr<ImageSource>>(source))) {}
+Image::Image(const void* buffer, size_t size) : source(LoadImageFromMemory(buffer, size).Detach()), size(GetImageSize(*static_cast<ref_ptr<ImageSource>>(source))) {}
 
 Image::~Image() { DestroyTexture(); ComPtr<ImageSource>().Swap(reinterpret_cast<owner_ptr<ImageSource>&>(source)); }
 

@@ -6,19 +6,19 @@
     },
     "win32-opengl": {
       "description": "Backend: Win32-OpenGL",
-      "dependencies": ["glad"]
+      "dependencies": ["glad", "stb"]
     },
     "win32-vulkan": {
       "description": "Backend: Win32-Vulkan",
-      "dependencies": ["glm"]
+      "dependencies": ["glm", "stb"]
     },
     "glfw-opengl": {
       "description": "Backend: GLFW-OpenGL",
-      "dependencies": ["glfw3", "glad"]
+      "dependencies": ["glfw3", "glad", "stb"]
     },
     "glfw-vulkan": {
       "description": "Backend: GLFW-Vulkan",
-      "dependencies": ["glfw3", "glm"]
+      "dependencies": ["glfw3", "glm", "stb"]
     }
   }
 }

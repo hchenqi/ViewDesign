@@ -9,7 +9,7 @@ namespace ViewDesign {
 
 class ImageView : public ViewBase, public SizeTrait<Auto, Auto> {
 public:
-	ImageView(const u16string& file_name) : image(file_name) {}
+	ImageView(const u16string& filename) : image(filename) {}
 protected:
 	Image image;
 protected:
@@ -26,7 +26,7 @@ protected:
 
 class ImageRepeatView : public ViewBase, public SizeTrait<Fixed, Fixed> {
 public:
-	ImageRepeatView(const u16string& file_name, Point offset = point_zero) : image(file_name), offset(offset - point_zero) {}
+	ImageRepeatView(const u16string& filename, Point offset = point_zero) : image(filename), offset(offset - point_zero) {}
 protected:
 	Image image;
 	Vector offset;
