@@ -23,7 +23,7 @@ public:
 	void SetText(const TextStyle& style, const u16string& text);
 	Rect UpdateLayout(Size size_ref);
 public:
-	using HitTestPointInfo = std::pair<TextRange, Rect>;
+	using HitTestPointInfo = std::tuple<TextRange, uint32, Rect>;
 	using HitTestRangeInfo = std::vector<std::pair<TextRange, Rect>>;
 public:
 	HitTestPointInfo HitTestPoint(Point point) const;

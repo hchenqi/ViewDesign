@@ -98,17 +98,17 @@ Rect TextBlock::UpdateLayout(Size size_ref) {
 TextBlock::HitTestPointInfo TextBlock::HitTestPoint(Point point) const {
 	BOOL isTrailingHit; BOOL isInside; DWRITE_HIT_TEST_METRICS metrics;
 	AsTextLayout(layout)->HitTestPoint(point.x, point.y, &isTrailingHit, &isInside, &metrics);
-	return std::make_pair(TextRange(metrics.textPosition, isTrailingHit ? metrics.length : 0), Rect(metrics.left, metrics.top, metrics.width, metrics.height));
+	return std::make_tuple(TextRange(metrics.textPosition, isTrailingHit ? metrics.length : 0), metrics.bidiLevel, Rect(metrics.left, metrics.top, metrics.width, metrics.height));
 }
 
 TextBlock::HitTestPointInfo TextBlock::HitTestPosition(TextRange position) const {
 	FLOAT x, y; DWRITE_HIT_TEST_METRICS metrics;
 	if (position.length() == 0) {
 		AsTextLayout(layout)->HitTestTextPosition((UINT32)position.end(), false, &x, &y, &metrics);
-		return std::make_pair(TextRange(metrics.textPosition, 0), Rect(metrics.left, metrics.top, metrics.width, metrics.height));
+		return std::make_tuple(TextRange(metrics.textPosition, 0), metrics.bidiLevel, Rect(metrics.left, metrics.top, metrics.width, metrics.height));
 	} else {
 		AsTextLayout(layout)->HitTestTextPosition((UINT32)(position.end() - 1), true, &x, &y, &metrics);
-		return std::make_pair(TextRange(metrics.textPosition, metrics.length), Rect(metrics.left, metrics.top, metrics.width, metrics.height));
+		return std::make_tuple(TextRange(metrics.textPosition, metrics.length), metrics.bidiLevel, Rect(metrics.left, metrics.top, metrics.width, metrics.height));
 	}
 }
 

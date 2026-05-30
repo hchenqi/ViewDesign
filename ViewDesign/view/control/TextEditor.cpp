@@ -115,8 +115,8 @@ void TextEditor::CaretBlink() {
 }
 
 Rect TextEditor::GetCaretRegion(const HitTestPointInfo& info) const {
-	const auto& [range, region] = info;
-	if (range.length() == 0) {
+	const auto& [range, bidi_level, region] = info;
+	if ((range.length() == 0) ^ (bidi_level % 2 != 0)) {
 		return Rect(region.point, Size(style.edit._caret_width, region.size.height));
 	} else {
 		return Rect(Point(region.point.x + region.size.width, region.point.y) - Vector(style.edit._caret_width, 0), Size(style.edit._caret_width, region.size.height));
@@ -124,7 +124,7 @@ Rect TextEditor::GetCaretRegion(const HitTestPointInfo& info) const {
 }
 
 void TextEditor::UpdateCaret(const HitTestPointInfo& info) {
-	caret_position = info.first;
+	caret_position = std::get<TextRange>(info);
 	Redraw(std::exchange(caret_region, GetCaretRegion(info)).Union(caret_region));
 }
 
@@ -210,9 +210,9 @@ void TextEditor::SelectParagraph() {
 void TextEditor::DoSelect(const HitTestPointInfo& info) {
 	TextRange current_range;
 	switch (selection_mode) {
-	case SelectionMode::Character: current_range = TextRange(info.first.end(), 0); break;
-	case SelectionMode::Word: current_range = GetWordRange(info.first.begin()); break;
-	case SelectionMode::Paragraph: current_range = GetParagraphRange(info.first.begin()); break;
+	case SelectionMode::Character: current_range = TextRange(std::get<TextRange>(info).end(), 0); break;
+	case SelectionMode::Word: current_range = GetWordRange(std::get<TextRange>(info).begin()); break;
+	case SelectionMode::Paragraph: current_range = GetParagraphRange(std::get<TextRange>(info).begin()); break;
 	default: assert(false);
 	}
 	size_t begin = std::min(current_range.begin(), selection_initial_range.begin()), end = std::max(current_range.end(), selection_initial_range.end());
