@@ -159,7 +159,9 @@ More examples can be found in subfolder [Example](Example) which are built along
 - `GLFW-OpenGL` (Windows, Linux)
 - `GLFW-Vulkan` (Windows, Linux)
 
-On Windows, *ViewDesign* with `Win32-DirectX` backend can be directly built by Visual Studio as a CMake project. [Building ViewDesign](docs/build.md) provides more detailed instructions on configuring and building *ViewDesign* with different backends and platforms.
+On Windows, *ViewDesign* with `Win32-DirectX` backend can be directly opened and built by Visual Studio as a CMake project. (rename `CMakeUserPresets.example.json` to `CMakeUserPresets.json` after cloning, select `VS2026 Windows MSVC x64 Debug (Backend: Win32-DirectX)` or others)
+
+[Building ViewDesign](docs/build.md) provides more detailed instructions on configuring and building *ViewDesign* with different backends and platforms.
 
 > Due to complexities, `-OpenGL/Vulkan` backends are not yet natively equipped with text rendering capabilities for a `TextView` component, with which text characters are presented as placeholder rectangles. Nevertheless, *ViewDesign* exposes the necessary OpenGL/Vulkan contexts, helper functions and examples so that one could custom implement drawing texts or other complex 2D shapes with third-party 2D graphics libraries, like *Skia*.
 
