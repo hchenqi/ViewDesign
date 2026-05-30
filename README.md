@@ -11,10 +11,10 @@ A C++ GUI framework
 (core library of *ViewDesign*)
 - a single static library in native C++, built with CMake (using standard C++23)
 - cross-platform, with multi-backend support
-- easy to setup and integrate, no boilerplate, no special environment
+- easy to setup and integrate, no boilerplate, no special tooling
 - minimal, clear and efficient logic for component management, layout calculation and rendering
 - intrinsically DPI-aware
-- fit for both 'immediate-mode' and 'retained-mode' GUI programming, supporting hot reload with ease
+- fit for both 'immediate-mode' and 'retained-mode' GUI programming, supporting hot reload with ease (see example [HotReload](Example/HotReload.cpp))
 
 (standard component library of *ViewDesign*, bundled together with the core library)
 - object-oriented, modular and extensible
@@ -165,9 +165,9 @@ On Windows, *ViewDesign* with `Win32-DirectX` backend can be directly built by V
 
 ### Principle
 
-Being complex is easy, but being simple yet equally functional is hard. Underwent multiple revisions and refactorings, *ViewDesign* aims to be simple, modular and transparent while maintaining high functionality. There is no hidden logic or global context, and it is easy to inspect and modify any part of the library code. The files of the library are well structured, self-explanatory and effortless to navigate. Each file is kept possibly small and independent for a single component, mostly within ~100 lines. There is no all-in-one header and each component header is to be included individually on demand. This results in better develop-time, compile-time and runtime efficiency.
+Being complex is easy, but being simple yet equally functional is hard. Having undergone multiple revisions and refactorings, *ViewDesign* aims to be simple, modular and transparent while maintaining high functionality. There is no hidden logic or global context, and it is easy to inspect and modify any part of the library code. The files of the library are well structured, self-explanatory and effortless to navigate. Each file is kept possibly small and independent for a single component, mostly within ~100 lines. There is no all-in-one header and each component header is to be included individually on demand. This results in better develop-time, compile-time and runtime efficiency.
 
-The example section above demonstrates the components like `TextView`, `CenterFrame`, etc with **size traits** in the standard component library of *ViewDesign*. The core library (excluding components in subfolders of [ViewDesign/view](ViewDesign/view) and `view_traits.h`), however, does not enforce size traits, component styles or any development paradigm. It can be integrated with any project in any C++ design patterns and extended with any custom component libraries to fit special development needs. The standard components provided along with the core library are such examples that can be directly used, inherited, or taken as models for developing custom components.
+The example section above demonstrates the components like `TextView`, `CenterFrame`, etc with size traits in the standard component library of *ViewDesign*. The core library (excluding components in subfolders of [ViewDesign/view](ViewDesign/view) and `view_traits.h`), however, does not enforce size traits, component styles or any development paradigm. It can be integrated with any project in any C++ design patterns and extended with any custom component libraries to fit special development needs. The standard components provided along with the core library are such examples that can be directly used, inherited, or taken as models for developing custom components.
 
 ### Comparison
 
@@ -213,7 +213,7 @@ The backends, examples, documentation and the standard component library of *Vie
 
 ### Summary
 
-*ViewDesign* is a promising general-purpose C++ GUI framework. It is easily maintainable, modifiable, adaptive and extensible due to its exceeding modularity and abstraction. The compile-time layout compatibility check of components introduced in the standard component library of *ViewDesign* could take some mental effort to adapt with, but its benefits are enormous. It provides a modern and clean approach for designing GUI applications, and is well-suited for learning purposes and for verifying prototypes and ideas.
+*ViewDesign* is a general-purpose C++ GUI framework that is easily maintainable, modifiable, adaptive and extensible due to its exceptional modularity and abstraction. The compile-time layout compatibility check of components introduced in the standard component library of *ViewDesign* could take some mental effort to adapt with, but its benefits are enormous. It provides a modern and clean approach for designing GUI applications, and is well-suited for learning purposes and for verifying prototypes and ideas.
 
 ## Concepts
 
@@ -255,7 +255,7 @@ A view initiating redraw notifies its parent view about its updated region, and 
 
 The core library provides the generic logic for updating layout of a view, but the parent and the child view's layout calculation logic must be additionally ensured to agree with each other. For example, the parent view might want to fix the size of its child view as large as the `size_ref` provided to its child view, but the child view can ignore the `size_ref` and decide its own size. This often introduces ill-formed layouts, and the core library actually doesn't prevent this from happening.
 
-The standard component library of *ViewDesign* introduces **size traits** `Fixed`, `Auto` and `Relative` that marks how the width or the height of a view component is to be decided which can be checked at compile-time.
+The standard component library of *ViewDesign* introduces **size traits**: `Fixed`, `Auto` and `Relative` that mark how the width or the height of a view component is to be decided which can be checked at compile-time.
 
 - `Fixed` means a dimension of a view is assigned by its parent view.
 
@@ -299,7 +299,7 @@ During hit test, each view checks the mouse event and returns a child view that 
 
 If a view to consume the mouse event is finally found, this view is tracked by `Desktop` in a stack, and all parent views of the view and the view itself will be sent a `MouseEnter` event as `FocusEvent`. This view in addition will be sent a `MouseOver` event and then the original mouse event. If a view to consume the mouse event is not found, then the last view that processed the mouse event is still tracked and sent the `MouseEnter` event even though it won't be sent the `MouseOver` event and the original mouse event.
 
-If the tracked view is changed on the next mouse event, the view tracked before will be sent a `MouseOut` event, and its parent views that not parent of the newly tracked view will be sent a `MouseLeave` event.
+If the tracked view is changed on the next mouse event, the view tracked before will be sent a `MouseOut` event, and its parent views that are not parent of the newly tracked view will be sent a `MouseLeave` event.
 
 If a view acquires mouse capture, all subsequent mouse events will be directly translated and sent to this view until it releases capture.
 
@@ -452,7 +452,7 @@ Feedback, suggestions, and issue reports are welcome!
 
 ## License
 
-*ViewDesign* is licensed under MIT license. (see [LICENSE](LICENSE))
+*ViewDesign* is licensed under the MIT license. (see [LICENSE](LICENSE))
 
 ## About
 
