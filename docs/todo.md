@@ -32,7 +32,9 @@
 
 - (feature) supporting loading images directly from a URL
 
-- (improvement) implementing text layout engine for OpenGL/Vulkan backend (possibly with HarfBuzz and FreeType, or other existing 2D graphics libraries like Skia that draw texts)
+- (improvement) implementing text layout engine for OpenGL/Vulkan backend (possibly with HarfBuzz and FreeType, or other existing 2D graphics libraries like Skia that can draw texts)
+
+- (feature) implementing `TextView` with range-based font/paragraph formats for building a rich-text editor (possibly as separate components like `RichTextView`, `RichTextEditor`)
 
 - (improvement) implementing integer value region arithmetic for non-Win32 platforms (possibly with Clipper2, Boost.Geometry, etc)
 

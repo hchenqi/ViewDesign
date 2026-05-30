@@ -24,7 +24,7 @@ A C++ GUI framework
 
 ### Example
 
-> The example section demonstrates the usage of the standard component library of *ViewDesign*, which, however, can be easily customized and extended.
+> The example section demonstrates the standard component library of *ViewDesign* with size traits. The core library, however, can be easily customized and extended by other means.
 
 The program below displays "Hello World!" at the center of the main window: ([Example/HelloWorld.cpp](Example/HelloWorld.cpp))
 
@@ -143,7 +143,7 @@ More examples can be found in subfolder [Example](Example) which are built along
 - [BackgroundWrapper](Example/BackgroundWrapper.cpp): adding background to a view component
 - [Canvas](Example/Canvas.cpp): drawing random shapes on a blank window
 - [ImageView](Example/ImageView.cpp): displaying an image with different stretch modes controlled by different frames
-- [PlainTextEditor](Example/PlainTextEditor.cpp): a plain-text editor supporting word/paragraph- level selection, copy/paste and IME input
+- [PlainTextEditor](Example/PlainTextEditor.cpp): a plain-text editor supporting word-/paragraph- level selection, copy/paste and IME input
 - [TitleBarWindow](Example/TitleBarWindow.cpp): a customized window frame with title bar, border, buttons, etc
 - [StateMirroring](Example/StateMirroring.cpp): duplicating the text state of a text editor to other text views
 - [ViewMirroring](Example/ViewMirroring.cpp): duplicating the exact drawing content of a view component

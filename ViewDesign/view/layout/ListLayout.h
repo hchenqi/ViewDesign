@@ -697,7 +697,7 @@ protected:
 	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override {
 		auto index = GetChildIndex(child);
 		auto it = child_list.begin() + index;
-		if constexpr (IsFixed<typename ListLayoutVertical::height_trait>) {
+		if constexpr (IsFixed<typename ListLayoutHorizontal::height_trait>) {
 			child_size.height = size.height;
 		} else {
 			height = std::max(height, child_size.height);

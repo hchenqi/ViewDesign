@@ -24,11 +24,21 @@ The `control` subfolder includes *control* components that have no child view co
 
 ### Placeholder
 
-`Placeholder` is the simplest *control* that takes up a certain space and draws nothing.
+`Placeholder` is the simplest *control* that takes up a certain space and draws nothing. It is a class template which can be specialized with the following traits:
+- `Placeholder<Fixed, Fixed>`
+- `Placeholder<Auto, Fixed>` (constructor with `width` parameter)
+- `Placeholder<Fixed, Auto>` (constructor with `height` parameter)
+- `Placeholder<Auto, Auto>` (constructor with `size` parameter)
 
 ### TextView
 
+`TextView` displays text in a uniform font and paragraph style within a size constraint. It has `Relative` traits for both width and height.
+
+> Currently `TextView` only displays text normally with `Win32-DirectX` backend. With the other backends all characters are displayed as placeholder rectangles.
+
 ### TextEditor
+
+`TextEditor` derives from `TextView` sharing the same size traits that supports text editing with caret, character-/word-/paragraph- level selection, IME input and cut/copy/paste.
 
 > Known issue: `TextEditor` doesn't well support vertical text layout. (The text layout direction of a `TextView` can be related with the choice of the ClipFrame that wraps it, because `TextView` itself doesn't care about the position within its parent view.)
 

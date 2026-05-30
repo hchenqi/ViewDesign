@@ -67,7 +67,7 @@ public:
 
 	// layout
 protected:
-	Size size_ref;
+	Size size_ref = size_empty;
 	Rect region;
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override {

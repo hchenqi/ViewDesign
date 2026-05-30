@@ -46,7 +46,7 @@ private:
 
 			vk::Extent2D extent = color_texture.extent;
 
-			TransitionImageLayout(command_buffer, color_texture.image, color_texture.image_layout, vk::ImageLayout::eColorAttachmentOptimal);
+			TransitionImageLayout(command_buffer, *color_texture.image, color_texture.image_layout, vk::ImageLayout::eColorAttachmentOptimal);
 			vk::RenderingAttachmentInfo color_attachment(*color_texture.image_view, vk::ImageLayout::eColorAttachmentOptimal, {}, {}, {}, vk::AttachmentLoadOp::eClear, vk::AttachmentStoreOp::eStore, color_clear_value);
 			vk::RenderingAttachmentInfo depth_attachment(*depth_texture.image_view, vk::ImageLayout::eDepthAttachmentOptimal, {}, {}, {}, vk::AttachmentLoadOp::eClear, vk::AttachmentStoreOp::eDontCare, depth_clear_value);
 			command_buffer.beginRendering(vk::RenderingInfo({}, vk::Rect2D({}, extent), 1, 0, color_attachment, &depth_attachment));
@@ -89,7 +89,7 @@ private:
 			}
 
 			command_buffer.endRendering();
-			TransitionImageLayout(command_buffer, color_texture.image, color_texture.image_layout, vk::ImageLayout::eShaderReadOnlyOptimal);
+			TransitionImageLayout(command_buffer, *color_texture.image, color_texture.image_layout, vk::ImageLayout::eShaderReadOnlyOptimal);
 		}
 	};
 

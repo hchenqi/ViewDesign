@@ -108,6 +108,10 @@ void App() {
 	desktop.AddWindow(new LoadImageWindow(image));
 	desktop.EventLoop();
 
+	if (!image.has_value()) {
+		return;
+	}
+
 	desktop.AddWindow(
 		new DefaultWindow(
 			DefaultWindow::Style(),
