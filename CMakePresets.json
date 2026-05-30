@@ -10,8 +10,6 @@
         "ICU_ROOT": "$env{ICU_ROOT}"
       }
     },
-
-    // Generator presets
     {
       "name": "ninja",
       "hidden": true,
@@ -27,8 +25,6 @@
       "hidden": true,
       "generator": "Unix Makefiles"
     },
-
-    // Host system presets
     {
       "name": "host-windows",
       "inherits": "base",
@@ -59,8 +55,6 @@
         "rhs": "macOS"
       }
     },
-
-    // Toolset presets (Windows Target)
     {
       "name": "msvc",
       "inherits": "host-windows",
@@ -125,8 +119,6 @@
         "CMAKE_CXX_COMPILER": "x86_64-w64-mingw32-g++"
       }
     },
-
-    // Toolset presets (Linux Target)
     {
       "name": "gcc",
       "inherits": "host-linux",
@@ -135,8 +127,6 @@
         "CMAKE_CXX_COMPILER": "g++"
       }
     },
-
-    // Build type presets
     {
       "name": "debug",
       "hidden": true,
@@ -151,8 +141,6 @@
         "CMAKE_BUILD_TYPE": "Release"
       }
     },
-
-    // Backend presets
     {
       "name": "win32-directx",
       "hidden": true,

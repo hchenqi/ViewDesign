@@ -11,11 +11,27 @@ Tools to install:
 - Visual Studio Code: https://code.visualstudio.com/ (recommended code editor)
   - CMake Tools (extension integrating CMake in VS Code)
 
-The configuring and building of this library follow CMake routines.
+This library can be configured and built using CMake presets:
+- Clone or download the source code of this repository, open the repository root folder
+- Create a copy of `CMakeUserPresets.example.json` and rename it to `CMakeUserPresets.json`
+- (with CMake Tools extension in VS Code or Visual Studio):
+  - Select the preset named with `VS2026 Windows MSVC x64 Debug (Backend: Win32-DirectX)` (or others)
+  - Click `Build All Projects`
+- (on the command line):
+  - Run `cmake --preset vs2026-windows-msvc-x64-debug-win32-directx` (or choose other presets)
+  - Run `cmake --build build/vs2026-windows-msvc-x64-debug-win32-directx`
 
-Possible base presets are specified in `CMakePresets.json` and can be inherited as in the example `CMakeUserPresets.example.json`. One may create a copy of the latter and rename it to `CMakeUserPresets.json` for actual use.
+Possible base presets are specified in `CMakePresets.json` and can be custom inherited in `CMakeUserPresets.json` as the example.
 
-*ViewDesign* source files can be downloaded and directly included in a CMake project with `add_subdirectory(path_to_ViewDesign_root)` and `target_link_libraries(AppName PRIVATE ViewDesign)`. The CMake cache variable `VIEWDESIGN_BACKEND` needs to be specified as one of the supported backends.
+*ViewDesign* can be directly included in a CMake project with `add_subdirectory(path_to_ViewDesign_root)` and `target_link_libraries(AppName PRIVATE ViewDesign)`. The CMake cache variable `VIEWDESIGN_BACKEND` needs to be specified as one of the supported backends, either in the command line as `-DVIEWDESIGN_BACKEND=Win32-DirectX` or in the presets: (using `Win32-DirectX` backend for example)
+
+```json
+  "cacheVariables": {
+    "VIEWDESIGN_BACKEND": "Win32-DirectX"
+  }
+```
+
+Other CMake cache variables like `CMAKE_CXX_STANDARD`, `CMAKE_CXX_COMPILER`, `CMAKE_BUILD_TYPE`, etc are expected to be specified as well.
 
 ## Compiler
 
@@ -85,7 +101,7 @@ The following platform packages will be searched and included automatically.
 >   - Run `CXXFLAGS=-std=c++23 ./configure;` `make -j$(nproc);` `sudo make install;`
 > - Windows:
 >   - Run `msbuild allinone/allinone.sln /p:OverrideLanguageStandard=stdcpp23 /p:Configuration=Release /p:Platform=x64` (within Developer Command Prompt from Visual Studio)
->   - Set `ICU_ROOT` environment variable to `icu/` for cmake `find_package(ICU)` to be able to locate the built files
+> Set `ICU_ROOT` environment variable to `icu/` for cmake `find_package(ICU)` to be able to locate the built files. The `ICU_ROOT` can also be specified directly as a cmake cache variable like in `CMakePresets.json`.
 
 ### GLFW (https://www.glfw.org/)
 

@@ -1,7 +1,6 @@
 {
   "version": 3,
   "configurePresets": [
-    // msvc-win32-directx
     {
       "name": "ninja-windows-msvc-x64-debug-win32-directx",
       "displayName": "Ninja Windows MSVC x64 Debug (Backend: Win32-DirectX)",
@@ -22,8 +21,6 @@
       "displayName": "VS2026 Windows MSVC x64 Debug (Backend: Win32-DirectX)",
       "inherits": ["vs2026", "msvc-x64", "debug", "win32-directx"]
     },
-
-    // mingw-win32-directx
     {
       "name": "ninja-windows-mingw-gcc-x64-debug-win32-directx",
       "displayName": "Ninja Windows MinGW (GCC) x64 Debug (Backend: Win32-DirectX)",
@@ -52,8 +49,6 @@
       "displayName": "Ninja Linux MinGW (GCC) x64 Debug (Backend: Win32-DirectX)",
       "inherits": ["ninja", "linux-mingw-gcc-x64", "debug", "win32-directx"]
     },
-
-    // msvc-win32
     {
       "name": "ninja-windows-msvc-x64-debug-win32-opengl",
       "displayName": "Ninja Windows MSVC x64 Debug (Backend: Win32-OpenGL)",
@@ -74,8 +69,6 @@
         "VCPKG_MANIFEST_FEATURES": "win32-vulkan"
       }
     },
-
-    // msvc-glfw
     {
       "name": "ninja-windows-msvc-x64-debug-glfw-opengl",
       "displayName": "Ninja Windows MSVC x64 Debug (Backend: GLFW-OpenGL)",
@@ -96,8 +89,6 @@
         "VCPKG_MANIFEST_FEATURES": "glfw-vulkan"
       }
     },
-
-    // gcc-glfw
     {
       "name": "ninja-linux-gcc-debug-glfw-opengl",
       "displayName": "Ninja Linux GCC Debug (Backend: GLFW-OpenGL)",
@@ -119,7 +110,6 @@
       }
     }
   ],
-
   "buildPresets": [
     {
       "name": "make-k",
