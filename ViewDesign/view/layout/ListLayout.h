@@ -397,19 +397,24 @@ protected:
 	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override {
 		auto index = GetChildIndex(child);
 		auto it = child_list.begin() + index;
-		if (it->region.size.height != child_size.height) {
-			it->region.size.height = child_size.height;
+		if constexpr (IsFixed<typename ListLayoutVertical::width_trait>) {
+			child_size.width = size.width;
+		} else {
+			width = std::max(width, child_size.width);
+			if (!calculate_max_width) {
+				if (width < it->region.size.width) {
+					calculate_max_width = true;
+				}
+			} else {
+				if (width >= size.width) {
+					calculate_max_width = false;
+				}
+			}
+		}
+		if (it->region.size != child_size) {
+			it->region.size = child_size;
 			first = std::min(first, index);
 			last = std::max(last, index);
-		}
-		if constexpr (!IsFixed<typename ListLayoutVertical::width_trait>) {
-			if (child_size.width > it->region.size.width) {
-				it->region.size.width = child_size.width;
-				width = std::max(width, child_size.width);
-			} else if (child_size.width < it->region.size.width) {
-				it->region.size.width = child_size.width;
-				calculate_max_width = true;
-			}
 		}
 	}
 };
@@ -692,19 +697,24 @@ protected:
 	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override {
 		auto index = GetChildIndex(child);
 		auto it = child_list.begin() + index;
-		if (it->region.size.width != child_size.width) {
-			it->region.size.width = child_size.width;
+		if constexpr (IsFixed<typename ListLayoutVertical::height_trait>) {
+			child_size.height = size.height;
+		} else {
+			height = std::max(height, child_size.height);
+			if (!calculate_max_height) {
+				if (height < it->region.size.height) {
+					calculate_max_height = true;
+				}
+			} else {
+				if (height >= size.height) {
+					calculate_max_height = false;
+				}
+			}
+		}
+		if (it->region.size != child_size) {
+			it->region.size = child_size;
 			first = std::min(first, index);
 			last = std::max(last, index);
-		}
-		if constexpr (!IsFixed<typename ListLayoutHorizontal::height_trait>) {
-			if (child_size.height > it->region.size.height) {
-				it->region.size.height = child_size.height;
-				height = std::max(height, child_size.height);
-			} else if (child_size.height < it->region.size.height) {
-				it->region.size.height = child_size.height;
-				calculate_max_height = true;
-			}
 		}
 	}
 };
