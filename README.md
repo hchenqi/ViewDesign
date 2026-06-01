@@ -17,7 +17,7 @@ A C++ GUI framework
 - fit for both 'immediate-mode' and 'retained-mode' GUI programming, supporting hot reload with ease (see example [HotReload](Example/HotReload.cpp))
 
 (standard component library of *ViewDesign*, bundled together with the core library)
-- object-oriented, modular and extensible
+- object-oriented, functional, modular and extensible
 - conceptual separation of components as *control*, *frame* and *layout*
 - explicit declaration of component layout with **size traits**
 - compile-time check of layout compatibility between components
@@ -26,12 +26,13 @@ A C++ GUI framework
 
 > The example section demonstrates the standard component library of *ViewDesign* with size traits. The core library, however, can be easily customized and extended by other means.
 
-The program below displays "Hello World!" at the center of the main window: ([Example/HelloWorld.cpp](Example/HelloWorld.cpp))
+The program below displays "Hello World!" at the center of the main window: ([Example/HelloWorld/Centered.cpp](Example/HelloWorld/Centered.cpp))
 
 ```cpp
 #include <ViewDesign/view/widget/DefaultWindow.h>
 #include <ViewDesign/view/frame/CenterFrame.h>
 #include <ViewDesign/view/control/TextView.h>
+#include <ViewDesign/view/wrapper/Background.h>
 
 using namespace ViewDesign;
 
@@ -43,9 +44,9 @@ struct TextViewStyle : TextView::Style {
 
 void App() {
 	desktop.AddWindow(
-		create<DefaultWindow>(
+		create<DefaultBackground<DefaultWindow>>(
 			DefaultWindow::Style(),
-			u"Example",
+			u"HelloWorld",
 			create<CenterFrame<Fixed, Fixed>>(
 				create<TextView>(TextViewStyle(), u"Hello World!")
 			)
@@ -55,18 +56,16 @@ void App() {
 }
 ```
 
-![screenshot HelloWorld-1](docs/HelloWorld-1.png)
-
-We first include headers of the components, then we define text style for `TextView` derived from the default style, and finally in the entrypoint `void App()`, we create and combine the components, add main window `DefaultWindow` and enter event loop.
+We first include headers of the components, then we define text style for `TextView` derived from the default style, and finally in the entrypoint `void App()`, we create and combine the components with styles, add main window `DefaultWindow` and enter event loop.
 
 `CenterFrame<Fixed, Fixed>` always places `TextView` at the center when it is being resized:
 
-![screen recording HelloWorld-1](docs/HelloWorld-1.gif)
+![HelloWorld-centered](https://github.com/user-attachments/assets/64840ad8-71ea-4031-b851-0d8790eb945e)
 
-If we change it to `ClipFrame<Fixed, Fixed, TopLeft>`, the `TextView` will stay at the top-left corner.
+If we change it to `ClipFrame<Fixed, Fixed, TopLeft>`, the `TextView` will stay at the top-left corner. ([Example/HelloWorld/TopLeft.cpp](Example/HelloWorld/TopLeft.cpp))
 
 ```cpp
-// #include <ViewDesign/view/frame/ClipFrame.h>
+//#include <ViewDesign/view/frame/ClipFrame.h>
 
 	desktop.AddWindow(
 		create<DefaultWindow>(
@@ -79,11 +78,15 @@ If we change it to `ClipFrame<Fixed, Fixed, TopLeft>`, the `TextView` will stay 
 	);
 ```
 
-![screenshot HelloWorld-2](docs/HelloWorld-2.png)
+![HelloWorld-topleft](https://github.com/user-attachments/assets/bb8a333f-c4e1-4353-a328-2d28378784e1)
 
 Similarly, `ClipFrame<Fixed, Fixed, TopRight>`, `ClipFrame<Fixed, Fixed, BottomLeft>` and `ClipFrame<Fixed, Fixed, BottomRight>` place their child views at top-right, bottom-left and bottom-right corners respectively.
 
-`Fixed` is one of the size traits of a view, marking that a dimension (width or height) is to be assigned by the parent view. `DefaultWindow` expects both width and height of the child view to be `Fixed`, therefore, we wrote `CenterFrame<Fixed, Fixed>` or `ClipFrame<Fixed, Fixed, TopLeft>`, etc. We can not directly put a `TextView` in `DefaultWindow`, because both width and height of a `TextView` are not `Fixed`, but `Relative`, and the code below won't compile:
+If we change `ClipFrame<Fixed, Fixed, TopLeft>` again to `StretchFrame<Fixed, Fixed>`, the `TextView` will be always stretched to fill the window: ([Example/HelloWorld/Stretched.cpp](Example/HelloWorld/Stretched.cpp))
+
+![HelloWorld-stretched](https://github.com/user-attachments/assets/9992269a-cf32-4f5d-ad37-e144fc52fa21)
+
+`Fixed` is one of the size traits of a view, marking that a dimension (width or height) is to be assigned by the parent view. `DefaultWindow` expects both width and height of the child view to be `Fixed`, therefore, we wrote `CenterFrame<Fixed, Fixed>`, `ClipFrame<Fixed, Fixed, TopLeft>`, `StretchFrame<Fixed, Fixed>`, etc. We can not directly put a `TextView` in `DefaultWindow`, because both width and height of a `TextView` are not `Fixed`, but `Relative`, and the code below won't compile:
 
 ```cpp
 	desktop.AddWindow(
@@ -97,17 +100,118 @@ Similarly, `ClipFrame<Fixed, Fixed, TopRight>`, `ClipFrame<Fixed, Fixed, BottomL
 
 The size of a `TextView` depends on both the size constraint provided by its parent view and its text content, thus it has `Relative` traits. Because its size might not exactly be the same as `DefaultWindow`, `DefaultWindow` doesn't know how to place it inside. `CenterFrame<Fixed, Fixed>` can be used as an adapter in between, which itself has `Fixed` traits that fits with `DefaultWindow`, while accepting a child view with `Relative` traits and placing the child view at its center.
 
+`CenterFrame`, `ClipFrame` and `StretchFrame` pass the size constraint from their parent views to the child view, therefore, the text in the `TextView` wraps when the window is being resized. We could insert a `MaxFrame` to explicitly provide a stable size constraint to the `TextView`: ([Example/HelloWorld/Constraint.cpp](Example/HelloWorld/Constraint.cpp))
+
+```cpp
+//#include <ViewDesign/view/frame/MaxFrame.h>
+
+	desktop.AddWindow(
+		create<DefaultBackground<DefaultWindow>>(
+			DefaultWindow::Style(),
+			u"HelloWorld",
+			create<CenterFrame<Fixed, Fixed>>(
+				create<MaxFrame<Auto, Auto>>(
+					Size(300.0f, 300.0f),
+					create<TextView>(TextViewStyle(), u"Hello World!")
+				)
+			)
+		)
+	);
+```
+
+![HelloWorld-constraint](https://github.com/user-attachments/assets/75d851c7-6a5f-4ddf-b914-024493ac78fb)
+
+We can provide a custom background for the `TextView`: ([Example/HelloWorld/Background.cpp](Example/HelloWorld/Background.cpp))
+
+```cpp
+//#include <ViewDesign/view/frame/BackgroundFrame.h>
+
+	desktop.AddWindow(
+		create<DefaultBackground<DefaultWindow>>(
+			DefaultWindow::Style(),
+			u"HelloWorld",
+			create<CenterFrame<Fixed, Fixed>>(
+				create<BackgroundFrame<Relative, Relative>>(
+					ColorCode::LightPink,
+					create<TextView>(TextViewStyle(), u"Hello World!")
+				)
+			)
+		)
+	);
+```
+
+![Background](https://github.com/user-attachments/assets/978df298-6526-4677-8e22-6aa2710df256)
+
+We can provide a padding for the `TextView` within the background: ([Example/HelloWorld/Padding.cpp](Example/HelloWorld/Padding.cpp))
+
+```cpp
+//#include <ViewDesign/view/frame/PaddingFrame.h>
+
+	desktop.AddWindow(
+		create<DefaultBackground<DefaultWindow>>>(
+			DefaultWindow::Style(),
+			u"HelloWorld",
+			create<CenterFrame<Fixed, Fixed>>(
+				create<BackgroundFrame<Relative, Relative>>(
+					ColorCode::LightPink,
+					create<PaddingFrame<Relative, Relative>>(
+						Padding(50.0f),
+						create<TextView>(TextViewStyle(), u"Hello World!")
+					)
+				)
+			)
+		)
+	);
+```
+
+![Padding](https://github.com/user-attachments/assets/b34e834e-4fab-4b8d-ae94-fb57c47cfe57)
+
+We can replace `DefaultWindow` with `UndecoratedWindow` to hide the window frame: ([Example/HelloWorld/Undecorated.cpp](Example/HelloWorld/Undecorated.cpp))
+
+```cpp
+//#include <ViewDesign/view/widget/UndecoratedWindow.h>
+
+	desktop.AddWindow(
+		create<DefaultBackground<UndecoratedWindow>>(
+			UndecoratedWindow::Style(),
+			u"HelloWorld",
+			create<CenterFrame<Fixed, Fixed>>(
+				create<TextView>(TextViewStyle(), u"Hello World!")
+			)
+		)
+	);
+```
+
+![Undecorated](https://github.com/user-attachments/assets/1c64b17c-8d0f-4ebe-b016-e5c5fffd19ee)
+
+`DefaultBackground` gives the wrapped window white background. We can remove the `DefaultBackground` wrapper and get a window with transparent background: ([Example/HelloWorld/Transparent.cpp](Example/HelloWorld/Transparent.cpp))
+
+```cpp
+	desktop.AddWindow(
+		create<DefaultWindow>(
+			DefaultWindow::Style(),
+			u"HelloWorld",
+			create<CenterFrame<Fixed, Fixed>>(
+				create<TextView>(TextViewStyle(), u"Hello World!")
+			)
+		)
+	);
+```
+
+![Transparent](https://github.com/user-attachments/assets/f3d412e6-2f48-4fb9-8586-5c76b9ac5c10)
+
 A simpler program below displays an empty main window: ([Example/Placeholder.cpp](Example/Placeholder.cpp))
 
 ```cpp
 #include <ViewDesign/view/widget/DefaultWindow.h>
 #include <ViewDesign/view/control/Placeholder.h>
+#include <ViewDesign/view/wrapper/Background.h>
 
 using namespace ViewDesign;
 
 void App() {
 	desktop.AddWindow(
-		create<DefaultWindow>(
+		create<DefaultBackground<DefaultWindow>>(
 			DefaultWindow::Style(),
 			u"Placeholder",
 			create<Placeholder<Fixed, Fixed>>()
@@ -117,38 +221,63 @@ void App() {
 }
 ```
 
-![screenshot Placeholder](docs/Placeholder.png)
+![Placeholder](https://github.com/user-attachments/assets/9f5b1bff-f2ad-4e2e-be06-70399be98e73)
 
 `DefaultWindow` always expects a child view with `Fixed` traits to be given. `Placeholder<Fixed, Fixed>` here works literally as a placeholder of the child view that draws nothing and can be replaced later.
 
 `create<>` is just a shorter alias of `std::make_unique<>`. We can also use the even shorter `new` here to create the components, and it will not be unsafe because the raw pointer returned by `new` will be immediately captured as a `unique_ptr` internally in the parent view constructors.
 
+Another advantage of using plain `new` is that it well supports template parameter deduction guide for specific parent view components without having to explicitly provide the template arguments, while with `create<>` the parent view's template arguments must be fully given: (see [Example/HelloWorld/Padding.cpp](Example/HelloWorld/Padding.cpp))
+
 ```cpp
 	desktop.AddWindow(
-		new DefaultWindow(
+		new DefaultBackground<DefaultWindow>(
 			DefaultWindow::Style(),
-			u"Example",
+			u"HelloWorld",
 			new CenterFrame<Fixed, Fixed>(
-				new TextView(TextViewStyle(), u"Hello World!")
+				new BackgroundFrame(
+					ColorCode::LightPink,
+					new PaddingFrame(
+						Padding(50.0f),
+						new TextView(TextViewStyle(), u"Hello World!")
+					)
+				)
 			)
 		)
 	);
 ```
 
-Another advantage of using plain `new` is that it well supports template parameter deduction guide for specific parent view components without having to explicitly provide the template arguments, while with `create<>` the parent view's template arguments must be fully given (see [Example/Background.cpp](Example/Background.cpp)). However, for *layout* components like `ListLayout`, `DivideLayout` and `StackLayoutMultiple` that accept variable number of child views, passing a child view as raw pointer is not allowed to ensure exception-safety.
+However, for *layout* components like `ListLayout`, `DivideLayout` and `StackLayoutMultiple` that accept variable number of child views, passing a child view as raw pointer is not allowed to ensure exception-safety.
 
 UTF-16 strings are used across this project. Prefix `u` is for declaring UTF-16 string literals.
 
 More examples can be found in subfolder [Example](Example) which are built along with the library. They include:
-- [BackgroundWrapper](Example/BackgroundWrapper.cpp): adding background to a view component
+
 - [Canvas](Example/Canvas.cpp): drawing random shapes on a blank window
+
+![Canvas](https://github.com/user-attachments/assets/6613b52b-a661-4537-8df7-9c68b9b49911)
+
 - [ImageView](Example/ImageView.cpp): displaying an image with different stretch modes controlled by different frames
+
 - [PlainTextEditor](Example/PlainTextEditor.cpp): a plain-text editor supporting word-/paragraph- level selection, copy/paste and IME input
+
 - [TitleBarWindow](Example/TitleBarWindow.cpp): a customized window frame with title bar, border, buttons, etc
+
+![TitleBarWindow](https://github.com/user-attachments/assets/8613b444-c213-4b28-a4b1-1a5d415e60e1)
+
 - [StateMirroring](Example/StateMirroring.cpp): duplicating the text state of a text editor to other text views
+
+![StateMirroring](https://github.com/user-attachments/assets/e64ed574-75a9-4a6f-ad86-ff7e3de8e79c)
+
 - [ViewMirroring](Example/ViewMirroring.cpp): duplicating the exact drawing content of a view component
+
+![ViewMirroring](https://github.com/user-attachments/assets/bcc4362f-a004-47c1-89eb-96db7251c8ce)
+
 - [HotReload](Example/HotReload.cpp): immediate-mode rendering with support of hot reload
+
 - [SceneEmbedding (Vulkan)](Example/vulkan/SceneEmbedding.cpp): embedding a custom 3D-scene in a view component
+
+![SceneEmbedding](https://github.com/user-attachments/assets/e7e5e8da-f48a-4f6c-9dee-6f3cfa02a9ee)
 
 ### Build
 

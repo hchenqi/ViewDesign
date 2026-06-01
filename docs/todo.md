@@ -20,6 +20,8 @@
 
 - (bug) `Test/ListLayoutTest.cpp`: nothing drawn by `LayerFrameTiled` within `ScaleFrame` under certain large scale values with OpenGL/Vulkan backend
 
+- (improvement) handling desktop size change and per-monitor window behaviour
+
 - (improvement) handling device lost with Vulkan backend (supporting recreation of Vulkan Instance, Device, and device-dependent resources) (possibly simulating static initialization/destruction with respect to resource creation dependencies)
 
 - (feature) adding stateful version for components like `TextView`, `TextEditor`, etc in the standard component library (similar to `Stateful::ImageView` and `ImageView`, with a derivation chain of states: `TextState`(text), `EditState`(caret, selection), `TemporaryEditState`(IME composition), `InputState`(focus, mouse, key) and using absolute timing with `Timer`)
