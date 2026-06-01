@@ -26,6 +26,8 @@ A C++ GUI framework
 
 > The example section demonstrates the standard component library of *ViewDesign* with size traits. The core library, however, can be easily customized and extended by other means.
 
+---
+
 The program below displays "Hello World!" at the center of the main window: ([Example/HelloWorld/Centered.cpp](Example/HelloWorld/Centered.cpp))
 
 ```cpp
@@ -56,9 +58,7 @@ void App() {
 }
 ```
 
-We first include headers of the components, then we define text style for `TextView` derived from the default style, and finally in the entrypoint `void App()`, we create and combine the components with styles, add main window `DefaultWindow` and enter event loop.
-
-`CenterFrame<Fixed, Fixed>` always places `TextView` at the center when it is being resized:
+We first include the headers for the components, then we define the style for `TextView` deriving from its default style, and finally in the entrypoint `void App()`, we create and combine the components, add main window `DefaultWindow` decorated by `DefaultBackground`, and enter event loop. `CenterFrame<Fixed, Fixed>` always places the `TextView` at the center when it is being resized:
 
 ![HelloWorld-centered](https://github.com/user-attachments/assets/64840ad8-71ea-4031-b851-0d8790eb945e)
 
@@ -82,9 +82,25 @@ If we change it to `ClipFrame<Fixed, Fixed, TopLeft>`, the `TextView` will stay 
 
 Similarly, `ClipFrame<Fixed, Fixed, TopRight>`, `ClipFrame<Fixed, Fixed, BottomLeft>` and `ClipFrame<Fixed, Fixed, BottomRight>` place their child views at top-right, bottom-left and bottom-right corners respectively.
 
-If we change `ClipFrame<Fixed, Fixed, TopLeft>` again to `StretchFrame<Fixed, Fixed>`, the `TextView` will be always stretched to fill the window: ([Example/HelloWorld/Stretched.cpp](Example/HelloWorld/Stretched.cpp))
+If we change it again to `StretchFrame<Fixed, Fixed>`, the `TextView` will always be stretched to fill the window. ([Example/HelloWorld/Stretched.cpp](Example/HelloWorld/Stretched.cpp))
+
+```cpp
+//#include <ViewDesign/view/frame/StretchFrame.h>
+
+	desktop.AddWindow(
+		create<DefaultBackground<DefaultWindow>>(
+			DefaultWindow::Style(),
+			u"HelloWorld",
+			create<StretchFrame<Fixed, Fixed>>(
+				create<TextView>(TextViewStyle(), u"Hello World!")
+			)
+		)
+	);
+```
 
 ![HelloWorld-stretched](https://github.com/user-attachments/assets/9992269a-cf32-4f5d-ad37-e144fc52fa21)
+
+---
 
 `Fixed` is one of the size traits of a view, marking that a dimension (width or height) is to be assigned by the parent view. `DefaultWindow` expects both width and height of the child view to be `Fixed`, therefore, we wrote `CenterFrame<Fixed, Fixed>`, `ClipFrame<Fixed, Fixed, TopLeft>`, `StretchFrame<Fixed, Fixed>`, etc. We can not directly put a `TextView` in `DefaultWindow`, because both width and height of a `TextView` are not `Fixed`, but `Relative`, and the code below won't compile:
 
@@ -100,7 +116,7 @@ If we change `ClipFrame<Fixed, Fixed, TopLeft>` again to `StretchFrame<Fixed, Fi
 
 The size of a `TextView` depends on both the size constraint provided by its parent view and its text content, thus it has `Relative` traits. Because its size might not exactly be the same as `DefaultWindow`, `DefaultWindow` doesn't know how to place it inside. `CenterFrame<Fixed, Fixed>` can be used as an adapter in between, which itself has `Fixed` traits that fits with `DefaultWindow`, while accepting a child view with `Relative` traits and placing the child view at its center.
 
-`CenterFrame`, `ClipFrame` and `StretchFrame` pass the size constraint from their parent views to the child view, therefore, the text in the `TextView` wraps when the window is being resized. We could insert a `MaxFrame` to explicitly provide a stable size constraint to the `TextView`: ([Example/HelloWorld/Constraint.cpp](Example/HelloWorld/Constraint.cpp))
+`CenterFrame`, `ClipFrame` and `StretchFrame` pass the size constraint from their parent view to the child view, therefore, the text in the `TextView` wraps when the window is being resized. We could insert a `MaxFrame` to explicitly provide a stable size constraint for the `TextView`: ([Example/HelloWorld/Constraint.cpp](Example/HelloWorld/Constraint.cpp))
 
 ```cpp
 //#include <ViewDesign/view/frame/MaxFrame.h>
@@ -120,6 +136,8 @@ The size of a `TextView` depends on both the size constraint provided by its par
 ```
 
 ![HelloWorld-constraint](https://github.com/user-attachments/assets/75d851c7-6a5f-4ddf-b914-024493ac78fb)
+
+---
 
 We can provide a custom background for the `TextView`: ([Example/HelloWorld/Background.cpp](Example/HelloWorld/Background.cpp))
 
@@ -142,7 +160,7 @@ We can provide a custom background for the `TextView`: ([Example/HelloWorld/Back
 
 ![Background](https://github.com/user-attachments/assets/978df298-6526-4677-8e22-6aa2710df256)
 
-We can provide a padding for the `TextView` within the background: ([Example/HelloWorld/Padding.cpp](Example/HelloWorld/Padding.cpp))
+We can add a padding for the `TextView` with the background: ([Example/HelloWorld/Padding.cpp](Example/HelloWorld/Padding.cpp))
 
 ```cpp
 //#include <ViewDesign/view/frame/PaddingFrame.h>
@@ -200,7 +218,9 @@ We can replace `DefaultWindow` with `UndecoratedWindow` to hide the window frame
 
 ![Transparent](https://github.com/user-attachments/assets/f3d412e6-2f48-4fb9-8586-5c76b9ac5c10)
 
-A simpler program below displays an empty main window: ([Example/Placeholder.cpp](Example/Placeholder.cpp))
+---
+
+A simpler program below displays a blank window: ([Example/Placeholder.cpp](Example/Placeholder.cpp))
 
 ```cpp
 #include <ViewDesign/view/widget/DefaultWindow.h>
@@ -251,29 +271,31 @@ However, for *layout* components like `ListLayout`, `DivideLayout` and `StackLay
 
 UTF-16 strings are used across this project. Prefix `u` is for declaring UTF-16 string literals.
 
+---
+
 More examples can be found in subfolder [Example](Example) which are built along with the library. They include:
 
 - [Canvas](Example/Canvas.cpp): drawing random shapes on a blank window
 
 ![Canvas](https://github.com/user-attachments/assets/6613b52b-a661-4537-8df7-9c68b9b49911)
 
-- [ImageView](Example/ImageView.cpp): displaying an image with different stretch modes controlled by different frames
+- [ImageView](Example/ImageView.cpp): displaying an image with different stretch modes controlled by frames
 
-- [PlainTextEditor](Example/PlainTextEditor.cpp): a plain-text editor supporting word-/paragraph- level selection, copy/paste and IME input
+- [PlainTextEditor](Example/PlainTextEditor.cpp): a plain-text editor supporting character-/word-/paragraph- level selection, cut/copy/paste and IME input on Windows
 
 - [TitleBarWindow](Example/TitleBarWindow.cpp): a customized window frame with title bar, border, buttons, etc
 
 ![TitleBarWindow](https://github.com/user-attachments/assets/8613b444-c213-4b28-a4b1-1a5d415e60e1)
 
-- [StateMirroring](Example/StateMirroring.cpp): duplicating the text state of a text editor to other text views
+- [StateMirroring](Example/StateMirroring.cpp): duplicating the text of a `TextEditor` to other `TextView`
 
 ![StateMirroring](https://github.com/user-attachments/assets/e64ed574-75a9-4a6f-ad86-ff7e3de8e79c)
 
-- [ViewMirroring](Example/ViewMirroring.cpp): duplicating the exact drawing content of a view component
+- [ViewMirroring](Example/ViewMirroring.cpp): duplicating the visual content of a view component
 
 ![ViewMirroring](https://github.com/user-attachments/assets/bcc4362f-a004-47c1-89eb-96db7251c8ce)
 
-- [HotReload](Example/HotReload.cpp): immediate-mode rendering with support of hot reload
+- [HotReload](Example/HotReload.cpp): immediate-mode rendering with support of hot reload on Visual Studio
 
 - [SceneEmbedding (Vulkan)](Example/vulkan/SceneEmbedding.cpp): embedding a custom 3D-scene in a view component
 
