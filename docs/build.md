@@ -101,7 +101,7 @@ The following platform packages will be searched and included automatically.
 >   - Run `CXXFLAGS=-std=c++23 ./configure;` `make -j$(nproc);` `sudo make install;`
 > - Windows:
 >   - Run `msbuild allinone/allinone.sln /p:OverrideLanguageStandard=stdcpp23 /p:Configuration=Release /p:Platform=x64` (within Developer Command Prompt from Visual Studio)
-> Set `ICU_ROOT` environment variable to `icu/` for cmake `find_package(ICU)` to be able to locate the built files. The `ICU_ROOT` can also be specified directly as a cmake cache variable like in `CMakePresets.json`.
+>   - Set `ICU_ROOT` environment variable to `icu/` for cmake `find_package(ICU)` to be able to locate ICU. `ICU_ROOT` can also be explicitly specified as cmake cache variable, like in `CMakePresets.json`: `"ICU_ROOT": "$env{ICU_ROOT}"`.
 
 ### GLFW (https://www.glfw.org/)
 

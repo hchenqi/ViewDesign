@@ -1,6 +1,7 @@
 #include <ViewDesign/view/widget/DefaultWindow.h>
 #include <ViewDesign/view/frame/CenterFrame.h>
 #include <ViewDesign/view/control/TextView.h>
+#include <ViewDesign/view/wrapper/Background.h>
 
 using namespace ViewDesign;
 
@@ -12,11 +13,11 @@ struct TextViewStyle : TextView::Style {
 
 void App() {
 	desktop.AddWindow(
-		create<DefaultWindow>(
+		create<DefaultBackground<DefaultWindow>>(
 			DefaultWindow::Style(),
-			u"Example",
+			u"HelloWorld",
 			create<CenterFrame<Fixed, Fixed>>(
-				create<TextView>(TextViewStyle(), u"Hello World!\n你好，世界！")
+				create<TextView>(TextViewStyle(), u"Hello World!")
 			)
 		)
 	);
