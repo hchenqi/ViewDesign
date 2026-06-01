@@ -62,16 +62,16 @@ public:
 		size_t row_index = std::max(0, (int)floorf(point.y / (symbol_size.height + row_gap)));
 		row_index = std::min(row_index, row_number - 1);
 		symbol_index = std::min(symbol_index, row_index == row_number - 1 ? length == 0 ? 0 : length - row_index * symbol_number - 1 : symbol_number - 1);
-		return std::make_pair(TextRange(row_index * symbol_number + symbol_index, length == 0 ? 0 : point.x >= GetSymbolRect(row_index, symbol_index).Center().x ? 1 : 0), GetSymbolRect(row_index, symbol_index));
+		return std::make_tuple(TextRange(row_index * symbol_number + symbol_index, length == 0 ? 0 : point.x >= GetSymbolRect(row_index, symbol_index).Center().x ? 1 : 0), 0, GetSymbolRect(row_index, symbol_index));
 	}
 	TextBlock::HitTestPointInfo HitTestPosition(TextRange position) const {
 		if (position.end() >= length) {
 			position = length == 0 ? TextRange(0, 0) : TextRange(length - 1, 1);
 		}
 		if (position.length() == 0) {
-			return std::make_pair(TextRange(position.end(), 0), GetSymbolRect(position.end()));
+			return std::make_tuple(TextRange(position.end(), 0), 0, GetSymbolRect(position.end()));
 		} else {
-			return std::make_pair(TextRange(position.end() - 1, 1), GetSymbolRect(position.end() - 1));
+			return std::make_tuple(TextRange(position.end() - 1, 1), 0, GetSymbolRect(position.end() - 1));
 		}
 	}
 	TextBlock::HitTestRangeInfo HitTestRange(TextRange range) const {
