@@ -25,10 +25,10 @@ void App() {
 			new CenterFrame<Fixed, Fixed>(
 				new BackgroundFrame(
 					ColorCode::LightPink,
-					// `CenterFrame` and `PaddingFrame` don't clip the child view's content within its extent
-					// therefore, the draw region for the child view exceeds the extent, and the inner background covers the outer
 					new PaddingFrame(
 						Padding(20.0f),
+						// `CenterFrame`, `BackgroundFrame` and `PaddingFrame` don't clip the child view's content within its extent
+						// thus, the draw region for the child view exceeds its extent, and the inner background covers the outer
 						new SolidColorBackground<ColorCode::LightYellow, TextView>(TextViewStyle(), u"Hello World!")
 					)
 				)
