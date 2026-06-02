@@ -102,9 +102,9 @@ If we change it again to `StretchFrame<Fixed, Fixed>`, the `TextView` will alway
 
 ---
 
-`Fixed` is one of the **size traits** of a view, marking that a dimension (width or height) is to be assigned by the parent view (similar to `100%` in CSS). The other two size traits are `Auto` and `Relative`.
+`Fixed` is one of the **size traits** of a view, marking that a dimension (width or height) is to be assigned by the parent view. The other two size traits are `Auto` and `Relative`.
 
-`DefaultWindow` expects both width and height of the child view to be `Fixed`, therefore, we wrote `CenterFrame<Fixed, Fixed>`, `ClipFrame<Fixed, Fixed, TopLeft>`, `StretchFrame<Fixed, Fixed>`, etc. We can not directly put a `TextView` in `DefaultWindow`, because both width and height of a `TextView` are `Relative`, not `Fixed`, and the code below won't compile:
+`DefaultWindow` expects both width and height of the child view to be `Fixed`, therefore, we wrote `CenterFrame<Fixed, Fixed>`, `ClipFrame<Fixed, Fixed, TopLeft>`, `StretchFrame<Fixed, Fixed>`, etc. We can not directly put a `TextView` in `DefaultWindow`, because both width and height of a `TextView` are `Relative` which is not convertible to `Fixed`, and the code below won't compile:
 
 ```cpp
 	desktop.AddWindow(
@@ -116,13 +116,9 @@ If we change it again to `StretchFrame<Fixed, Fixed>`, the `TextView` will alway
 	);
 ```
 
-The size of a `TextView` depends on both the size constraint provided by its parent view and its text content, thus it has `Relative` traits (see definition of [`TextView`](ViewDesign/view/control/TextView.h)). Because its size might not exactly be the same as `DefaultWindow`, `DefaultWindow` doesn't know how to place it inside. `CenterFrame<Fixed, Fixed>` can be used as an adapter in between, which itself has `Fixed` traits that fits with `DefaultWindow`, while accepting a child view with `Relative` traits by placing the child view at its center.
+The size of a `TextView` depends on both the size constraint provided by its parent view and its text content, thus it has `Relative` traits. Because its size might not exactly be the same as `DefaultWindow`, `DefaultWindow` doesn't know how to place it inside. `CenterFrame<Fixed, Fixed>` can be used as an adapter in between, which itself has `Fixed` traits that fits with `DefaultWindow`, while accepting a child view with `Relative` traits by placing the child view at its center.
 
-`DefaultWindow` passes its size to its child view whenever its size changes, for the child view to update its current size and inner layout. In general, a parent view passes a *size reference* to a child view, and the child view returns its actual size back to the parent view. Thus, `CenterFrame`, `ClipFrame` or `StretchFrame` can know both their own size and their child view's size to compute the position or the stretch ratio for the child view.
-
-A `TextView` with `Relative` traits regards the *size reference* from its parent view as the constraint to compute its layout, while `CenterFrame`, `ClipFrame` or `StretchFrame` with `Fixed` traits regard the *size reference* as their current size and forward the same *size reference* to their child view with `Relative` traits for it to compute its size. Therefore, in the examples above, the text in the `TextView` wraps when the window is being resized.
-
-We could insert a `MaxFrame` to explicitly provide a stable size constraint for the `TextView`. Now in a small constraint `Size(300.0f, 300.0f)`, the `TextView` stays wrapped. This is because `MaxFrame<Auto, Auto>` ignores the *size reference* from its parent view and passes a new *size reference* from its constructor argument to its child view. ([Example/HelloWorld/Constraint.cpp](Example/HelloWorld/Constraint.cpp))
+In the examples above, the text of the `TextView` wraps when the window is being resized. This is because `CenterFrame`, `ClipFrame` or `StretchFrame` pass the window size to the child `TextView` as the size constraint. We could insert a `MaxFrame` to explicitly provide a static size constraint for the `TextView`. Now in a small constraint `Size(300.0f, 300.0f)`, the text of the `TextView` stays wrapped. ([Example/HelloWorld/Constraint.cpp](Example/HelloWorld/Constraint.cpp))
 
 ```cpp
 //#include <ViewDesign/view/frame/MaxFrame.h>
@@ -402,7 +398,7 @@ Each view component occupies a rectangular region on its parent view. Usually th
 
 *Reflow* is the process of propagating size change and calculating the layout of a view component, determining the size of the view and the sizes and positions of child views. *Redraw* is the process of propagating an updated region of a view component and rendering the updated region with new contents.
 
-In the core library, regardless of size traits, the parent view provides the *size reference* as `size_ref` to a child view, the child view calculates its size based on the `size_ref` or on its own, and returns its actual size to the parent view, which then calculates its own layout and size.
+In the core library, regardless of size traits, the parent view provides a size reference `size_ref` to a child view, the child view calculates its size based on the `size_ref` or on its own, and returns its actual size to the parent view, which then calculates its own layout and size.
 
 If a view later changes its size by itself, it notifies its parent view, and the parent view calculates its layout again and might also change its own size. Reflow stops at the first parent view who updated its internal layout but doesn't change its own size. This final parent view then initiates redraw over its updated region.
 
