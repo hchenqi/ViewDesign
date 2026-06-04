@@ -4,6 +4,8 @@ Tools to install:
 
 (required)
 - CMake: https://cmake.org/download/
+- a C++ compiler (see section [Compiler](#compiler))
+- necessary platform packages (see section [Platform](#platform))
 
 (optional)
 - Ninja: https://ninja-build.org/ (recommended CMake generator for faster build)
@@ -14,7 +16,7 @@ Tools to install:
 This library can be configured and built using CMake presets:
 - Clone or download the source code of this repository, open the repository root folder
 - Create a copy of `CMakeUserPresets.example.json` and rename it to `CMakeUserPresets.json`
-- (with CMake Tools extension in VS Code or Visual Studio):
+- (with Visual Studio or CMake Tools extension in VS Code):
   - Select the preset named with `VS2026 Windows MSVC x64 Debug (Backend: Win32-DirectX)` (or others)
   - Click `Build All Projects`
 - (on the command line):
@@ -70,14 +72,16 @@ The following compilers can be used to build *ViewDesign*:
 
 ## Backend
 
-The following backends can be selected for for configuring and building *ViewDesign*:
+The following backends can be selected for configuring and building *ViewDesign*:
 - `Win32-DirectX` (Windows)
 - `Win32-OpenGL` (Windows)
 - `Win32-Vulkan` (Windows)
 - `GLFW-OpenGL` (Windows, Linux)
 - `GLFW-Vulkan` (Windows, Linux)
 
-Additional platform packages might be required for a backend. These packages can be installed from source, with vcpkg or the system package manager globally, or via the provided vcpkg manifest `vcpkg.json`.
+Additional platform packages might be required for a backend. These packages can be installed from source, with vcpkg or the system package manager globally, or via the provided vcpkg manifest `vcpkg.json`. (see the next section [Platform](#platform))
+
+*for `Win32-DirectX` backend no additional package needs to be manually installed except for the compiler tool chain (MSVC or Mingw-w64)*
 
 > Backend / Platform:
 > 
@@ -89,13 +93,24 @@ Additional platform packages might be required for a backend. These packages can
 
 The following platform packages will be searched and included automatically.
 
-### Win32 SDK (Already included in the compiler tool chain targeting Windows)
+### Win32 SDK
 
-### OpenGL (Already available on major operating systems)
+*already included in the compiler tool chain targeting Windows*
+
+*required for all backends targeting Windows*
+
+### OpenGL
+
+*already available on major operating systems*
+
+*required for `-OpenGL` backends*
 
 ### ICU (International Components for Unicode, https://icu.unicode.org/)
 
+*required for `GLFW-` backends or when conversion functions `to_u8string`/`to_u16string` are referenced*
+
 > ICU is built with C++17 by default, which doesn't include some functions related with `std::u16string`, causing linker errors. It can be built and installed from [its source](https://github.com/unicode-org/icu/releases) with C++ standard specified as C++23:
+>
 > (current directory at `icu/source`)
 > - Linux:
 >   - Run `CXXFLAGS=-std=c++23 ./configure;` `make -j$(nproc);` `sudo make install;`
@@ -105,7 +120,10 @@ The following platform packages will be searched and included automatically.
 
 ### GLFW (https://www.glfw.org/)
 
+*required for `GLFW-` backends*
+
 > GLFW installed by `sudo apt install libglfw3-dev` (Ubuntu) might be in a lower version which doesn't include some definitions. It can be built and installed from [its source](https://github.com/glfw/glfw/releases) with CMake:
+>
 > (current directory at `glfw/`)
 > - `cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug`
 > - `cmake --build build -j$(nproc)`
@@ -117,10 +135,16 @@ The following platform packages will be searched and included automatically.
 
 ### glad (https://glad.dav1d.de/)
 
+*required for `-OpenGL` backends*
+
 > The easiest way to install glad is through vcpkg. The normal way requires generating and unpacking the source files manually.
 
 ### Vulkan (https://vulkan.lunarg.com/)
 
+*required for `-Vulkan` backends*
+
 ### stb (https://github.com/nothings/stb)
 
 > The header-only library *stb* provides an image loader that is used for OpenGL and Vulkan backends.
+
+*required for `-OpenGL` or `-Vulkan` backends when `Image` or `ImageView` are referenced*
