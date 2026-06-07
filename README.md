@@ -4,7 +4,7 @@ A C++ GUI framework
 
 ## Introduction
 
-*ViewDesign* is a general-purpose, object-oriented, highly modular, minimal and flexible cross-platform C++ GUI framework with multi-backend support. It ships with an easily extensible component library for explicit and intuitive UI building, featuring compile-time layout compatibility check via C++ concepts, which is particularly helpful for designing complex UI components with minimal runtime overhead.
+*ViewDesign* is a general-purpose, object-oriented, highly modular, minimal and flexible cross-platform C++ GUI framework with multi-backend support. It ships with an easily extensible component library for explicit and intuitive UI building, featuring compile-time layout compatibility check via C++ concepts, which is particularly helpful for designing complex UI components with precise sizing behavior while carrying no runtime overhead.
 
 ### Highlight
 
@@ -334,15 +334,15 @@ The features and benefits of *ViewDesign* can be demonstrated by comparing with 
 
 In web development, elements, styles and event handling are described separately by HTML, CSS and Javascript which can get distracting, complicate the development and affect the performance. With *ViewDesign*, they can be all implemented in pure C++ which directly compiles to machine code targeting desktop applications. One can still choose to separate style definitions and main logics in different files at will.
 
-In web development, each element consists of padding, border and margin along with its content according to the CSS box model, which makes it easy to design and change the style of an element but also makes an element unnecessarily large to store all the style information. In the standard component library of *ViewDesign*, a *control* component is aimed to be minimal and lightweight without additional decorations. For example, the `TextView` just displays text within a given size constraint without any border, padding, background color or layout styles. It can however be combined with other *frame* components like `CenterFrame`, `BorderFrame`, `PaddingFrame` or `MaxFrame` to implement such additional styling attributes.
+In web development, a minimal element still consists of padding, border and margin along with its text content according to the CSS box model, which makes it easy to design and change the style of an element but also makes an element unnecessarily large to store all the style information. In the standard component library of *ViewDesign*, a *control* as a **basic** component is minimal and lightweight without additional decorations. For example, a `TextView` just displays text within a given size constraint without any border, padding, background color or layout styles. It can however be combined with other *frame* components like `CenterFrame`, `BorderFrame`, `PaddingFrame` or `MaxFrame` to implement such additional styling attributes.
 
-In web development, the layout styles of parent and child elements can be conflicting. For example, a parent element might have style `width: fix-content` while its child element has style `width: 100%`, which doesn't make sense. With the standard component library of *ViewDesign*, this scenario can be prevented at compile-time when parent view expects the width trait of its child view to be `Auto` but child view's width trait is `Fixed`. This usually encourages developers to think about the sizing behaviour of a component and the layout compatibility between components. Nevertheless, there remains the possibility of building a general-purpose, style-guided and at runtime calculated rich component like an HTML-element on top of the core *ViewDesign* library. In other words, *ViewDesign* can provide a basis for a browser engine.
+In web development, the layout styles of parent and child elements can be conflicting. For example, a parent element might have style `width: fix-content` while its child element has style `width: 100%`, which doesn't make sense. With the standard component library of *ViewDesign*, this scenario can be prevented at compile-time when parent view expects the width trait of its child view to be `Auto` but child view's width trait is `Fixed`. This usually encourages developers to think about the sizing behavior of a component and the layout compatibility between components. Nevertheless, there remains the possibility of building a general-purpose, style-guided and at runtime calculated rich component like an HTML-element on top of the core *ViewDesign* library. In other words, *ViewDesign* can provide a basis for a browser engine.
 
 #### Win32 Desktop Development
 
 With native Win32 API, each component is treated as a window and can be created with different pre-defined styles through low-level system APIs, with which it is difficult to develop and manage complex and custom UI components. Though *ViewDesign* still internally relies on Win32 API for its `Win32-` backends, it only creates one root-level window for presenting and receiving system messages, while the content of the window is completely managed and drawn by the framework itself.
 
-Other Win32-targeting GUI frameworks like MFC, WPF or WinUI evolve to align more with object-oriented design, but they are not cross-platform, rely on special development tools, focus rather on the styling and component library without providing much extensibility.
+Other Win32-targeting GUI frameworks like MFC, WPF or WinUI evolve to align more with object-oriented design, but they rely on special development tools and environments, focus rather on the component library using XAML to describe views without convenient abstraction and extensibility, and don't offer explicit control of the sizing behavior for components.
 
 #### Qt
 
@@ -408,7 +408,7 @@ A view initiating redraw notifies its parent view about its updated region, and 
 
 ### Fixed / Auto / Relative
 
-The core library provides the generic logic for updating layout of a view, but the parent and the child view's layout calculation logic must be additionally ensured to agree with each other. For example, the parent view might want to fix the size of its child view as large as the `size_ref` provided to its child view, but the child view can ignore the `size_ref` and decide its own size. This often introduces ill-formed layouts, and the core library actually doesn't prevent this from happening.
+The core library provides the generic logic for updating layout of a view, but the parent and the child view's layout calculation logic must be additionally ensured to agree with each other. For example, a parent view might want to fix its child view's size to the `size_ref` it provided, but the child view can ignore the `size_ref` and decide its size by itself. This often introduces ill-formed layouts, and the core library actually doesn't prevent this.
 
 The standard component library of *ViewDesign* introduces **size traits**: `Fixed`, `Auto` and `Relative` that mark how the width or the height of a view component is to be decided which can be checked at compile-time.
 
@@ -418,19 +418,21 @@ The standard component library of *ViewDesign* introduces **size traits**: `Fixe
 
 - `Relative` means a dimension of a view is finally calculated by the view but based on the value in the `size_ref` provided by its parent view.
 
-`view_ref` holds a reference to a view, and `view_ptr` owns a unique pointer to a view. Both of them can be marked by certain size traits, and a parent view may only accept child views passed as `view_ref` or `view_ptr` with certain size traits. This will be checked through C++ concepts at compile-time.
+A parent view might accept a child view by reference or by a `unique_ptr`. `view_ref` wraps `std::reference_wrapper` and holds a reference to a view, while `view_ptr` wraps a `std::unique_ptr` to a view. Both of them can be marked by certain size traits (like `view_ptr<Relative, Auto>`), and a parent view may only accept child views as `view_ref` or `view_ptr` with matching size traits. This will be checked through C++ concepts at compile-time.
 
-Some *frame* components act as adapters for converting size traits of the child view:
+Some *layout* components require their child views to have certain size traits that are natural to these layouts. For example, `StackLayout` allows at most one child view's width or height to be not `Fixed` and requires all others' to be `Fixed`, because all its child views and itself share the same size and there can be only one source of the size value. This provides strong guarantee for a correct layout design.
 
-- `ClipFrame`, `CenterFrame` and `ScrollFrame` convert a dimension of the child view from `Relative` to `Fixed`, clipping the overflowing part of the child view. `ClipFrame` puts the child view at a corner or to a side. `CenterFrame` puts the child view at the center. `ScrollFrame` makes it possible to scroll to the overflowing part of the child view. `StretchFrame` does the same trait conversion, though it stretches its child view to make it fit in itself.
+Some *frame* components work as adapters for converting size traits of the child view with different behaviors: (*convert* means accepting a child view with the *source* trait and exposing the *target* trait itself)
+
+- `ClipFrame`, `CenterFrame` and `ScrollFrame` convert a dimension of the child view from `Relative` to `Fixed`, clipping the overflowing part of the child view. `ClipFrame` puts the child view at a corner or to a side. `CenterFrame` puts the child view at the center. `ScrollFrame` puts the child view initially at the top-left corner but enables it to scroll to the overflowing part of the child view. `StretchFrame` does the same trait conversion from `Relative` to `Fixed`, but it stretches its child view to make it fit in itself. If the child view happens to have the same size, it is presented as-is.
 
 - `FixedFrame` converts a dimension of the child view from `Fixed` to `Auto`. It sets a fixed value for the dimension of the child view.
 
-- `MaxFrame` and `MinFrame` convert a dimension of the child view from `Relative` to `Auto`, normalizing its child view with a max or min size. `MaxFrame` is often combined with child view components with flowing behaviour, like `TextView`, by providing a max size constraint to the child view.
+- `MaxFrame` and `MinFrame` convert a dimension of the child view from `Relative` to `Auto`, normalizing its child view with a max or min size. `MaxFrame` is often combined with child view components with flowing behavior, like `TextView`, by providing a size constraint to the child view.
 
-`Fixed` and `Auto` are naturally also `Relative`, but not vice versa. Therefore, `Relative` has the most freedom and the weakest restriction.
+**`Fixed` and `Auto` are naturally also `Relative`, but not vice versa.** This means a child view with `Fixed` or `Auto` traits is accepted by a parent view requiring `Relative` traits, but a child view with `Relative` traits is not accepted by a parent view requiring `Fixed` or `Auto` traits without conversion.
 
-> How a view component with `Relative` traits or a parent view accepting a child view with `Relative` traits interpret the `size_ref` still depends on the components. For example, `TextView` has `Relative` traits and regards the `size_ref` as the size constraint for calculating the text layout, which agrees with `MaxFrame` that provides the `size_ref` as the max size constraint. However, another component with `Relative` traits may calculate its size as a percentage of `size_ref`, which usually won't work very well with `MaxFrame` even though it fits with `MaxFrame` by size traits. It is possible that more traits like `Bounded` or `Proportional` could be proposed to further restrict the usage of `Relative`.
+> How a child view with `Relative` traits and a parent view accepting a child view with `Relative` traits interpret the `size_ref` still depends on the components. For example, `TextView` has `Relative` traits and regards the `size_ref` as the size constraint for calculating the text layout, which agrees with `MaxFrame` that provides the `size_ref` as its max size. However, another component with `Relative` traits may calculate its size as a percentage of `size_ref`, which usually won't work very well with `MaxFrame` even though it fits with `MaxFrame` by size traits. It is possible that more traits like `Bounded` or `Proportional` could be proposed to further restrict the usage of `Relative`.
 
 The reflow logic and the size traits already describe most scenarios of layout dependencies. Other more complex or special layout dependencies can be implemented by certain view components extending the core interfaces in a custom way. For example, a `Window` or an `OverlapLayout::Window` doesn't only decide its size, but also its position on the `Desktop` or the `OverlapLayout`, which is reflected by their extended interfaces.
 
