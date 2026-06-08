@@ -8,7 +8,7 @@ A C++ GUI framework
 
 ### Highlight
 
-(core library of *ViewDesign*)
+(Core Library of *ViewDesign*)
 - a single static library in native C++, built with CMake (using standard C++23)
 - cross-platform, with multi-backend support
 - easy to setup and integrate, no boilerplate, no special tooling
@@ -16,17 +16,25 @@ A C++ GUI framework
 - intrinsically DPI-aware
 - fit for both 'immediate-mode' and 'retained-mode' GUI programming, supporting hot reload with ease (see example [HotReload](Example/HotReload.cpp))
 
-(standard component library of *ViewDesign*, bundled together with the core library)
+(Standard Component Library of *ViewDesign*, bundled together with the core library)
 - conceptual separation of **basic** components as *control*, *frame* and *layout*
 - functional, object-oriented, modular and extensible
 - explicit declaration of component layout with **size traits**
 - compile-time check of layout compatibility between components and automatic layout deduction
 
+### Table of Contents
+
+- [Example](#example)
+- [Build Instructions](#build)
+- [Comparison with Other Frameworks](#comparison)
+- [Concepts and Algorithms](#concepts)
+- [Code Structure](#code-structure)
+- [Standard Component Library](docs/components.md)
+- [To Do](docs/todo.md)
+
 ### Example
 
 > The example section demonstrates the standard component library of *ViewDesign* with size traits. The core library, however, can be easily customized and extended by other means.
-
----
 
 The program below displays "Hello World!" at the center of the main window: ([Example/HelloWorld/Centered.cpp](Example/HelloWorld/Centered.cpp))
 
