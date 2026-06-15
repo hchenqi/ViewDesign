@@ -65,7 +65,7 @@ private:
 private:
 	void AppendItem() {
 		ref_ptr<Item> item;
-		Base::AppendChild(
+		Base::Append(
 			new ItemFrame(
 				new PaddingFrame(
 					Padding(10.0f),

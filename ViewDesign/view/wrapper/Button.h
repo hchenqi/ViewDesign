@@ -1,18 +1,18 @@
 #pragma once
 
-#include "ViewDesign/view/wrapper/HitTestHelper.h"
+#include "ViewDesign/view/view_traits.h"
 
 
 namespace ViewDesign {
 
 
 template<view_type View>
-class Button : public HitSelf<View> {
+class Button : public View {
 protected:
 	using Base = Button;
 
 public:
-	using HitSelf<View>::HitSelf;
+	using View::View;
 
 	// state transition:
 	// - State::Normal (initial)

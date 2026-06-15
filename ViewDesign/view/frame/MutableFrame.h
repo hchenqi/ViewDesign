@@ -17,6 +17,7 @@ public:
 
 	// child
 public:
+	// ptr_0, ptr_1, ptr_2, ..., ptr_n -> ptr_1, ptr_2, ..., ptr_n, ptr_0
 	template<class... T> requires ((std::same_as<MutableFrame, T> || std::same_as<child_type, T>) && ...)
 	static void Rotate(T&... other) {
 		if constexpr (sizeof...(other) <= 1) {

@@ -9,6 +9,7 @@
 #include <ViewDesign/view/control/TextView.h>
 #include <ViewDesign/view/control/TextEditor.h>
 #include <ViewDesign/view/control/ImageView.h>
+#include <ViewDesign/view/wrapper/HitTestHelper.h>
 #include <ViewDesign/view/wrapper/Button.h>
 #include <ViewDesign/view/wrapper/Background.h>
 #include <ViewDesign/view/widget/TextViewAdapter.h>
@@ -53,7 +54,7 @@ public:
 	), ContextProvider(AsViewBase()), image(image) {}
 
 private:
-	class LoadButton : public Button<DefaultBackground<ViewFrame>>, SizeTrait<Auto, Auto>, private Context<LoadImageWindow> {
+	class LoadButton : public HitSelf<Button<DefaultBackground<ViewFrame>>>, public SizeTrait<Auto, Auto>, private Context<LoadImageWindow> {
 	public:
 		LoadButton() : Base(
 			new MaxFrame(
