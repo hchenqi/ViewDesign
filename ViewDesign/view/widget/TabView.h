@@ -161,8 +161,8 @@ private:
 	ref_ptr<ContentFrame> content_frame;
 	ref_ptr<HeaderFrame> tab_focus = nullptr;
 
-private:
-	void OnTabFocus(HeaderFrame& tab) {
+protected:
+	virtual void OnTabFocus(HeaderFrame& tab) {
 		if (tab_focus == &tab) {
 			return;
 		}
@@ -175,7 +175,7 @@ private:
 		tab_focus = &tab;
 		tab_focus->OnFocus();
 	}
-	void OnTabClose(HeaderFrame& tab) {
+	virtual void OnTabClose(HeaderFrame& tab) {
 		if (tab_focus == &tab) {
 			tab_focus->OnBlur();
 			content_frame->RotateWith(tab.content);

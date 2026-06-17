@@ -23,11 +23,11 @@ template<class View>
 class Context {
 private:
 	ViewBase& consumer;
-	ref_ptr<ViewBase> provider;
+	mutable ref_ptr<ViewBase> provider;
 public:
 	Context(ViewBase& consumer) : consumer(consumer), provider(&consumer) {}
 public:
-	View& Get() {
+	View& Get() const {
 		if (provider == &consumer) {
 			for (ref_ptr<ViewBase> view = &consumer;;) {
 				view = ContextProvider::GetNextProvider(*view);
@@ -45,10 +45,10 @@ public:
 		}
 		return static_cast<View&>(*provider);
 	}
-	void Drop() {
+	void Drop() const {
 		provider = &consumer;
 	}
-	View& GetCurrent() {
+	View& GetCurrent() const {
 		Drop();
 		return Get();
 	}
