@@ -35,23 +35,6 @@ std::unique_ptr<Window> Desktop::RemoveWindow(Window& window) {
 	return ptr;
 }
 
-Window& Desktop::GetWindow(ViewBase& view) {
-	ref_ptr<ViewBase> child = &view;
-	for (ref_ptr<ViewBase> parent = child->parent; parent != &desktop.Get(); child = parent, parent = child->parent) {
-		if (parent == nullptr) { throw std::invalid_argument("view not registered"); }
-	}
-	return static_cast<Window&>(*child);
-}
-
-Window& Desktop::GetWindowPoint(ViewBase& view, Point& point) {
-	ref_ptr<ViewBase> child = &view;
-	for (ref_ptr<ViewBase> parent = child->parent; parent != &desktop.Get(); child = parent, parent = child->parent) {
-		if (parent == nullptr) { throw std::invalid_argument("view not registered"); }
-		point *= parent->GetChildTransform(*child);
-	}
-	return static_cast<Window&>(*child);
-}
-
 void Desktop::CloseAllWindows() {
 	for (auto& window : window_list) {
 		window->Close();
@@ -138,7 +121,7 @@ void Desktop::LoseCapture() {
 
 void Desktop::DispatchMouseEvent(Window& window, MouseEvent event) {
 	if (view_capture != nullptr) {
-		event.point *= window.GetDescendentTransform(*view_capture).Invert();
+		event.point = window.ConvertDescendentPoint(event.point, *view_capture);
 		view_capture->OnMouseEvent(event);
 	} else {
 		for (ref_ptr<ViewBase> curr = &window;;) {
@@ -234,7 +217,8 @@ void Desktop::ImeWindowSetPosition(Window& window, Point point) {
 }
 
 void Desktop::ImeSetPosition(ViewBase& view, Point point) {
-	Window& window = GetWindowPoint(view, point);
+	Window& window = GetWindow(view);
+	point = window.ConvertDescendentPoint(view, point);
 	ImeWindowSetPosition(window, point);
 }
 

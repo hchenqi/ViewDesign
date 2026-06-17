@@ -30,7 +30,8 @@ protected:
 	Vector GetChildOffset() const { return Vector(padding.left, padding.top); }
 	Rect GetChildRegion() const { return Rect(point_zero + GetChildOffset(), child_size); }
 protected:
-	virtual Transform GetChildTransform(ViewBase& child) const override { return GetChildOffset(); }
+	virtual Point ConvertChildPoint(ViewBase& child, Point point) const override { return point + GetChildOffset(); }
+	virtual Point ConvertChildPoint(Point point, ViewBase& child) const override { return point - GetChildOffset(); }
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override { return size = Extend(child_size = UpdateChildSizeRef(child, Extend(size_ref, -padding)), padding); }
 	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override { SizeUpdated(size = Extend(this->child_size = child_size, padding)); }

@@ -32,7 +32,8 @@ protected:
 	Vector GetChildOffset() const { return point_zero - frame_offset; }
 	Rect GetChildRegion() const { return Rect(point_zero + GetChildOffset(), child_size); }
 protected:
-	virtual Transform GetChildTransform(ViewBase& child) const override { return GetChildOffset(); }
+	virtual Point ConvertChildPoint(ViewBase& child, Point point) const override { return point + GetChildOffset(); }
+	virtual Point ConvertChildPoint(Point point, ViewBase& child) const override { return point - GetChildOffset(); }
 
 	// scrolling
 protected:

@@ -31,7 +31,8 @@ protected:
 protected:
 	Size size_ref;
 protected:
-	virtual Transform GetChildTransform(ViewBase& child) const override { return scale; }
+	virtual Point ConvertChildPoint(ViewBase& child, Point point) const override { return point * scale; }
+	virtual Point ConvertChildPoint(Point point, ViewBase& child) const override { return point / scale; }
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override { return UpdateChildSizeRef(child, (this->size_ref = size_ref) / scale) * scale; }
 	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override { SizeUpdated(child_size * scale); }

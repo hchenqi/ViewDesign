@@ -28,12 +28,13 @@ public:
 	// window
 private:
 	std::vector<std::unique_ptr<Window>> window_list;
+private:
+	Window& AsWindow(ViewBase& child) const { return static_cast<Window&>(child); }
+public:
+	Window& GetWindow(ViewBase& view) { return AsWindow(GetDirectChild(view)); }
 public:
 	Window& AddWindow(std::unique_ptr<Window> window);
 	std::unique_ptr<Window> RemoveWindow(Window& window);
-public:
-	Window& GetWindow(ViewBase& view);
-	Window& GetWindowPoint(ViewBase& view, Point& point);
 public:
 	bool WindowListEmpty() { return window_list.empty(); }
 	void CloseAllWindows();
@@ -51,6 +52,9 @@ private:
 		VerifyChild(window);
 		window.RegionUpdated(window.OnWindowSizeRefUpdate(GetSize() / window.scale));
 	}
+private:
+	virtual Point ConvertChildPoint(ViewBase& child, Point point) const { return point + (AsWindow(child).point - point_zero); }
+	virtual Point ConvertChildPoint(Point point, ViewBase& child) const { return point - (AsWindow(child).point - point_zero); }
 
 	// context
 private:
@@ -116,12 +120,11 @@ public:
 	Desktop& Get() { return Desktop::Get(); }
 	const Desktop& Get() const { return Desktop::Get(); }
 public:
+	Window& GetWindow(ViewBase& view) { return Get().GetWindow(view); }
+public:
 	Window& AddWindow(std::unique_ptr<Window> window) { return Get().AddWindow(std::move(window)); }
 	Window& AddWindow(owner_ptr<Window> window) { return AddWindow(std::unique_ptr<Window>(window)); }
 	std::unique_ptr<Window> RemoveWindow(Window& window) { return Get().RemoveWindow(window); }
-public:
-	Window& GetWindow(ViewBase& view) { return Get().GetWindow(view); }
-	Window& GetWindowPoint(ViewBase& view, Point& point) { return Get().GetWindowPoint(view, point); }
 public:
 	bool WindowListEmpty() { return Get().WindowListEmpty(); }
 	void CloseAllWindows() { return Get().CloseAllWindows(); }

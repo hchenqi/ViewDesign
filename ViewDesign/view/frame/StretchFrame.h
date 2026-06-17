@@ -21,7 +21,8 @@ protected:
 protected:
 	Scale GetCurrentScale() const { return child_size.IsEmpty() ? scale_identity : Scale(size.width / child_size.width, size.height / child_size.height); }
 protected:
-	virtual Transform GetChildTransform(ViewBase& child) const override { return GetCurrentScale(); }
+	virtual Point ConvertChildPoint(ViewBase& child, Point point) const override { return point * GetCurrentScale(); }
+	virtual Point ConvertChildPoint(Point point, ViewBase& child) const override { return point / GetCurrentScale(); }
 
 	// drawing
 protected:
@@ -112,7 +113,8 @@ protected:
 protected:
 	Scale GetCurrentScale() const { return child_size.IsEmpty() ? scale_identity : Scale(std::min(max_size.width / child_size.width, max_size.height / child_size.height)); }
 protected:
-	virtual Transform GetChildTransform(ViewBase& child) const override { return GetCurrentScale(); }
+	virtual Point ConvertChildPoint(ViewBase& child, Point point) const override { return point * GetCurrentScale(); }
+	virtual Point ConvertChildPoint(Point point, ViewBase& child) const override { return point / GetCurrentScale(); }
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override {
 		child_size = UpdateChildSizeRef(child, max_size = size_ref);

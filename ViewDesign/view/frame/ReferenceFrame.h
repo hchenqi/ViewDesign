@@ -21,8 +21,6 @@ protected:
 
 	// layout
 protected:
-	virtual Transform GetChildTransform(ViewBase& child) const override { return Transform::Identity(); }
-protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override { return UpdateChildSizeRef(child, size_ref); }
 	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override { return SizeUpdated(child_size); }
 

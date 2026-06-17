@@ -108,9 +108,8 @@ private:
 protected:
 	void UpdateWindowSizeRef(Window& window) { VerifyChild(window); window.RegionUpdated(window.OnWindowSizeRefUpdate(size)); }
 protected:
-	virtual Transform GetChildTransform(ViewBase& child) const override {
-		return AsWindow(child).region.point - point_zero;
-	}
+	virtual Point ConvertChildPoint(ViewBase& child, Point point) const override { return point + (AsWindow(child).region.point - point_zero); }
+	virtual Point ConvertChildPoint(Point point, ViewBase& child) const override { return point - (AsWindow(child).region.point - point_zero); }
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override {
 		size = size_ref;

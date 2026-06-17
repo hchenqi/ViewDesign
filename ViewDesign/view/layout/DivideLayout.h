@@ -55,9 +55,8 @@ protected:
 	Rect GetChildRegion(size_t index) const { return Rect(Point(0.0f, index * child_length), Size(size.width, child_length)); }
 	Rect GetChildRegion(ViewBase& child) const { return GetChildRegion(GetChildIndex(child)); }
 protected:
-	virtual Transform GetChildTransform(ViewBase& child) const override {
-		return GetChildRegion(child).point - point_zero;
-	}
+	virtual Point ConvertChildPoint(ViewBase& child, Point point) const override { return point + (GetChildRegion(child).point - point_zero); }
+	virtual Point ConvertChildPoint(Point point, ViewBase& child) const override { return point - (GetChildRegion(child).point - point_zero); }
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override {
 		if (size != size_ref) {
@@ -105,9 +104,8 @@ protected:
 	Rect GetChildRegion(size_t index) const { return Rect(Point(index * child_length, 0.0f), Size(child_length, size.height)); }
 	Rect GetChildRegion(ViewBase& child) const { return GetChildRegion(GetChildIndex(child)); }
 protected:
-	virtual Transform GetChildTransform(ViewBase& child) const override {
-		return GetChildRegion(child).point - point_zero;
-	}
+	virtual Point ConvertChildPoint(ViewBase& child, Point point) const override { return point + (GetChildRegion(child).point - point_zero); }
+	virtual Point ConvertChildPoint(Point point, ViewBase& child) const override { return point - (GetChildRegion(child).point - point_zero); }
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override {
 		if (size != size_ref) {

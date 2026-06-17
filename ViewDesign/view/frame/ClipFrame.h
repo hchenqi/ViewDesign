@@ -32,7 +32,8 @@ protected:
 	Vector GetChildOffset() const { return child_region.point - point_zero; }
 	Rect GetChildRegion() const { return child_region; }
 protected:
-	virtual Transform GetChildTransform(ViewBase& child) const override { return GetChildOffset(); }
+	virtual Point ConvertChildPoint(ViewBase& child, Point point) const override { return point + GetChildOffset(); }
+	virtual Point ConvertChildPoint(Point point, ViewBase& child) const override { return point - GetChildOffset(); }
 
 	// drawing
 protected:

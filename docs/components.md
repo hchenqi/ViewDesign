@@ -53,9 +53,9 @@ The *frame* components can be classified as follows:
 - size-preserving (but not content-preserving): `BackgroundFrame`, `InnerBorderFrame`
 - size-traits-preserving (but not size-preserving): `PaddingFrame`, `BorderFrame`, `ScaleFrame`
 - size-traits-converting:
-  - `Relative`->`Fixed`: `ClipFrame`, `CenterFrame`, `ScrollFrame`, `StretchFrame`
-  - `Fixed`->`Auto`: `FixedFrame`
-  - `Relative`->`Auto`: `MaxFrame`, `MinFrame`
+  - `Relative`->`Fixed` (not size-preserving): `ClipFrame`, `CenterFrame`, `ScrollFrame`, `StretchFrame`
+  - `Fixed`->`Auto` (size-preserving): `FixedFrame`
+  - `Relative`->`Auto` (size-preserving): `MaxFrame`, `MinFrame`
 
 ### ViewFrame
 

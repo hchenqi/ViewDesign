@@ -51,7 +51,8 @@ private:
 protected:
 	void RegionUpdated(Rect region);
 protected:
-	virtual Transform GetChildTransform(ViewBase& child) const override { return scale; }
+	virtual Point ConvertChildPoint(ViewBase& child, Point point) const override { return point * scale; }
+	virtual Point ConvertChildPoint(Point point, ViewBase& child) const override { return point / scale; }
 protected:
 	virtual std::pair<Size, Size> CalculateMinMaxSize(Size size_ref) { return { size_empty, size_ref }; }
 	virtual Rect OnWindowSizeRefUpdate(Size size_ref) { return Rect(point_zero, UpdateChildSizeRef(*child, size_ref)); }

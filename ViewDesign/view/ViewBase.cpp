@@ -14,28 +14,30 @@ ViewBase::~ViewBase() {
 
 ViewBase& ViewBase::GetDirectChild(ViewBase& descendent) const {
 	ref_ptr<ViewBase> child = &descendent;
-	while (child->parent != this) {
-		if (child->parent == nullptr) { throw std::invalid_argument("invalid descendent view"); }
-		child = child->parent;
+	for (ref_ptr<ViewBase> parent = child->parent; parent != this; child = parent, parent = child->parent) {
+		if (parent == nullptr) { throw std::invalid_argument("invalid descendent view"); }
 	}
 	return *child;
 }
 
-Transform ViewBase::GetDescendentTransform(ViewBase& descendent) const {
-	Transform transform = Transform::Identity();
-	for (ref_ptr<ViewBase> child = &descendent, parent = descendent.parent; child != this; child = parent, parent = child->parent) {
+Point ViewBase::ConvertDescendentPoint(ViewBase& descendent, Point point) const {
+	ref_ptr<ViewBase> child = &descendent;
+	for (ref_ptr<ViewBase> parent = child->parent; parent != this; child = parent, parent = child->parent) {
 		if (parent == nullptr) { throw std::invalid_argument("invalid descendent view"); }
-		transform = transform * parent->GetChildTransform(*child);
+		point = parent->ConvertChildPoint(*child, point);
 	}
-	return transform;
+	return ConvertChildPoint(*child, point);
 }
 
-Point ViewBase::ConvertDescendentPoint(ViewBase& descendent, Point point) const {
-	for (ref_ptr<ViewBase> child = &descendent, parent = descendent.parent; child != this; child = parent, parent = child->parent) {
+Point ViewBase::ConvertDescendentPoint(Point point, ViewBase& descendent) const {
+	ref_ptr<ViewBase> parent = descendent.parent;
+	if (parent != this) {
 		if (parent == nullptr) { throw std::invalid_argument("invalid descendent view"); }
-		point *= parent->GetChildTransform(*child);
+		point = ConvertDescendentPoint(point, *parent);
+		return parent->ConvertChildPoint(point, descendent);
+	} else {
+		return ConvertChildPoint(point, descendent);
 	}
-	return point;
 }
 
 void ViewBase::DrawChild(ViewBase& child, Point child_offset, Canvas& canvas, Rect draw_region) {

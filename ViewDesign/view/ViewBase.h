@@ -56,10 +56,11 @@ protected:
 	Size UpdateChildSizeRef(ViewBase& child, Size size_ref) { VerifyChild(child); return child.OnSizeRefUpdate(size_ref); }
 	void SizeUpdated(Size size) { if (HasParent()) { GetParent().OnChildSizeUpdate(*this, size); } }
 protected:
-	virtual Transform GetChildTransform(ViewBase& child) const { return Transform::Identity(); }
+	virtual Point ConvertChildPoint(ViewBase& child, Point point) const { return point; }
+	virtual Point ConvertChildPoint(Point point, ViewBase& child) const { return point; }
 protected:
-	Transform GetDescendentTransform(ViewBase& descendent) const;
 	Point ConvertDescendentPoint(ViewBase& descendent, Point point) const;
+	Point ConvertDescendentPoint(Point point, ViewBase& descendent) const;
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) { return size_ref; }
 	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) {}

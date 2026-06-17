@@ -41,9 +41,8 @@ protected:
 	Rect GetRegionSecond() const { return Rect(Point(0.0f, size_first.height), Size(size.width, size_second.height)); }
 	Rect GetChildRegion(ViewBase& child) const { return IsFirst(child) ? GetRegionFirst() : GetRegionSecond(); }
 protected:
-	virtual Transform GetChildTransform(ViewBase& child) const override {
-		return GetChildRegion(child).point - point_zero;
-	}
+	virtual Point ConvertChildPoint(ViewBase& child, Point point) const override { return point + (GetChildRegion(child).point - point_zero); }
+	virtual Point ConvertChildPoint(Point point, ViewBase& child) const override { return point - (GetChildRegion(child).point - point_zero); }
 
 	// drawing
 protected:
@@ -76,9 +75,8 @@ protected:
 	Rect GetRegionSecond() const { return Rect(Point(size_first.width, 0.0f), Size(size_second.width, size.height)); }
 	Rect GetChildRegion(ViewBase& child) const { return IsFirst(child) ? GetRegionFirst() : GetRegionSecond(); }
 protected:
-	virtual Transform GetChildTransform(ViewBase& child) const override {
-		return GetChildRegion(child).point - point_zero;
-	}
+	virtual Point ConvertChildPoint(ViewBase& child, Point point) const override { return point + (GetChildRegion(child).point - point_zero); }
+	virtual Point ConvertChildPoint(Point point, ViewBase& child) const override { return point - (GetChildRegion(child).point - point_zero); }
 
 	// drawing
 protected:

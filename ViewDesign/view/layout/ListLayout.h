@@ -107,9 +107,8 @@ protected:
 protected:
 	Rect GetChildRegion(ViewBase& child) const { return child_list[GetChildIndex(child)].region; }
 protected:
-	virtual Transform GetChildTransform(ViewBase& child) const override {
-		return GetChildRegion(child).point - point_zero;
-	}
+	virtual Point ConvertChildPoint(ViewBase& child, Point point) const override { return point + (GetChildRegion(child).point - point_zero); }
+	virtual Point ConvertChildPoint(Point point, ViewBase& child) const override { return point - (GetChildRegion(child).point - point_zero); }
 
 	// drawing
 protected:

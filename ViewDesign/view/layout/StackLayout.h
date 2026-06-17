@@ -21,8 +21,6 @@ protected:
 	// layout
 protected:
 	Size size;
-protected:
-	virtual Transform GetChildTransform(ViewBase& child) const override { return Transform::Identity(); }
 
 	// drawing
 protected:
@@ -118,8 +116,6 @@ protected:
 	std::vector<child_type> child_list;
 
 	// layout
-protected:
-	virtual Transform GetChildTransform(ViewBase& child) const override { return Transform::Identity(); }
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override { for (auto& child : child_list) { UpdateChildSizeRef(child, size_ref); } return size_ref; }
 	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override {}
