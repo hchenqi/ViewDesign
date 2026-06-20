@@ -185,7 +185,11 @@ protected:
 	}
 
 public:
-	HeaderFrame& Append(Tab tab) { tab_list->Append(new HeaderFrame(std::move(tab))); }
+	HeaderFrame& Append(Tab tab) {
+		ref_ptr<HeaderFrame> header;
+		tab_list->Append(header = new HeaderFrame(std::move(tab)));
+		return *header;
+	}
 };
 
 
