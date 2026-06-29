@@ -64,7 +64,14 @@ public:
 
 public:
 	void CreateDeviceIndependentResource() {
-		hr << D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, __uuidof(D2DFactory), &d2d_factory);
+		D2D1_FACTORY_OPTIONS options = {
+#if defined(NDEBUG)
+			D2D1_DEBUG_LEVEL_NONE
+#else
+			D2D1_DEBUG_LEVEL_INFORMATION
+#endif
+		};
+		hr << D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, __uuidof(D2DFactory), &options, &d2d_factory);
 		hr << DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(DWriteFactory), &dwrite_factory);
 		hr << CoCreateInstance(CLSID_WICImagingFactory2, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&wic_factory));
 	}
