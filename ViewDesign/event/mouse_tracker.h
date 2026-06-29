@@ -21,39 +21,57 @@ enum class MouseTrackEvent {
 };
 
 
+namespace Stateful {
+
+
 class MouseTracker {
 public:
+	struct State {
+		bool down = false;
+		Point down_position;
+		uint32 hit_count = 0;
+		std::chrono::steady_clock::time_point last_hit_time;
+	};
+public:
+	MouseTracker(State& state) : state(state) {}
+protected:
+	State& state;
+protected:
 	static constexpr float move_tolerate_distance{ 5.0f }; // 5px
 	static constexpr std::chrono::milliseconds hit_timeout{ 500 }; // 500ms
-public:
-	bool down = false;
-	Point down_position;
-	uint32 hit_count = 0;
-	std::chrono::steady_clock::time_point last_hit_time;
 public:
 	MouseTrackEvent Track(MouseEvent event) {
 		switch (event.type) {
 		case MouseEvent::LeftDown:
-			if (hit_count > 0 && (hit_count >= 3 || !PointInCircle(event.point, down_position, move_tolerate_distance) || std::chrono::steady_clock::now() - last_hit_time > hit_timeout)) {
-				hit_count = 0;
+			if (state.hit_count > 0 && (state.hit_count >= 3 || !PointInCircle(event.point, state.down_position, move_tolerate_distance) || std::chrono::steady_clock::now() - state.last_hit_time > hit_timeout)) {
+				state.hit_count = 0;
 			}
-			down = true;
-			down_position = event.point;
-			hit_count++;
-			last_hit_time = std::chrono::steady_clock::now();
-			switch (hit_count) {
+			state.down = true;
+			state.down_position = event.point;
+			state.hit_count++;
+			state.last_hit_time = std::chrono::steady_clock::now();
+			switch (state.hit_count) {
 			case 1: return MouseTrackEvent::LeftDown;
 			case 2: return MouseTrackEvent::LeftDoubleClick;
 			case 3: return MouseTrackEvent::LeftTripleClick;
 			}
 		case MouseEvent::LeftUp:
-			return std::exchange(down, false) ? MouseTrackEvent::LeftClick : MouseTrackEvent::LeftUp;
+			return std::exchange(state.down, false) ? MouseTrackEvent::LeftClick : MouseTrackEvent::LeftUp;
 		case MouseEvent::Move:
-			return down ? MouseTrackEvent::LeftDrag : MouseTrackEvent::MouseMove;
+			return state.down ? MouseTrackEvent::LeftDrag : MouseTrackEvent::MouseMove;
 		default:
 			return MouseTrackEvent::None;
 		}
 	}
+};
+
+
+} // namespace Stateful
+
+
+class MouseTracker : public Stateful::MouseTracker::State, public Stateful::MouseTracker {
+public:
+	MouseTracker() : Stateful::MouseTracker(static_cast<State&>(*this)) {}
 };
 
 
