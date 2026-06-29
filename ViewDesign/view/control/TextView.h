@@ -22,9 +22,10 @@ protected:
 	const Style& style;
 	const u16string& text;
 public:
+	const Style& GetStyle() const { return style; }
 	const u16string& GetText() const { return text; }
-public:
-	void OnUpdate() {
+protected:
+	virtual void OnTextUpdate() {
 		text_block.SetText(style, text);
 		Rect region = text_block.UpdateLayout(size_ref);
 		if (this->region.size != region.size) {
@@ -58,18 +59,20 @@ protected:
 };
 
 
-} // namespace Stateful
-
-
-template<class TextView>
-class TextModifier {
-private:
-	TextView& AsTextView() { return static_cast<TextView&>(*this); }
-	u16string& GetText() { return AsTextView().GetText(); }
-	void Update() { return AsTextView().OnUpdate(); }
+class TextViewMutable : public TextView {
 public:
-	void Assign(u16string str) { GetText().assign(std::move(str)); Update(); }
-	void Insert(size_t pos, u16char ch) { GetText().insert(pos, 1, ch); Update(); }
+	TextViewMutable(Style& style, u16string& text) : TextView(style, text) {}
+
+	// state
+public:
+	TextView::GetStyle;
+	TextView::GetText;
+public:
+	Style& GetStyle() { return const_cast<Style&>(TextView::GetStyle()); }
+	u16string& GetText() { return const_cast<u16string&>(TextView::GetText());; }
+public:
+	void Assign(u16string str) { GetText().assign(std::move(str)); OnTextUpdate(); }
+	void Insert(size_t pos, u16char ch) { GetText().insert(pos, 1, ch); OnTextUpdate(); }
 	void Insert(size_t pos, u16pair ch) {
 		if (size_t length = ch.length(); length > 0) {
 			if (length == 1) {
@@ -77,11 +80,11 @@ public:
 			} else {
 				GetText().insert(GetText().begin() + pos, { ch.first, ch.second });
 			}
-			Update();
+			OnTextUpdate();
 		}
 	}
-	void Insert(size_t pos, const u16string& str) { GetText().insert(pos, str); Update(); }
-	void Replace(TextRange range, u16char ch) { GetText().replace(range.begin(), range.length(), 1, ch); Update(); }
+	void Insert(size_t pos, const u16string& str) { GetText().insert(pos, str); OnTextUpdate(); }
+	void Replace(TextRange range, u16char ch) { GetText().replace(range.begin(), range.length(), 1, ch); OnTextUpdate(); }
 	void Replace(TextRange range, u16pair ch) {
 		if (size_t length = ch.length(); length > 0) {
 			if (length == 1) {
@@ -92,23 +95,20 @@ public:
 		} else {
 			GetText().erase(range.begin(), range.length());
 		}
-		Update();
+		OnTextUpdate();
 	}
-	void Replace(TextRange range, const u16string& str) { GetText().replace(range.begin(), range.length(), str); Update(); }
-	void Erase(size_t pos) { GetText().erase(pos); Update(); }
-	void Erase(TextRange range) { GetText().erase(range.begin(), range.length()); Update(); }
+	void Replace(TextRange range, const u16string& str) { GetText().replace(range.begin(), range.length(), str); OnTextUpdate(); }
+	void Erase(size_t pos) { GetText().erase(pos); OnTextUpdate(); }
+	void Erase(TextRange range) { GetText().erase(range.begin(), range.length()); OnTextUpdate(); }
 };
 
 
-class TextView : protected Holder<Stateful::TextView::Style>, protected Holder<u16string>, public Stateful::TextView, public TextModifier<TextView> {
+} // namespace Stateful
+
+
+class TextView : protected Holder<Stateful::TextView::Style>, protected Holder<u16string>, public Stateful::TextViewMutable {
 public:
-	TextView(Style style, u16string text) : Holder<Style>(std::move(style)), Holder<u16string>(std::move(text)), Stateful::TextView(GetStyle(), GetText()) {}
-public:
-	Style& GetStyle() { return Holder<Style>::value; }
-	const Style& GetStyle() const { return Holder<Style>::value; }
-public:
-	u16string& GetText() { return Holder<u16string>::value; }
-	const u16string& GetText() const { return Holder<u16string>::value; }
+	TextView(Style style, u16string text) : Holder<Style>(std::move(style)), Holder<u16string>(std::move(text)), TextViewMutable(Holder<Style>::value, Holder<u16string>::value) {}
 };
 
 
