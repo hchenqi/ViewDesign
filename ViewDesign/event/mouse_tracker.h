@@ -1,8 +1,9 @@
 #pragma once
 
 #include "ViewDesign/event/mouse_event.h"
-#include "ViewDesign/event/timer.h"
 #include "ViewDesign/geometry/helper.h"
+
+#include <chrono>
 
 
 namespace ViewDesign {
@@ -22,43 +23,36 @@ enum class MouseTrackEvent {
 
 class MouseTracker {
 public:
+	static constexpr float move_tolerate_distance{ 5.0f }; // 5px
+	static constexpr std::chrono::milliseconds hit_timeout{ 500 }; // 500ms
+public:
 	bool down = false;
 	Point down_position;
 	uint32 hit_count = 0;
-private:
-	static constexpr uint32 timer_interval = 500; // 0.5s
-	Timer timer = Timer([&]() { hit_count = 0; timer.Stop(); });
-private:
-	static constexpr float move_tolerate_distance = 5.0f; // 5px
+	std::chrono::steady_clock::time_point last_hit_time;
 public:
 	MouseTrackEvent Track(MouseEvent event) {
-		MouseTrackEvent ret;
 		switch (event.type) {
 		case MouseEvent::LeftDown:
-			switch (hit_count) {
-			case 1: ret = MouseTrackEvent::LeftDoubleClick; break;
-			case 2: ret = MouseTrackEvent::LeftTripleClick; break;
-			case 0: default: ret = MouseTrackEvent::LeftDown; hit_count = 0; break;
+			if (hit_count > 0 && (hit_count >= 3 || !PointInCircle(event.point, down_position, move_tolerate_distance) || std::chrono::steady_clock::now() - last_hit_time > hit_timeout)) {
+				hit_count = 0;
 			}
-			if (hit_count > 0 && !PointInCircle(event.point, down_position, move_tolerate_distance)) {
-				ret = MouseTrackEvent::LeftDown; hit_count = 0;
-			}
-			hit_count++; timer.Set(timer_interval);
 			down = true;
 			down_position = event.point;
-			break;
+			hit_count++;
+			last_hit_time = std::chrono::steady_clock::now();
+			switch (hit_count) {
+			case 1: return MouseTrackEvent::LeftDown;
+			case 2: return MouseTrackEvent::LeftDoubleClick;
+			case 3: return MouseTrackEvent::LeftTripleClick;
+			}
 		case MouseEvent::LeftUp:
-			ret = down ? MouseTrackEvent::LeftClick : MouseTrackEvent::LeftUp;
-			down = false;
-			break;
+			return std::exchange(down, false) ? MouseTrackEvent::LeftClick : MouseTrackEvent::LeftUp;
 		case MouseEvent::Move:
-			ret = down ? MouseTrackEvent::LeftDrag : MouseTrackEvent::MouseMove;
-			break;
+			return down ? MouseTrackEvent::LeftDrag : MouseTrackEvent::MouseMove;
 		default:
-			ret = MouseTrackEvent::None;
-			break;
+			return MouseTrackEvent::None;
 		}
-		return ret;
 	}
 };
 
