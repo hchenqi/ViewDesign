@@ -1,20 +1,14 @@
 # To Do
 
-- (feature) adding stateful version for components like `TextView`, `TextEditor`, etc in the standard component library (similar to `Stateful::ImageView` and `ImageView`, with a derivation chain of states: `TextState`(text), `EditState`(caret, selection), `TemporaryEditState`(IME composition), `InputState`(focus, mouse, key) and using absolute timing with `Timer`)
-
-- (feature) adding example `StateSharing`, where multiple views share the same state and each view can update the state that is synchronized with the others
-
-- (feature) `TextEditor`: implementing undo/redo
-
-- (improvement) `TextEditor`: supporting right-to-left/vertical text editing
+- (feature) adding styled text controls like `TextButton`, `TextLabel`, `TextInput`, etc as widgets that have margin, border, padding, background, etc styled individually or based on themes and react to mouse hovering/clicking/focus events
 
 - (feature) adding more common components like  `Slider`, `Progress`, `Scrollbar`, `ColorPicker`, `Chart`, `Menu`, `TableView`, `PanelView`, etc in the standard component library
-
-- (feature) adding styled text controls like `TextButton`, `TextLabel`, `TextInput`, etc as widgets that have margin, border, padding, background, etc styled individually or based on themes and react to mouse hovering/clicking/focus events
 
 - (feature) adding example `ControlGallery` that displays a collection of standard components
 
 - (feature) adding example `MapView` that displays an infinitely large, scrollable and scalable map with multi-level tiled layers
+
+- (improvement) `TextEditor`: supporting right-to-left/vertical text editing
 
 - (improvement) implementing text layout engine for OpenGL/Vulkan backend (possibly with HarfBuzz and FreeType, or other existing 2D graphics libraries like Skia that can draw texts)
 
@@ -48,8 +42,8 @@
 
 - (feature) setting up GitHub Actions for automatically checking commits and pull-requests
 
-- (feature) `MirroringFrame::MirrorView`: possibly handling and redirecting mouse events to `MirroringFrame`
-
 - (questionable) `ViewBase`/`Desktop`: allowing a view component to initiate `SetTrack()`
 
 - (questionable) adding other size traits (like `Bounded` for `TextView` and `MaxFrame`) to replace the ambiguous `Relative` trait
+
+- (questionable) adding `OnMount()`/`OnDismount()` callbacks when a component is attached to/detached from the view tree

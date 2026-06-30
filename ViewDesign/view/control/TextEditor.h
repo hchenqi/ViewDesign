@@ -11,8 +11,11 @@
 
 namespace ViewDesign {
 
+namespace Stateful {
 
-class TextEditor : public CustomizedCursor<CursorStyle::Text, TextView> {
+
+class TextEditor : protected Holder<Stateful::TextView::Style>, public CustomizedCursor<CursorStyle::Text, TextViewMutable> {
+	// style
 protected:
 	struct TextEditorStyle {
 		struct EditStyle {
@@ -36,15 +39,59 @@ protected:
 public:
 	struct Style : TextView::Style, TextEditorStyle {};
 
+	// state
 public:
-	TextEditor(const Style& style, u16string text = u"");
-	~TextEditor() {}
+	struct CaretState {
+		bool active = false;
+		TextRange position;
+		std::chrono::steady_clock::time_point activation_time;
+		std::chrono::steady_clock::time_point track_time;
+	};
+
+	enum class SelectionMode {
+		Character,
+		Word,
+		Paragraph
+	};
+
+	struct SelectionState {
+		TextRange current_range = text_range_empty;
+		SelectionMode mode;
+		TextRange initial_range;
+	};
+
+	struct InputState {
+		MouseTracker::State mouse;
+		KeyTracker::State key;
+		TextRange ime_composition_range = text_range_empty;
+	};
+
+	struct State {
+		u16string text;
+		CaretState caret;
+		SelectionState selection;
+		InputState input;
+	};
+
+public:
+	TextEditor(Style style, State& state);
 
 	// style
 protected:
 	TextEditorStyle style;
 protected:
 	bool IsEditDisabled() const { return style.edit._disabled; }
+
+	// state
+protected:
+	State& state;
+public:
+	void OnStateUpdate() {
+		OnTextUpdate();
+		UpdateCaret(state.caret.position);
+		UpdateSelection(state.selection.current_range);
+		UpdateImeComposition(state.input.ime_composition_range);
+	}
 
 	// text
 protected:
@@ -68,28 +115,22 @@ protected:
 protected:
 	virtual void OnDraw(Canvas& canvas, Rect draw_region) override;
 
-	// caret state
-protected:
-	enum class CaretState : uint16 { Hide, Show, BlinkShow, BlinkHide } caret_state = CaretState::Hide;
-protected:
-	static constexpr uint16 caret_blink_period = 500;  // 500ms
-	static constexpr uint16 caret_blink_expire_time = 20000;  // 20s
-protected:
-	Timer caret_timer = Timer(std::bind(&TextEditor::CaretBlink, this));
-	uint16 caret_blink_time;
-protected:
-	bool IsCaretVisible() const { return caret_state == CaretState::Show || caret_state == CaretState::BlinkShow; }
-protected:
-	void HideCaret();
-	void CaretStartBlinking();
-	void CaretBlink();
-
 	// caret
 protected:
-	enum class CaretMoveDirection { Left, Right, Up, Down, Home, End };
+	static constexpr std::chrono::milliseconds caret_blink_period{ 500 };  // 500ms
+	static constexpr std::chrono::milliseconds caret_blink_expire_time{ 20000 };  // 20s
 protected:
-	TextRange caret_position;
+	Timer caret_timer{ std::bind(&TextEditor::CaretBlink, this) };
 	Rect caret_region;
+protected:
+	bool IsCaretBlinking() const { return std::chrono::steady_clock::now() < state.caret.track_time + caret_blink_expire_time; }
+	bool IsCaretVisible() const { return state.caret.active ? IsCaretBlinking() ? ((std::chrono::steady_clock::now() - state.caret.activation_time + caret_blink_period / 2) / caret_blink_period) % 2 == 0 : true : false; }
+protected:
+	void ShowCaret() { state.caret.active = true; state.caret.activation_time = std::chrono::steady_clock::now(); caret_timer.Stop(); }
+	void HideCaret() { if (state.caret.active == true) { state.caret.active = false; Redraw(caret_region); } }
+	void SetCaretTimer() { caret_timer.Set(static_cast<unsigned int>(caret_blink_period.count())); }
+	void CaretStartBlinking();
+	void CaretBlink();
 protected:
 	Rect GetCaretRegion(const HitTestPointInfo& info) const;
 	void UpdateCaret(const HitTestPointInfo& info);
@@ -98,18 +139,17 @@ protected:
 	void SetCaret(const HitTestPointInfo& info);
 	void SetCaret(Point point) { SetCaret(text_block.HitTestPoint(point)); }
 	void SetCaret(TextRange position) { SetCaret(text_block.HitTestPosition(position)); }
+protected:
+	enum class CaretMoveDirection { Left, Right, Up, Down, Home, End };
+protected:
 	void MoveCaret(CaretMoveDirection direction);
 
 	// selection
 protected:
-	TextRange selection_range = text_range_empty;
 	std::vector<Rect> selection_region_list;
 	Rect selection_region_union;
 protected:
-	enum class SelectionMode { Character, Word, Paragraph } selection_mode;
-	TextRange selection_initial_range;
-protected:
-	bool HasSelection() const { return !selection_range.empty(); }
+	bool HasSelection() const { return !state.selection.current_range.empty(); }
 	void UpdateSelection(TextRange range);
 	void ClearSelection() { UpdateSelection(text_range_empty); }
 protected:
@@ -121,19 +161,18 @@ protected:
 	void DoSelect(Point current_point) { DoSelect(text_block.HitTestPoint(current_point)); }
 	void DoSelect(TextRange current_position) { DoSelect(text_block.HitTestPosition(current_position)); }
 
-	// keyboard input
+	// input
 protected:
 	void Insert(u16char ch);
 	void Insert(u16pair ch);
 	void Insert(const u16string& str);
 	void Delete(bool is_backspace);
 
-	// ime input
+	// ime
 protected:
-	TextRange ime_composition_range = text_range_empty;
 	std::vector<Rect> ime_composition_region_list;
 protected:
-	bool HasImeComposition() { return !ime_composition_range.empty(); }
+	bool HasImeComposition() { return !state.input.ime_composition_range.empty(); }
 	void UpdateImeComposition(TextRange range);
 	void ClearImeComposition() { UpdateImeComposition(text_range_empty); }
 protected:
@@ -160,9 +199,21 @@ protected:
 	MouseTracker mouse_tracker;
 	KeyTracker key_tracker;
 protected:
+	bool ctrl() const { return state.input.key.ctrl; }
+	bool shift() const { return state.input.key.shift; }
+protected:
 	virtual void OnMouseEvent(MouseEvent event) override;
 	virtual void OnKeyEvent(KeyEvent event) override;
 	virtual void OnFocusEvent(FocusEvent event) override;
+};
+
+
+} // namespace Stateful
+
+
+class TextEditor : protected Holder<Stateful::TextEditor::State>, public Stateful::TextEditor {
+public:
+	TextEditor(Style style, u16string text = u"") : Holder<State>(std::move(text)), Stateful::TextEditor(std::move(style), Holder<State>::value) {}
 };
 
 

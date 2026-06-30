@@ -8,6 +8,8 @@
 
 namespace ViewDesign {
 
+namespace Stateful {
+
 namespace {
 
 constexpr size_t GetNextCharacterLength(u16char ch) {
@@ -29,9 +31,12 @@ constexpr size_t GetPrevCharacterLength(u16char ch) {
 } // namespace
 
 
-TextEditor::TextEditor(const Style& style, u16string text) : Base(style, std::move(text)), style(style) {
+TextEditor::TextEditor(Style style, State& state) :
+	Holder<TextView::Style>(std::move(style)), Base(Holder<TextView::Style>::value, state.text),
+	style(std::move(style)), state(state), mouse_tracker(state.input.mouse), key_tracker(state.input.key) {
 	style.edit._disabled ? ime.Disable(*this) : ime.Enable(*this);
-	word_iterator.SetText(this->text);
+	word_iterator.SetText(text);
+	if (state.caret.active && IsCaretBlinking()) { SetCaretTimer(); }
 }
 
 TextRange TextEditor::GetCharacterRange(size_t position) const {
@@ -62,18 +67,19 @@ TextRange TextEditor::GetParagraphRange(size_t position) const {
 
 void TextEditor::OnTextUpdate() {
 	word_iterator.SetText(text);
-	TextView::OnTextUpdate();
+	Base::OnTextUpdate();
 }
 
 Size TextEditor::OnSizeRefUpdate(Size size_ref) {
-	Size size = TextView::OnSizeRefUpdate(size_ref);
-	UpdateCaret(caret_position);
-	UpdateSelection(selection_range);
+	Size size = Base::OnSizeRefUpdate(size_ref);
+	UpdateCaret(state.caret.position);
+	UpdateSelection(state.selection.current_range);
+	UpdateImeComposition(state.input.ime_composition_range);
 	return size;
 }
 
 void TextEditor::OnDraw(Canvas& canvas, Rect draw_region) {
-	TextView::OnDraw(canvas, draw_region);
+	Base::OnDraw(canvas, draw_region);
 	if (IsCaretVisible()) {
 		canvas.draw(caret_region.point, new Rectangle(caret_region.size, style.edit._caret_color));
 	}
@@ -90,26 +96,17 @@ void TextEditor::OnDraw(Canvas& canvas, Rect draw_region) {
 }
 
 void TextEditor::CaretStartBlinking() {
-	if (caret_state != CaretState::Hide) {
+	if (state.caret.active) {
 		if (!caret_timer.IsSet()) {
-			caret_timer.Set(caret_blink_period);
+			SetCaretTimer();
 		}
-		caret_blink_time = 0;
+		state.caret.track_time = std::chrono::steady_clock::now();
 	}
 }
 
 void TextEditor::CaretBlink() {
-	caret_blink_time += caret_blink_period;
-	if (caret_blink_time >= caret_blink_expire_time) {
-		caret_state = CaretState::Show;
+	if (!state.caret.active || std::chrono::steady_clock::now() >= state.caret.track_time + caret_blink_expire_time) {
 		caret_timer.Stop();
-		return;
-	}
-	switch (caret_state) {
-	case CaretState::Hide: caret_timer.Stop(); return;
-	case CaretState::Show:
-	case CaretState::BlinkShow: caret_state = CaretState::BlinkHide; break;
-	case CaretState::BlinkHide: caret_state = CaretState::BlinkShow; break;
 	}
 	Redraw(caret_region);
 }
@@ -124,35 +121,35 @@ Rect TextEditor::GetCaretRegion(const HitTestPointInfo& info) const {
 }
 
 void TextEditor::UpdateCaret(const HitTestPointInfo& info) {
-	caret_position = std::get<TextRange>(info);
+	state.caret.position = std::get<TextRange>(info);
 	Redraw(std::exchange(caret_region, GetCaretRegion(info)).Union(caret_region));
 }
 
 void TextEditor::SetCaret(const HitTestPointInfo& info) {
 	UpdateCaret(info);
-	caret_state = CaretState::Show;
+	ShowCaret();
 	ClearSelection();
-	selection_initial_range = TextRange(caret_position.end(), 0);
-	selection_mode = SelectionMode::Character;
+	state.selection.initial_range = TextRange(state.caret.position.end(), 0);
+	state.selection.mode = SelectionMode::Character;
 }
 
 void TextEditor::MoveCaret(CaretMoveDirection direction) {
 	switch (direction) {
 	case CaretMoveDirection::Left:
 		if (HasSelection()) {
-			SetCaret(TextRange(selection_range.begin(), 0));
+			SetCaret(TextRange(state.selection.current_range.begin(), 0));
 		} else {
-			if (caret_position.end() > 0) {
-				SetCaret(TextRange(caret_position.end() - GetPrevCharacterLength(text[caret_position.end() - 1]), 0));
+			if (state.caret.position.end() > 0) {
+				SetCaret(TextRange(state.caret.position.end() - GetPrevCharacterLength(text[state.caret.position.end() - 1]), 0));
 			}
 		}
 		break;
 	case CaretMoveDirection::Right:
 		if (HasSelection()) {
-			SetCaret(TextRange(selection_range.end(), 0));
+			SetCaret(TextRange(state.selection.current_range.end(), 0));
 		} else {
-			if (caret_position.end() < text.length()) {
-				SetCaret(TextRange(caret_position.end() + GetNextCharacterLength(text[caret_position.end()]), 0));
+			if (state.caret.position.end() < text.length()) {
+				SetCaret(TextRange(state.caret.position.end() + GetNextCharacterLength(text[state.caret.position.end()]), 0));
 			}
 		}
 		break;
@@ -171,19 +168,12 @@ void TextEditor::MoveCaret(CaretMoveDirection direction) {
 	}
 }
 
-void TextEditor::HideCaret() {
-	if (caret_state != CaretState::Hide) {
-		caret_state = CaretState::Hide;
-		Redraw(caret_region);
-	}
-}
-
 void TextEditor::UpdateSelection(TextRange range) {
-	selection_range = range;
+	state.selection.current_range = range;
 	selection_region_list.clear();
 	Rect selection_region_union = rect_empty;
-	if (!selection_range.empty()) {
-		HitTestRangeInfo selection_info = text_block.HitTestRange(selection_range); selection_region_list.reserve(selection_info.size());
+	if (!state.selection.current_range.empty()) {
+		HitTestRangeInfo selection_info = text_block.HitTestRange(state.selection.current_range); selection_region_list.reserve(selection_info.size());
 		for (auto& it : selection_info) {
 			it.second.size = it.second.size.Union(Size(1.0f, 1.0f));
 			selection_region_list.emplace_back(it.second);
@@ -194,90 +184,90 @@ void TextEditor::UpdateSelection(TextRange range) {
 }
 
 void TextEditor::SelectWord() {
-	UpdateSelection(GetWordRange(selection_initial_range.begin()));
-	selection_mode = SelectionMode::Word;
-	selection_initial_range = selection_range;
-	UpdateCaret(TextRange(selection_range.end() - 1, 1));
+	UpdateSelection(GetWordRange(state.selection.initial_range.begin()));
+	state.selection.mode = SelectionMode::Word;
+	state.selection.initial_range = state.selection.current_range;
+	UpdateCaret(TextRange(state.selection.current_range.end() - 1, 1));
 }
 
 void TextEditor::SelectParagraph() {
-	UpdateSelection(GetParagraphRange(selection_initial_range.begin()));
-	selection_mode = SelectionMode::Paragraph;
-	selection_initial_range = selection_range;
-	UpdateCaret(TextRange(selection_range.end() - 1, 1));
+	UpdateSelection(GetParagraphRange(state.selection.initial_range.begin()));
+	state.selection.mode = SelectionMode::Paragraph;
+	state.selection.initial_range = state.selection.current_range;
+	UpdateCaret(TextRange(state.selection.current_range.end() - 1, 1));
 }
 
 void TextEditor::DoSelect(const HitTestPointInfo& info) {
 	TextRange current_range;
-	switch (selection_mode) {
+	switch (state.selection.mode) {
 	case SelectionMode::Character: current_range = TextRange(std::get<TextRange>(info).end(), 0); break;
 	case SelectionMode::Word: current_range = GetWordRange(std::get<TextRange>(info).begin()); break;
 	case SelectionMode::Paragraph: current_range = GetParagraphRange(std::get<TextRange>(info).begin()); break;
 	default: assert(false);
 	}
-	size_t begin = std::min(current_range.begin(), selection_initial_range.begin()), end = std::max(current_range.end(), selection_initial_range.end());
-	UpdateCaret(TextRange(begin, begin < selection_initial_range.begin() ? 0 : end - begin));
+	size_t begin = std::min(current_range.begin(), state.selection.initial_range.begin()), end = std::max(current_range.end(), state.selection.initial_range.end());
+	UpdateCaret(TextRange(begin, begin < state.selection.initial_range.begin() ? 0 : end - begin));
 	UpdateSelection(TextRange(begin, end - begin));
 }
 
 void TextEditor::Insert(u16char ch) {
 	if (IsEditDisabled()) { return; }
 	if (HasSelection()) {
-		TextView::Replace(selection_range, ch);
-		SetCaret(TextRange(selection_range.begin() + 1, 0));
+		Base::Replace(state.selection.current_range, ch);
+		SetCaret(TextRange(state.selection.current_range.begin() + 1, 0));
 	} else {
-		TextView::Insert(caret_position.end(), ch);
-		SetCaret(TextRange(caret_position.end() + 1, 0));
+		Base::Insert(state.caret.position.end(), ch);
+		SetCaret(TextRange(state.caret.position.end() + 1, 0));
 	}
 }
 
 void TextEditor::Insert(u16pair ch) {
 	if (IsEditDisabled()) { return; }
 	if (HasSelection()) {
-		TextView::Replace(selection_range, ch);
-		SetCaret(TextRange(selection_range.begin() + ch.length(), 0));
+		Base::Replace(state.selection.current_range, ch);
+		SetCaret(TextRange(state.selection.current_range.begin() + ch.length(), 0));
 	} else {
-		TextView::Insert(caret_position.end(), ch);
-		SetCaret(TextRange(caret_position.end() + ch.length(), 0));
+		Base::Insert(state.caret.position.end(), ch);
+		SetCaret(TextRange(state.caret.position.end() + ch.length(), 0));
 	}
 }
 
 void TextEditor::Insert(const u16string& str) {
 	if (IsEditDisabled()) { return; }
 	if (HasSelection()) {
-		TextView::Replace(selection_range, str);
-		SetCaret(TextRange(selection_range.begin() + str.length(), 0));
+		Base::Replace(state.selection.current_range, str);
+		SetCaret(TextRange(state.selection.current_range.begin() + str.length(), 0));
 	} else {
-		TextView::Insert(caret_position.end(), str);
-		SetCaret(TextRange(caret_position.end() + str.length(), 0));
+		Base::Insert(state.caret.position.end(), str);
+		SetCaret(TextRange(state.caret.position.end() + str.length(), 0));
 	}
 }
 
 void TextEditor::Delete(bool is_backspace) {
 	if (IsEditDisabled()) { return; }
 	if (HasSelection()) {
-		TextView::Erase(selection_range);
-		SetCaret(TextRange(selection_range.begin(), 0));
+		Base::Erase(state.selection.current_range);
+		SetCaret(TextRange(state.selection.current_range.begin(), 0));
 	} else {
 		if (is_backspace) {
-			if (caret_position.end() > 0) {
-				size_t length = GetPrevCharacterLength(text[caret_position.end() - 1]);
-				TextView::Erase(TextRange(caret_position.end() - length, length));
-				SetCaret(TextRange(caret_position.end() - length, 0));
+			if (state.caret.position.end() > 0) {
+				size_t length = GetPrevCharacterLength(text[state.caret.position.end() - 1]);
+				Base::Erase(TextRange(state.caret.position.end() - length, length));
+				SetCaret(TextRange(state.caret.position.end() - length, 0));
 			}
 		} else {
-			if (caret_position.end() < text.length()) {
-				TextView::Erase(TextRange(caret_position.end(), GetNextCharacterLength(text[caret_position.end()])));
+			if (state.caret.position.end() < text.length()) {
+				Base::Erase(TextRange(state.caret.position.end(), GetNextCharacterLength(text[state.caret.position.end()])));
 			}
 		}
 	}
 }
 
 void TextEditor::UpdateImeComposition(TextRange range) {
-	ime_composition_range = range;
+	state.input.ime_composition_range = range;
 	ime_composition_region_list.clear();
-	if (!ime_composition_range.empty()) {
-		HitTestRangeInfo ime_composition_info = text_block.HitTestRange(ime_composition_range); ime_composition_region_list.reserve(ime_composition_info.size());
+	if (!state.input.ime_composition_range.empty()) {
+		HitTestRangeInfo ime_composition_info = text_block.HitTestRange(state.input.ime_composition_range); ime_composition_region_list.reserve(ime_composition_info.size());
 		for (auto& it : ime_composition_info) {
 			ime_composition_region_list.emplace_back(it.second);
 		}
@@ -287,10 +277,10 @@ void TextEditor::UpdateImeComposition(TextRange range) {
 void TextEditor::OnImeBegin() {
 	if (IsEditDisabled()) { return; }
 	if (HasSelection()) {
-		UpdateImeComposition(selection_range);
+		UpdateImeComposition(state.selection.current_range);
 		ime.SetPosition(*this, selection_region_list.front().BottomRight());
 	} else {
-		UpdateImeComposition(TextRange(caret_position.end(), 0));
+		UpdateImeComposition(TextRange(state.caret.position.end(), 0));
 		ime.SetPosition(*this, caret_region.BottomRight());
 	}
 }
@@ -298,14 +288,14 @@ void TextEditor::OnImeBegin() {
 void TextEditor::OnImeString() {
 	if (IsEditDisabled()) { return; }
 	u16string str = ime.GetString();
-	TextView::Replace(ime_composition_range, str);
-	UpdateImeComposition(TextRange(ime_composition_range.begin(), str.length()));
-	SetCaret(TextRange(ime_composition_range.begin(), ime.GetCursorPosition()));
+	Base::Replace(state.input.ime_composition_range, str);
+	UpdateImeComposition(TextRange(state.input.ime_composition_range.begin(), str.length()));
+	SetCaret(TextRange(state.input.ime_composition_range.begin(), ime.GetCursorPosition()));
 }
 
 void TextEditor::OnImeEnd() {
-	if (caret_position.end() != ime_composition_range.end()) {
-		SetCaret(TextRange(ime_composition_range.end() - 1, 1));
+	if (state.caret.position.end() != state.input.ime_composition_range.end()) {
+		SetCaret(TextRange(state.input.ime_composition_range.end() - 1, 1));
 	}
 	ClearImeComposition();
 }
@@ -319,7 +309,7 @@ void TextEditor::Cut() {
 
 void TextEditor::Copy() {
 	if (HasSelection()) {
-		SetClipboardText(text.substr(selection_range.begin(), selection_range.length()));
+		SetClipboardText(text.substr(state.selection.current_range.begin(), state.selection.current_range.length()));
 	}
 }
 
@@ -360,14 +350,14 @@ void TextEditor::OnKeyEvent(KeyEvent event) {
 		case Key::Backspace: Delete(true); break;
 		case Key::Delete: Delete(false); break;
 
-		case Key::Char('A'): if (key_tracker.ctrl) { SelectAll(); } break;
-		case Key::Char('X'): if (key_tracker.ctrl) { Cut(); } break;
-		case Key::Char('C'): if (key_tracker.ctrl) { Copy(); } break;
-		case Key::Char('V'): if (key_tracker.ctrl) { Paste(); } break;
+		case Key::Char('A'): if (ctrl()) { SelectAll(); } break;
+		case Key::Char('X'): if (ctrl()) { Cut(); } break;
+		case Key::Char('C'): if (ctrl()) { Copy(); } break;
+		case Key::Char('V'): if (ctrl()) { Paste(); } break;
 		}
 		break;
 	case KeyEvent::Char:
-		if (key_tracker.ctrl) { break; }
+		if (ctrl()) { break; }
 		if (event.ch.empty()) { break; }
 		if (event.ch.single()) { if (!iswcntrl(event.ch.first)) { Insert(event.ch.first); } break; }
 		Insert(event.ch);
@@ -385,5 +375,7 @@ void TextEditor::OnFocusEvent(FocusEvent event) {
 	}
 }
 
+
+} // namespace Stateful
 
 } // namespace ViewDesign

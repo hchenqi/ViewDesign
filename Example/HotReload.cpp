@@ -11,90 +11,19 @@
 #include <ViewDesign/view/control/TextEditor.h>
 
 
-// hot reload (immediate mode) requires the states to be stored externally and the components access and update the states by reference, so that the state won't be lost when the components are recreated
-// TextEditor in the standard component library of ViewDesign owns its states internally, therefore, it is extended here to accept an external state reference which is synchronized with its internal states on events
-// alternatively, one can write their own versions of TextEditor that just reference an external state without owning internal states
-// other stateless or possibly constant components like TextView, ClipFrame, BackgroundFrame, etc might be used directly in immediate mode
+// hot reload (immediate mode) requires the states to be stored externally
+// the components access and update the states by reference, so that the states won't be lost when the components are recreated
+// we use Stateful::TextEditor in the standard component library of ViewDesign
 
 namespace ViewDesign::IM {
 
-class TextEditor : public ViewDesign::TextEditor {
+class TextEditor : public Stateful::TextEditor {
 public:
-	using Style = ViewDesign::TextEditor::Style;
+	TextEditor(Style style, State& state) : Stateful::TextEditor(std::move(style), state) {}
 public:
-	struct State {
-		// some states are not initialized here just because their values should initially be undefined
-		u16string text = u"";
-		CaretState caret_state = CaretState::Hide;
-		TextRange caret_position;
-		TextRange selection_range = text_range_empty;
-		SelectionMode selection_mode;
-		TextRange selection_initial_range;
-		TextRange ime_composition_range = text_range_empty;
-		bool mouse_down = false;
-		Point mouse_down_position;
-		uint32 mouse_hit_count = 0;
-		bool key_ctrl = false;
-		bool key_shift = false;
-		bool focus = false;
-	};
-public:
-	TextEditor(const Style& style, State& state) : ViewDesign::TextEditor(style, state.text), state(state) {}
-
-private:
-	State& state;
-public:
-	void SaveState() {
-		// state.text = text; // saved at OnTextUpdate 
-		state.caret_state = caret_state;
-		state.caret_position = caret_position;
-		state.selection_range = selection_range;
-		state.selection_mode = selection_mode;
-		state.selection_initial_range = selection_initial_range;
-		state.ime_composition_range = ime_composition_range;
-		state.mouse_down = mouse_tracker.down;
-		state.mouse_down_position = mouse_tracker.down_position;
-		state.mouse_hit_count = mouse_tracker.hit_count;
-		state.key_ctrl = key_tracker.ctrl;
-		state.key_shift = key_tracker.shift;
-		// state.focus updated at OnFocusEvent
-	}
-	void LoadState() {
-		//Assign(state.text); // loaded at construction
-		caret_state = state.caret_state;
-		if (caret_state != CaretState::Hide) { UpdateCaret(state.caret_position); }
-		UpdateSelection(state.selection_range);
-		selection_mode = state.selection_mode;
-		selection_initial_range = state.selection_initial_range;
-		UpdateImeComposition(state.ime_composition_range);
-		mouse_tracker.down = state.mouse_down;
-		mouse_tracker.down_position = state.mouse_down_position;
-		mouse_tracker.hit_count = state.mouse_hit_count;
-		key_tracker.ctrl = state.key_ctrl;
-		key_tracker.shift = state.key_shift;
-		if (state.focus) { SetFocus(); }
-		if (state.mouse_down) { SetCapture(); }
-	}
-private:
-	virtual void OnTextUpdate() override {
-		ViewDesign::TextEditor::OnTextUpdate();
-		state.text = text;
-	}
-private:
-	virtual void OnMouseEvent(MouseEvent event) override {
-		ViewDesign::TextEditor::OnMouseEvent(event);
-		SaveState();
-	}
-	virtual void OnKeyEvent(KeyEvent event) override {
-		ViewDesign::TextEditor::OnKeyEvent(event);
-		SaveState();
-	}
-	virtual void OnFocusEvent(FocusEvent event) override {
-		ViewDesign::TextEditor::OnFocusEvent(event);
-		switch (event) {
-		case FocusEvent::Focus: state.focus = true; break;
-		case FocusEvent::Blur: state.focus = false; break;
-		}
+	void RestoreFocusCapture() {
+		if (state.caret.active) { SetFocus(); }
+		if (state.input.mouse.down) { SetCapture(); }
 	}
 };
 
@@ -167,13 +96,11 @@ void App() {
 				)
 			)
 		);
-		// TextEditorRef is detached from the view tree when created and SetFocus() / SetCapture() won't work until it is added in the view tree
-		text_editor->LoadState();
+		// TextEditor is detached from the view tree when created and SetFocus() / SetCapture() won't work until it is added in the view tree
+		text_editor->RestoreFocusCapture();
 
-		// the caret blinking state, mouse tracker state and cursor might not display consistently without LAZY_RECREATE, because:
-		// - caret blinking and mouse tracker uses internal timers that are not set at LoadState
-		// - the cursor resets when the tracked view is destructed but the newly added view won't automatically be tracked by Desktop until the next mouse event
-		// however, mouse capture and key focus states can be saved and restored through the newly added view itself
+		// the cursor might not display consistently without LAZY_RECREATE
+		// because the cursor resets when the tracked view is destructed but the newly added view won't automatically be tracked by Desktop until the next mouse event
 	}
 }
 
