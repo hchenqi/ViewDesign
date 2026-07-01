@@ -23,7 +23,7 @@ void App() {
 							// this padding is scaled
 							new PaddingFrame(
 								Padding(10.0f),
-								text_editor = new TextEditor(TextEditor::Style(), u"Type something here...\n(hint: zoom with Ctrl + scroll)")
+								text_editor = new WithHistory<TextEditor>(TextEditor::Style(), u"Type something here...\n(hint: zoom with Ctrl + scroll)")
 							)
 						)
 					)

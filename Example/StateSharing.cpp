@@ -20,12 +20,7 @@ public:
 	const Signal& state_update_signal;
 	Signal::Listener state_listener;
 private:
-	virtual void OnMouseEvent(MouseEvent event) override {
-		TextEditor::OnMouseEvent(event);
-		state_update_signal.Notify();
-	}
-	virtual void OnKeyEvent(KeyEvent event) override {
-		TextEditor::OnKeyEvent(event);
+	virtual void OnOperationEnd() override {
 		state_update_signal.Notify();
 	}
 };

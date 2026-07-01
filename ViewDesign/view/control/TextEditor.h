@@ -8,6 +8,8 @@
 #include "ViewDesign/event/mouse_tracker.h"
 #include "ViewDesign/event/key_tracker.h"
 
+#include <vector>
+
 
 namespace ViewDesign {
 
@@ -161,7 +163,17 @@ protected:
 	void DoSelect(Point current_point) { DoSelect(text_block.HitTestPoint(current_point)); }
 	void DoSelect(TextRange current_position) { DoSelect(text_block.HitTestPosition(current_position)); }
 
-	// input
+	// operation
+protected:
+	virtual void OnOperationBegin() {}
+	virtual void OnOperationEnd() {}
+protected:
+	void Operation(auto func) {
+		if (IsEditDisabled()) { return; }
+		OnOperationBegin();
+		func();
+		OnOperationEnd();
+	}
 protected:
 	void Insert(u16char ch);
 	void Insert(u16pair ch);
@@ -214,6 +226,83 @@ protected:
 class TextEditor : protected Holder<Stateful::TextEditor::State>, public Stateful::TextEditor {
 public:
 	TextEditor(Style style, u16string text = u"") : Holder<State>(std::move(text)), Stateful::TextEditor(std::move(style), Holder<State>::value) {}
+};
+
+
+template<class TextEditor>
+class WithHistory : public TextEditor {
+public:
+	using Base = WithHistory;
+
+public:
+	using TextEditor::TextEditor;
+
+protected:
+	using TextEditor::state;
+	using TextEditor::ctrl;
+
+protected:
+	struct EditState {
+		u16string text;
+		TextRange caret_position;
+		TextRange selection_range;
+	};
+protected:
+	EditState GetEditState() const {
+		return { state.text, state.caret.position, state.selection.current_range };
+	}
+	EditState SetEditState(EditState edit_state) {
+		std::swap(state.text, edit_state.text);
+		std::swap(state.caret.position, edit_state.caret_position);
+		std::swap(state.selection.current_range, edit_state.selection_range);
+		TextEditor::OnStateUpdate();
+		return edit_state;
+	}
+
+protected:
+	std::vector<EditState> undo_stack;
+	std::vector<EditState> redo_stack;
+protected:
+	void Push() {
+		undo_stack.emplace_back(GetEditState());
+		redo_stack.clear();
+	}
+public:
+	void Undo() {
+		if (undo_stack.empty()) { return; }
+		update_timeout.Stop();
+		redo_stack.emplace_back(SetEditState(std::move(undo_stack.back()))); undo_stack.pop_back();
+	}
+	void Redo() {
+		if (redo_stack.empty()) { return; }
+		undo_stack.emplace_back(SetEditState(std::move(redo_stack.back()))); redo_stack.pop_back();
+	}
+
+protected:
+	static constexpr uint32 update_timeout_value = 1000; // 1s
+protected:
+	Timer update_timeout{ [&]() { update_timeout.Stop(); } };
+protected:
+	virtual void OnOperationBegin() override {
+		TextEditor::OnOperationBegin();
+		if (!update_timeout.IsSet()) {
+			Push();
+		}
+		update_timeout.Set(update_timeout_value);
+	}
+
+protected:
+	virtual void OnKeyEvent(KeyEvent event) override {
+		TextEditor::OnKeyEvent(event);
+		switch (event.type) {
+		case KeyEvent::KeyDown:
+			switch (event.key) {
+			case Key::Char('Z'): if (ctrl()) { Undo(); } break;
+			case Key::Char('Y'): if (ctrl()) { Redo(); } break;
+			}
+			break;
+		}
+	}
 };
 
 

@@ -211,56 +211,60 @@ void TextEditor::DoSelect(const HitTestPointInfo& info) {
 }
 
 void TextEditor::Insert(u16char ch) {
-	if (IsEditDisabled()) { return; }
-	if (HasSelection()) {
-		Base::Replace(state.selection.current_range, ch);
-		SetCaret(TextRange(state.selection.current_range.begin() + 1, 0));
-	} else {
-		Base::Insert(state.caret.position.end(), ch);
-		SetCaret(TextRange(state.caret.position.end() + 1, 0));
-	}
+	Operation([&] {
+		if (HasSelection()) {
+			Base::Replace(state.selection.current_range, ch);
+			SetCaret(TextRange(state.selection.current_range.begin() + 1, 0));
+		} else {
+			Base::Insert(state.caret.position.end(), ch);
+			SetCaret(TextRange(state.caret.position.end() + 1, 0));
+		}
+	});
 }
 
 void TextEditor::Insert(u16pair ch) {
-	if (IsEditDisabled()) { return; }
-	if (HasSelection()) {
-		Base::Replace(state.selection.current_range, ch);
-		SetCaret(TextRange(state.selection.current_range.begin() + ch.length(), 0));
-	} else {
-		Base::Insert(state.caret.position.end(), ch);
-		SetCaret(TextRange(state.caret.position.end() + ch.length(), 0));
-	}
+	Operation([&] {
+		if (HasSelection()) {
+			Base::Replace(state.selection.current_range, ch);
+			SetCaret(TextRange(state.selection.current_range.begin() + ch.length(), 0));
+		} else {
+			Base::Insert(state.caret.position.end(), ch);
+			SetCaret(TextRange(state.caret.position.end() + ch.length(), 0));
+		}
+	});
 }
 
 void TextEditor::Insert(const u16string& str) {
-	if (IsEditDisabled()) { return; }
-	if (HasSelection()) {
-		Base::Replace(state.selection.current_range, str);
-		SetCaret(TextRange(state.selection.current_range.begin() + str.length(), 0));
-	} else {
-		Base::Insert(state.caret.position.end(), str);
-		SetCaret(TextRange(state.caret.position.end() + str.length(), 0));
-	}
+	Operation([&] {
+		if (HasSelection()) {
+			Base::Replace(state.selection.current_range, str);
+			SetCaret(TextRange(state.selection.current_range.begin() + str.length(), 0));
+		} else {
+			Base::Insert(state.caret.position.end(), str);
+			SetCaret(TextRange(state.caret.position.end() + str.length(), 0));
+		}
+	});
 }
 
 void TextEditor::Delete(bool is_backspace) {
-	if (IsEditDisabled()) { return; }
-	if (HasSelection()) {
-		Base::Erase(state.selection.current_range);
-		SetCaret(TextRange(state.selection.current_range.begin(), 0));
-	} else {
-		if (is_backspace) {
-			if (state.caret.position.end() > 0) {
-				size_t length = GetPrevCharacterLength(text[state.caret.position.end() - 1]);
-				Base::Erase(TextRange(state.caret.position.end() - length, length));
-				SetCaret(TextRange(state.caret.position.end() - length, 0));
-			}
+	Operation([&] {
+		if (HasSelection()) {
+			Base::Erase(state.selection.current_range);
+			SetCaret(TextRange(state.selection.current_range.begin(), 0));
 		} else {
-			if (state.caret.position.end() < text.length()) {
-				Base::Erase(TextRange(state.caret.position.end(), GetNextCharacterLength(text[state.caret.position.end()])));
+			if (is_backspace) {
+				if (state.caret.position.end() > 0) {
+					size_t length = GetPrevCharacterLength(text[state.caret.position.end() - 1]);
+					Base::Erase(TextRange(state.caret.position.end() - length, length));
+					SetCaret(TextRange(state.caret.position.end() - length, 0));
+				}
+			} else {
+				if (state.caret.position.end() < text.length()) {
+					Base::Erase(TextRange(state.caret.position.end(), GetNextCharacterLength(text[state.caret.position.end()])));
+				}
 			}
 		}
-	}
+	});
 }
 
 void TextEditor::UpdateImeComposition(TextRange range) {
@@ -286,11 +290,12 @@ void TextEditor::OnImeBegin() {
 }
 
 void TextEditor::OnImeString() {
-	if (IsEditDisabled()) { return; }
-	u16string str = ime.GetString();
-	Base::Replace(state.input.ime_composition_range, str);
-	UpdateImeComposition(TextRange(state.input.ime_composition_range.begin(), str.length()));
-	SetCaret(TextRange(state.input.ime_composition_range.begin(), ime.GetCursorPosition()));
+	Operation([&] {
+		u16string str = ime.GetString();
+		Base::Replace(state.input.ime_composition_range, str);
+		UpdateImeComposition(TextRange(state.input.ime_composition_range.begin(), str.length()));
+		SetCaret(TextRange(state.input.ime_composition_range.begin(), ime.GetCursorPosition()));
+	});
 }
 
 void TextEditor::OnImeEnd() {
@@ -321,7 +326,7 @@ void TextEditor::Paste() {
 
 void TextEditor::OnMouseEvent(MouseEvent event) {
 	switch (event.type) {
-	case MouseEvent::LeftDown: SetCaret(event.point); SetFocus(); SetCapture(); break;
+	case MouseEvent::LeftDown: SetFocus(); SetCapture(); SetCaret(event.point); break;
 	case MouseEvent::LeftUp: ReleaseCapture(); break;
 	}
 	switch (mouse_tracker.Track(event)) {
