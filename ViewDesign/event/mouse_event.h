@@ -10,18 +10,6 @@ namespace ViewDesign {
 struct MouseEvent {
 	Point point;
 	short wheel_delta = 0;
-	union {
-		struct {
-			bool left : 1;
-			bool right : 1;
-			bool shift : 1;
-			bool ctrl : 1;
-			bool middle : 1;
-			bool xbutton1 : 1;
-			bool xbutton2 : 1;
-		};
-		uint8 _key_state = 0;
-	};
 	enum : uint8 {
 		LeftDown,
 		LeftUp,
@@ -33,6 +21,11 @@ struct MouseEvent {
 		WheelVertical,
 		WheelHorizontal,
 	} type;
+	struct {
+		bool ctrl : 1;
+		bool shift : 1;
+		bool alt : 1;
+	};
 };
 
 

@@ -20,6 +20,11 @@ struct KeyEvent {
 		ImeString,
 		ImeEnd,
 	} type;
+	struct {
+		bool ctrl : 1;
+		bool shift : 1;
+		bool alt : 1;
+	};
 };
 
 

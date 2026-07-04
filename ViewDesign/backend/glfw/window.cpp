@@ -92,8 +92,9 @@ void CursorPosCallback(GLFWwindow* glfw_window, double xpos, double ypos) {
 void MouseButtonCallback(GLFWwindow* glfw_window, int button, int action, int mods) {
 	MouseEvent mouse_event;
 	mouse_event.point = cursor_position;
-	mouse_event.shift = (mods & GLFW_MOD_SHIFT) != 0;
 	mouse_event.ctrl = (mods & GLFW_MOD_CONTROL) != 0;
+	mouse_event.shift = (mods & GLFW_MOD_SHIFT) != 0;
+	mouse_event.alt = (mods & GLFW_MOD_ALT) != 0;
 	switch (action) {
 	case GLFW_PRESS:
 		switch (button) {
@@ -119,8 +120,9 @@ void MouseButtonCallback(GLFWwindow* glfw_window, int button, int action, int mo
 void ScrollCallback(GLFWwindow* glfw_window, double xoffset, double yoffset) {
 	MouseEvent mouse_event;
 	mouse_event.point = cursor_position;
-	mouse_event.shift = (glfwGetKey(glfw_window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) || (glfwGetKey(glfw_window, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS);
 	mouse_event.ctrl = (glfwGetKey(glfw_window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) || (glfwGetKey(glfw_window, GLFW_KEY_RIGHT_CONTROL) == GLFW_PRESS);
+	mouse_event.shift = (glfwGetKey(glfw_window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) || (glfwGetKey(glfw_window, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS);
+	mouse_event.alt = (glfwGetKey(glfw_window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS) || (glfwGetKey(glfw_window, GLFW_KEY_RIGHT_ALT) == GLFW_PRESS);
 	if (yoffset != 0.0) {
 		mouse_event.wheel_delta = yoffset * 120;
 		mouse_event.type = MouseEvent::WheelVertical;
@@ -149,6 +151,9 @@ void KeyCallback(GLFWwindow* glfw_window, int key, int scancode, int action, int
 	case GLFW_RELEASE: key_event.type = KeyEvent::KeyUp; break;
 	default: return;
 	}
+	key_event.ctrl = (mods & GLFW_MOD_CONTROL) != 0;
+	key_event.shift = (mods & GLFW_MOD_SHIFT) != 0;
+	key_event.alt = (mods & GLFW_MOD_ALT) != 0;
 	GetDesktop().DispatchKeyEvent(key_event);
 }
 
@@ -156,6 +161,9 @@ void CharCallback(GLFWwindow* glfw_window, unsigned int codepoint) {
 	KeyEvent key_event;
 	key_event.ch = to_u16pair(codepoint);
 	key_event.type = KeyEvent::Char;
+	key_event.ctrl = (glfwGetKey(glfw_window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) || (glfwGetKey(glfw_window, GLFW_KEY_RIGHT_CONTROL) == GLFW_PRESS);
+	key_event.shift = (glfwGetKey(glfw_window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) || (glfwGetKey(glfw_window, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS);
+	key_event.alt = (glfwGetKey(glfw_window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS) || (glfwGetKey(glfw_window, GLFW_KEY_RIGHT_ALT) == GLFW_PRESS);
 	GetDesktop().DispatchKeyEvent(key_event);
 }
 

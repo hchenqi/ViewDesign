@@ -33,7 +33,7 @@ constexpr size_t GetPrevCharacterLength(u16char ch) {
 
 TextEditor::TextEditor(Style style, State& state) :
 	Holder<TextView::Style>(std::move(style)), Base(Holder<TextView::Style>::value, state.text),
-	style(std::move(style)), state(state), mouse_tracker(state.input.mouse), key_tracker(state.input.key) {
+	style(std::move(style)), state(state), mouse_tracker(state.input.mouse) {
 	style.edit._disabled ? ime.Disable(*this) : ime.Enable(*this);
 	word_iterator.SetText(text);
 	if (state.caret.active && IsCaretBlinking()) { SetCaretTimer(); }
@@ -338,7 +338,6 @@ void TextEditor::OnMouseEvent(MouseEvent event) {
 }
 
 void TextEditor::OnKeyEvent(KeyEvent event) {
-	key_tracker.Track(event);
 	switch (event.type) {
 	case KeyEvent::KeyDown:
 		switch (event.key) {
@@ -355,14 +354,14 @@ void TextEditor::OnKeyEvent(KeyEvent event) {
 		case Key::Backspace: Delete(true); break;
 		case Key::Delete: Delete(false); break;
 
-		case Key::Char('A'): if (ctrl()) { SelectAll(); } break;
-		case Key::Char('X'): if (ctrl()) { Cut(); } break;
-		case Key::Char('C'): if (ctrl()) { Copy(); } break;
-		case Key::Char('V'): if (ctrl()) { Paste(); } break;
+		case Key::Char('A'): if (event.ctrl) { SelectAll(); } break;
+		case Key::Char('X'): if (event.ctrl) { Cut(); } break;
+		case Key::Char('C'): if (event.ctrl) { Copy(); } break;
+		case Key::Char('V'): if (event.ctrl) { Paste(); } break;
 		}
 		break;
 	case KeyEvent::Char:
-		if (ctrl()) { break; }
+		if (event.ctrl) { break; }
 		if (event.ch.empty()) { break; }
 		if (event.ch.single()) { if (!iswcntrl(event.ch.first)) { Insert(event.ch.first); } break; }
 		Insert(event.ch);

@@ -6,7 +6,6 @@
 #include "ViewDesign/event/timer.h"
 #include "ViewDesign/event/ime.h"
 #include "ViewDesign/event/mouse_tracker.h"
-#include "ViewDesign/event/key_tracker.h"
 
 #include <vector>
 
@@ -64,7 +63,6 @@ public:
 
 	struct InputState {
 		MouseTracker::State mouse;
-		KeyTracker::State key;
 		TextRange ime_composition_range = text_range_empty;
 	};
 
@@ -209,10 +207,6 @@ public:
 	// event
 protected:
 	MouseTracker mouse_tracker;
-	KeyTracker key_tracker;
-protected:
-	bool ctrl() const { return state.input.key.ctrl; }
-	bool shift() const { return state.input.key.shift; }
 protected:
 	virtual void OnMouseEvent(MouseEvent event) override;
 	virtual void OnKeyEvent(KeyEvent event) override;
@@ -239,7 +233,6 @@ public:
 
 protected:
 	using TextEditor::state;
-	using TextEditor::ctrl;
 
 protected:
 	struct EditState {
@@ -297,8 +290,8 @@ protected:
 		switch (event.type) {
 		case KeyEvent::KeyDown:
 			switch (event.key) {
-			case Key::Char('Z'): if (ctrl()) { Undo(); } break;
-			case Key::Char('Y'): if (ctrl()) { Redo(); } break;
+			case Key::Char('Z'): if (event.ctrl) { Undo(); } break;
+			case Key::Char('Y'): if (event.ctrl) { Redo(); } break;
 			}
 			break;
 		}

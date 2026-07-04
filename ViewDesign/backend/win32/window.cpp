@@ -68,7 +68,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 	if (IsMouseMsg(msg)) {
 		MouseEvent mouse_event;
 		mouse_event.point = Point((float)GET_X_LPARAM(lparam), (float)GET_Y_LPARAM(lparam));
-		mouse_event._key_state = (uint8)GET_KEYSTATE_WPARAM(wparam);;
 		mouse_event.wheel_delta = GET_WHEEL_DELTA_WPARAM(wparam);
 		switch (msg) {
 		case WM_MOUSEMOVE: mouse_event.type = MouseEvent::Move;
@@ -92,6 +91,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 		case WM_MOUSEHWHEEL: mouse_event.type = MouseEvent::WheelHorizontal; mouse_event.point -= window->GetRegion().point - point_zero; break;
 		default: return DefWindowProc(hwnd, msg, wparam, lparam);
 		}
+		mouse_event.ctrl = (GET_KEYSTATE_WPARAM(wparam) & MK_CONTROL) != 0;
+		mouse_event.shift = (GET_KEYSTATE_WPARAM(wparam) & MK_SHIFT) != 0;
+		mouse_event.alt = (GetKeyState(VK_MENU) & 0x8000) != 0;
 		GetDesktop().DispatchMouseEvent(*window, mouse_event);
 		return 0;
 	}
@@ -99,8 +101,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 	// keyboard message
 	if (IsKeyMsg(msg)) {
 		KeyEvent key_event;
-		key_event.key = static_cast<Key::Value>(wparam);
 		key_event.ch = { static_cast<u16char>(wparam), 0 };
+		key_event.key = static_cast<Key::Value>(wparam);
 		switch (msg) {
 		case WM_KEYDOWN: key_event.type = KeyEvent::KeyDown; break;
 		case WM_KEYUP: key_event.type = KeyEvent::KeyUp; break;
@@ -110,6 +112,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 		case WM_IME_ENDCOMPOSITION: key_event.type = KeyEvent::ImeEnd; break;
 		default: return DefWindowProc(hwnd, msg, wparam, lparam);
 		}
+		key_event.ctrl = (GetKeyState(VK_CONTROL) & 0x8000) != 0;
+		key_event.shift = (GetKeyState(VK_SHIFT) & 0x8000) != 0;
+		key_event.alt = (GetKeyState(VK_MENU) & 0x8000) != 0;
 		GetDesktop().DispatchKeyEvent(key_event);
 		return 0;
 	}
@@ -148,15 +153,15 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 		case WM_HSCROLL:
 		case WM_VSCROLL: {
 			short wheel_delta = 0;
-			short key_state = 0;
-			Point cursor_position = GetCursorPosition();
-			if (GetAsyncKeyState(VK_SHIFT)) { key_state |= MK_SHIFT; }
-			if (GetAsyncKeyState(VK_CONTROL)) { key_state |= MK_CONTROL; }
 			switch (LOWORD(wparam)) {
 			case SB_LINEUP: case SB_PAGEUP: wheel_delta = WHEEL_DELTA; break;
 			case SB_LINEDOWN: case SB_PAGEDOWN: wheel_delta = -WHEEL_DELTA; break;
 			default: return 0;
 			}
+			short key_state = 0;
+			if (GetKeyState(VK_CONTROL)) { key_state |= MK_CONTROL; }
+			if (GetKeyState(VK_SHIFT)) { key_state |= MK_SHIFT; }
+			Point cursor_position = GetCursorPosition();
 			return WndProc(
 				hwnd, msg == WM_HSCROLL ? WM_MOUSEHWHEEL : WM_MOUSEWHEEL,
 				(wheel_delta << 16) | key_state, ((short)cursor_position.y << 16) | (short)cursor_position.x

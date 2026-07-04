@@ -9,7 +9,6 @@
 #include <ViewDesign/view/wrapper/Background.h>
 #include <ViewDesign/view/wrapper/HitTestHelper.h>
 #include <ViewDesign/event/mouse_tracker.h>
-#include <ViewDesign/event/key_tracker.h>
 
 
 using namespace ViewDesign;
@@ -53,7 +52,6 @@ private:
 		// event
 	private:
 		MouseTracker mouse_tracker;
-		KeyTracker key_tracker;
 	private:
 		virtual void OnMouseEvent(MouseEvent event) override {
 			switch (event.type) {
@@ -71,11 +69,10 @@ private:
 			}
 		}
 		virtual void OnKeyEvent(KeyEvent event) override {
-			key_tracker.Track(event);
 			if (event.type == KeyEvent::KeyDown) {
 				switch (event.key) {
-				case Key::Char('F'): key_tracker.ctrl ? BringToFront() : BringForward(); break;
-				case Key::Char('B'): key_tracker.ctrl ? SendToBack() : SendBackward(); break;
+				case Key::Char('F'): event.ctrl ? BringToFront() : BringForward(); break;
+				case Key::Char('B'): event.ctrl ? SendToBack() : SendBackward(); break;
 				}
 			}
 		}
