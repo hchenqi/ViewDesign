@@ -21,7 +21,7 @@ public:
 protected:
 	Border border;
 public:
-	void SetBorder(Border border) { this->border = border; Redraw(rect_infinite); }
+	void SetBorderColor(Color color) { if (border._color != color) { border._color = color; Redraw(rect_infinite); } }
 
 	// layout
 protected:

@@ -7,12 +7,11 @@
 #include <ViewDesign/view/frame/ScrollFrame.h>
 #include <ViewDesign/view/frame/LayerFrame.h>
 #include <ViewDesign/view/frame/ScaleFrame.h>
-#include <ViewDesign/view/frame/InnerBorderFrame.h>
-#include <ViewDesign/view/frame/PaddingFrame.h>
 #include <ViewDesign/view/layout/ListLayout.h>
 #include <ViewDesign/view/control/TextEditor.h>
 #include <ViewDesign/view/wrapper/Background.h>
 #include <ViewDesign/view/wrapper/HitTestHelper.h>
+#include <ViewDesign/view/widget/Box.h>
 #include <ViewDesign/view/widget/TextViewAdapter.h>
 
 #include "trait_name.h"
@@ -22,28 +21,31 @@ using namespace ViewDesign;
 
 
 template<template<class Trait> class ListLayout, class Trait>
-class ListView : public HitSelfFallback<ListLayout<Trait>> {
+class ListView : public HitSelfFallbackRecursive<ListLayout<Trait>> {
 private:
-	using Base = HitSelfFallback<ListLayout<Trait>>;
+	using Base = HitSelfFallbackRecursive<ListLayout<Trait>>;
 
 public:
 	using Base::Base;
 
 private:
 	template<class WidthTrait, class HeightTrait>
-	class ItemFrame : public InnerBorderFrame<WidthTrait, HeightTrait> {
+	class ItemFrame : public Box<WidthTrait, HeightTrait> {
 	private:
-		using Base = InnerBorderFrame<WidthTrait, HeightTrait>;
+		using Base = Box<WidthTrait, HeightTrait>;
 	public:
-		ItemFrame(Base::child_type child) : Base(border_normal, std::move(child)) {}
+		ItemFrame(Base::child_type child) : Base(
+			Margin(0.0f), Border(2.0f, 5.0f, border_color_normal), color_transparent, Padding(10.0f),
+			std::move(child)
+		) {}
 	private:
-		constexpr static Border border_normal = Border(2.0f, 5.0f, ColorCode::CadetBlue);
-		constexpr static Border border_focused = Border(2.0f, 5.0f, ColorCode::Orange);
+		constexpr static Color border_color_normal = ColorCode::CadetBlue;
+		constexpr static Color border_color_focused = ColorCode::Orange;
 	private:
 		virtual void OnFocusEvent(FocusEvent event) override {
 			switch (event) {
-			case FocusEvent::FocusIn: Base::SetBorder(border_focused); break;
-			case FocusEvent::FocusOut: Base::SetBorder(border_normal); break;
+			case FocusEvent::FocusIn: Base::SetBorderColor(border_color_focused); break;
+			case FocusEvent::FocusOut: Base::SetBorderColor(border_color_normal); break;
 			}
 		}
 	};
@@ -67,11 +69,8 @@ private:
 		ref_ptr<Item> item;
 		Base::Append(
 			new ItemFrame(
-				new PaddingFrame(
-					Padding(10.0f),
-					TextViewAdapter<typename Base::width_trait, typename Base::height_trait>(
-						item = new Item()
-					)
+				TextViewAdapter<typename Base::width_trait, typename Base::height_trait>(
+					item = new Item()
 				)
 			)
 		);
@@ -107,12 +106,9 @@ void Test() {
 				new LayerFrameTiled(
 					new ScaleFrame(
 						new LayerFrameTiled(
-							new InnerBorderFrame(
-								Border(1.0f, 0.0f, ColorCode::Black),
-								new PaddingFrame(
-									Padding(5.0f),
-									new ListView<ListLayout, Trait>(5)
-								)
+							new Box(
+								Margin(0.0f), Border(1.0f, 0.0f, ColorCode::Black), color_transparent, Padding(5.0f),
+								new ListView<ListLayout, Trait>(5)
 							)
 						)
 					)

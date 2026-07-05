@@ -43,7 +43,7 @@ public:
 		public:
 			float _height = 30.0f;
 			float _max_title_length = 300.0f;
-			Color _background_color = ColorCode::DarkGray;
+			Color _background_color = ColorCode::CadetBlue;
 			Color _foreground_color = ColorCode::White;
 		public:
 			constexpr BarStyle& height(float height) { _height = height; return *this; }
@@ -54,21 +54,16 @@ public:
 	};
 
 	struct FrameStyle {
-		Padding padding;
-		Border border;
-		Color background_color;
+		Padding padding = Padding(2.0f);
+		Border border = Border(2.0f, 2.0f, ColorCode::CadetBlue);
+		Color background_color = ColorCode::White;
 	};
 
 	struct Style : UndecoratedWindow::Style, FrameStyle {
 		TitleBarStyle title;
 
 		Style() {
-			padding = Padding(2.0f);
-			border.width(2.0f).radius(2.0f).color(ColorCode::CadetBlue);
-			background_color = ColorCode::White;
-			title.bar.background_color(ColorCode::CadetBlue);
-			title.font.color(ColorCode::White);
-			title.paragraph.line_spacing(pct(100));
+			title.font.color(title.bar._foreground_color);
 		}
 	};
 

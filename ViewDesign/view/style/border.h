@@ -11,7 +11,6 @@ struct Border {
 	float _radius;
 	Color _color;
 
-	constexpr Border() : Border(0.0f, 0.0f, color_transparent) {}
 	constexpr Border(float width, Color color) : Border(width, 0.0f, color) {}
 	constexpr Border(float width, float radius, Color color) : _width(width), _radius(radius), _color(color) {}
 
