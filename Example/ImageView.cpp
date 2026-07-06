@@ -8,11 +8,10 @@
 #include <ViewDesign/view/control/TextEditor.h>
 #include <ViewDesign/view/control/ImageView.h>
 #include <ViewDesign/view/wrapper/HitTestHelper.h>
-#include <ViewDesign/view/wrapper/Button.h>
 #include <ViewDesign/view/wrapper/Background.h>
+#include <ViewDesign/view/widget/FilledButton.h>
 #include <ViewDesign/view/widget/Box.h>
 #include <ViewDesign/view/widget/TextViewAdapter.h>
-#include <ViewDesign/messaging/context.h>
 
 #include <optional>
 
@@ -20,7 +19,7 @@
 using namespace ViewDesign;
 
 
-class LoadImageWindow : public DefaultBackground<DefaultWindow>, private ContextProvider {
+class LoadImageWindow : public DefaultBackground<DefaultWindow> {
 private:
 	struct Style : DefaultWindow::Style {
 		Style() {
@@ -41,15 +40,17 @@ public:
 						filename_input = new TextEditor(TextEditor::Style(), filename_default)
 					)
 				),
-				new LoadButton()
+				new LoadButton(*this)
 			)
 		)
-	), ContextProvider(AsViewBase()), image(image) {}
+	), image(image) {}
 
 private:
-	class LoadButton : public HitSelf<Button<DefaultBackground<ViewFrame>>>, public SizeTrait<Auto, Auto>, private Context<LoadImageWindow> {
+	class LoadButton : public HitSelf<FilledButton<ViewFrame>>, public SizeTrait<Auto, Auto> {
 	public:
-		LoadButton() : Base(
+		LoadButton(LoadImageWindow& window) : Base(
+			Base::Style(),
+			[&] { window.TryLoadImage(); },
 			new MaxFrame(
 				size_infinite,
 				new Box(
@@ -57,17 +58,7 @@ private:
 					new TextView(TextView::Style(), u"load")
 				)
 			)
-		), Context(AsViewBase()) {}
-	private:
-		static constexpr Color background_normal = ColorCode::White;
-		static constexpr Color background_hovered = ColorCode::LightGray;
-		static constexpr Color background_pressed = ColorCode::Gray;
-	private:
-		virtual void OnHover() override { SetBackground(background_hovered); }
-		virtual void OnPress() override { SetBackground(background_pressed); }
-		virtual void OnLeave() override { SetBackground(background_normal); }
-	private:
-		virtual void OnClick() override { Context::Get().TryLoadImage(); }
+		) {}
 	};
 
 private:

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "ViewDesign/view/control/Placeholder.h"
 #include "ViewDesign/view/wrapper/Button.h"
 #include "ViewDesign/view/wrapper/Background.h"
 
@@ -10,18 +9,18 @@
 namespace ViewDesign {
 
 
-template<class WidthTrait, class HeightTrait>
-class FilledButton : public Button<DefaultBackground<Placeholder<WidthTrait, HeightTrait>>> {
-public:
-	using Base = Button<DefaultBackground<Placeholder<WidthTrait, HeightTrait>>>;
+template<view_type View>
+class FilledButton : public Button<DefaultBackground<View>> {
+private:
+	using Base = Button<DefaultBackground<View>>;
 
 public:
 	struct Style {
 		struct BackgroundStyle {
 		public:
 			Color _normal = color_transparent;
-			Color _hovered = ColorCode::Gray;
-			Color _pressed = ColorCode::DimGray;
+			Color _hovered = ColorCode::LightGray;
+			Color _pressed = ColorCode::Gray;
 		public:
 			BackgroundStyle& normal(Color normal) { _normal = normal; return *this; }
 			BackgroundStyle& hovered(Color hovered) { _hovered = hovered; return *this; }
