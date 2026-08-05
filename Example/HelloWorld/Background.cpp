@@ -18,7 +18,7 @@ void App() {
 			DefaultWindow::Style(),
 			u"HelloWorld",
 			create<CenterFrame<Fixed, Fixed>>(
-				create<BackgroundFrame<Relative, Relative>>(
+				create<BackgroundFrame<Bounded, Bounded>>(
 					ColorCode::LightPink,
 					create<TextView>(TextViewStyle(), u"Hello World!")
 				)

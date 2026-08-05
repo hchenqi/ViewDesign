@@ -44,6 +44,4 @@
 
 - (questionable) `ViewBase`/`Desktop`: allowing a view component to initiate `SetTrack()`
 
-- (questionable) adding other size traits (like `Bounded` for `TextView` and `MaxFrame`) to replace the ambiguous `Relative` trait
-
 - (questionable) adding `OnMount()`/`OnDismount()` callbacks when a component is attached to/detached from the view tree

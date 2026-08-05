@@ -10,7 +10,7 @@ namespace ViewDesign {
 namespace Stateful {
 
 
-class TextView : public ViewBase, public SizeTrait<Relative, Relative> {
+class TextView : public ViewBase, public SizeTrait<Bounded, Bounded> {
 public:
 	using Style = TextStyle;
 

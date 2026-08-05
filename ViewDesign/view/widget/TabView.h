@@ -8,7 +8,6 @@
 #include "ViewDesign/view/frame/CenterFrame.h"
 #include "ViewDesign/view/frame/MaxFrame.h"
 #include "ViewDesign/view/frame/ClipFrame.h"
-#include "ViewDesign/view/frame/FixedFrame.h"
 #include "ViewDesign/view/frame/ScrollFrame.h"
 #include "ViewDesign/view/control/TextView.h"
 #include "ViewDesign/view/control/Placeholder.h"
@@ -25,7 +24,7 @@ namespace ViewDesign {
 class TabView : public ViewFrame, public SizeTrait<Fixed, Fixed>, private ContextProvider {
 public:
 	using header_ptr = view_ptr<Auto, Fixed>;
-	using content_ptr = view_ptr<Relative, Relative>;
+	using content_ptr = view_ptr<Fixed, Fixed>;
 
 public:
 	struct Style {};
@@ -70,7 +69,7 @@ public:
 		virtual void OnPress() override { Focus(); }
 	};
 
-	using ContentFrame = MutableFrame<Relative, Relative>;
+	using ContentFrame = MutableFrame<Fixed, Fixed>;
 
 public:
 	class DefaultHeaderFixed : public HitThrough<PaddingFrame<Auto, Fixed>> {
@@ -78,7 +77,7 @@ public:
 		DefaultHeaderFixed(Padding padding, u16string text) : Base(
 			padding,
 			new CenterFrame<Auto, Fixed>(
-				new MaxFrame<Auto, Relative>(
+				new MaxFrame<Auto, Bounded>(
 					200.0f,
 					new TextView(TextView::Style(), std::move(text))
 				)
@@ -139,19 +138,19 @@ public:
 public:
 	TabView(Style style, auto... tab) : ViewFrame(
 		new SplitLayoutVertical(
-			new FixedFrame<Fixed, Auto>(
+			new MaxFrame<Bounded, Auto>(
 				30.0f,
-				new ScrollFrame<Horizontal>(
-					tab_list = new ListLayoutHorizontal<Fixed>(
-						1.0f,
-						(view_ptr<Auto, Fixed>(new HeaderFrame(std::move(tab))))...
+				new ClipFrame<Fixed, Fixed, Left>(
+					new ScrollFrame<Bounded, Fixed>(
+						tab_list = new ListLayoutHorizontal<Fixed>(
+							1.0f,
+							(view_ptr<Auto, Fixed>(new HeaderFrame(std::move(tab))))...
+						)
 					)
 				)
 			),
-			new ScrollFrame<Bidirectional>(
-				content_frame = new ContentFrame(
-					new Placeholder<Fixed, Fixed>()
-				)
+			content_frame = new ContentFrame(
+				new Placeholder<Fixed, Fixed>()
 			)
 		)
 	), ContextProvider(AsViewBase()) {}

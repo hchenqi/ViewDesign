@@ -51,7 +51,7 @@ private:
 		LoadButton(LoadImageWindow& window) : Base(
 			Base::Style(),
 			[&] { window.TryLoadImage(); },
-			new MaxFrame(
+			new MaxFrame<Auto, Auto>(
 				size_infinite,
 				new Box(
 					Margin(0.0f), Border(1.0f, ColorCode::Black), color_transparent, Padding(20.0f, 5.0f),

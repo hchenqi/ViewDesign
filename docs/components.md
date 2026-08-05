@@ -32,7 +32,7 @@ The `control` subfolder includes *control* components that have no child view co
 
 ### TextView
 
-`TextView` displays text in a uniform font and paragraph style within a size constraint. It has `Relative` traits for both width and height.
+`TextView` displays text in a uniform font and paragraph style within a size constraint. It has `Bounded` traits for both width and height.
 
 > Currently `TextView` only displays text normally with `Win32-DirectX` backend. With the other backends all characters are displayed as placeholder rectangles.
 
@@ -53,9 +53,9 @@ The *frame* components can be classified as follows:
 - size-preserving (but not content-preserving): `BackgroundFrame`, `InnerBorderFrame`
 - size-traits-preserving (but not size-preserving): `PaddingFrame`, `BorderFrame`, `ScaleFrame`
 - size-traits-converting:
-  - `Relative`->`Fixed` (not size-preserving): `ClipFrame`, `CenterFrame`, `ScrollFrame`, `StretchFrame`
-  - `Fixed`->`Auto` (size-preserving): `FixedFrame`
-  - `Relative`->`Auto` (size-preserving): `MaxFrame`, `MinFrame`
+  - `Relative`->`Fixed` (not size-preserving): `ClipFrame`, `CenterFrame`, `StretchFrame`
+  - `Relative`->`Bounded` (not size-preserving): `ScrollFrame`, `StretchFrameUniform`
+  - `Bounded`->`Auto` (size-preserving): `MaxFrame`
 
 ### ViewFrame
 
@@ -99,11 +99,7 @@ Similar to `Observable`, a `MirrorView` references the `MirroringFrame` which sh
 
 ### StretchFrame
 
-### FixedFrame
-
 ### MaxFrame
-
-### MinFrame
 
 ## layout
 

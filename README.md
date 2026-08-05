@@ -76,9 +76,9 @@ If we change it to `ClipFrame<Fixed, Fixed, TopLeft>`, the `TextView` will stay 
 //#include <ViewDesign/view/frame/ClipFrame.h>
 
 	desktop.AddWindow(
-		create<DefaultWindow>(
+		create<DefaultBackground<DefaultWindow>>(
 			DefaultWindow::Style(),
-			u"Example",
+			u"HelloWorld",
 			create<ClipFrame<Fixed, Fixed, TopLeft>>(
 				create<TextView>(TextViewStyle(), u"Hello World!")
 			)
@@ -110,9 +110,9 @@ If we change it again to `StretchFrame<Fixed, Fixed>`, the `TextView` will alway
 
 ---
 
-`Fixed` is one of the **size traits** of a view, marking that a dimension (width or height) is to be assigned by the parent view. The other two size traits are `Auto` and `Relative`.
+`Fixed` is one of the **size traits** of a view, marking that a dimension (width or height) is to be assigned by the parent view. The other size traits are `Bounded`, `Auto` and `Relative`.
 
-`DefaultWindow` expects both width and height of the child view to be `Fixed`, therefore, we wrote `CenterFrame<Fixed, Fixed>`, `ClipFrame<Fixed, Fixed, TopLeft>`, `StretchFrame<Fixed, Fixed>`, etc. We can not directly put a `TextView` in `DefaultWindow`, because both width and height of a `TextView` are `Relative` which is not convertible to `Fixed`, and the code below won't compile:
+`DefaultWindow` expects both width and height of the child view to be `Fixed`, therefore, we wrote `CenterFrame<Fixed, Fixed>`, `ClipFrame<Fixed, Fixed, TopLeft>`, `StretchFrame<Fixed, Fixed>`, etc. We can not directly put a `TextView` in `DefaultWindow`, because both width and height of a `TextView` are `Bounded` which is not naturally convertible to `Fixed`, and the code below won't compile:
 
 ```cpp
 	desktop.AddWindow(
@@ -124,7 +124,7 @@ If we change it again to `StretchFrame<Fixed, Fixed>`, the `TextView` will alway
 	);
 ```
 
-The size of a `TextView` depends on both the size constraint provided by its parent view and its text content, thus it has `Relative` traits. Because its size might not exactly be the same as `DefaultWindow`, `DefaultWindow` doesn't know how to place it inside. `CenterFrame<Fixed, Fixed>` can be used as an adapter in between, which itself has `Fixed` traits that fits with `DefaultWindow`, while accepting a child view with `Relative` traits by placing the child view at its center.
+The size of a `TextView` depends on both the size constraint provided by its parent view and its text content, thus it has `Bounded` traits. Because its size might not exactly be the same as `DefaultWindow`, `DefaultWindow` doesn't know how to place it inside. `CenterFrame<Fixed, Fixed>` can be used as an adapter in between, which itself has `Fixed` traits that fits with `DefaultWindow`, while accepting a child view with `Bounded` traits by placing the child view at its center.
 
 In the examples above, the text of the `TextView` wraps when the window is being resized. This is because `CenterFrame`, `ClipFrame` or `StretchFrame` pass the window size to the child `TextView` as the size constraint. We could insert a `MaxFrame` to explicitly provide a static size constraint for the `TextView`. Now in a small constraint `Size(300.0f, 300.0f)`, the text of the `TextView` stays wrapped. ([Example/HelloWorld/Constraint.cpp](Example/HelloWorld/Constraint.cpp))
 
@@ -159,7 +159,7 @@ We can provide a custom background for the `TextView`: ([Example/HelloWorld/Back
 			DefaultWindow::Style(),
 			u"HelloWorld",
 			create<CenterFrame<Fixed, Fixed>>(
-				create<BackgroundFrame<Relative, Relative>>(
+				create<BackgroundFrame<Bounded, Bounded>>(
 					ColorCode::LightPink,
 					create<TextView>(TextViewStyle(), u"Hello World!")
 				)
@@ -180,9 +180,9 @@ We can add a padding for the `TextView` with the background: ([Example/HelloWorl
 			DefaultWindow::Style(),
 			u"HelloWorld",
 			create<CenterFrame<Fixed, Fixed>>(
-				create<BackgroundFrame<Relative, Relative>>(
+				create<BackgroundFrame<Bounded, Bounded>>(
 					ColorCode::LightPink,
-					create<PaddingFrame<Relative, Relative>>(
+					create<PaddingFrame<Bounded, Bounded>>(
 						Padding(50.0f),
 						create<TextView>(TextViewStyle(), u"Hello World!")
 					)
@@ -414,33 +414,40 @@ A view whose content is updated without size change can also initiate redraw. A 
 
 A view initiating redraw notifies its parent view about its updated region, and the parent view translates and clips the child view's region as its own and notifies its own parent view until the root-level `Window`, which then draws all child views in the updated region and presents the window in the next rendering frame.
 
-### Fixed / Auto / Relative
+### Fixed / Bounded / Auto / Relative
 
 The core library provides the generic logic for updating layout of a view, but the parent and the child view's layout calculation logic must be additionally ensured to agree with each other. For example, a parent view might want to fix its child view's size to the `size_ref` it provided, but the child view can ignore the `size_ref` and decide its size by itself. This often introduces ill-formed layouts, and the core library actually doesn't prevent this.
 
-The standard component library of *ViewDesign* introduces **size traits**: `Fixed`, `Auto` and `Relative` that mark how the width or the height of a view component is to be decided which can be checked at compile-time.
+The standard component library of *ViewDesign* introduces **size traits**: `Fixed`, `Bounded`, `Auto` and `Relative` that mark how the width or the height of a view component is to be decided which can be checked at compile-time.
 
 - `Fixed` means a dimension of a view is assigned by its parent view. The returned value of this dimension is ensured to be the same as in `size_ref`.
 
+- `Bounded` means a dimension of a view is bounded. The maximum returned value of this dimension is ensured to be the the same as in `size_ref`. `Fixed` is naturally `Bounded`.
+
 - `Auto` means a dimension of a view is determined by the view itself. The value of the dimension in `size_ref` is ignored.
 
-- `Relative` means a dimension of a view is finally calculated by the view but based on the value in the `size_ref` provided by its parent view.
+- `Relative` means a dimension of a view is finally calculated by the view but based on the value in the `size_ref` provided by its parent view. `Bounded` and `Auto` are naturally also `Relative`.
 
-A parent view might accept a child view by reference or by a `unique_ptr`. `view_ref` wraps `std::reference_wrapper` and holds a reference to a view, while `view_ptr` wraps a `std::unique_ptr` to a view. Both of them can be marked by certain size traits (like `view_ptr<Relative, Auto>`), and a parent view may only accept child views as `view_ref` or `view_ptr` with matching size traits. This will be checked through C++ concepts at compile-time.
+The traits follow the inheritance diagram:
+
+```
+Relative
+├── Bounded
+│   └── Fixed
+└── Auto
+```
+
+A parent view might accept a child view by reference or by a `unique_ptr`. `view_ref` wraps `std::reference_wrapper` and holds a reference to a view, while `view_ptr` wraps a `std::unique_ptr` to a view. Both of them can be marked by certain size traits (like `view_ptr<Bounded, Auto>`), and a parent view may only accept child views as `view_ref` or `view_ptr` with matching size traits. This will be checked through C++ concepts at compile-time.
 
 Some *layout* components require their child views to have certain size traits that are natural to these layouts. For example, `StackLayout` allows at most one child view's width or height to be not `Fixed` and requires all others' to be `Fixed`, because all its child views and itself share the same size and there can be only one source of the size value. This provides strong guarantee for a correct layout design.
 
 Some *frame* components work as adapters for converting size traits of the child view with different behaviors: (*convert* means accepting a child view with the *source* trait and exposing the *target* trait itself)
 
-- `ClipFrame`, `CenterFrame` and `ScrollFrame` convert a dimension of the child view from `Relative` to `Fixed`, clipping the overflowing part of the child view. `ClipFrame` puts the child view at a corner or to a side. `CenterFrame` puts the child view at the center. `ScrollFrame` puts the child view initially at the top-left corner but enables it to scroll to the overflowing part of the child view. `StretchFrame` does the same trait conversion from `Relative` to `Fixed`, but it stretches its child view to make it fit in itself. If the child view happens to have the same size, it is presented as-is.
+- `ClipFrame`, `CenterFrame` and `StretchFrame` convert a dimension of the child view from `Relative` to `Fixed`, clipping the overflowing part of the child view. `ClipFrame` puts the child view at a corner or a side, `CenterFrame` puts the child view at the center, and `StretchFrame` stretches its child view to make it fit in itself.
 
-- `FixedFrame` converts a dimension of the child view from `Fixed` to `Auto`. It sets a fixed value for the dimension of the child view.
+- `ScrollFrame` and `StretchFrameUniform` convert a dimension of the child view from `Relative` to `Bounded`. `ScrollFrame` enables it to scroll to the part of the child view that exceeds the bound, and `StretchFrameUniform` scales the child view uniformly to fit in the bound.
 
-- `MaxFrame` and `MinFrame` convert a dimension of the child view from `Relative` to `Auto`, normalizing its child view with a max or min size. `MaxFrame` is often combined with child view components with flowing behavior, like `TextView`, by providing a size constraint to the child view.
-
-**`Fixed` and `Auto` are naturally also `Relative`, but not vice versa.** This means a child view with `Fixed` or `Auto` traits is accepted by a parent view requiring `Relative` traits, but a child view with `Relative` traits is not accepted by a parent view requiring `Fixed` or `Auto` traits without conversion.
-
-> How a child view with `Relative` traits and a parent view accepting a child view with `Relative` traits interpret the `size_ref` still depends on the components. For example, `TextView` has `Relative` traits and regards the `size_ref` as the size constraint for calculating the text layout, which agrees with `MaxFrame` that provides the `size_ref` as its max size. However, another component with `Relative` traits may calculate its size as a percentage of `size_ref`, which usually won't work very well with `MaxFrame` even though it fits with `MaxFrame` by size traits. It is possible that more traits like `Bounded` or `Proportional` could be proposed to further restrict the usage of `Relative`.
+- `MaxFrame` converts a dimension of the child view from `Bounded` to `Auto`. It sets a bound for the dimension of the child view.
 
 The reflow logic and the size traits already describe most scenarios of layout dependencies. Other more complex or special layout dependencies can be implemented by certain view components extending the core interfaces in a custom way. For example, a `Window` or an `OverlapLayout::Window` doesn't only decide its size, but also its position on the `Desktop` or the `OverlapLayout`, which is reflected by their extended interfaces.
 

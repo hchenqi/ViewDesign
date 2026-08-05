@@ -25,7 +25,7 @@ class Tooltip : public Window {
 private:
 	Tooltip() : Window(
 		u"",
-		new MaxFrame(
+		new MaxFrame<Auto, Auto>(
 			Size(200.0f, 200.0f),
 			new BorderFrame(
 				Border(1.5f, 0x767676),

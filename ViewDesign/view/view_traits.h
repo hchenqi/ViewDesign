@@ -13,15 +13,18 @@ concept view_type = std::derived_from<View, ViewBase>;
 
 
 struct Relative {};
-struct Fixed : Relative {};
-struct Auto : Relative {};
+struct Bounded : Relative { using parent = Relative; };
+struct Fixed : Bounded { using parent = Bounded; };
+struct Auto : Relative { using parent = Relative; };
+
+template<class T> concept IsRelative = std::same_as<T, Relative>;
+template<class T> concept IsBounded = std::same_as<T, Bounded>;
+template<class T> concept IsFixed = std::same_as<T, Fixed>;
+template<class T> concept IsAuto = std::same_as<T, Auto>;
+
 
 template<class T>
 concept size_trait = std::derived_from<T, Relative>;
-
-template<class T> concept IsFixed = std::same_as<T, Fixed>;
-template<class T> concept IsAuto = std::same_as<T, Auto>;
-template<class T> concept IsRelative = std::same_as<T, Relative>;
 
 template<size_trait WidthTrait, size_trait HeightTrait>
 struct SizeTrait {

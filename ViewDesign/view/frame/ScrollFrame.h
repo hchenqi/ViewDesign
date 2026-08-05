@@ -7,61 +7,51 @@
 namespace ViewDesign {
 
 
-struct Vertical {};
-struct Horizontal {};
-struct Bidirectional {};
-
-
-template<class Direction>
+template<class WidthTrait = Bounded, class HeightTrait = Bounded>
 class ScrollFrame;
 
 
-class _ScrollFrame_Base : public ViewFrame, public SizeTrait<Fixed, Fixed> {
+class _ScrollFrame_Base : public ViewFrame {
 protected:
 	_ScrollFrame_Base(view_ptr_any child) : ViewFrame(std::move(child)) {}
 
 	// layout
 protected:
-	Size size;
+	Size size_ref;
 	Size child_size;
-	Point frame_offset;
+	Size size;
+	Point offset = point_zero;
 protected:
-	Size GetFrameSize() const { return size; }
-	Size GetChildSize() const { return child_size; }
-	Point GetFrameOffset() const { return frame_offset; }
-	Vector GetChildOffset() const { return point_zero - frame_offset; }
+	static Size CalculateSize(Size size_ref, Size child_size) {
+		return Size(std::min(size_ref.width, child_size.width), std::min(size_ref.height, child_size.height));
+	}
+	static Point ClampOffset(Size size, Size child_size, Point offset) {
+		return Point(std::clamp(offset.x, 0.0f, child_size.width - size.width), std::clamp(offset.y, 0.0f, child_size.height - size.height));
+	}
+protected:
+	Vector GetChildOffset() const { return point_zero - offset; }
 	Rect GetChildRegion() const { return Rect(point_zero + GetChildOffset(), child_size); }
 protected:
 	virtual Point ConvertChildPoint(ViewBase& child, Point point) const override { return point + GetChildOffset(); }
 	virtual Point ConvertChildPoint(Point point, ViewBase& child) const override { return point - GetChildOffset(); }
-
-	// scrolling
 protected:
-	Point ClampFrameOffset(Point offset) const {
-		offset.x = child_size.width <= size.width ? 0.0f : Clamp(offset.x, Interval(0.0f, child_size.width - size.width));
-		offset.y = child_size.height <= size.height ? 0.0f : Clamp(offset.y, Interval(0.0f, child_size.height - size.height));
-		return offset;
+	virtual Size OnSizeRefUpdate(Size size_ref) override {
+		child_size = UpdateChildSizeRef(child, this->size_ref = size_ref);
+		size = CalculateSize(this->size_ref, child_size);
+		offset = ClampOffset(size, child_size, offset);
+		return size;
 	}
-public:
-	void ScrollTo(Point offset) {
-		offset = ClampFrameOffset(offset);
-		if (frame_offset != offset) {
-			frame_offset = offset;
-			Redraw(rect_infinite);
+	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override {
+		if (this->child_size != child_size) {
+			this->child_size = child_size;
+			Size size = CalculateSize(size_ref, this->child_size);
+			offset = ClampOffset(size, this->child_size, offset);
+			if (this->size != size) {
+				SizeUpdated(this->size = size);
+			} else {
+				Redraw(rect_infinite);
+			}
 		}
-	}
-	void Scroll(Vector offset) {
-		if (offset != vector_zero) {
-			ScrollTo(frame_offset + offset);
-		}
-	}
-	void ScrollIntoView(Point point) {
-		point = Clamp(point, Rect(point_zero, child_size));
-		Scroll(point - Clamp(point, Rect(frame_offset, size)));
-	}
-	void ScrollIntoView(Rect rect) {
-		rect = Clamp(rect, Rect(point_zero, child_size));
-		Scroll(rect.point - Clamp(rect, Rect(frame_offset, size)).point);
 	}
 
 	// drawing
@@ -73,6 +63,29 @@ protected:
 		Redraw(child_redraw_region + GetChildOffset());
 	}
 
+	// scroll
+public:
+	void ScrollTo(Point offset) {
+		offset = ClampOffset(size, child_size, offset);
+		if (this->offset != offset) {
+			this->offset = offset;
+			Redraw(rect_infinite);
+		}
+	}
+	void Scroll(Vector offset) {
+		if (offset != vector_zero) {
+			ScrollTo(this->offset + offset);
+		}
+	}
+	void ScrollIntoView(Point point) {
+		point = Clamp(point, Rect(point_zero, child_size));
+		Scroll(point - Clamp(point, Rect(offset, size)));
+	}
+	void ScrollIntoView(Rect rect) {
+		rect = Clamp(rect, Rect(point_zero, child_size));
+		Scroll(rect.point - Clamp(rect, Rect(offset, size)).point);
+	}
+
 	// event
 protected:
 	virtual ref_ptr<ViewBase> HitTest(MouseEvent& event) override { event.point -= GetChildOffset(); return ViewFrame::HitTest(event); }
@@ -80,27 +93,9 @@ protected:
 
 
 template<>
-class ScrollFrame<Bidirectional> : public _ScrollFrame_Base {
+class ScrollFrame<Bounded, Bounded> : public _ScrollFrame_Base, public SizeTrait<Bounded, Bounded> {
 public:
-	ScrollFrame(view_ptr_any child) : _ScrollFrame_Base(std::move(child)) {}
-
-	// layout
-protected:
-	virtual Size OnSizeRefUpdate(Size size_ref) override {
-		if (size != size_ref) {
-			size = size_ref;
-			child_size = UpdateChildSizeRef(this->child, size);
-			frame_offset = ClampFrameOffset(frame_offset);
-		}
-		return size;
-	}
-	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override {
-		if (this->child_size != child_size) {
-			this->child_size = child_size;
-			frame_offset = ClampFrameOffset(frame_offset);
-			Redraw(rect_infinite);
-		}
-	}
+	ScrollFrame(view_ptr<Relative, Relative> child) : _ScrollFrame_Base(std::move(child)) {}
 
 	// event
 protected:
@@ -118,16 +113,13 @@ protected:
 };
 
 
-template<>
-class ScrollFrame<Vertical> : public _ScrollFrame_Base {
+template<class WidthTrait> requires (!IsBounded<WidthTrait>)
+class ScrollFrame<WidthTrait, Bounded> : public _ScrollFrame_Base, public SizeTrait<WidthTrait, Bounded> {
 public:
-	ScrollFrame(view_ptr<Fixed, Relative> child) : _ScrollFrame_Base(std::move(child)) {}
+	using child_type = view_ptr<WidthTrait, Relative>;
 
-	// layout
 public:
-	float GetFrameLength() const { return _ScrollFrame_Base::GetFrameSize().height; }
-	float GetChildLength() const { return _ScrollFrame_Base::GetChildSize().height; }
-	float GetFrameOffset() const { return _ScrollFrame_Base::GetFrameOffset().y; }
+	ScrollFrame(child_type child) : _ScrollFrame_Base(std::move(child)) {}
 
 	// scroll
 public:
@@ -139,26 +131,6 @@ public:
 	void Scroll(float offset) { Scroll(Vector(0.0f, offset)); }
 	void ScrollIntoView(float y) { ScrollIntoView(Point(0.0f, y)); }
 	void ScrollIntoView(Interval interval) { ScrollIntoView(Rect(Interval(0.0f, size.width), interval)); }
-
-	// layout
-protected:
-	virtual Size OnSizeRefUpdate(Size size_ref) override {
-		if (size != size_ref) {
-			if (size.width != size_ref.width) {
-				child_size = Size(size_ref.width, UpdateChildSizeRef(child, Size(size_ref.width, length_infinite)).height);
-			}
-			size = size_ref;
-			frame_offset = ClampFrameOffset(frame_offset);
-		}
-		return size;
-	}
-	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override {
-		if (this->child_size.height != child_size.height) {
-			this->child_size.height = child_size.height;
-			frame_offset = ClampFrameOffset(frame_offset);
-			Redraw(rect_infinite);
-		}
-	}
 
 	// event
 protected:
@@ -173,16 +145,13 @@ protected:
 };
 
 
-template<>
-class ScrollFrame<Horizontal> : public _ScrollFrame_Base {
+template<class HeightTrait> requires (!IsBounded<HeightTrait>)
+class ScrollFrame<Bounded, HeightTrait> : public _ScrollFrame_Base, public SizeTrait<Bounded, HeightTrait> {
 public:
-	ScrollFrame(view_ptr<Relative, Fixed> child) : _ScrollFrame_Base(std::move(child)) {}
+	using child_type = view_ptr<Auto, HeightTrait>;
 
-	// layout
 public:
-	float GetFrameLength() const { return _ScrollFrame_Base::GetFrameSize().width; }
-	float GetChildLength() const { return _ScrollFrame_Base::GetChildSize().width; }
-	float GetFrameOffset() const { return _ScrollFrame_Base::GetFrameOffset().x; }
+	ScrollFrame(child_type child) : _ScrollFrame_Base(std::move(child)) {}
 
 	// scroll
 public:
@@ -195,26 +164,6 @@ public:
 	void ScrollIntoView(float x) { ScrollIntoView(Point(x, 0.0f)); }
 	void ScrollIntoView(Interval interval) { ScrollIntoView(Rect(interval, Interval(0.0f, size.height))); }
 
-	// layout
-protected:
-	virtual Size OnSizeRefUpdate(Size size_ref) override {
-		if (size != size_ref) {
-			if (size.height != size_ref.height) {
-				child_size = Size(UpdateChildSizeRef(child, Size(length_infinite, size_ref.height)).width, size_ref.height);
-			}
-			size = size_ref;
-			frame_offset = ClampFrameOffset(frame_offset);
-		}
-		return size;
-	}
-	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override {
-		if (this->child_size.width != child_size.width) {
-			this->child_size.width = child_size.width;
-			frame_offset = ClampFrameOffset(frame_offset);
-			Redraw(rect_infinite);
-		}
-	}
-
 	// event
 protected:
 	virtual ref_ptr<ViewBase> HitTest(MouseEvent& event) override {
@@ -226,29 +175,6 @@ protected:
 		Scroll((float)event.wheel_delta);
 	}
 };
-
-
-template<class WidthTrait, class HeightTrait>
-struct deduce_scroll_frame_direction;
-
-template<class WidthTrait, class HeightTrait> requires (!IsFixed<WidthTrait> && !IsFixed<HeightTrait>)
-struct deduce_scroll_frame_direction<WidthTrait, HeightTrait> {
-	using type = Bidirectional;
-};
-
-template<class HeightTrait> requires (!IsFixed<HeightTrait>)
-struct deduce_scroll_frame_direction<Fixed, HeightTrait> {
-	using type = Vertical;
-};
-
-template<class WidthTrait> requires (!IsFixed<WidthTrait>)
-struct deduce_scroll_frame_direction<WidthTrait, Fixed> {
-	using type = Horizontal;
-};
-
-
-template<class T>
-ScrollFrame(T) -> ScrollFrame<typename deduce_scroll_frame_direction<extract_width_trait<T>, extract_height_trait<T>>::type>;
 
 
 } // namespace ViewDesign

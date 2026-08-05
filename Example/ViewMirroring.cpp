@@ -16,13 +16,15 @@ using namespace ViewDesign;
 
 void App() {
 	auto mirroring_frame = create<MirroringFrame<Fixed, Fixed>>(
-		new ScrollFrame<Vertical>(
-			new ClipFrame<Fixed, Auto, Left>(
-				new MaxFrame<Relative, Auto>(
-					length_infinite,
-					new PaddingFrame(
-						Padding(10.0f),
-						new TextEditor(TextEditor::Style(), u"Type something here...")
+		new ClipFrame<Fixed, Fixed, Top>(
+			new ScrollFrame<Fixed, Bounded>(
+				new ClipFrame<Fixed, Auto, Left>(
+					new MaxFrame<Bounded, Auto>(
+						length_infinite,
+						new PaddingFrame(
+							Padding(10.0f),
+							new TextEditor(TextEditor::Style(), u"Type something here...")
+						)
 					)
 				)
 			)
@@ -39,7 +41,7 @@ void App() {
 				create<HitThrough<ClipFrame<Fixed, Fixed, BottomRight>>>(
 					new BackgroundFrame(
 						Color(ColorCode::LightBlue, 0x80),
-						new MaxFrame(
+						new MaxFrame<Auto, Auto>(
 							Size(400.0f, 400.0f),
 							new StretchFrameUniform(
 								mirroring_frame_ref.CreateMirrorView()

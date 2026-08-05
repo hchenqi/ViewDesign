@@ -99,7 +99,7 @@ protected:
 };
 
 
-class StretchFrameUniform : public ViewFrame, public SizeTrait<Relative, Relative> {
+class StretchFrameUniform : public ViewFrame, public SizeTrait<Bounded, Bounded> {
 public:
 	using child_type = view_ptr_any;
 public:

@@ -18,7 +18,7 @@
 using namespace ViewDesign;
 
 
-using ListView = DeferredReflow<ListLayoutVertical<Relative>>;
+using ListView = DeferredReflow<ListLayoutVertical<Bounded>>;
 
 
 class TextInput : public TextEditor {
@@ -72,32 +72,34 @@ void App() {
 		new DefaultBackground<DefaultWindow>(
 			DefaultWindow::Style(),
 			u"StateMirroring",
-			new ScrollFrame<Vertical>(
-				new ClipFrame<Fixed, Auto, Left>(
-					list_view = new ListView(
-						5.0f,
-						create<BackgroundFrame<Relative, Auto>>(
-							ColorCode::LightSalmon,
-							new PaddingFrame(
-								Padding(20.0f),
-								TextViewAdapter<Relative, Auto>(
-									new TextLabel(TextStyleA(), text_input_ref.text_state)
+			new ClipFrame<Fixed, Fixed, Top>(
+				new ScrollFrame<Fixed, Bounded>(
+					new ClipFrame<Fixed, Auto, Left>(
+						list_view = new ListView(
+							5.0f,
+							create<BackgroundFrame<Bounded, Auto>>(
+								ColorCode::LightSalmon,
+								new PaddingFrame(
+									Padding(20.0f),
+									TextViewAdapter<Bounded, Auto>(
+										new TextLabel(TextStyleA(), text_input_ref.text_state)
+									)
 								)
-							)
-						),
-						create<BorderFrame<Relative, Auto>>(
-							Border(2.0f, ColorCode::Orange),
-							new PaddingFrame(
-								Padding(10.0f),
-								TextViewAdapter<Relative, Auto>(
-									std::move(text_input)
+							),
+							create<BorderFrame<Bounded, Auto>>(
+								Border(2.0f, ColorCode::Orange),
+								new PaddingFrame(
+									Padding(10.0f),
+									TextViewAdapter<Bounded, Auto>(
+										std::move(text_input)
+									)
 								)
-							)
-						),
-						create<BackgroundFrame<Relative, Auto>>(
-							ColorCode::LightSkyBlue,
-							TextViewAdapter<Relative, Auto>(
-								create<TextLabel>(TextStyleB(), text_input_ref.text_state)
+							),
+							create<BackgroundFrame<Bounded, Auto>>(
+								ColorCode::LightSkyBlue,
+								TextViewAdapter<Bounded, Auto>(
+									create<TextLabel>(TextStyleB(), text_input_ref.text_state)
+								)
 							)
 						)
 					)

@@ -4,6 +4,7 @@
 // - layer tiling with TileLayerFrame under scaling context
 
 #include <ViewDesign/view/widget/DefaultWindow.h>
+#include <ViewDesign/view/frame/ClipFrame.h>
 #include <ViewDesign/view/frame/ScrollFrame.h>
 #include <ViewDesign/view/frame/LayerFrame.h>
 #include <ViewDesign/view/frame/ScaleFrame.h>
@@ -102,13 +103,15 @@ void Test() {
 		new DefaultBackground<DefaultWindow>(
 			DefaultWindow::Style(),
 			GetName<ListLayout<Trait>>(),
-			new ScrollFrame(
-				new LayerFrameTiled(
-					new ScaleFrame(
-						new LayerFrameTiled(
-							new Box(
-								Margin(0.0f), Border(1.0f, 0.0f, ColorCode::Black), color_transparent, Padding(5.0f),
-								new ListView<ListLayout, Trait>(5)
+			new ClipFrame<Fixed, Fixed, TopLeft>(
+				new ScrollFrame<Bounded, Bounded>(
+					new LayerFrameTiled(
+						new ScaleFrame(
+							new LayerFrameTiled(
+								new Box(
+									Margin(0.0f), Border(1.0f, 0.0f, ColorCode::Black), color_transparent, Padding(5.0f),
+									new ListView<ListLayout, Trait>(5)
+								)
 							)
 						)
 					)
@@ -123,9 +126,9 @@ void Test() {
 void App() {
 	Test<ListLayoutVertical, Fixed>();
 	Test<ListLayoutVertical, Auto>();
-	Test<ListLayoutVertical, Relative>();
+	Test<ListLayoutVertical, Bounded>();
 
 	Test<ListLayoutHorizontal, Fixed>();
 	Test<ListLayoutHorizontal, Auto>();
-	Test<ListLayoutHorizontal, Relative>();
+	Test<ListLayoutHorizontal, Bounded>();
 }

@@ -7,7 +7,6 @@
 #include "ViewDesign/view/frame/CenterFrame.h"
 #include "ViewDesign/view/frame/ClipFrame.h"
 #include "ViewDesign/view/frame/MaxFrame.h"
-#include "ViewDesign/view/frame/FixedFrame.h"
 #include "ViewDesign/view/frame/BackgroundFrame.h"
 #include "ViewDesign/view/layout/SplitLayout.h"
 #include "ViewDesign/view/layout/StackLayout.h"
@@ -86,7 +85,7 @@ protected:
 		}
 	};
 
-	class TitleBar : public HitSelfFallback<DefaultBackground<FixedFrame<Fixed, Auto>>>, Context<TitleBarWindow> {
+	class TitleBar : public HitSelfFallback<DefaultBackground<MaxFrame<Fixed, Auto>>>, Context<TitleBarWindow> {
 	public:
 		class Title : public TextView {
 		public:
@@ -179,7 +178,7 @@ protected:
 			style._height,
 			new StackLayoutMultiple(
 				create<HitThrough<CenterFrame<Fixed, Fixed>>>(
-					new MaxFrame(
+					new MaxFrame<Auto, Auto>(
 						Size(style._max_title_length, length_infinite),
 						std::move(title)
 					)

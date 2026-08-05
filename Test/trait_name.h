@@ -22,6 +22,11 @@ struct Name<Fixed> {
 };
 
 template<>
+struct Name<Bounded> {
+	inline static const u16string text = u"Bounded";
+};
+
+template<>
 struct Name<Auto> {
 	inline static const u16string text = u"Auto";
 };
