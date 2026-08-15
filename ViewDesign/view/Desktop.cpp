@@ -3,19 +3,21 @@
 #include "ViewDesign/system/window.h"
 #include "ViewDesign/system/event_loop.h"
 #include "ViewDesign/common/reversion_wrapper.h"
-#include "Desktop.h"
 
 
 namespace ViewDesign {
 
 
-Desktop::Desktop() {}
-
-Desktop::~Desktop() {}
-
 Desktop& Desktop::Get() {
 	static Desktop desktop;
 	return desktop;
+}
+
+void Desktop::OnViewDetach(ViewBase& view) {
+	ime_enabled_view.erase(&view);
+	if (auto it = view_focus_map.find(&view); it != view_focus_map.end()) { view_focus_stack[it->second] = nullptr; view_focus_map.erase(it); }
+	if (view_capture == &view) { ReleaseWindowCapture(*window_capture); }
+	if (auto it = view_track_map.find(&view); it != view_track_map.end()) { view_track_stack[it->second] = nullptr; view_track_map.erase(it); }
 }
 
 Window& Desktop::AddWindow(std::unique_ptr<Window> window) {
@@ -27,11 +29,11 @@ Window& Desktop::AddWindow(std::unique_ptr<Window> window) {
 
 std::unique_ptr<Window> Desktop::RemoveWindow(Window& window) {
 	auto it = std::find_if(window_list.begin(), window_list.end(), [&](const std::unique_ptr<Window>& ptr) { return ptr.get() == &window; });
-	if (it == window_list.end()) { throw std::invalid_argument("window not registered"); }
-	window.Hide();
-	UnregisterChild(window);
+	if (it == window_list.end()) { return nullptr; }
 	std::unique_ptr<Window> ptr = std::move(*it);
 	window_list.erase(it);
+	window.Hide();
+	UnregisterChild(window);
 	return ptr;
 }
 
@@ -41,30 +43,39 @@ void Desktop::CloseAllWindows() {
 	}
 }
 
-SizeU ViewDesign::Desktop::GetSize() const {
-	return GetDesktopSize();
+SizeU Desktop::GetPixelSize() const {
+	return GetDesktopPixelSize();
 }
 
-void Desktop::ReleaseView(ViewBase& view) {
-	if (&view == &desktop.Get()) { return; }
-	if (view_track_map.contains(&view)) { PopTrack(view_track_map[&view]); PushTrack({}); }
-	if (view_capture == &view) { ReleaseWindowCapture(*window_capture); }
-	if (view_focus_map.contains(&view)) { LoseFocus(); }
-	ime_enabled_view.erase(&view);
+std::pair<SizeU, RectI> Desktop::GetWindowMinMaxRegion(Window& window) {
+	auto [size_min, size_max] = window.CalculateMinMaxSize(GetPixelSize() / window.scale);
+	return { Round(size_min * window.scale), RectI(point_i_zero, Round(size_max * window.scale)) };
 }
 
-void Desktop::ReleaseWindow(Window& window) {
-	if (view_track_map.contains(&window)) { LoseTrack(); }
-	if (window_capture == &window) { ReleaseWindowCapture(window); }
-	if (view_focus_map.contains(&window)) { LoseFocus(); }
+void Desktop::UpdateWindowSizeRef(Window& window) {
+	window.RegionUpdated(window.OnWindowSizeRefUpdate(GetPixelSize() / window.scale));
 }
 
-void Desktop::SetWindowCapture(Window& window) {
-	ViewDesign::SetWindowCapture(window.GetHandle());
-}
-
-void Desktop::ReleaseWindowCapture(Window& window) {
-	ViewDesign::ReleaseWindowCapture(window.GetHandle());
+void Desktop::PushTrack(size_t index, std::vector<ref_ptr<ViewBase>> trace) {
+	if (!view_track_stack.empty() && view_track_stack.back() != nullptr) {
+		view_track_stack.back()->OnFocusEvent(FocusEvent::MouseOut);
+	}
+	for (; view_track_stack.size() > index; view_track_stack.pop_back()) {
+		if (view_track_stack.back() != nullptr) {
+			view_track_stack.back()->OnFocusEvent(FocusEvent::MouseLeave);
+			view_track_map.erase(view_track_stack.back());
+		}
+	}
+	for (; !trace.empty(); trace.pop_back()) {
+		view_track_map.emplace(trace.back(), view_track_stack.size());
+		view_track_stack.push_back(trace.back());
+		view_track_stack.back()->OnFocusEvent(FocusEvent::MouseEnter);
+	}
+	if (!view_track_stack.empty()) {
+		view_track_stack.back()->OnFocusEvent(FocusEvent::MouseOver);
+		Window& window = static_cast<Window&>(*view_track_stack.front());
+		SetWindowCursor(window.GetHandle(), view_track_stack.back()->cursor);
+	}
 }
 
 void Desktop::SetTrack(ViewBase& view) {
@@ -73,40 +84,26 @@ void Desktop::SetTrack(ViewBase& view) {
 	for (ref_ptr<ViewBase> curr = &view;;) {
 		trace.push_back(curr);
 		curr = curr->parent;
-		if (curr == nullptr) { PopTrack(0); return; }
-		if (curr == &desktop.Get()) { PopTrack(0); break; }
-		if (view_track_map.contains(curr)) { PopTrack(view_track_map[curr] + 1); break; }
-	}
-	PushTrack(std::move(trace));
-}
-
-void Desktop::PopTrack(size_t index) {
-	if (index == view_track_stack.size()) { return; }
-	view_track_stack.back()->OnFocusEvent(FocusEvent::MouseOut);
-	for (; view_track_stack.size() > index; view_track_stack.pop_back()) {
-		view_track_stack.back()->OnFocusEvent(FocusEvent::MouseLeave);
-		view_track_map.erase(view_track_stack.back());
+		if (curr == nullptr) { PushTrack(0, {}); break; }
+		if (curr == &desktop.Get()) { PushTrack(0, std::move(trace)); break; }
+		if (auto it = view_track_map.find(curr); it != view_track_map.end()) { PushTrack(it->second + 1, std::move(trace)); break; }
 	}
 }
 
-void Desktop::PushTrack(std::vector<ref_ptr<ViewBase>> trace) {
-	for (; !trace.empty(); trace.pop_back()) {
-		view_track_map.emplace(trace.back(), view_track_stack.size());
-		view_track_stack.push_back(trace.back());
-		view_track_stack.back()->OnFocusEvent(FocusEvent::MouseEnter);
-	}
-	if (!view_track_stack.empty()) {
-		view_track_stack.back()->OnFocusEvent(FocusEvent::MouseOver);
-		SetWindowCursor(static_cast<Window&>(*view_track_stack.front()).GetHandle(), view_track_stack.back()->cursor);
-	}
+void Desktop::SetWindowCapture(Window& window) {
+	window_capture = &window;
+	ViewDesign::SetWindowCapture(window.GetHandle());
+}
+
+void Desktop::ReleaseWindowCapture(Window& window) {
+	ViewDesign::ReleaseWindowCapture(window.GetHandle());
 }
 
 void Desktop::SetCapture(ViewBase& view) {
 	if (view_capture == &view) { return; }
 	Window& window = GetWindow(view);
 	if (window_capture != &window) { SetWindowCapture(window); }
-	if (view_capture != &view) { LoseCapture(); }
-	window_capture = &window; view_capture = &view;
+	view_capture = &view;
 }
 
 void Desktop::ReleaseCapture(ViewBase& view) {
@@ -115,101 +112,74 @@ void Desktop::ReleaseCapture(ViewBase& view) {
 	}
 }
 
-void Desktop::LoseCapture() {
-	window_capture = nullptr; view_capture = nullptr;
-}
-
 void Desktop::DispatchMouseEvent(Window& window, MouseEvent event) {
 	if (view_capture != nullptr) {
 		event.point = window.ConvertDescendentPoint(event.point, *view_capture);
-		view_capture->OnMouseEvent(event);
-	} else {
-		for (ref_ptr<ViewBase> curr = &window;;) {
-			ref_ptr<ViewBase> next = curr->HitTest(event);
-			if (next == nullptr) {
-				SetTrack(*curr);
-				return;
-			} else if (next == curr) {
-				SetTrack(*curr);
-				curr->OnMouseEvent(event);
-				return;
-			} else {
-				curr = next;
-			}
+		return view_capture->OnMouseEvent(event);
+	}
+	for (ref_ptr<ViewBase> curr = &window, next;; curr = next) {
+		next = curr->HitTest(event);
+		if (next == nullptr) {
+			break;
+		}
+		if (next == curr) {
+			SetTrack(*curr);
+			curr->OnMouseEvent(event);
+			break;
 		}
 	}
 }
 
-void Desktop::SetWindowFocus(Window& window_focus) {
-	ViewDesign::SetWindowFocus(window_focus.GetHandle());
+void Desktop::PushFocus(size_t index, std::vector<ref_ptr<ViewBase>> trace) {
+	if (!view_focus_stack.empty() && view_focus_stack.back() != nullptr) {
+		view_focus_stack.back()->OnFocusEvent(FocusEvent::Blur);
+	}
+	for (; view_focus_stack.size() > index; view_focus_stack.pop_back()) {
+		if (view_focus_stack.back() != nullptr) {
+			view_focus_stack.back()->OnFocusEvent(FocusEvent::FocusOut);
+			view_focus_map.erase(view_focus_stack.back());
+		}
+	}
+	for (; !trace.empty(); trace.pop_back()) {
+		view_focus_map.emplace(trace.back(), view_focus_stack.size());
+		view_focus_stack.push_back(trace.back());
+		view_focus_stack.back()->OnFocusEvent(FocusEvent::FocusIn);
+	}
+	if (!view_focus_stack.empty()) {
+		view_focus_stack.back()->OnFocusEvent(FocusEvent::Focus);
+		Window& window = static_cast<Window&>(*view_focus_stack.front());
+		ime_enabled_view.contains(view_focus_stack.back()) ? ImeWindowEnable(window) : ImeWindowDisable(window);
+	}
+}
+
+void Desktop::SetWindowFocus(Window& window) {
+	ViewDesign::SetWindowFocus(window.GetHandle());
 }
 
 void Desktop::SetFocus(ViewBase& view) {
 	if (!view_focus_stack.empty() && view_focus_stack.back() == &view) { return; }
 	std::vector<ref_ptr<ViewBase>> trace;
-	for (ref_ptr<ViewBase> curr = &view;;) {
+	for (ref_ptr<ViewBase> curr = &view, next;; curr = next) {
 		trace.push_back(curr);
-		ref_ptr<ViewBase> next = curr->parent;
-		if (next == nullptr) {
-			LoseFocus();
-			break;
-		}
-		if (next == &desktop.Get()) {
-			LoseFocus();
-			window_focus = static_cast<ref_ptr<Window>>(curr);
-			SetWindowFocus(*window_focus);
-			break;
-		}
-		if (view_focus_map.contains(curr)) {
-			view_focus_stack.back()->OnFocusEvent(FocusEvent::Blur);
-			for (size_t index = view_focus_map[curr]; view_focus_stack.size() > index; view_focus_stack.pop_back()) {
-				view_focus_stack.back()->OnFocusEvent(FocusEvent::FocusOut);
-				view_focus_map.erase(view_focus_stack.back());
-			}
-			break;
-		}
-		curr = next;
+		next = curr->parent;
+		if (next == nullptr) { PushFocus(0, {}); break; }
+		if (next == &desktop.Get()) { SetWindowFocus(*static_cast<ref_ptr<Window>>(curr)); PushFocus(0, std::move(trace)); break; }
+		if (auto it = view_focus_map.find(next); it != view_focus_map.end()) { PushFocus(it->second + 1, std::move(trace)); break; }
 	}
-	for (; !trace.empty(); trace.pop_back()) {
-		trace.back()->OnFocusEvent(FocusEvent::FocusIn);
-		view_focus_stack.push_back(trace.back());
-		view_focus_map.emplace(trace.back(), view_focus_stack.size());
-	}
-	if (window_focus) {
-		ime_enabled_view.contains(&view) ? ImeWindowEnable() : ImeWindowDisable();
-	}
-	view.OnFocusEvent(FocusEvent::Focus);
-}
-
-void Desktop::ReleaseFocus(ViewBase& view) {
-	if (view_focus_map.contains(&view)) {
-		LoseFocus();
-	}
-}
-
-void Desktop::LoseFocus() {
-	if (view_focus_stack.empty()) { return; }
-	view_focus_stack.back()->OnFocusEvent(FocusEvent::Blur);
-	for (auto view : reverse(view_focus_stack)) {
-		view->OnFocusEvent(FocusEvent::FocusOut);
-	}
-	view_focus_stack.clear();
-	view_focus_map.clear();
-	window_focus = nullptr;
 }
 
 void Desktop::DispatchKeyEvent(KeyEvent event) {
-	if (!view_focus_stack.empty()) {
+	if (!view_focus_stack.empty() && view_focus_stack.back() != nullptr) {
 		view_focus_stack.back()->OnKeyEvent(event);
 	}
 }
 
-void Desktop::ImeWindowEnable() {
-	ViewDesign::ImeWindowEnable(window_focus->GetHandle());
+void Desktop::ImeWindowEnable(Window& window) {
+	ViewDesign::ImeWindowEnable(window.GetHandle());
 }
 
-void Desktop::ImeWindowDisable() {
-	ViewDesign::ImeWindowDisable(window_focus->GetHandle());
+void Desktop::ImeWindowDisable(Window& window) {
+	ViewDesign::ImeWindowDisable(window.GetHandle());
 }
 
 void Desktop::ImeWindowSetPosition(Window& window, Point point) {

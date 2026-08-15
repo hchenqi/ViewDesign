@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ViewDesign/view/view_traits.h"
+#include "ViewDesign/view/ViewBase.h"
 #include "ViewDesign/view/figure/shape.h"
 
 
@@ -18,7 +18,7 @@ public:
 	// style
 protected:
 	Color background = color;
-protected:
+public:
 	void SetBackground(Color background) {
 		if (this->background != background) {
 			this->background = background;

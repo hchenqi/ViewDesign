@@ -13,43 +13,29 @@ class MaxFrame;
 template<>
 class MaxFrame<Auto, Auto> : public ViewFrame, public SizeTrait<Auto, Auto> {
 public:
-	MaxFrame(Size size, view_ptr<Bounded, Bounded> child) : ViewFrame(std::move(child)) {
-		SetChildData<uint32>(this->child, BoundedBounded);
-		this->size = UpdateChildSizeRef(this->child, size);
-	}
-	MaxFrame(float width, view_ptr<Bounded, Auto> child) : ViewFrame(std::move(child)) {
-		SetChildData<uint32>(this->child, BoundedAuto);
-		size = UpdateChildSizeRef(this->child, Size(width, length_zero));
-	}
-	MaxFrame(float height, view_ptr<Auto, Bounded> child) : ViewFrame(std::move(child)) {
-		SetChildData<uint32>(this->child, AutoBounded);
-		size = UpdateChildSizeRef(this->child, Size(length_zero, height));
-	}
+	MaxFrame(Size size, view_ptr<Bounded, Bounded> child) : ViewFrame(std::move(child)), child_type(ChildType::BoundedBounded), size(UpdateChildSizeRef(this->child, size)) {}
+	MaxFrame(float width, view_ptr<Bounded, Auto> child) : ViewFrame(std::move(child)), child_type(ChildType::BoundedAuto), size(UpdateChildSizeRef(this->child, Size(width, length_zero))) {}
+	MaxFrame(float height, view_ptr<Auto, Bounded> child) : ViewFrame(std::move(child)), child_type(ChildType::AutoBounded), size(UpdateChildSizeRef(this->child, Size(length_zero, height))) {}
 protected:
-	enum {
-		BoundedBounded,
-		BoundedAuto,
-		AutoBounded,
-	};
+	enum class ChildType { BoundedBounded, BoundedAuto, AutoBounded } child_type;
+	Size size;
 protected:
-	void CheckChildType(auto child_type) const {
-		if (GetChildData<uint32>(child) != child_type) {
+	void CheckChildType(ChildType child_type) const {
+		if (this->child_type != child_type) {
 			throw std::logic_error("MaxFrame: child type mismatch");
 		}
 	}
-protected:
-	Size size;
 public:
 	void SetSize(Size size) {
-		CheckChildType(BoundedBounded);
+		CheckChildType(ChildType::BoundedBounded);
 		SizeUpdated(this->size = UpdateChildSizeRef(child, size));
 	}
 	void SetWidth(float width) {
-		CheckChildType(BoundedAuto);
+		CheckChildType(ChildType::BoundedAuto);
 		SizeUpdated(size = UpdateChildSizeRef(child, Size(width, length_zero)));
 	}
 	void SetHeight(float height) {
-		CheckChildType(AutoBounded);
+		CheckChildType(ChildType::AutoBounded);
 		SizeUpdated(size = UpdateChildSizeRef(child, Size(length_zero, height)));
 	}
 protected:

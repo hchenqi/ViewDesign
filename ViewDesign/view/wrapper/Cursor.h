@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ViewDesign/view/view_traits.h"
+#include "ViewDesign/view/ViewBase.h"
 
 
 namespace ViewDesign {

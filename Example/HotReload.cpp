@@ -98,9 +98,6 @@ void App() {
 		);
 		// TextEditor is detached from the view tree when created and SetFocus() / SetCapture() won't work until it is added in the view tree
 		text_editor->RestoreFocusCapture();
-
-		// the cursor might not display consistently without LAZY_RECREATE
-		// because the cursor resets when the tracked view is destructed but the newly added view won't automatically be tracked by Desktop until the next mouse event
 	}
 }
 

@@ -19,7 +19,7 @@ public:
 		FrameInFlight& frame_in_flight = FrameInFlight::GetCurrent();
 		vk::raii::CommandBuffer& command_buffer = frame_in_flight.command_buffer;
 
-		Vulkan::Render(command_buffer, *image, image_layout, image_view, vk::ImageLayout::eShaderReadOnlyOptimal, extent, AsVulkanRect2D(clip_region), [&]() {
+		Vulkan::Render(command_buffer, *image, image_layout, image_view, vk::ImageLayout::eShaderReadOnlyOptimal, extent, AsVulkanRect2D(clip_region), [&] {
 			RenderContext context(frame_in_flight, extent);
 			func(static_cast<RenderTarget&>(context));
 		});

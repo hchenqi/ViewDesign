@@ -130,7 +130,7 @@ public:
 		vk::raii::CommandBuffer& command_buffer = frame_in_flight.command_buffer;
 		auto& [image, image_layout, image_view, semaphore_render_finished] = image_list[image_index];
 
-		Vulkan::Render(command_buffer, image, image_layout, image_view, vk::ImageLayout::ePresentSrcKHR, extent, AsVulkanRect2D(clip_region), [&]() {
+		Vulkan::Render(command_buffer, image, image_layout, image_view, vk::ImageLayout::ePresentSrcKHR, extent, AsVulkanRect2D(clip_region), [&] {
 			RenderContext context(frame_in_flight, extent);
 			func(static_cast<RenderTarget&>(context));
 		});

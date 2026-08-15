@@ -6,7 +6,7 @@
 namespace ViewDesign {
 
 
-SizeU GetDesktopSize();
+SizeU GetDesktopPixelSize();
 
 
 } // namespace ViewDesign

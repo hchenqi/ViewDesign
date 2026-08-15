@@ -7,7 +7,7 @@ namespace ViewDesign {
 using namespace Win32;
 
 
-SizeU GetDesktopSize() {
+SizeU GetDesktopPixelSize() {
 	RECT rect;
 	SystemParametersInfoW(SPI_GETWORKAREA, 0, &rect, 0);
 	return AsRectI(rect).size;

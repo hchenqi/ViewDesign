@@ -6,7 +6,7 @@
 namespace ViewDesign {
 
 
-SizeU GetDesktopSize() {
+SizeU GetDesktopPixelSize() {
 	int x, y, width, height;
 	glfwGetMonitorWorkarea(glfwGetPrimaryMonitor(), &x, &y, &width, &height);
 	return SizeU(width, height);

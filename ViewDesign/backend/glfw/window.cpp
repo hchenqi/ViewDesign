@@ -11,8 +11,9 @@ namespace ViewDesign {
 
 struct WindowPrivateAccess : Window {
 	using Window::HasParent;
-	using Window::SetSize;
-	using Window::SetPoint;
+	using Window::GetScale;
+	using Window::SetPixelPoint;
+	using Window::SetPixelSize;
 	using Window::SetScale;
 	using Window::State;
 	using Window::SetState;
@@ -20,9 +21,9 @@ struct WindowPrivateAccess : Window {
 };
 
 struct DesktopPrivateAccess : Desktop {
-	using Desktop::LoseTrack;
-	using Desktop::LoseCapture;
-	using Desktop::LoseFocus;
+	using Desktop::LoseWindowTrack;
+	using Desktop::LoseWindowCapture;
+	using Desktop::LoseWindowFocus;
 	using Desktop::DispatchMouseEvent;
 	using Desktop::DispatchKeyEvent;
 };
@@ -49,11 +50,11 @@ void WindowSizeCallback(GLFWwindow* glfw_window, int width, int height) {
 }
 
 void FramebufferSizeCallback(GLFWwindow* glfw_window, int width, int height) {
-	GetWindow(glfw_window)->SetSize(SizeU(width, height));
+	GetWindow(glfw_window)->SetPixelSize(SizeU(width, height));
 }
 
 void WindowPosCallback(GLFWwindow* glfw_window, int xpos, int ypos) {
-	GetWindow(glfw_window)->SetPoint(PointI(xpos, ypos));
+	GetWindow(glfw_window)->SetPixelPoint(PointI(xpos, ypos));
 }
 
 void WindowContentScaleCallback(GLFWwindow* glfw_window, float xscale, float yscale) {
@@ -78,13 +79,13 @@ Point cursor_position;
 
 void CursorEnterCallback(GLFWwindow* glfw_window, int entered) {
 	if (entered == GLFW_FALSE) {
-		GetDesktop().LoseTrack();
+		GetDesktop().LoseWindowTrack();
 	}
 }
 
 void CursorPosCallback(GLFWwindow* glfw_window, double xpos, double ypos) {
 	MouseEvent mouse_event;
-	mouse_event.point = cursor_position = Point(xpos, ypos);
+	mouse_event.point = cursor_position = Point(xpos, ypos) / GetWindow(glfw_window)->GetScale();
 	mouse_event.type = MouseEvent::Move;
 	GetDesktop().DispatchMouseEvent(*GetWindow(glfw_window), mouse_event);
 }
@@ -138,7 +139,7 @@ void ScrollCallback(GLFWwindow* glfw_window, double xoffset, double yoffset) {
 
 void WindowFocusCallback(GLFWwindow* glfw_window, int focused) {
 	if (focused == GLFW_FALSE) {
-		GetDesktop().LoseFocus();
+		GetDesktop().LoseWindowFocus();
 	}
 }
 
@@ -246,7 +247,7 @@ void CloseWindow(Handle window) { glfwSetWindowShouldClose(AsGLFWWindow(window),
 void RedrawWindowRegion(Handle window, RectI region) {}
 
 void SetWindowCapture(Handle window) { glfwSetInputMode(AsGLFWWindow(window), GLFW_CURSOR, GLFW_CURSOR_DISABLED); }
-void ReleaseWindowCapture(Handle window) { glfwSetInputMode(AsGLFWWindow(window), GLFW_CURSOR, GLFW_CURSOR_NORMAL); GetDesktop().LoseCapture(); }
+void ReleaseWindowCapture(Handle window) { glfwSetInputMode(AsGLFWWindow(window), GLFW_CURSOR, GLFW_CURSOR_NORMAL); GetDesktop().LoseWindowCapture(); }
 void SetWindowFocus(Handle window) { glfwFocusWindow(AsGLFWWindow(window)); }
 
 void ImeWindowEnable(Handle window) {}

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "ViewDesign/view/wrapper/Button.h"
-#include "ViewDesign/view/wrapper/Background.h"
 
 #include <functional>
 
@@ -9,28 +8,31 @@
 namespace ViewDesign {
 
 
-template<view_type View>
-class FilledButton : public Button<DefaultBackground<View>> {
+struct FilledButtonStyle {
+	struct BackgroundStyle {
+	public:
+		Color _normal = ColorCode::White;
+		Color _hovered = ColorCode::LightGray;
+		Color _pressed = ColorCode::Gray;
+	public:
+		BackgroundStyle& normal(Color normal) { _normal = normal; return *this; }
+		BackgroundStyle& hovered(Color hovered) { _hovered = hovered; return *this; }
+		BackgroundStyle& pressed(Color pressed) { _pressed = pressed; return *this; }
+	} background;
+};
+
+
+template<view_type View> requires (requires(View view, Color color) { view.SetBackground(color); })
+class FilledButton : public Button<View> {
 private:
-	using Base = Button<DefaultBackground<View>>;
+	using Base = Button<View>;
 
 public:
-	struct Style {
-		struct BackgroundStyle {
-		public:
-			Color _normal = color_transparent;
-			Color _hovered = ColorCode::LightGray;
-			Color _pressed = ColorCode::Gray;
-		public:
-			BackgroundStyle& normal(Color normal) { _normal = normal; return *this; }
-			BackgroundStyle& hovered(Color hovered) { _hovered = hovered; return *this; }
-			BackgroundStyle& pressed(Color pressed) { _pressed = pressed; return *this; }
-		} background;
-	};
+	using Style = FilledButtonStyle;
 
 public:
 	FilledButton(Style style, std::function<void()> callback, auto&&... args) : Base(std::forward<decltype(args)>(args)...), style(style), callback(std::move(callback)) {
-		Base::background = style.background._normal;
+		Base::SetBackground(style.background._normal);
 	}
 
 protected:

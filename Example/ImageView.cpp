@@ -46,7 +46,7 @@ public:
 	), image(image) {}
 
 private:
-	class LoadButton : public HitSelf<FilledButton<ViewFrame>>, public SizeTrait<Auto, Auto> {
+	class LoadButton : public HitSelf<FilledButton<DefaultBackground<ViewFrame>>>, public SizeTrait<Auto, Auto> {
 	public:
 		LoadButton(LoadImageWindow& window) : Base(
 			Base::Style(),
@@ -69,7 +69,7 @@ private:
 private:
 	ref_ptr<TextEditor> filename_input;
 	ref_ptr<Box<Fixed, Fixed>> filename_input_box;
-	Timer reset_border_timer = Timer([&]() { filename_input_box->SetBorderColor(border_color_normal); });
+	Timer reset_border_timer = Timer([&] { filename_input_box->SetBorderColor(border_color_normal); });
 private:
 	std::optional<Image>& image;
 private:

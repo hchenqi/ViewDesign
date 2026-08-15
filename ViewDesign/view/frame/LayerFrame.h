@@ -73,7 +73,7 @@ protected:
 		}
 		if (!redraw_region.IsEmpty()) {
 			Canvas canvas;
-			canvas.Group(scale, rect_infinite, [&]() { DrawChild(child, point_zero, canvas, redraw_region / scale); });
+			canvas.Group(scale, rect_infinite, [&] { DrawChild(child, point_zero, canvas, redraw_region / scale); });
 			layer.RenderCanvas(canvas, vector_zero, redraw_region);
 			invalid_region.Sub(RoundDown(redraw_region));
 		}
@@ -160,7 +160,7 @@ protected:
 		Rect redraw_region = render_region.GetBoundingRect();
 		if (!redraw_region.IsEmpty()) {
 			Canvas canvas;
-			canvas.Group(scale, rect_infinite, [&]() { DrawChild(child, point_zero, canvas, redraw_region / scale); });
+			canvas.Group(scale, rect_infinite, [&] { DrawChild(child, point_zero, canvas, redraw_region / scale); });
 			for (TileIndex tile_index : GetOverlappingTileRange(tile_size, redraw_region)) {
 				Layer& layer = tile_cache[tile_index];
 				if (layer.Empty()) { layer.Create(tile_size); }

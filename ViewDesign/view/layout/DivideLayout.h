@@ -2,8 +2,6 @@
 
 #include "ViewDesign/view/view_traits.h"
 
-#include <vector>
-
 
 namespace ViewDesign {
 
@@ -14,13 +12,9 @@ public:
 
 protected:
 	_DivideLayout_Base(std::vector<child_type> child_list) : child_list(std::move(child_list)) {
-		size_t index = 0;
-		for (auto& child : this->child_list) {
-			RegisterChild(child);
-			SetChildIndex(child, index++);
-		}
+		for (auto& child : this->child_list) { RegisterChild(child); }
 	}
-	_DivideLayout_Base(auto... child) requires (compatible_unique_ptr_type<decltype(child), child_type> && ...) : _DivideLayout_Base([&]() {
+	_DivideLayout_Base(auto... child) requires (compatible_unique_ptr_type<decltype(child), child_type> && ...) : _DivideLayout_Base([&] {
 		std::vector<child_type> child_list; child_list.reserve(sizeof...(child));
 		(child_list.emplace_back(std::move(child)), ...);
 		return child_list;
@@ -34,8 +28,11 @@ protected:
 protected:
 	std::vector<child_type> child_list;
 protected:
-	void SetChildIndex(ViewBase& child, size_t index) { ViewBase::SetChildData<size_t>(child, index); }
-	size_t GetChildIndex(ViewBase& child) const { return ViewBase::GetChildData<size_t>(child); }
+	size_t GetChildIndex(ViewBase& child) const {
+		auto it = std::find_if(child_list.begin(), child_list.end(), [&](const auto& ptr) { return ptr == &child; });
+		if (it == child_list.end()) { throw std::invalid_argument("invalid child"); }
+		return it - child_list.begin();
+	}
 
 	// layout
 protected:

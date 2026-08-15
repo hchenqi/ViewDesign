@@ -40,7 +40,7 @@ protected:
 	// drawing
 protected:
 	virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
-		canvas.Group(scale, rect_infinite, [&]() {
+		canvas.Group(scale, rect_infinite, [&] {
 			DrawChild(child, point_zero, canvas, draw_region / scale);
 		});
 	}

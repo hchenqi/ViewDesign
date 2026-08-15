@@ -102,10 +102,14 @@ public:
 	using child_type = view_ptr<Fixed, Fixed>;
 
 public:
-	StackLayoutMultiple(auto... child) requires (compatible_unique_ptr_type<decltype(child), child_type> && ...) : child_list() {
-		child_list.reserve(sizeof...(child)); (child_list.emplace_back(std::move(child)), ...);
-		for (auto& child : child_list) { RegisterChild(child); }
+	StackLayoutMultiple(std::vector<child_type> child_list) : child_list(std::move(child_list)) {
+		for (auto& child : this->child_list) { RegisterChild(child); }
 	}
+	StackLayoutMultiple(auto... child) requires (compatible_unique_ptr_type<decltype(child), child_type> && ...) : StackLayoutMultiple([&] {
+		std::vector<child_type> child_list; child_list.reserve(sizeof...(child));
+		(child_list.emplace_back(std::move(child)), ...);
+		return child_list;
+	}()) {}
 	StackLayoutMultiple(auto... child) requires (!compatible_unique_ptr_type<decltype(child), child_type> || ...) {
 		static_assert((unique_ptr_type<decltype(child)> && ...), "StackLayoutMultiple: child view argument of raw pointer type not accepted");
 		static_assert((size_trait_compatible_with<decltype(child), child_type> && ...), "StackLayoutMultiple: child view size traits incompatible");

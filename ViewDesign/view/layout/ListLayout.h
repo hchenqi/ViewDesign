@@ -2,8 +2,6 @@
 
 #include "ViewDesign/view/view_traits.h"
 
-#include <vector>
-
 
 namespace ViewDesign {
 
@@ -16,18 +14,14 @@ protected:
 	struct ChildInfo {
 	public:
 		view_ptr_any view;
-		Rect region;
+		Rect region = rect_empty;
 	public:
-		ChildInfo(view_ptr_any view) : view(std::move(view)), region(rect_empty) {}
+		ChildInfo(view_ptr_any view) : view(std::move(view)) {}
 	};
 
 protected:
 	_ListLayout_Base(float gap, std::vector<ChildInfo> child_list) : gap(gap), child_list(std::move(child_list)) {
-		size_t index = 0;
-		for (auto& child : this->child_list) {
-			RegisterChild(child.view);
-			SetChildIndex(child.view, index++);
-		}
+		for (auto& child : this->child_list) { RegisterChild(child.view); }
 	}
 
 	// style
@@ -41,57 +35,41 @@ public:
 	bool Empty() const { return child_list.empty(); }
 	size_t Length() const { return child_list.size(); }
 	ViewBase& GetChild(size_t index) const { return child_list[index].view; }
-protected:
-	size_t GetChildIndex(ViewBase& child) const { return ViewBase::GetChildData<size_t>(child); }
-	void SetChildIndex(ViewBase& child, size_t index) { ViewBase::SetChildData<size_t>(child, index); }
-protected:
-	void UpdateIndex(std::vector<ChildInfo>::iterator it) {
-		for (; it != child_list.end(); ++it) {
-			SetChildIndex(it->view, it - child_list.begin());
-		}
+	size_t GetChildIndex(ViewBase& child) const {
+		auto it = std::find_if(child_list.begin(), child_list.end(), [&](const ChildInfo& info) { return info.view == &child; });
+		if (it == child_list.end()) { throw std::invalid_argument("invalid child"); }
+		return it - child_list.begin();
 	}
 protected:
-	std::vector<ChildInfo>::iterator Insert(size_t index, view_ptr_any child) {
-		if (index > child_list.size()) {
-			index = child_list.size();
-		}
-		RegisterChild(child);
-		auto it = child_list.emplace(child_list.begin() + index, std::move(child));
-		UpdateIndex(it);
-		return it;
+	std::vector<ChildInfo>::iterator NormalizeInsertIndex(size_t index) {
+		if (index > child_list.size()) { index = child_list.size(); }
+		return child_list.begin() + index;
 	}
-	std::pair<std::vector<ChildInfo>::iterator, std::vector<ChildInfo>::iterator> Insert(size_t index, auto list) requires (std::ranges::input_range<decltype(list)>) {
-		if (index > child_list.size()) {
-			index = child_list.size();
-		}
-		for (auto& child : list) {
-			RegisterChild(child);
-		}
-		auto it = child_list.insert(child_list.begin() + index, std::make_move_iterator(list.begin()), std::make_move_iterator(list.end()));
-		UpdateIndex(it);
-		return std::make_pair(it, it + list.size());
+	std::vector<ChildInfo>::iterator NormalizeEraseIndex(size_t index) {
+		if (index >= child_list.size()) { throw std::invalid_argument("invalid index"); }
+		return child_list.begin() + index;
 	}
-	std::pair<ChildInfo, std::vector<ChildInfo>::iterator> Erase(size_t index) {
-		if (index >= child_list.size()) {
-			throw std::invalid_argument("invalid index");
-		}
-		ChildInfo child = std::move(child_list[index]);
-		auto it = child_list.erase(child_list.begin() + index);
-		UpdateIndex(it);
+	std::pair<std::vector<ChildInfo>::iterator, std::vector<ChildInfo>::iterator> NormalizeEraseIndex(size_t index, size_t count) {
+		if (index >= child_list.size() || count == 0) { throw std::invalid_argument("invalid index"); }
+		auto begin = child_list.begin() + index, end = begin + std::min(count, child_list.size() - index);
+		return std::make_pair(begin, end);
+	}
+protected:
+	std::vector<ChildInfo>::iterator Insert(std::vector<ChildInfo>::iterator it, view_ptr_any child) {
+		return child_list.emplace(it, std::move(child));
+	}
+	std::pair<std::vector<ChildInfo>::iterator, std::vector<ChildInfo>::iterator> Insert(std::vector<ChildInfo>::iterator it, auto list) requires (std::ranges::input_range<decltype(list)>) {
+		auto begin = child_list.insert(it, std::make_move_iterator(list.begin()), std::make_move_iterator(list.end())), end = begin + list.size();
+		return std::make_pair(begin, end);
+	}
+	std::pair<ChildInfo, std::vector<ChildInfo>::iterator> Erase(std::vector<ChildInfo>::iterator it) {
+		ChildInfo child = std::move(*it);
+		it = child_list.erase(it);
 		return std::make_pair(std::move(child), it);
 	}
-	std::pair<std::vector<ChildInfo>, std::vector<ChildInfo>::iterator> Erase(size_t index, size_t count) {
-		if (index >= child_list.size()) {
-			throw std::invalid_argument("invalid index");
-		}
-		if (count == 0) {
-			return { std::vector<ChildInfo>(), child_list.end() };
-		}
-		count = std::min(count, child_list.size() - index);
-		size_t end = index + count;
-		std::vector<ChildInfo> list(std::make_move_iterator(child_list.begin() + index), std::make_move_iterator(child_list.begin() + end));
-		auto it = child_list.erase(child_list.begin() + index, child_list.begin() + end);
-		UpdateIndex(it);
+	std::pair<std::vector<ChildInfo>, std::vector<ChildInfo>::iterator> Erase(std::vector<ChildInfo>::iterator begin, std::vector<ChildInfo>::iterator end) {
+		std::vector<ChildInfo> list(std::make_move_iterator(begin), std::make_move_iterator(end));
+		auto it = child_list.erase(begin, end);
 		return std::make_pair(std::move(list), it);
 	}
 
@@ -125,9 +103,9 @@ protected:
 		return std::lower_bound(child_list.begin(), child_list.end(), y, [](const ChildInfo& child, float y) { return child.region.point.y <= y; }) - 1;
 	}
 protected:
-	float UpdateOffset(std::vector<ChildInfo>::iterator it, std::vector<ChildInfo>::iterator it_end) {
+	float UpdateOffset(std::vector<ChildInfo>::iterator it, std::vector<ChildInfo>::iterator end) {
 		float y = it == child_list.begin() ? 0.0f : (it - 1)->region.bottom() + gap;
-		for (; it != it_end; ++it) {
+		for (; it != end; ++it) {
 			it->region.point.y = y;
 			y += it->region.size.height + gap;
 		}
@@ -149,8 +127,8 @@ protected:
 			SizeUpdated(size);
 		}
 	}
-	void UpdateOffsetHeight(std::vector<ChildInfo>::iterator it, std::vector<ChildInfo>::iterator it_end) {
-		UpdateHeight(UpdateOffset(it, it_end));
+	void UpdateOffsetHeight(std::vector<ChildInfo>::iterator it, std::vector<ChildInfo>::iterator end) {
+		UpdateHeight(UpdateOffset(it, end));
 	}
 	void UpdateOffsetHeight(std::vector<ChildInfo>::iterator it) {
 		UpdateOffsetHeight(it, it);
@@ -167,8 +145,8 @@ protected:
 protected:
 	virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
 		draw_region = draw_region.Intersect(Rect(point_zero, size)); if (draw_region.IsEmpty()) { return; }
-		auto it_begin = HitTestIndex(draw_region.top()), it_end = HitTestIndex(draw_region.bottom());
-		for (auto it = it_begin; it <= it_end; ++it) {
+		auto begin = HitTestIndex(draw_region.top()), end = HitTestIndex(draw_region.bottom());
+		for (auto it = begin; it <= end; ++it) {
 			DrawChild(it->view, it->region, canvas, draw_region);
 		}
 	}
@@ -200,12 +178,12 @@ protected:
 		}
 	}
 public:
-	ListLayoutVertical(float gap, std::vector<child_type> list) : ListLayoutVertical(gap, [&]() {
+	ListLayoutVertical(float gap, std::vector<child_type> list) : ListLayoutVertical(gap, [&] {
 		std::vector<ChildInfo> child_list; child_list.reserve(list.size());
 		for (auto& child : list) { child_list.emplace_back(std::move(child)); }
 		return child_list;
 	}()) {}
-	ListLayoutVertical(float gap, auto... child) requires (compatible_unique_ptr_type<decltype(child), child_type> && ...) : ListLayoutVertical(gap, [&]() {
+	ListLayoutVertical(float gap, auto... child) requires (compatible_unique_ptr_type<decltype(child), child_type> && ...) : ListLayoutVertical(gap, [&] {
 		std::vector<ChildInfo> child_list; child_list.reserve(sizeof...(child));
 		(child_list.emplace_back(std::move(child)), ...);
 		return child_list;
@@ -217,50 +195,57 @@ public:
 
 public:
 	void Insert(size_t index, child_type child) {
-		auto it = _ListLayout_Base::Insert(index, std::move(child));
+		auto it = _ListLayout_Base::NormalizeInsertIndex(index);
+		RegisterChild(child);
+		it = _ListLayout_Base::Insert(it, std::move(child));
 		it->region.size = UpdateChildSizeRef(it->view, Size(width_ref, length_zero));
 		UpdateWidthHeight(CalculateMaxWidthAdd(it->region.size.width), UpdateOffset(it, it + 1));
 	}
 	void InsertBefore(ViewBase& ref, child_type child) { Insert(GetChildIndex(ref), std::move(child)); }
 	void InsertAfter(ViewBase& ref, child_type child) { Insert(GetChildIndex(ref) + 1, std::move(child)); }
 	void Append(child_type child) { Insert(-1, std::move(child)); }
-	void Insert(size_t begin, std::vector<child_type> list) {
-		auto [it_begin, it_end] = _ListLayout_Base::Insert(begin, std::move(list));
+	void Insert(size_t index, std::vector<child_type> list) {
+		auto it = _ListLayout_Base::NormalizeInsertIndex(index);
+		for (auto& child : list) { RegisterChild(child); }
+		auto [begin, end] = _ListLayout_Base::Insert(it, std::move(list));
 		float width = 0.0f;
-		for (auto it = it_begin; it < it_end; ++it) {
+		for (auto it = begin; it < end; ++it) {
 			it->region.size = UpdateChildSizeRef(it->view, Size(width_ref, length_zero));
 			if constexpr (!IsFixed<WidthTrait>) {
 				width = std::max(width, it->region.size.width);
 			}
 		}
-		UpdateWidthHeight(CalculateMaxWidthAdd(width), UpdateOffset(it_begin, it_end));
+		UpdateWidthHeight(CalculateMaxWidthAdd(width), UpdateOffset(begin, end));
 	}
 	void InsertBefore(ViewBase& ref, std::vector<child_type> list) { Insert(GetChildIndex(ref), std::move(list)); }
 	void InsertAfter(ViewBase& ref, std::vector<child_type> list) { Insert(GetChildIndex(ref) + 1, std::move(list)); }
 	void Erase(size_t index) {
-		auto [child, it] = _ListLayout_Base::Erase(index);
-		UpdateWidthHeight(CalculateMaxWidthRemove(child.region.size.width), UpdateOffset(it));
+		auto it = _ListLayout_Base::NormalizeEraseIndex(index);
+		auto [child, next] = _ListLayout_Base::Erase(it);
+		UpdateWidthHeight(CalculateMaxWidthRemove(child.region.size.width), UpdateOffset(next));
+		UnregisterChild(child.view);
 	}
 	void Erase(ViewBase& child) { Erase(GetChildIndex(child)); }
 	void Erase(size_t index, size_t count) {
-		auto [list, it] = _ListLayout_Base::Erase(index, count);
-		UpdateWidthHeight(CalculateMaxWidth(), UpdateOffset(it));
+		auto [begin, end] = _ListLayout_Base::NormalizeEraseIndex(index, count);
+		auto [list, next] = _ListLayout_Base::Erase(begin, end);
+		UpdateWidthHeight(CalculateMaxWidth(), UpdateOffset(next));
+		for (auto& child : list) { UnregisterChild(child.view); }
 	}
 	child_type Extract(size_t index) {
-		auto [child, it] = _ListLayout_Base::Erase(index);
-		UpdateWidthHeight(CalculateMaxWidthRemove(child.region.size.width), UpdateOffset(it));
+		auto it = _ListLayout_Base::NormalizeEraseIndex(index);
+		auto [child, next] = _ListLayout_Base::Erase(it);
+		UpdateWidthHeight(CalculateMaxWidthRemove(child.region.size.width), UpdateOffset(next));
 		UnregisterChild(child.view);
 		return std::move(child.view);
 	}
 	child_type Extract(ViewBase& child) { return Extract(GetChildIndex(child)); }
 	std::vector<child_type> Extract(size_t index, size_t count) {
-		auto [list, it] = _ListLayout_Base::Erase(index, count);
-		UpdateWidthHeight(CalculateMaxWidth(), UpdateOffset(it));
+		auto [begin, end] = _ListLayout_Base::NormalizeEraseIndex(index, count);
+		auto [list, next] = _ListLayout_Base::Erase(begin, end);
+		UpdateWidthHeight(CalculateMaxWidth(), UpdateOffset(next));
 		std::vector<child_type> result; result.reserve(list.size());
-		for (auto& child : list) {
-			UnregisterChild(child.view);
-			result.push_back(std::move(child.view));
-		}
+		for (auto& child : list) { UnregisterChild(child.view); result.push_back(std::move(child.view)); }
 		return result;
 	}
 
@@ -445,9 +430,9 @@ protected:
 		return std::lower_bound(child_list.begin(), child_list.end(), x, [](const ChildInfo& child, float x) { return child.region.point.x <= x; }) - 1;
 	}
 protected:
-	float UpdateOffset(std::vector<ChildInfo>::iterator it, std::vector<ChildInfo>::iterator it_end) {
+	float UpdateOffset(std::vector<ChildInfo>::iterator it, std::vector<ChildInfo>::iterator end) {
 		float x = it == child_list.begin() ? 0.0f : (it - 1)->region.right() + gap;
-		for (; it != it_end; ++it) {
+		for (; it != end; ++it) {
 			it->region.point.x = x;
 			x += it->region.size.width + gap;
 		}
@@ -469,8 +454,8 @@ protected:
 			SizeUpdated(size);
 		}
 	}
-	void UpdateOffsetWidth(std::vector<ChildInfo>::iterator it, std::vector<ChildInfo>::iterator it_end) {
-		UpdateWidth(UpdateOffset(it, it_end));
+	void UpdateOffsetWidth(std::vector<ChildInfo>::iterator it, std::vector<ChildInfo>::iterator end) {
+		UpdateWidth(UpdateOffset(it, end));
 	}
 	void UpdateOffsetWidth(std::vector<ChildInfo>::iterator it) {
 		UpdateOffsetWidth(it, it);
@@ -487,8 +472,8 @@ protected:
 protected:
 	virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
 		draw_region = draw_region.Intersect(Rect(point_zero, size)); if (draw_region.IsEmpty()) { return; }
-		auto it_begin = HitTestIndex(draw_region.left()), it_end = HitTestIndex(draw_region.right());
-		for (auto it = it_begin; it <= it_end; ++it) {
+		auto begin = HitTestIndex(draw_region.left()), end = HitTestIndex(draw_region.right());
+		for (auto it = begin; it <= end; ++it) {
 			DrawChild(it->view, it->region, canvas, draw_region);
 		}
 	}
@@ -520,12 +505,12 @@ protected:
 		}
 	}
 public:
-	ListLayoutHorizontal(float gap, std::vector<child_type> list) : ListLayoutHorizontal(gap, [&]() {
+	ListLayoutHorizontal(float gap, std::vector<child_type> list) : ListLayoutHorizontal(gap, [&] {
 		std::vector<ChildInfo> child_list; child_list.reserve(list.size());
 		for (auto& child : list) { child_list.emplace_back(std::move(child)); }
 		return child_list;
 	}()) {}
-	ListLayoutHorizontal(float gap, auto... child) requires (compatible_unique_ptr_type<decltype(child), child_type> && ...) : ListLayoutHorizontal(gap, [&]() {
+	ListLayoutHorizontal(float gap, auto... child) requires (compatible_unique_ptr_type<decltype(child), child_type> && ...) : ListLayoutHorizontal(gap, [&] {
 		std::vector<ChildInfo> child_list; child_list.reserve(sizeof...(child));
 		(child_list.emplace_back(std::move(child)), ...);
 		return child_list;
@@ -537,50 +522,57 @@ public:
 
 public:
 	void Insert(size_t index, child_type child) {
-		auto it = _ListLayout_Base::Insert(index, std::move(child));
+		auto it = _ListLayout_Base::NormalizeInsertIndex(index);
+		RegisterChild(child);
+		it = _ListLayout_Base::Insert(it, std::move(child));
 		it->region.size = UpdateChildSizeRef(it->view, Size(length_zero, height_ref));
 		UpdateHeightWidth(CalculateMaxHeightAdd(it->region.size.height), UpdateOffset(it, it + 1));
 	}
 	void InsertBefore(ViewBase& ref, child_type child) { Insert(GetChildIndex(ref), std::move(child)); }
 	void InsertAfter(ViewBase& ref, child_type child) { Insert(GetChildIndex(ref) + 1, std::move(child)); }
 	void Append(child_type child) { Insert(-1, std::move(child)); }
-	void Insert(size_t begin, std::vector<child_type> list) {
-		auto [it_begin, it_end] = _ListLayout_Base::Insert(begin, std::move(list));
+	void Insert(size_t index, std::vector<child_type> list) {
+		auto it = _ListLayout_Base::NormalizeInsertIndex(index);
+		for (auto& child : list) { RegisterChild(child); }
+		auto [begin, end] = _ListLayout_Base::Insert(it, std::move(list));
 		float height = 0.0f;
-		for (auto it = it_begin; it < it_end; ++it) {
+		for (auto it = begin; it < end; ++it) {
 			it->region.size = UpdateChildSizeRef(it->view, Size(length_zero, height_ref));
 			if constexpr (!IsFixed<HeightTrait>) {
 				height = std::max(height, it->region.size.height);
 			}
 		}
-		UpdateHeightWidth(CalculateMaxHeightAdd(height), UpdateOffset(it_begin, it_end));
+		UpdateHeightWidth(CalculateMaxHeightAdd(height), UpdateOffset(begin, end));
 	}
 	void InsertBefore(ViewBase& ref, std::vector<child_type> list) { Insert(GetChildIndex(ref), std::move(list)); }
 	void InsertAfter(ViewBase& ref, std::vector<child_type> list) { Insert(GetChildIndex(ref) + 1, std::move(list)); }
 	void Erase(size_t index) {
-		auto [child, it] = _ListLayout_Base::Erase(index);
-		UpdateHeightWidth(CalculateMaxHeightRemove(child.region.size.height), UpdateOffset(it));
+		auto it = _ListLayout_Base::NormalizeEraseIndex(index);
+		auto [child, next] = _ListLayout_Base::Erase(it);
+		UpdateHeightWidth(CalculateMaxHeightRemove(child.region.size.height), UpdateOffset(next));
+		UnregisterChild(child.view);
 	}
 	void Erase(ViewBase& child) { Erase(GetChildIndex(child)); }
 	void Erase(size_t index, size_t count) {
-		auto [list, it] = _ListLayout_Base::Erase(index, count);
-		UpdateHeightWidth(CalculateMaxHeight(), UpdateOffset(it));
+		auto [begin, end] = _ListLayout_Base::NormalizeEraseIndex(index, count);
+		auto [list, next] = _ListLayout_Base::Erase(begin, end);
+		UpdateHeightWidth(CalculateMaxHeight(), UpdateOffset(next));
+		for (auto& child : list) { UnregisterChild(child.view); }
 	}
 	child_type Extract(size_t index) {
-		auto [child, it] = _ListLayout_Base::Erase(index);
-		UpdateHeightWidth(CalculateMaxHeightRemove(child.region.size.height), UpdateOffset(it));
+		auto it = _ListLayout_Base::NormalizeEraseIndex(index);
+		auto [child, next] = _ListLayout_Base::Erase(it);
+		UpdateHeightWidth(CalculateMaxHeightRemove(child.region.size.height), UpdateOffset(next));
 		UnregisterChild(child.view);
 		return std::move(child.view);
 	}
 	child_type Extract(ViewBase& child) { return Extract(GetChildIndex(child)); }
 	std::vector<child_type> Extract(size_t index, size_t count) {
-		auto [list, it] = _ListLayout_Base::Erase(index, count);
-		UpdateHeightWidth(CalculateMaxHeight(), UpdateOffset(it));
+		auto [begin, end] = _ListLayout_Base::NormalizeEraseIndex(index, count);
+		auto [list, next] = _ListLayout_Base::Erase(begin, end);
+		UpdateHeightWidth(CalculateMaxHeight(), UpdateOffset(next));
 		std::vector<child_type> result; result.reserve(list.size());
-		for (auto& child : list) {
-			UnregisterChild(child.view);
-			result.push_back(std::move(child.view));
-		}
+		for (auto& child : list) { UnregisterChild(child.view); result.push_back(std::move(child.view)); }
 		return result;
 	}
 

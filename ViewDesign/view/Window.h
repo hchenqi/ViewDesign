@@ -1,10 +1,7 @@
 #pragma once
 
 #include "ViewDesign/view/ViewBase.h"
-#include "ViewDesign/geometry/scale.h"
 #include "ViewDesign/drawing/surface.h"
-
-#include <memory>
 
 
 namespace ViewDesign {
@@ -16,11 +13,13 @@ private:
 	friend struct WindowPrivateAccess;
 
 public:
-	Window(Handle window, std::unique_ptr<ViewBase> child);
-	Window(Handle window, owner_ptr<ViewBase> child) : Window(window, std::unique_ptr<ViewBase>(child)) {}
-	Window(const u16string& title, std::unique_ptr<ViewBase> child);
-	Window(const u16string& title, owner_ptr<ViewBase> child) : Window(title, std::unique_ptr<ViewBase>(child)) {}
+	Window(Handle window, view_ptr_any child);
+	Window(const u16string& title, view_ptr_any child);
 	virtual ~Window() override;
+
+	// style
+public:
+	void SetTitle(const u16string& title);
 
 	// surface
 private:
@@ -28,35 +27,19 @@ private:
 public:
 	Handle GetHandle() const { return surface.GetWindow(); }
 
-	// style
-public:
-	void SetTitle(const u16string& title);
-
-	// child
-protected:
-	std::unique_ptr<ViewBase> child;
-
-	// layout
+	// metrics
 private:
 	PointI point;
 	Scale scale;
 protected:
-	SizeU GetSize() const { return surface.GetSize(); }
-	RectI GetRegion() const { return RectI(point, GetSize()); }
+	PointI GetPixelPoint() const { return point; }
+	SizeU GetPixelSize() const { return surface.GetSize(); }
+	RectI GetPixelRegion() const { return RectI(GetPixelPoint(), GetPixelSize()); }
 	Scale GetScale() const { return scale; }
 private:
-	void SetSize(SizeU size) { if (GetSize() != size) { surface.Resize(size); UpdateChildSizeRef(*child, size / scale); Redraw(rect_infinite); } }
-	void SetPoint(PointI point) { this->point = point; }
-	void SetScale(Scale scale) { this->scale = Scale(scale); }
-protected:
-	void RegionUpdated(Rect region);
-protected:
-	virtual Point ConvertChildPoint(ViewBase& child, Point point) const override { return point * scale; }
-	virtual Point ConvertChildPoint(Point point, ViewBase& child) const override { return point / scale; }
-protected:
-	virtual std::pair<Size, Size> CalculateMinMaxSize(Size size_ref) { return { size_empty, size_ref }; }
-	virtual Rect OnWindowSizeRefUpdate(Size size_ref) { return Rect(point_zero, UpdateChildSizeRef(*child, size_ref)); }
-	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override {}
+	void SetPixelPoint(PointI point) { this->point = point; }
+	void SetPixelSize(SizeU size) { if (GetPixelSize() != size) { surface.Resize(size); UpdateChildSizeRef(child, size / scale); Redraw(rect_infinite); } }
+	void SetScale(Scale scale) { this->scale = scale; }
 
 	// state
 public:
@@ -77,17 +60,31 @@ public:
 	void Restore();
 	void Close();
 
+	// child
+protected:
+	view_ptr_any child;
+
+	// layout
+protected:
+	Point GetPoint() const { return GetPixelPoint() / GetScale(); }
+protected:
+	void RegionUpdated(Rect region);
+protected:
+	virtual std::pair<Size, Size> CalculateMinMaxSize(Size size_ref) { return { size_empty, size_ref }; }
+	virtual Rect OnWindowSizeRefUpdate(Size size_ref) { return Rect(point_zero, UpdateChildSizeRef(child, size_ref)); }
+	virtual void OnChildSizeUpdate(ViewBase& child, Size child_size) override {}
+
 	// drawing
 protected:
 	void Draw();
 	void Redraw(Rect redraw_region);
 protected:
-	virtual void OnDraw(Canvas& canvas, Rect draw_region) override { DrawChild(*child, point_zero, canvas, draw_region); }
+	virtual void OnDraw(Canvas& canvas, Rect draw_region) override { DrawChild(child, point_zero, canvas, draw_region); }
 	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) override { Redraw(child_redraw_region); }
 
 	// event
 protected:
-	virtual ref_ptr<ViewBase> HitTest(MouseEvent& event) override { event.point /= scale; return HitTestChild(*child, event); }
+	virtual ref_ptr<ViewBase> HitTest(MouseEvent& event) override { return HitTestChild(child, event); }
 };
 
 

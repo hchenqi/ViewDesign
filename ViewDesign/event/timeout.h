@@ -11,7 +11,7 @@ namespace ViewDesign {
 
 class Timeout : private Timer {
 public:
-	Timeout() : Timer([&]() { function ? Reset()() : Stop(); }) {}
+	Timeout() : Timer([&] { function ? Reset()() : Stop(); }) {}
 	~Timeout() {}
 
 private:
@@ -27,13 +27,13 @@ public:
 
 inline std::shared_ptr<Timeout> SetTimeout(std::function<void(void)> function, uint32 delay) {
 	std::shared_ptr<Timeout> timeout(new Timeout());
-	timeout->Set([timeout, function]() { function(); }, delay);
+	timeout->Set([timeout, function] { function(); }, delay);
 	return timeout;
 }
 
 
 inline TaskAwaitable<> SetTimeout(uint32 delay) {
-	return SetTask([=](Continuation<> continuation) { SetTimeout([=]() { continuation(); }, delay); });
+	return SetTask([=](Continuation<> continuation) { SetTimeout([=] { continuation(); }, delay); });
 }
 
 

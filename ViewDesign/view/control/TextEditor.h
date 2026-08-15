@@ -274,7 +274,7 @@ public:
 protected:
 	static constexpr uint32 update_timeout_value = 1000; // 1s
 protected:
-	Timer update_timeout{ [&]() { update_timeout.Stop(); } };
+	Timer update_timeout{ [&] { update_timeout.Stop(); } };
 protected:
 	virtual void OnOperationBegin() override {
 		TextEditor::OnOperationBegin();

@@ -27,7 +27,7 @@ protected:
 	// drawing
 protected:
 	virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
-		canvas.Group(GetCurrentScale(), rect_infinite, [&]() {
+		canvas.Group(GetCurrentScale(), rect_infinite, [&] {
 			DrawChild(child, point_zero, canvas, draw_region / GetCurrentScale());
 		});
 	}
@@ -128,7 +128,7 @@ protected:
 	// drawing
 protected:
 	virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
-		canvas.Group(GetCurrentScale(), rect_infinite, [&]() {
+		canvas.Group(GetCurrentScale(), rect_infinite, [&] {
 			DrawChild(child, point_zero, canvas, draw_region / GetCurrentScale());
 		});
 	}

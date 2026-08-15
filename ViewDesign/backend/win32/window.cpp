@@ -21,10 +21,11 @@ namespace ViewDesign {
 
 struct WindowPrivateAccess : Window {
 	using Window::HasParent;
-	using Window::GetRegion;
+	using Window::GetScale;
+	using Window::SetPixelPoint;
+	using Window::SetPixelSize;
 	using Window::SetScale;
-	using Window::SetSize;
-	using Window::SetPoint;
+	using Window::GetPoint;
 	using Window::State;
 	using Window::SetState;
 	using Window::Draw;
@@ -33,9 +34,9 @@ struct WindowPrivateAccess : Window {
 struct DesktopPrivateAccess : Desktop {
 	using Desktop::window_list;
 	using Desktop::GetWindowMinMaxRegion;
-	using Desktop::LoseTrack;
-	using Desktop::LoseCapture;
-	using Desktop::LoseFocus;
+	using Desktop::LoseWindowTrack;
+	using Desktop::LoseWindowCapture;
+	using Desktop::LoseWindowFocus;
 	using Desktop::DispatchMouseEvent;
 	using Desktop::DispatchKeyEvent;
 };
@@ -55,19 +56,17 @@ inline DesktopPrivateAccess& GetDesktop() {
 
 constexpr float dpi_default = 96.0f;
 
+bool is_mouse_tracked = false;
+
 inline bool IsMouseMsg(UINT msg) { return WM_MOUSEFIRST <= msg && msg <= WM_MOUSELAST; }
 inline bool IsKeyMsg(UINT msg) { return WM_KEYFIRST <= msg && msg <= WM_IME_KEYLAST; }
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
-	static bool is_mouse_tracked = false;
-
 	ref_ptr<WindowPrivateAccess> window = GetWindow(hwnd);
-	if (window == nullptr) { goto WindowIrrelevantMessages; }
 
-	// mouse message
 	if (IsMouseMsg(msg)) {
 		MouseEvent mouse_event;
-		mouse_event.point = Point((float)GET_X_LPARAM(lparam), (float)GET_Y_LPARAM(lparam));
+		mouse_event.point = Point((float)GET_X_LPARAM(lparam), (float)GET_Y_LPARAM(lparam)) / window->GetScale();
 		mouse_event.wheel_delta = GET_WHEEL_DELTA_WPARAM(wparam);
 		switch (msg) {
 		case WM_MOUSEMOVE: mouse_event.type = MouseEvent::Move;
@@ -87,8 +86,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 		case WM_RBUTTONUP: mouse_event.type = MouseEvent::RightUp; break;
 		case WM_MBUTTONDOWN: mouse_event.type = MouseEvent::MiddleDown; break;
 		case WM_MBUTTONUP: mouse_event.type = MouseEvent::MiddleUp; break;
-		case WM_MOUSEWHEEL: mouse_event.type = MouseEvent::WheelVertical; mouse_event.point -= window->GetRegion().point - point_zero; break;
-		case WM_MOUSEHWHEEL: mouse_event.type = MouseEvent::WheelHorizontal; mouse_event.point -= window->GetRegion().point - point_zero; break;
+		case WM_MOUSEWHEEL: mouse_event.type = MouseEvent::WheelVertical; mouse_event.point -= window->GetPoint() - point_zero; break;
+		case WM_MOUSEHWHEEL: mouse_event.type = MouseEvent::WheelHorizontal; mouse_event.point -= window->GetPoint() - point_zero; break;
 		default: return DefWindowProc(hwnd, msg, wparam, lparam);
 		}
 		mouse_event.ctrl = (GET_KEYSTATE_WPARAM(wparam) & MK_CONTROL) != 0;
@@ -98,7 +97,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 		return 0;
 	}
 
-	// keyboard message
 	if (IsKeyMsg(msg)) {
 		KeyEvent key_event;
 		key_event.ch = { static_cast<u16char>(wparam), 0 };
@@ -119,67 +117,58 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 		return 0;
 	}
 
-	{
-		switch (msg) {
-			// layout
-		case WM_GETMINMAXINFO: {
-			auto [size_min, region_max] = GetDesktop().GetWindowMinMaxRegion(*window);
-			MINMAXINFO* min_max_info = reinterpret_cast<MINMAXINFO*>(lparam);
-			min_max_info->ptMaxPosition = { region_max.point.x, region_max.point.y };
-			min_max_info->ptMaxSize = { (LONG)region_max.size.width, (LONG)region_max.size.height };
-			min_max_info->ptMinTrackSize = { (LONG)size_min.width, (LONG)size_min.height };
-			min_max_info->ptMaxTrackSize = min_max_info->ptMaxSize;
-		} break;
-		case WM_WINDOWPOSCHANGING: break;
-		case WM_WINDOWPOSCHANGED: return DefWindowProc(hwnd, msg, wparam, lparam);
-		case WM_MOVE: window->SetPoint(PointI((short)LOWORD(lparam), (short)HIWORD(lparam))); break;
-		case WM_SIZE: window->SetState(static_cast<WindowPrivateAccess::State>(wparam <= 2 ? wparam : 2)); if (wparam != SIZE_MINIMIZED) { window->SetSize(SizeU(LOWORD(lparam), HIWORD(lparam))); } break;
-		case WM_DPICHANGED: window->SetScale(Scale(LOWORD(wparam) / dpi_default)); break;
-
-			// drawing
-		case WM_PAINT: {
-			PAINTSTRUCT ps;
-			HDC hdc = BeginPaint(hwnd, &ps);
-			window->Draw();
-			EndPaint(hwnd, &ps);
-		} break;
-		case WM_ERASEBKGND: return true;
-
-			// event
-		case WM_MOUSELEAVE: is_mouse_tracked = false; GetDesktop().LoseTrack(); break;
-		case WM_CAPTURECHANGED: GetDesktop().LoseCapture(); break;
-
-			// convert scroll message to mouse wheel message
-		case WM_HSCROLL:
-		case WM_VSCROLL: {
-			short wheel_delta = 0;
-			switch (LOWORD(wparam)) {
-			case SB_LINEUP: case SB_PAGEUP: wheel_delta = WHEEL_DELTA; break;
-			case SB_LINEDOWN: case SB_PAGEDOWN: wheel_delta = -WHEEL_DELTA; break;
-			default: return 0;
-			}
-			short key_state = 0;
-			if (GetKeyState(VK_CONTROL)) { key_state |= MK_CONTROL; }
-			if (GetKeyState(VK_SHIFT)) { key_state |= MK_SHIFT; }
-			Point cursor_position = GetCursorPosition();
-			return WndProc(
-				hwnd, msg == WM_HSCROLL ? WM_MOUSEHWHEEL : WM_MOUSEWHEEL,
-				(wheel_delta << 16) | key_state, ((short)cursor_position.y << 16) | (short)cursor_position.x
-			);
-		}
-
-		case WM_CLOSE: GetDesktop().RemoveWindow(*window); break;
-
-		default: goto WindowIrrelevantMessages;
-		}
-		return 0;
-	}
-
-WindowIrrelevantMessages:
 	switch (msg) {
 	case WM_CREATE: break;
+	case WM_CLOSE: GetDesktop().RemoveWindow(*window); break;
 	case WM_DESTROY: if (GetDesktop().window_list.empty()) { PostQuitMessage(0); } break;
-	case WM_KILLFOCUS: GetDesktop().LoseFocus(); break;
+
+		// layout
+	case WM_WINDOWPOSCHANGING: break;
+	case WM_GETMINMAXINFO: {
+		auto [size_min, region_max] = GetDesktop().GetWindowMinMaxRegion(*window);
+		MINMAXINFO* min_max_info = reinterpret_cast<MINMAXINFO*>(lparam);
+		min_max_info->ptMaxPosition = { region_max.point.x, region_max.point.y };
+		min_max_info->ptMaxSize = { (LONG)region_max.size.width, (LONG)region_max.size.height };
+		min_max_info->ptMinTrackSize = { (LONG)size_min.width, (LONG)size_min.height };
+		min_max_info->ptMaxTrackSize = min_max_info->ptMaxSize;
+	} break;
+	case WM_MOVE: window->SetPixelPoint(PointI((short)LOWORD(lparam), (short)HIWORD(lparam))); break;
+	case WM_SIZE: window->SetState(static_cast<WindowPrivateAccess::State>(wparam <= 2 ? wparam : 2)); if (wparam != SIZE_MINIMIZED) { window->SetPixelSize(SizeU(LOWORD(lparam), HIWORD(lparam))); } break;
+	case WM_DPICHANGED: window->SetScale(Scale(LOWORD(wparam) / dpi_default)); break;
+
+		// drawing
+	case WM_PAINT: {
+		PAINTSTRUCT ps;
+		HDC hdc = BeginPaint(hwnd, &ps);
+		window->Draw();
+		EndPaint(hwnd, &ps);
+	} break;
+	case WM_ERASEBKGND: return true;
+
+		// scroll
+	case WM_HSCROLL:
+	case WM_VSCROLL: {
+		short wheel_delta = 0;
+		switch (LOWORD(wparam)) {
+		case SB_LINEUP: case SB_PAGEUP: wheel_delta = WHEEL_DELTA; break;
+		case SB_LINEDOWN: case SB_PAGEDOWN: wheel_delta = -WHEEL_DELTA; break;
+		default: return 0;
+		}
+		short key_state = 0;
+		if (GetKeyState(VK_CONTROL)) { key_state |= MK_CONTROL; }
+		if (GetKeyState(VK_SHIFT)) { key_state |= MK_SHIFT; }
+		Point cursor_position = GetCursorPosition();
+		return WndProc(
+			hwnd, msg == WM_HSCROLL ? WM_MOUSEHWHEEL : WM_MOUSEWHEEL,
+			(wheel_delta << 16) | key_state, ((short)cursor_position.y << 16) | (short)cursor_position.x
+		);
+	}
+
+	case WM_MOUSEACTIVATE: return MA_NOACTIVATE;
+	case WM_MOUSELEAVE: is_mouse_tracked = false; GetDesktop().LoseWindowTrack(); break;
+	case WM_CAPTURECHANGED: GetDesktop().LoseWindowCapture(); break;
+	case WM_KILLFOCUS: GetDesktop().LoseWindowFocus(); break;
+
 	default: return DefWindowProcW(hwnd, msg, wparam, lparam);
 	}
 	return 0;
@@ -249,7 +238,7 @@ void MinimizeWindow(Handle window) { ShowWindow(AsHWND(window), SW_MINIMIZE); }
 void MaximizeWindow(Handle window) { ShowWindow(AsHWND(window), SW_MAXIMIZE); }
 void RestoreWindow(Handle window) { ShowWindow(AsHWND(window), SW_RESTORE); }
 
-void CloseWindow(Handle window) { SendMessageW(AsHWND(window), WM_CLOSE, 0, 0); }
+void CloseWindow(Handle window) { PostMessageW(AsHWND(window), WM_CLOSE, 0, 0); }
 
 void RedrawWindowRegion(Handle window, RectI region) { RECT rect = AsWin32RECT(region); InvalidateRect(AsHWND(window), &rect, false); }
 

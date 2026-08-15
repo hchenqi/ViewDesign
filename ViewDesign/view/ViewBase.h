@@ -5,9 +5,6 @@
 #include "ViewDesign/drawing/canvas.h"
 #include "ViewDesign/event/event.h"
 
-#include <stdexcept>
-#include <cstring>
-
 
 namespace ViewDesign {
 
@@ -15,15 +12,14 @@ namespace ViewDesign {
 class ViewBase : Uncopyable {
 private:
 	friend class Desktop;
-	friend struct ViewBasePrivateAccess;
 
 protected:
 	ViewBase() {}
 public:
 	virtual ~ViewBase();
-
-protected:
+public:
 	ViewBase& AsViewBase() { return *this; }
+	const ViewBase& AsViewBase() const { return *this; }
 
 	// style
 protected:
@@ -32,24 +28,17 @@ protected:
 	// parent
 private:
 	ref_ptr<ViewBase> parent = nullptr;
-protected:
+public:
 	bool HasParent() const { return parent != nullptr; }
 	ViewBase& GetParent() const { if (!HasParent()) { throw std::logic_error("view has no parent"); } return *parent; }
 
 	// child
 protected:
 	void VerifyChild(ViewBase& child) const { if (child.parent != this) { throw std::invalid_argument("invalid child view"); } }
-	void RegisterChild(ViewBase& child) { if (child.HasParent()) { throw std::logic_error("view already has a parent"); } child.parent = this; }
-	void UnregisterChild(ViewBase& child) { VerifyChild(child); child.parent = nullptr; }
-protected:
+	void RegisterChild(ViewBase& child);
+	void UnregisterChild(ViewBase& child);
+public:
 	ViewBase& GetDirectChild(ViewBase& descendent) const;
-
-	// data
-private:
-	uint64 data = 0;
-protected:
-	template<class T> void SetChildData(ViewBase& child, T data) const requires (sizeof(T) <= sizeof(uint64)) { VerifyChild(child); memcpy(&child.data, &data, sizeof(T)); }
-	template<class T> T GetChildData(ViewBase& child) const requires (sizeof(T) <= sizeof(uint64)) { VerifyChild(child); T data; memcpy(&data, &child.data, sizeof(T)); return data; }
 
 	// layout
 protected:
@@ -58,7 +47,7 @@ protected:
 protected:
 	virtual Point ConvertChildPoint(ViewBase& child, Point point) const { return point; }
 	virtual Point ConvertChildPoint(Point point, ViewBase& child) const { return point; }
-protected:
+public:
 	Point ConvertDescendentPoint(ViewBase& descendent, Point point) const;
 	Point ConvertDescendentPoint(Point point, ViewBase& descendent) const;
 protected:
@@ -75,11 +64,10 @@ protected:
 	virtual void OnChildRedraw(ViewBase& child, Rect child_redraw_region) {}
 
 	// event
-protected:
+public:
 	void SetCapture();
 	void ReleaseCapture();
 	void SetFocus();
-	void ReleaseFocus();
 protected:
 	ref_ptr<ViewBase> HitTestChild(ViewBase& child, MouseEvent& event) { return child.HitTest(event); }
 protected:
@@ -89,6 +77,41 @@ protected:
 	virtual void OnKeyEvent(KeyEvent event) {}
 	virtual void OnFocusEvent(FocusEvent event) {}
 };
+
+
+template<class View>
+concept view_type = std::derived_from<View, ViewBase>;
+
+
+class view_ref_any : public std::reference_wrapper<ViewBase> {
+public:
+	template<view_type View>
+	view_ref_any(View& ref) : std::reference_wrapper<ViewBase>(ref) {}
+public:
+	operator ViewBase& () const { return get(); }
+	operator ref_ptr<ViewBase>() const { return &get(); }
+	ref_ptr<ViewBase> operator->() const { return &get(); }
+};
+
+class view_ptr_any : public std::unique_ptr<ViewBase> {
+public:
+	view_ptr_any() : std::unique_ptr<ViewBase>(nullptr) {}
+	template<view_type View>
+	view_ptr_any(owner_ptr<View> ptr) : std::unique_ptr<ViewBase>(ptr) {}
+	template<view_type View>
+	view_ptr_any(std::unique_ptr<View> ptr) : std::unique_ptr<ViewBase>(std::move(ptr)) {}
+public:
+	operator ViewBase& () const { return *get(); }
+	operator ref_ptr<ViewBase>() const { return get(); }
+	ref_ptr<ViewBase> operator->() const { return get(); }
+};
+
+
+template<class T>
+concept unique_ptr_type = std::derived_from<T, std::unique_ptr<typename T::element_type, typename T::deleter_type>>;
+
+template<class T>
+auto create(auto&&... args) { return std::make_unique<T>(std::forward<decltype(args)>(args)...); }
 
 
 } // namespace ViewDesign

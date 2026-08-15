@@ -76,10 +76,10 @@ private:
 private:
 	virtual void OnDraw(Canvas& canvas, Rect draw_region) override {
 		canvas.draw(point_zero, new Rectangle(patch_size, Color(background_00, alpha)));
-		canvas.Offset(Vector(patch_size.width, 0), [&]() {
+		canvas.Offset(Vector(patch_size.width, 0), [&] {
 			canvas.draw(point_zero, new Rectangle(patch_size, Color(background_01, alpha)));
 		});
-		canvas.Group(Vector(0, patch_size.height), Rect(0, 0, size.width, patch_size.height), [&]() {
+		canvas.Group(Vector(0, patch_size.height), Rect(0, 0, size.width, patch_size.height), [&] {
 			canvas.draw(point_zero, new Rectangle(patch_size, Color(background_10, alpha)));
 			canvas.draw(Point(patch_size.width, 0), new BitmapFigure(bitmap_11, alpha / (float)0xFF));
 		});

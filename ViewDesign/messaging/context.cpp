@@ -5,13 +5,13 @@
 
 namespace ViewDesign {
 
-struct ViewBasePrivateAccess : public ViewBase {
-	ref_ptr<ViewBasePrivateAccess> Parent() { return static_cast<ref_ptr<ViewBasePrivateAccess>>(parent); }
-};
-
 namespace {
 
 std::unordered_set<ref_ptr<ViewBase>> provider_set;
+
+inline ref_ptr<ViewBase> CheckFindProvider(ViewBase& view) {
+	return provider_set.contains(&view) ? &view : view.HasParent() ? CheckFindProvider(view.GetParent()) : nullptr;
+}
 
 } // namespace
 
@@ -28,9 +28,7 @@ ContextProvider::~ContextProvider() {
 }
 
 ref_ptr<ViewBase> ContextProvider::GetNextProvider(ViewBase& view) {
-	auto parent = static_cast<ref_ptr<ViewBasePrivateAccess>>(&view)->Parent();
-	for (; parent && !provider_set.contains(parent); parent = parent->Parent()) {}
-	return parent;
+	return view.HasParent() ? CheckFindProvider(view.GetParent()) : nullptr;
 }
 
 

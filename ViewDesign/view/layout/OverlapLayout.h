@@ -56,7 +56,8 @@ public:
 	void AddWindow(window_ptr window) {
 		RegisterChild(*window);
 		UpdateWindowSizeRef(*window);
-		window_list.emplace_back(std::move(window));
+		auto& ptr = window_list.emplace_back(std::move(window));
+		Redraw(ptr->region);
 	}
 	void AddWindow(owner_ptr<Window> window) { AddWindow(window_ptr(window)); }
 	window_ptr RemoveWindow(Window& window) {
@@ -106,7 +107,7 @@ private:
 	using ViewBase::UpdateChildSizeRef;
 	using ViewBase::OnChildSizeUpdate;
 protected:
-	void UpdateWindowSizeRef(Window& window) { VerifyChild(window); window.RegionUpdated(window.OnWindowSizeRefUpdate(size)); }
+	void UpdateWindowSizeRef(Window& window) { VerifyChild(window); window.region = window.OnWindowSizeRefUpdate(size); }
 protected:
 	virtual Point ConvertChildPoint(ViewBase& child, Point point) const override { return point + (AsWindow(child).region.point - point_zero); }
 	virtual Point ConvertChildPoint(Point point, ViewBase& child) const override { return point - (AsWindow(child).region.point - point_zero); }

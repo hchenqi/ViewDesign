@@ -66,7 +66,7 @@ void App() {
 	TextInput& text_input_ref = *text_input;
 
 	ref_ptr<ListView> list_view;
-	Signal::Listener text_update_listener(text_input_ref.text_update_signal, [&]() { list_view->Reflow(); });
+	Signal::Listener text_update_listener(text_input_ref.text_update_signal, [&] { list_view->Reflow(); });
 
 	desktop.AddWindow(
 		new DefaultBackground<DefaultWindow>(
