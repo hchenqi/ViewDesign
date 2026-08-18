@@ -16,15 +16,15 @@ using u32string = std::u32string;
 
 
 struct u16pair : std::pair<u16char, u16char> {
-	u16pair() {}
-	u16pair(u16char first, u16char second) : std::pair<u16char, u16char>(first, second) {}
-	bool empty() const { return first == 0; }
-	bool single() const { return first != 0 && second == 0; }
-	bool pair() const { return first != 0 && second != 0; }
-	size_t length() const { return first == 0 ? 0 : second == 0 ? 1 : 2; }
+	constexpr u16pair() {}
+	constexpr u16pair(u16char first, u16char second) : std::pair<u16char, u16char>(first, second) {}
+	constexpr bool empty() const { return first == 0; }
+	constexpr bool single() const { return first != 0 && second == 0; }
+	constexpr bool pair() const { return first != 0 && second != 0; }
+	constexpr size_t length() const { return first == 0 ? 0 : second == 0 ? 1 : 2; }
 };
 
-inline u16pair to_u16pair(u32char ch) {
+constexpr u16pair to_u16pair(u32char ch) {
 	if (ch <= 0xFFFF) {
 		if (ch >= 0xD800 && ch <= 0xDFFF) {
 			return { 0, 0 };
