@@ -49,7 +49,7 @@ protected:
 template<>
 class ClipFrame<Fixed, Fixed, TopLeft> : public _ClipFrame_Base, public SizeTrait<Fixed, Fixed> {
 public:
-	ClipFrame(view_ptr_any child) : _ClipFrame_Base(std::move(child)) { child_region.point = point_zero; }
+	ClipFrame(view_ptr<Relative, Relative> child) : _ClipFrame_Base(std::move(child)) { child_region.point = point_zero; }
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override {
 		child_region.size = UpdateChildSizeRef(child, size = size_ref);
@@ -64,7 +64,7 @@ protected:
 template<>
 class ClipFrame<Fixed, Fixed, TopRight> : public _ClipFrame_Base, public SizeTrait<Fixed, Fixed> {
 public:
-	ClipFrame(view_ptr_any child) : _ClipFrame_Base(std::move(child)) { child_region.point.y = 0; }
+	ClipFrame(view_ptr<Relative, Relative> child) : _ClipFrame_Base(std::move(child)) { child_region.point.y = 0; }
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override {
 		child_region.size = UpdateChildSizeRef(child, size = size_ref);
@@ -81,7 +81,7 @@ protected:
 template<>
 class ClipFrame<Fixed, Fixed, BottomLeft> : public _ClipFrame_Base, public SizeTrait<Fixed, Fixed> {
 public:
-	ClipFrame(view_ptr_any child) : _ClipFrame_Base(std::move(child)) { child_region.point.x = 0; }
+	ClipFrame(view_ptr<Relative, Relative> child) : _ClipFrame_Base(std::move(child)) { child_region.point.x = 0; }
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override {
 		child_region.size = UpdateChildSizeRef(child, size = size_ref);
@@ -98,7 +98,7 @@ protected:
 template<>
 class ClipFrame<Fixed, Fixed, BottomRight> : public _ClipFrame_Base, public SizeTrait<Fixed, Fixed> {
 public:
-	ClipFrame(view_ptr_any child) : _ClipFrame_Base(std::move(child)) {}
+	ClipFrame(view_ptr<Relative, Relative> child) : _ClipFrame_Base(std::move(child)) {}
 protected:
 	virtual Size OnSizeRefUpdate(Size size_ref) override {
 		child_region.size = UpdateChildSizeRef(child, size = size_ref);

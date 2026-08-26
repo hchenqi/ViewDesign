@@ -44,7 +44,7 @@ protected:
 template<>
 class StretchFrame<Fixed, Fixed> : public _StretchFrame_Base, public SizeTrait<Fixed, Fixed> {
 public:
-	using child_type = view_ptr_any;
+	using child_type = view_ptr<Relative, Relative>;
 public:
 	StretchFrame(child_type child) : _StretchFrame_Base(std::move(child)) {}
 protected:
@@ -101,7 +101,7 @@ protected:
 
 class StretchFrameUniform : public ViewFrame, public SizeTrait<Bounded, Bounded> {
 public:
-	using child_type = view_ptr_any;
+	using child_type = view_ptr<Relative, Relative>;
 public:
 	StretchFrameUniform(child_type child) : ViewFrame(std::move(child)) {}
 

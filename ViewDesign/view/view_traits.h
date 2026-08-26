@@ -6,7 +6,7 @@
 namespace ViewDesign {
 
 
-struct Relative {};
+struct Relative { struct size_trait_tag {}; };
 struct Bounded : Relative { using parent = Relative; };
 struct Fixed : Bounded { using parent = Bounded; };
 struct Auto : Relative { using parent = Relative; };
@@ -18,7 +18,7 @@ template<class T> concept IsAuto = std::same_as<T, Auto>;
 
 
 template<class T>
-concept size_trait = std::derived_from<T, Relative>;
+concept size_trait = requires { typename T::size_trait_tag; };
 
 
 template<size_trait WidthTrait, size_trait HeightTrait>

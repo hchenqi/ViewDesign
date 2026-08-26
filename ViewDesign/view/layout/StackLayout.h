@@ -9,14 +9,17 @@ namespace ViewDesign {
 
 class _StackLayout_Base : public ViewBase {
 protected:
-	_StackLayout_Base(view_ptr_any child_first, view_ptr_any child_second) : child_first(std::move(child_first)), child_second(std::move(child_second)) {
+	using child_type = view_ptr_any;
+
+protected:
+	_StackLayout_Base(child_type child_first, child_type child_second) : child_first(std::move(child_first)), child_second(std::move(child_second)) {
 		RegisterChild(this->child_first); RegisterChild(this->child_second);
 	}
 
 	// child
 protected:
-	view_ptr_any child_first;
-	view_ptr_any child_second;
+	child_type child_first;
+	child_type child_second;
 
 	// layout
 protected:
