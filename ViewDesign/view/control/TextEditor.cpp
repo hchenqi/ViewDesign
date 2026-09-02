@@ -280,6 +280,7 @@ void TextEditor::UpdateImeComposition(TextRange range) {
 
 void TextEditor::OnImeBegin() {
 	if (IsEditDisabled()) { return; }
+	OnOperationBegin();
 	if (HasSelection()) {
 		UpdateImeComposition(state.selection.current_range);
 		ime.SetPosition(*this, selection_region_list.front().BottomRight());
@@ -290,12 +291,10 @@ void TextEditor::OnImeBegin() {
 }
 
 void TextEditor::OnImeString() {
-	Operation([&] {
-		u16string str = ime.GetString();
-		Base::Replace(state.input.ime_composition_range, str);
-		UpdateImeComposition(TextRange(state.input.ime_composition_range.begin(), str.length()));
-		SetCaret(TextRange(state.input.ime_composition_range.begin(), ime.GetCursorPosition()));
-	});
+	u16string str = ime.GetString();
+	Base::Replace(state.input.ime_composition_range, str);
+	UpdateImeComposition(TextRange(state.input.ime_composition_range.begin(), str.length()));
+	SetCaret(TextRange(state.input.ime_composition_range.begin(), ime.GetCursorPosition()));
 }
 
 void TextEditor::OnImeEnd() {
@@ -303,6 +302,7 @@ void TextEditor::OnImeEnd() {
 		SetCaret(TextRange(state.input.ime_composition_range.end() - 1, 1));
 	}
 	ClearImeComposition();
+	OnOperationEnd();
 }
 
 void TextEditor::Cut() {

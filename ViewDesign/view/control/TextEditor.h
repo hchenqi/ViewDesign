@@ -281,6 +281,9 @@ protected:
 		if (!update_timeout.IsSet()) {
 			Push();
 		}
+	}
+	virtual void OnOperationEnd() override {
+		TextEditor::OnOperationEnd();
 		update_timeout.Set(update_timeout_value);
 	}
 
