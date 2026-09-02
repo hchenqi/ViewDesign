@@ -183,7 +183,7 @@ void Desktop::ImeWindowDisable(Window& window) {
 }
 
 void Desktop::ImeWindowSetPosition(Window& window, Point point) {
-	ViewDesign::ImeWindowSetPosition(window.GetHandle(), Round(point));
+	ViewDesign::ImeWindowSetPosition(window.GetHandle(), Round(point * window.GetScale()));
 }
 
 void Desktop::ImeSetPosition(ViewBase& view, Point point) {
