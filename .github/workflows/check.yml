@@ -1,4 +1,4 @@
-name: Nightly Build
+name: check build
 
 on:
   schedule:
@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: seanmiddleditch/gha-setup-ninja@master
+      - uses: seanmiddleditch/gha-setup-ninja@v6
 
       - uses: ilammy/msvc-dev-cmd@v1
         with:
@@ -48,15 +48,35 @@ jobs:
 
   linux-glfw-opengl:
     runs-on: ubuntu-latest
+    env:
+      ICU_ROOT: /opt/icu
     steps:
       - uses: actions/checkout@v4
 
-      - uses: seanmiddleditch/gha-setup-ninja@master
+      - uses: seanmiddleditch/gha-setup-ninja@v6
 
       - name: Install system packages
         run: |
           sudo apt-get update
-          sudo apt-get install -y g++ libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libgl1-mesa-dev libicu-dev
+          sudo apt-get install -y g++ libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libgl1-mesa-dev
+
+      - name: Cache ICU
+        id: cache-icu
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.ICU_ROOT }}
+          key: icu-74-cxx23-${{ runner.os }}
+
+      - name: Build ICU from source
+        if: steps.cache-icu.outputs.cache-hit != 'true'
+        run: |
+          curl -L -o icu.tgz https://github.com/unicode-org/icu/releases/download/release-74-2/icu4c-74_2-src.tgz
+          tar xzf icu.tgz
+          cd icu/source
+          CXXFLAGS=-std=c++23 ./configure --prefix=${{ env.ICU_ROOT }}
+          make -j"$(nproc)"
+          sudo make install
+          sudo chown -R "$USER" ${{ env.ICU_ROOT }}
 
       - uses: lukka/run-vcpkg@v11
         with:
