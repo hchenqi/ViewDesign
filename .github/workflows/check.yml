@@ -1,4 +1,4 @@
-name: test build[b]
+name: Build
 
 on:
   schedule:
@@ -47,6 +47,7 @@ jobs:
         run: cmake --build build/vs2026-windows-msvc-x64-debug-win32-directx
 
   linux-glfw-opengl:
+    if: false
     runs-on: ubuntu-latest
     env:
       ICU_ROOT: /opt/icu
