@@ -1,0 +1,73 @@
+name: Nightly Build
+
+on:
+  schedule:
+    - cron: '0 3 * * *'
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  windows-msvc:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: seanmiddleditch/gha-setup-ninja@master
+
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      - name: Configure
+        shell: cmd
+        run: |
+          copy CMakeUserPresets.example.json CMakeUserPresets.json
+          cmake --preset ninja-windows-msvc-x64-debug-win32-directx
+
+      - name: Build
+        shell: cmd
+        run: cmake --build build/ninja-windows-msvc-x64-debug-win32-directx
+
+  windows-vs2026:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure
+        shell: cmd
+        run: |
+          copy CMakeUserPresets.example.json CMakeUserPresets.json
+          cmake --preset vs2026-windows-msvc-x64-debug-win32-directx
+
+      - name: Build
+        shell: cmd
+        run: cmake --build build/vs2026-windows-msvc-x64-debug-win32-directx
+
+  linux-glfw-opengl:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: seanmiddleditch/gha-setup-ninja@master
+
+      - name: Install system packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y g++ libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libgl1-mesa-dev libicu-dev
+
+      - uses: lukka/run-vcpkg@v11
+        with:
+          vcpkgJsonGlob: 'vcpkg.json'
+
+      - name: Configure
+        env:
+          VCPKG_ROOT: ${{ github.workspace }}/vcpkg
+        run: |
+          cp CMakeUserPresets.example.json CMakeUserPresets.json
+          cmake --preset ninja-linux-gcc-debug-glfw-opengl
+
+      - name: Build
+        run: cmake --build build/ninja-linux-gcc-debug-glfw-opengl
