@@ -1,4 +1,4 @@
-name: check build
+name: test build[b]
 
 on:
   schedule:
@@ -86,8 +86,15 @@ jobs:
         env:
           VCPKG_ROOT: ${{ github.workspace }}/vcpkg
         run: |
+          export PATH="${ICU_ROOT}/bin:${PATH}"
+          export PKG_CONFIG_PATH="${ICU_ROOT}/lib/pkgconfig"
           cp CMakeUserPresets.example.json CMakeUserPresets.json
-          cmake --preset ninja-linux-gcc-debug-glfw-opengl
+          cmake --preset ninja-linux-gcc-debug-glfw-opengl \
+            -DICU_ROOT="${ICU_ROOT}" \
+            -DCMAKE_PREFIX_PATH="${ICU_ROOT}" \
+            -DCMAKE_FIND_ROOT_PATH="${ICU_ROOT}"
 
       - name: Build
-        run: cmake --build build/ninja-linux-gcc-debug-glfw-opengl
+        run: |
+          export LD_LIBRARY_PATH="${ICU_ROOT}/lib"
+          cmake --build build/ninja-linux-gcc-debug-glfw-opengl
