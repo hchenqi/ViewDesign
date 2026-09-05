@@ -2,216 +2,179 @@
   "version": 3,
   "configurePresets": [
     {
-      "name": "ninja-windows-msvc-x64-debug-win32-directx",
-      "displayName": "Ninja Windows MSVC x64 Debug (Backend: Win32-DirectX)",
-      "inherits": [
-        "ninja",
-        "msvc-x64",
-        "debug",
-        "win32-directx"
-      ],
+      "name": "base",
+      "hidden": true,
+      "binaryDir": "${sourceDir}/build/${presetName}",
       "cacheVariables": {
-        "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
-        "VCPKG_TARGET_TRIPLET": "x64-windows",
-        "VCPKG_MANIFEST_FEATURES": "win32-directx"
+        "CMAKE_CXX_STANDARD": "23",
+        "ICU_ROOT": "$env{ICU_ROOT}"
       }
     },
     {
-      "name": "ninja-windows-msvc-x64-release-win32-directx",
-      "displayName": "Ninja Windows MSVC x64 Release (Backend: Win32-DirectX)",
-      "inherits": [
-        "ninja",
-        "msvc-x64",
-        "release",
-        "win32-directx"
-      ],
-      "cacheVariables": {
-        "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
-        "VCPKG_TARGET_TRIPLET": "x64-windows",
-        "VCPKG_MANIFEST_FEATURES": "win32-directx"
+      "name": "ninja",
+      "hidden": true,
+      "generator": "Ninja"
+    },
+    {
+      "name": "vs2026",
+      "hidden": true,
+      "generator": "Visual Studio 18 2026"
+    },
+    {
+      "name": "make",
+      "hidden": true,
+      "generator": "Unix Makefiles"
+    },
+    {
+      "name": "host-windows",
+      "inherits": "base",
+      "hidden": true,
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
       }
     },
     {
-      "name": "ninja-windows-msvc-x86-debug-win32-directx",
-      "displayName": "Ninja Windows MSVC x86 Debug (Backend: Win32-DirectX)",
-      "inherits": [
-        "ninja",
-        "msvc-x86",
-        "debug",
-        "win32-directx"
-      ],
-      "cacheVariables": {
-        "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
-        "VCPKG_TARGET_TRIPLET": "x86-windows",
-        "VCPKG_MANIFEST_FEATURES": "win32-directx"
+      "name": "host-linux",
+      "inherits": "base",
+      "hidden": true,
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
       }
     },
     {
-      "name": "vs2026-windows-msvc-x64-debug-win32-directx",
-      "displayName": "VS2026 Windows MSVC x64 Debug (Backend: Win32-DirectX)",
-      "inherits": [
-        "vs2026",
-        "msvc-x64",
-        "debug",
-        "win32-directx"
-      ],
-      "cacheVariables": {
-        "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
-        "VCPKG_TARGET_TRIPLET": "x64-windows",
-        "VCPKG_MANIFEST_FEATURES": "win32-directx"
+      "name": "host-macos",
+      "inherits": "base",
+      "hidden": true,
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "macOS"
       }
     },
     {
-      "name": "ninja-windows-mingw-gcc-x64-debug-win32-directx",
-      "displayName": "Ninja Windows MinGW (GCC) x64 Debug (Backend: Win32-DirectX)",
-      "inherits": [
-        "ninja",
-        "mingw-gcc-x64",
-        "debug",
-        "win32-directx"
-      ]
-    },
-    {
-      "name": "ninja-windows-mingw-gcc-x86-debug-win32-directx",
-      "displayName": "Ninja Windows MinGW (GCC) x86 Debug (Backend: Win32-DirectX)",
-      "inherits": [
-        "ninja",
-        "mingw-gcc-x86",
-        "debug",
-        "win32-directx"
-      ],
+      "name": "msvc",
+      "inherits": "host-windows",
+      "hidden": true,
+      "toolset": {
+        "value": "host=x64",
+        "strategy": "external"
+      },
       "cacheVariables": {
-        "CMAKE_CXX_FLAGS_INIT": "-D_WIN32_WINNT=0x0A00"
+        "CMAKE_CXX_COMPILER": "cl"
       }
     },
     {
-      "name": "ninja-windows-mingw-clang-x64-debug-win32-directx",
-      "displayName": "Ninja Windows MinGW (Clang/LLVM) x64 Debug (Backend: Win32-DirectX)",
-      "inherits": [
-        "ninja",
-        "mingw-clang-x64",
-        "debug",
-        "win32-directx"
-      ]
-    },
-    {
-      "name": "make-linux-mingw-gcc-x64-debug-win32-directx",
-      "displayName": "Makefiles Linux MinGW (GCC) x64 Debug (Backend: Win32-DirectX)",
-      "inherits": [
-        "make",
-        "linux-mingw-gcc-x64",
-        "debug",
-        "win32-directx"
-      ]
-    },
-    {
-      "name": "ninja-linux-mingw-gcc-x64-debug-win32-directx",
-      "displayName": "Ninja Linux MinGW (GCC) x64 Debug (Backend: Win32-DirectX)",
-      "inherits": [
-        "ninja",
-        "linux-mingw-gcc-x64",
-        "debug",
-        "win32-directx"
-      ]
-    },
-    {
-      "name": "ninja-windows-msvc-x64-debug-win32-opengl",
-      "displayName": "Ninja Windows MSVC x64 Debug (Backend: Win32-OpenGL)",
-      "inherits": [
-        "ninja",
-        "msvc-x64",
-        "debug",
-        "win32-opengl"
-      ],
-      "cacheVariables": {
-        "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
-        "VCPKG_TARGET_TRIPLET": "x64-windows",
-        "VCPKG_MANIFEST_FEATURES": "win32-opengl"
+      "name": "msvc-x64",
+      "inherits": "msvc",
+      "hidden": true,
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
       }
     },
     {
-      "name": "ninja-windows-msvc-x64-debug-win32-vulkan",
-      "displayName": "Ninja Windows MSVC x64 Debug (Backend: Win32-Vulkan)",
-      "inherits": [
-        "ninja",
-        "msvc-x64",
-        "debug",
-        "win32-vulkan"
-      ],
-      "cacheVariables": {
-        "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
-        "VCPKG_TARGET_TRIPLET": "x64-windows",
-        "VCPKG_MANIFEST_FEATURES": "win32-vulkan"
+      "name": "msvc-x86",
+      "inherits": "msvc",
+      "hidden": true,
+      "architecture": {
+        "value": "x86",
+        "strategy": "external"
       }
     },
     {
-      "name": "ninja-windows-msvc-x64-debug-glfw-opengl",
-      "displayName": "Ninja Windows MSVC x64 Debug (Backend: GLFW-OpenGL)",
-      "inherits": [
-        "ninja",
-        "msvc-x64",
-        "debug",
-        "glfw-opengl"
-      ],
+      "name": "mingw-gcc-x64",
+      "inherits": "host-windows",
+      "hidden": true,
       "cacheVariables": {
-        "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
-        "VCPKG_TARGET_TRIPLET": "x64-windows",
-        "VCPKG_MANIFEST_FEATURES": "glfw-opengl"
+        "CMAKE_CXX_COMPILER": "x86_64-w64-mingw32-g++"
       }
     },
     {
-      "name": "ninja-windows-msvc-x64-debug-glfw-vulkan",
-      "displayName": "Ninja Windows MSVC x64 Debug (Backend: GLFW-Vulkan)",
-      "inherits": [
-        "ninja",
-        "msvc-x64",
-        "debug",
-        "glfw-vulkan"
-      ],
+      "name": "mingw-gcc-x86",
+      "inherits": "host-windows",
+      "hidden": true,
       "cacheVariables": {
-        "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
-        "VCPKG_TARGET_TRIPLET": "x64-windows",
-        "VCPKG_MANIFEST_FEATURES": "glfw-vulkan"
+        "CMAKE_CXX_COMPILER": "i686-w64-mingw32-g++"
       }
     },
     {
-      "name": "ninja-linux-gcc-debug-glfw-opengl",
-      "displayName": "Ninja Linux GCC Debug (Backend: GLFW-OpenGL)",
-      "inherits": [
-        "ninja",
-        "gcc",
-        "debug",
-        "glfw-opengl"
-      ],
+      "name": "mingw-clang-x64",
+      "inherits": "host-windows",
+      "hidden": true,
       "cacheVariables": {
-        "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
-        "VCPKG_TARGET_TRIPLET": "x64-linux",
-        "VCPKG_MANIFEST_FEATURES": "glfw-opengl"
+        "CMAKE_CXX_COMPILER": "clang++",
+        "CMAKE_CXX_FLAGS": "-Wno-switch"
       }
     },
     {
-      "name": "ninja-linux-gcc-debug-glfw-vulkan",
-      "displayName": "Ninja Linux GCC Debug (Backend: GLFW-Vulkan)",
-      "inherits": [
-        "ninja",
-        "gcc",
-        "debug",
-        "glfw-vulkan"
-      ],
+      "name": "linux-mingw-gcc-x64",
+      "inherits": "host-linux",
+      "hidden": true,
       "cacheVariables": {
-        "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
-        "VCPKG_TARGET_TRIPLET": "x64-linux",
-        "VCPKG_MANIFEST_FEATURES": "glfw-vulkan"
+        "CMAKE_SYSTEM_NAME": "Windows",
+        "CMAKE_CXX_COMPILER": "x86_64-w64-mingw32-g++"
       }
-    }
-  ],
-  "buildPresets": [
+    },
     {
-      "name": "make-k",
-      "configurePreset": "make-linux-mingw-gcc-x64-debug-win32-directx",
-      "nativeToolOptions": [
-        "-k"
-      ]
+      "name": "gcc",
+      "inherits": "host-linux",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "g++"
+      }
+    },
+    {
+      "name": "debug",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "release",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "win32-directx",
+      "hidden": true,
+      "cacheVariables": {
+        "BACKEND": "Win32-DirectX"
+      }
+    },
+    {
+      "name": "win32-opengl",
+      "hidden": true,
+      "cacheVariables": {
+        "BACKEND": "Win32-OpenGL"
+      }
+    },
+    {
+      "name": "win32-vulkan",
+      "hidden": true,
+      "cacheVariables": {
+        "BACKEND": "Win32-Vulkan"
+      }
+    },
+    {
+      "name": "glfw-opengl",
+      "hidden": true,
+      "cacheVariables": {
+        "BACKEND": "GLFW-OpenGL"
+      }
+    },
+    {
+      "name": "glfw-vulkan",
+      "hidden": true,
+      "cacheVariables": {
+        "BACKEND": "GLFW-Vulkan"
+      }
     }
   ]
 }
