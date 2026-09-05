@@ -1,4 +1,4 @@
-name: Test Build 
+name: Test Build
 
 on:
   schedule:
@@ -21,8 +21,14 @@ jobs:
         with:
           arch: x64
 
+      - uses: lukka/run-vcpkg@v11
+        with:
+          vcpkgJsonGlob: 'vcpkg.json'
+
       - name: Configure
         shell: cmd
+        env:
+          VCPKG_ROOT: ${{ github.workspace }}\vcpkg
         run: |
           copy CMakeUserPresets.example.json CMakeUserPresets.json
           cmake --preset ninja-windows-msvc-x64-debug-win32-directx
@@ -31,13 +37,24 @@ jobs:
         shell: cmd
         run: cmake --build build/ninja-windows-msvc-x64-debug-win32-directx
 
+      - uses: actions/upload-artifact@v4
+        with:
+          name: examples-ninja-msvc
+          path: build/ninja-windows-msvc-x64-debug-win32-directx/Example/**/*.exe
+
   windows-vs2026:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
 
+      - uses: lukka/run-vcpkg@v11
+        with:
+          vcpkgJsonGlob: 'vcpkg.json'
+
       - name: Configure
         shell: cmd
+        env:
+          VCPKG_ROOT: ${{ github.workspace }}\vcpkg
         run: |
           copy CMakeUserPresets.example.json CMakeUserPresets.json
           cmake --preset vs2026-windows-msvc-x64-debug-win32-directx
@@ -45,6 +62,11 @@ jobs:
       - name: Build
         shell: cmd
         run: cmake --build build/vs2026-windows-msvc-x64-debug-win32-directx
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: examples-vs2026
+          path: build/vs2026-windows-msvc-x64-debug-win32-directx/Example/**/*.exe
 
   linux-glfw-opengl:
     if: false
