@@ -148,3 +148,9 @@ The following platform packages will be searched and included automatically.
 > The header-only library *stb* provides an image loader that is used for OpenGL and Vulkan backends.
 
 *required for `-OpenGL` or `-Vulkan` backends when `Image` or `ImageView` are referenced*
+
+### curl (https://curl.se/libcurl.html)
+
+> The library *libcurl* is used to support loading an `Image` directly from a URL.
+
+*required when `Image` is constructed from a URL*
