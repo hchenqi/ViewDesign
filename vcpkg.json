@@ -2,23 +2,23 @@
   "features": {
     "win32-directx": {
       "description": "Backend: Win32-DirectX",
-      "dependencies": []
+      "dependencies": ["curl"]
     },
     "win32-opengl": {
       "description": "Backend: Win32-OpenGL",
-      "dependencies": ["glad", "stb"]
+      "dependencies": ["glad", "stb", "curl"]
     },
     "win32-vulkan": {
       "description": "Backend: Win32-Vulkan",
-      "dependencies": ["glm", "stb"]
+      "dependencies": ["glm", "stb", "curl"]
     },
     "glfw-opengl": {
       "description": "Backend: GLFW-OpenGL",
-      "dependencies": ["glfw3", "glad", "stb"]
+      "dependencies": ["glfw3", "glad", "stb", "curl"]
     },
     "glfw-vulkan": {
       "description": "Backend: GLFW-Vulkan",
-      "dependencies": ["glfw3", "glm", "stb"]
+      "dependencies": ["glfw3", "glm", "stb", "curl"]
     }
   }
 }
