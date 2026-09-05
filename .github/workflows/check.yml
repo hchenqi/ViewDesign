@@ -40,7 +40,9 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: examples-ninja-msvc
-          path: build/ninja-windows-msvc-x64-debug-win32-directx/Example/**/*.exe
+          path: |
+            build/ninja-windows-msvc-x64-debug-win32-directx/Example/**/*.exe
+            build/ninja-windows-msvc-x64-debug-win32-directx/Example/**/*.dll
 
   windows-vs2026:
     runs-on: windows-latest
@@ -66,7 +68,9 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: examples-vs2026
-          path: build/vs2026-windows-msvc-x64-debug-win32-directx/Example/**/*.exe
+          path: |
+            build/vs2026-windows-msvc-x64-debug-win32-directx/Example/**/*.exe
+            build/vs2026-windows-msvc-x64-debug-win32-directx/Example/**/*.dll
 
   linux-glfw-opengl:
     if: false
