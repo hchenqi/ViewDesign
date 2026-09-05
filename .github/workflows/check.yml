@@ -1,12 +1,12 @@
-name: Build
+name: Test Build 
 
 on:
   schedule:
     - cron: '0 3 * * *'
   push:
-    branches: [main]
+    branches: [main, BuildEx]
   pull_request:
-    branches: [main]
+    branches: [main, BuildEx]
   workflow_dispatch:
 
 jobs:
