@@ -4,9 +4,9 @@ on:
   schedule:
     - cron: '0 3 * * *'
   push:
-    branches: [main, BuildEx]
+    branches: [main, BuildEx, ExperimentalIcons]
   pull_request:
-    branches: [main, BuildEx]
+    branches: [main, BuildEx, ExperimentalIcons]
   workflow_dispatch:
 
 jobs:
