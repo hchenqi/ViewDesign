@@ -5,6 +5,11 @@
 #include <ViewDesign/view/wrapper/Background.h>
 
 #include <string>
+#include <stdexcept>
+
+#ifdef _WIN32
+#include <Windows.h>
+#endif
 
 
 using namespace ViewDesign;
@@ -18,18 +23,23 @@ const std::string image_url = "https://raw.githubusercontent.com/coppersalts/HTM
 
 
 void App() {
-	Image image(image_url);
+	try {
+		Image image(image_url);
 
-	desktop.AddWindow(
-		new DefaultBackground<DefaultWindow>(
-			DefaultWindow::Style(),
-			u"URL Image",
-			new CenterFrame<Fixed, Fixed>(
-				new ScaleFrame(
-					new Stateful::ImageView(image)
+		desktop.AddWindow(
+			new DefaultBackground<DefaultWindow>(
+				DefaultWindow::Style(),
+				u"URL Image",
+				new CenterFrame<Fixed, Fixed>(
+					new ScaleFrame(
+						new Stateful::ImageView(image)
+					)
 				)
 			)
-		)
-	);
-	desktop.EventLoop();
+		);
+		desktop.EventLoop();
+	}
+	catch (const std::exception& e) {
+		MessageBoxA(nullptr, e.what(), "URLImageView failed", MB_ICONERROR);
+	}
 }
