@@ -17,3 +17,5 @@ target_link_libraries(ViewDesignPlatformVulkan PUBLIC Vulkan::Vulkan)
 
 target_link_libraries(ViewDesign PUBLIC ViewDesign::Platform::Vulkan)
 target_compile_definitions(ViewDesign PUBLIC VIEWDESIGN_PLATFORM_VULKAN)
+
+set(VIEWDESIGN_PLATFORM_VULKAN ON CACHE BOOL "")

@@ -7,6 +7,16 @@
       "inherits": ["ninja", "msvc-x64", "debug", "win32-directx"]
     },
     {
+      "name": "ninja-windows-msvc-x64-debug-win32-directx-curl",
+      "displayName": "Ninja Windows MSVC x64 Debug (Backend: Win32-DirectX, with curl)",
+      "inherits": ["ninja", "msvc-x64", "debug", "win32-directx"],
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+        "VCPKG_TARGET_TRIPLET": "x64-windows",
+        "VCPKG_MANIFEST_FEATURES": "win32-directx-curl"
+      }
+    },
+    {
       "name": "ninja-windows-msvc-x64-release-win32-directx",
       "displayName": "Ninja Windows MSVC x64 Release (Backend: Win32-DirectX)",
       "inherits": ["ninja", "msvc-x64", "release", "win32-directx"]

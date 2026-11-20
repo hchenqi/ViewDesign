@@ -1,3 +1,4 @@
+add_subdirectory(curl)
 add_subdirectory(directx)
 add_subdirectory(glad)
 add_subdirectory(glfw)

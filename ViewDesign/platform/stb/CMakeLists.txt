@@ -14,3 +14,5 @@ target_include_directories(ViewDesignPlatformStb PUBLIC ${Stb_INCLUDE_DIR})
 
 target_link_libraries(ViewDesign PUBLIC ViewDesign::Platform::Stb)
 target_compile_definitions(ViewDesign PUBLIC VIEWDESIGN_PLATFORM_STB)
+
+set(VIEWDESIGN_PLATFORM_STB ON CACHE BOOL "")

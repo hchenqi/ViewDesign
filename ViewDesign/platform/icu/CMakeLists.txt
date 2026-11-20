@@ -15,3 +15,5 @@ target_link_libraries(ViewDesignPlatformICU PUBLIC ICU::uc)
 
 target_link_libraries(ViewDesign PUBLIC ViewDesign::Platform::ICU)
 target_compile_definitions(ViewDesign PUBLIC VIEWDESIGN_PLATFORM_ICU)
+
+set(VIEWDESIGN_PLATFORM_ICU ON CACHE BOOL "")

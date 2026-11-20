@@ -32,8 +32,6 @@
 
 - (feature) adding example `ViewEmbedding` that renders view components within 3D scenes
 
-- (feature) supporting loading images directly from a URL
-
 - (feature) implementing `TextView` with range-based font/paragraph formats for building a rich-text editor (possibly as separate components like `RichTextView`, `RichTextEditor`)
 
 - (improvement) implementing integer value region arithmetic for non-Win32 platforms (possibly with Clipper2, Boost.Geometry, etc)

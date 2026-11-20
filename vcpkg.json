@@ -4,6 +4,10 @@
       "description": "Backend: Win32-DirectX",
       "dependencies": []
     },
+    "win32-directx-curl": {
+      "description": "Backend: Win32-DirectX, with curl",
+      "dependencies": ["curl"]
+    },
     "win32-opengl": {
       "description": "Backend: Win32-OpenGL",
       "dependencies": ["glad", "stb"]

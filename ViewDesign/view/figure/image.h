@@ -5,6 +5,7 @@
 #include "ViewDesign/geometry/sizeu.h"
 #include "ViewDesign/drawing/figure.h"
 
+#include <vector>
 #include <stdexcept>
 
 
@@ -15,6 +16,7 @@ class Image : Uncopyable {
 public:
 	Image(const u16string& filename);
 	Image(const void* buffer, size_t size);
+	Image(std::vector<std::byte> buffer) : Image(buffer.data(), buffer.size()) {}
 	~Image();
 protected:
 	Handle source;

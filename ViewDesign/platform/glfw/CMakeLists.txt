@@ -15,3 +15,5 @@ target_link_libraries(ViewDesignPlatformGLFW PUBLIC glfw)
 
 target_link_libraries(ViewDesign PUBLIC ViewDesign::Platform::GLFW)
 target_compile_definitions(ViewDesign PUBLIC VIEWDESIGN_PLATFORM_GLFW)
+
+set(VIEWDESIGN_PLATFORM_GLFW ON CACHE BOOL "")
