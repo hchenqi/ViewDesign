@@ -13,6 +13,8 @@ target_link_libraries(ViewDesignPlatformWin32 PRIVATE imm32)
 target_link_libraries(ViewDesignPlatformWin32 PRIVATE icu)
 target_link_libraries(ViewDesignPlatformWin32 PRIVATE dwmapi)
 target_link_libraries(ViewDesignPlatformWin32 PRIVATE comctl32)
+target_link_libraries(ViewDesignPlatformWin32 PRIVATE windowscodecs)
+target_link_libraries(ViewDesignPlatformWin32 PRIVATE shlwapi)
 
 target_link_libraries(ViewDesign PUBLIC ViewDesign::Platform::Win32)
 target_compile_definitions(ViewDesign PUBLIC VIEWDESIGN_PLATFORM_WIN32)

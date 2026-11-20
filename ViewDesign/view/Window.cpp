@@ -10,6 +10,8 @@ Window::Window(const u16string& title, view_ptr_any child) : Window(CreateWindow
 Window::~Window() { DestroyWindow(surface.DestroyWindow()); }
 
 void Window::SetTitle(const u16string& title) { SetWindowTitle(GetHandle(), title); }
+void Window::SetIcon(const void* buffer, size_t size) { SetWindowIcon(GetHandle(), buffer, size); }
+void Window::ClearIcon() { ClearWindowIcon(GetHandle()); }
 void Window::RegionUpdated(Rect rect) { SetWindowRegion(GetHandle(), Round(rect * scale)); }
 
 void Window::Show() { ShowWindow(GetHandle()); }

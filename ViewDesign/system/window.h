@@ -16,6 +16,8 @@ void DestroyWindow(Handle window);
 Scale GetWindowScale(Handle window);
 
 void SetWindowTitle(Handle window, const u16string& title);
+void SetWindowIcon(Handle window, const void* buffer, size_t size);
+void ClearWindowIcon(Handle window);
 void SetWindowRegion(Handle window, RectI region);
 void SetWindowOpacity(Handle window, float opacity);
 void SetWindowCursor(Handle window, std::reference_wrapper<Cursor> cursor);

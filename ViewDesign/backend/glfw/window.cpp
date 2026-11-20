@@ -6,6 +6,10 @@
 #include <ViewDesign/platform/glfw/context.h>
 #include <ViewDesign/platform/glfw/key.h>
 
+#ifdef VIEWDESIGN_PLATFORM_STB
+#include <stb_image.h>
+#endif
+
 
 namespace ViewDesign {
 
@@ -235,6 +239,23 @@ void SetWindowRegion(Handle window, RectI region) {
 }
 
 void SetWindowOpacity(Handle window, float opacity) { glfwSetWindowOpacity(AsGLFWWindow(window), opacity); }
+
+void SetWindowIcon(Handle window, const void* buffer, size_t size) {
+#ifdef VIEWDESIGN_PLATFORM_STB
+	int width, height, channels;
+	stbi_uc* data = stbi_load_from_memory(reinterpret_cast<const stbi_uc*>(buffer), (int)size, &width, &height, &channels, 4);
+	if (data == nullptr) {
+		throw std::runtime_error("GLFW: failed to decode icon image");
+	}
+	GLFWimage icon = { width, height, data };
+	glfwSetWindowIcon(AsGLFWWindow(window), 1, &icon);
+	stbi_image_free(data);
+#else
+	throw std::runtime_error("Window: setting an icon requires the Stb platform module");
+#endif
+}
+
+void ClearWindowIcon(Handle window) { glfwSetWindowIcon(AsGLFWWindow(window), 0, nullptr); }
 
 void ShowWindow(Handle window) { glfwShowWindow(AsGLFWWindow(window)); }
 void HideWindow(Handle window) { glfwHideWindow(AsGLFWWindow(window)); }

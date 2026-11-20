@@ -20,6 +20,8 @@ public:
 	// style
 public:
 	void SetTitle(const u16string& title);
+	void SetIcon(const void* buffer, size_t size);
+	void ClearIcon();
 
 	// surface
 private:

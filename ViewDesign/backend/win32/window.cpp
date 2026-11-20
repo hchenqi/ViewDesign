@@ -5,6 +5,7 @@
 #include <ViewDesign/platform/win32/window.h>
 #include <ViewDesign/platform/win32/geometry_helper.h>
 #include <ViewDesign/platform/win32/ime.h>
+#include <ViewDesign/platform/win32/icon.h>
 #include "ViewDesign/view/Desktop.h"
 
 #include <windows.h>
@@ -228,6 +229,22 @@ void DestroyWindow(Handle window) { DestroyWindow(AsHWND(window)); }
 Scale GetWindowScale(Handle window) { return Scale(GetDpiForWindow(AsHWND(window)) / dpi_default); }
 
 void SetWindowTitle(Handle window, const u16string& title) { SetWindowTextW(AsHWND(window), as_wchar_str(title.c_str())); }
+
+void SetWindowIcon(Handle window, const void* buffer, size_t size) {
+	HICON icon = CreateIconFromBytes(buffer, size);
+	HICON old_small = (HICON)SendMessageW(AsHWND(window), WM_SETICON, ICON_SMALL, (LPARAM)icon);
+	HICON old_big = (HICON)SendMessageW(AsHWND(window), WM_SETICON, ICON_BIG, (LPARAM)icon);
+	if (old_small != nullptr) { DestroyIcon(old_small); }
+	if (old_big != nullptr && old_big != old_small) { DestroyIcon(old_big); }
+}
+
+void ClearWindowIcon(Handle window) {
+	HICON old_small = (HICON)SendMessageW(AsHWND(window), WM_SETICON, ICON_SMALL, 0);
+	HICON old_big = (HICON)SendMessageW(AsHWND(window), WM_SETICON, ICON_BIG, 0);
+	if (old_small != nullptr) { DestroyIcon(old_small); }
+	if (old_big != nullptr && old_big != old_small) { DestroyIcon(old_big); }
+}
+
 void SetWindowRegion(Handle window, RectI region) { MoveWindow(AsHWND(window), region.point.x, region.point.y, region.size.width, region.size.height, false); }
 void SetWindowOpacity(Handle window, float opacity) { SetWndExStyle(AsHWND(window), WS_EX_LAYERED); SetLayeredWindowAttributes(AsHWND(window), 0, opacity * 0xFF, LWA_ALPHA); }
 void SetWindowCursor(Handle window, std::reference_wrapper<Cursor> cursor) { SetCursor(cursor); }
