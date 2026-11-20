@@ -151,6 +151,6 @@ The following platform packages will be searched and included automatically.
 
 ### curl (https://curl.se/)
 
-> The library *libcurl* is used to support loading an `Image` directly from a URL.
+> The library *libcurl* is used to download data from a URL.
 
-*required when `Image` is constructed from a URL*
+*required for downloading data from a URL (as in example `URLImageView`)*

@@ -20,10 +20,10 @@
 using namespace ViewDesign;
 
 
-class UrlImage : public Image {
+class URLImage : public Image {
 public:
-	UrlImage(const u8string& url) : Image(Curl::DownloadBytes(url)) {}
-	UrlImage(const u16string& url) : UrlImage(to_u8string(url)) {}
+	URLImage(const u8string& url) : Image(Curl::DownloadBytes(url)) {}
+	URLImage(const u16string& url) : URLImage(to_u8string(url)) {}
 };
 
 
@@ -37,7 +37,7 @@ private:
 	};
 
 public:
-	LoadImageWindow(std::optional<UrlImage>& image) : Base(
+	LoadImageWindow(std::optional<URLImage>& image) : Base(
 		Style(),
 		u"Load Image From URL",
 		new CenterFrame<Fixed, Fixed>(
@@ -79,7 +79,7 @@ private:
 	ref_ptr<Box<Fixed, Fixed>> url_input_box;
 	Timer reset_border_timer = Timer([&] { url_input_box->SetBorderColor(border_color_normal); });
 private:
-	std::optional<UrlImage>& image;
+	std::optional<URLImage>& image;
 private:
 	void TryLoadImage() {
 		try {
@@ -94,7 +94,7 @@ private:
 
 
 void App() {
-	std::optional<UrlImage> image;
+	std::optional<URLImage> image;
 	desktop.AddWindow(new LoadImageWindow(image));
 	desktop.EventLoop();
 
@@ -105,7 +105,7 @@ void App() {
 	desktop.AddWindow(
 		new DefaultWindow(
 			DefaultWindow::Style(),
-			u"UrlImageView (stretched uniformly)",
+			u"URLImageView (stretched uniformly)",
 			new CenterFrame<Fixed, Fixed>(
 				new StretchFrameUniform(
 					new Stateful::ImageView(*image)
