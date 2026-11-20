@@ -1,3 +1,7 @@
+if(NOT DEFINED VIEWDESIGN_PLATFORM_CURL)
+    return()
+endif()
+
 file(GLOB EXAMPLE_SOURCES *.cpp)
 
 foreach(EXAMPLE_SOURCE ${EXAMPLE_SOURCES})

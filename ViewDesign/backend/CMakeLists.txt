@@ -1,5 +1,3 @@
-add_subdirectory(curl)
-
 if(DEFINED VIEWDESIGN_BACKEND)
     set(BACKEND "${VIEWDESIGN_BACKEND}")
 endif()

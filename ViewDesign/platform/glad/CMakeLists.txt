@@ -15,3 +15,5 @@ target_link_libraries(ViewDesignPlatformGLAD PUBLIC glad::glad)
 
 target_link_libraries(ViewDesign PUBLIC ViewDesign::Platform::GLAD)
 target_compile_definitions(ViewDesign PUBLIC VIEWDESIGN_PLATFORM_GLAD)
+
+set(VIEWDESIGN_PLATFORM_GLAD ON CACHE BOOL "")

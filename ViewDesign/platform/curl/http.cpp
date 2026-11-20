@@ -11,8 +11,8 @@ namespace Curl {
 
 namespace {
 
-size_t WriteCallback(char* data, size_t size, size_t count, void* userdata) {
-	auto& buffer = *static_cast<std::vector<unsigned char>*>(userdata);
+size_t WriteCallback(std::byte* data, size_t size, size_t count, void* userdata) {
+	auto& buffer = *static_cast<std::vector<std::byte>*>(userdata);
 	buffer.insert(buffer.end(), data, data + size * count);
 	return size * count;
 }
@@ -20,13 +20,14 @@ size_t WriteCallback(char* data, size_t size, size_t count, void* userdata) {
 } // namespace
 
 
-std::vector<unsigned char> DownloadBytes(const std::string& url) {
+std::vector<std::byte> DownloadBytes(const u8string& url) {
+	std::vector<std::byte> buffer;
+
 	CURL* curl = curl_easy_init();
 	if (curl == nullptr) {
 		throw std::runtime_error("Curl: failed to initialize");
 	}
 
-	std::vector<unsigned char> buffer;
 	curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer);
@@ -35,10 +36,11 @@ std::vector<unsigned char> DownloadBytes(const std::string& url) {
 	curl_easy_setopt(curl, CURLOPT_USERAGENT, "ViewDesign");
 
 	CURLcode result = curl_easy_perform(curl);
+
 	curl_easy_cleanup(curl);
 
-	if (result != CURLE_OK || buffer.empty()) {
-		throw std::runtime_error("Curl: failed to download image from URL");
+	if (result != CURLE_OK) {
+		throw std::runtime_error("Curl: failed to download from URL");
 	}
 
 	return buffer;

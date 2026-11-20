@@ -15,3 +15,5 @@ target_link_libraries(ViewDesignPlatformCurl PUBLIC CURL::libcurl)
 
 target_link_libraries(ViewDesign PUBLIC ViewDesign::Platform::Curl)
 target_compile_definitions(ViewDesign PUBLIC VIEWDESIGN_PLATFORM_CURL)
+
+set(VIEWDESIGN_PLATFORM_CURL ON CACHE BOOL "")

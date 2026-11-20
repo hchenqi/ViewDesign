@@ -18,3 +18,5 @@ target_link_libraries(ViewDesignPlatformDirectX PRIVATE shlwapi)
 
 target_link_libraries(ViewDesign PUBLIC ViewDesign::Platform::DirectX)
 target_compile_definitions(ViewDesign PUBLIC VIEWDESIGN_PLATFORM_DIRECTX)
+
+set(VIEWDESIGN_PLATFORM_DIRECTX ON CACHE BOOL "")

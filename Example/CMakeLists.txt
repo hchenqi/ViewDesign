@@ -14,4 +14,5 @@ if (MSVC)
     target_link_options(HotReload PRIVATE /INCREMENTAL)
 endif()
 
+add_subdirectory(curl)
 add_subdirectory(vulkan)

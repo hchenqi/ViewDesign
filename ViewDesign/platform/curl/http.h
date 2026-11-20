@@ -1,6 +1,7 @@
 #pragma once
 
-#include <string>
+#include "ViewDesign/common/unicode.h"
+
 #include <vector>
 
 
@@ -9,7 +10,7 @@ namespace ViewDesign {
 namespace Curl {
 
 
-std::vector<unsigned char> DownloadBytes(const std::string& url);
+std::vector<std::byte> DownloadBytes(const u8string& url);
 
 
 } // namespace Curl

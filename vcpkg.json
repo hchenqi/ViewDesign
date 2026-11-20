@@ -4,6 +4,10 @@
       "description": "Backend: Win32-DirectX",
       "dependencies": []
     },
+    "win32-directx-curl": {
+      "description": "Backend: Win32-DirectX, with curl",
+      "dependencies": ["curl"]
+    },
     "win32-opengl": {
       "description": "Backend: Win32-OpenGL",
       "dependencies": ["glad", "stb"]
@@ -19,26 +23,6 @@
     "glfw-vulkan": {
       "description": "Backend: GLFW-Vulkan",
       "dependencies": ["glfw3", "glm", "stb"]
-    },
-    "win32-directx-curl": {
-      "description": "Backend: Win32-DirectX, with support for loading Image from a URL",
-      "dependencies": ["curl"]
-    },
-    "win32-opengl-curl": {
-      "description": "Backend: Win32-OpenGL, with support for loading Image from a URL",
-      "dependencies": ["glad", "stb", "curl"]
-    },
-    "win32-vulkan-curl": {
-      "description": "Backend: Win32-Vulkan, with support for loading Image from a URL",
-      "dependencies": ["glm", "stb", "curl"]
-    },
-    "glfw-opengl-curl": {
-      "description": "Backend: GLFW-OpenGL, with support for loading Image from a URL",
-      "dependencies": ["glfw3", "glad", "stb", "curl"]
-    },
-    "glfw-vulkan-curl": {
-      "description": "Backend: GLFW-Vulkan, with support for loading Image from a URL",
-      "dependencies": ["glfw3", "glm", "stb", "curl"]
     }
   }
 }

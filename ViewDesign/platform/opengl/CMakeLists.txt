@@ -15,3 +15,5 @@ target_link_libraries(ViewDesignPlatformOpenGL PUBLIC OpenGL::GL)
 
 target_link_libraries(ViewDesign PUBLIC ViewDesign::Platform::OpenGL)
 target_compile_definitions(ViewDesign PUBLIC VIEWDESIGN_PLATFORM_OPENGL)
+
+set(VIEWDESIGN_PLATFORM_OPENGL ON CACHE BOOL "")

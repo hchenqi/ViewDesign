@@ -2,6 +2,7 @@
 #include <ViewDesign/view/frame/MaxFrame.h>
 #include <ViewDesign/view/frame/CenterFrame.h>
 #include <ViewDesign/view/frame/ScaleFrame.h>
+#include <ViewDesign/view/frame/StretchFrame.h>
 #include <ViewDesign/view/layout/SplitLayout.h>
 #include <ViewDesign/view/control/TextView.h>
 #include <ViewDesign/view/control/TextEditor.h>
@@ -11,7 +12,7 @@
 #include <ViewDesign/view/widget/FilledButton.h>
 #include <ViewDesign/view/widget/Box.h>
 #include <ViewDesign/view/widget/TextViewAdapter.h>
-#include <ViewDesign/common/unicode.h>
+#include <ViewDesign/platform/curl/http.h>
 
 #include <optional>
 
@@ -19,14 +20,11 @@
 using namespace ViewDesign;
 
 
-namespace {
-
-std::string ToNarrowString(const u16string& str) {
-	u8string u8 = to_u8string(str);
-	return std::string(as_char_str(u8.c_str()), u8.size());
-}
-
-} // namespace
+class UrlImage : public Image {
+public:
+	UrlImage(const u8string& url) : Image(Curl::DownloadBytes(url)) {}
+	UrlImage(const u16string& url) : UrlImage(to_u8string(url)) {}
+};
 
 
 class LoadImageWindow : public DefaultBackground<DefaultWindow> {
@@ -39,7 +37,7 @@ private:
 	};
 
 public:
-	LoadImageWindow(std::optional<Image>& image) : Base(
+	LoadImageWindow(std::optional<UrlImage>& image) : Base(
 		Style(),
 		u"Load Image From URL",
 		new CenterFrame<Fixed, Fixed>(
@@ -81,11 +79,11 @@ private:
 	ref_ptr<Box<Fixed, Fixed>> url_input_box;
 	Timer reset_border_timer = Timer([&] { url_input_box->SetBorderColor(border_color_normal); });
 private:
-	std::optional<Image>& image;
+	std::optional<UrlImage>& image;
 private:
 	void TryLoadImage() {
 		try {
-			image.emplace(ToNarrowString(url_input->GetText()));
+			image.emplace(url_input->GetText());
 			Close();
 		} catch (...) {
 			url_input_box->SetBorderColor(border_color_error);
@@ -96,7 +94,7 @@ private:
 
 
 void App() {
-	std::optional<Image> image;
+	std::optional<UrlImage> image;
 	desktop.AddWindow(new LoadImageWindow(image));
 	desktop.EventLoop();
 
@@ -107,9 +105,9 @@ void App() {
 	desktop.AddWindow(
 		new DefaultWindow(
 			DefaultWindow::Style(),
-			u"URL Image (hint: zoom with Ctrl + scroll)",
+			u"UrlImageView (stretched uniformly)",
 			new CenterFrame<Fixed, Fixed>(
-				new ScaleFrame(
+				new StretchFrameUniform(
 					new Stateful::ImageView(*image)
 				)
 			)
